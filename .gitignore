@@ -1,0 +1,17 @@
+# الخزنة اللي فيها الـ API Keys
+.env
+.env.local
+.env.*.local
+
+# ملفات النظام (عشان الزحمة)
+.DS_Store
+Thumbs.db
+
+# إعدادات المحرر (لو بتستخدم VS Code)
+.vscode/
+.idea/
+
+# لو بدأت تستخدم مكتبات برمجة (Node.js)
+node_modules/
+dist/
+build/
