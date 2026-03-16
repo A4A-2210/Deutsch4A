@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German A1 to B1 Transition - Pro Edition</title>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+    
+    <style>
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #f1f5f9; }
+        
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .pulse-animation {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .translation-block {
+            font-size: 0.75rem;
+            line-height: 1.1rem;
+            opacity: 0.85;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        .user-translation-block {
+            border-top: 1px solid rgba(255,255,255,0.2);
+            color: #d1fae5;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        .german-text { font-family: 'Nunito', sans-serif; direction: ltr; text-align: left; }
+        .tab-btn.active { border-bottom: 4px solid #3b82f6; color: #1d4ed8; font-weight: 700; }
+        .mic-btn { cursor: pointer; transition: all 0.2s; }
+        .mic-btn:hover { transform: scale(1.1); }
+        .speak-btn { cursor: pointer; transition: all 0.2s; }
+        .speak-btn:hover { transform: scale(1.1); filter: brightness(1.2); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // ================= DATA STRUCTURES =================
+
+        // 1. Verben mit präpositionalem Kasus (Dativ & Akkusativ)
+        const prepVerbsData = [
+            { german: "denken an", case: "Akkusativ", english: "to think about", arabic: "يفكر في" },
+            { german: "sich erinnern an", case: "Akkusativ", english: "to remember", arabic: "يفتكر / يتذكر" },
+            { german: "bestehen aus", case: "Dativ", english: "to consist of", arabic: "يتكون من" },
+            { german: "warten auf", case: "Akkusativ", english: "to wait for", arabic: "يستنى / ينتظر" },
+            { german: "sich freuen auf", case: "Akkusativ", english: "to look forward to", arabic: "يتطلع لـ / مستني بفارغ الصبر" },
+            { german: "sich bedanken bei", case: "Dativ", english: "to thank (someone)", arabic: "يشكر (شخص)" },
+            { german: "sich interessieren für", case: "Akkusativ", english: "to be interested in", arabic: "مهتم بـ" },
+            { german: "sich bedanken für", case: "Akkusativ", english: "to thank for (something)", arabic: "يشكر على (حاجة)" },
+            { german: "sprechen mit", case: "Dativ", english: "to speak with", arabic: "يتكلم مع" },
+            { german: "telefonieren mit", case: "Dativ", english: "to talk on the phone with", arabic: "يكلم (حد) في التليفون" },
+            { german: "sich beschäftigen mit", case: "Dativ", english: "to occupy oneself with", arabic: "ينشغل بـ / يضيع وقته في" },
+            { german: "sich ärgern über", case: "Akkusativ", english: "to be annoyed about", arabic: "يتعصب من / يتضايق من" },
+            { german: "sich freuen über", case: "Akkusativ", english: "to be happy about (past/present)", arabic: "يفرح بـ (حاجة حصلت)" },
+            { german: "reden über", case: "Akkusativ", english: "to talk about", arabic: "يتكلم عن / يرغي في" },
+            { german: "verfügen über", case: "Akkusativ", english: "to have at one's disposal", arabic: "يمتلك / متوفر عنده" },
+            { german: "fragen nach", case: "Dativ", english: "to ask about", arabic: "يسأل على" },
+            { german: "bitten um", case: "Akkusativ", english: "to ask for / request", arabic: "يطلب" },
+            { german: "steigen um", case: "Akkusativ", english: "to increase by", arabic: "يزيد بمقدار" },
+            { german: "sinken um", case: "Akkusativ", english: "to decrease by", arabic: "يقل بمقدار" },
+            { german: "träumen von", case: "Dativ", english: "to dream of", arabic: "يحلم بـ" },
+            { german: "handeln von", case: "Dativ", english: "to be about (story/book)", arabic: "يحكي عن / يدور حول" },
+            { german: "gehören zu", case: "Dativ", english: "to belong to", arabic: "يخص / ينتمي لـ" },
+            { german: "zählen zu", case: "Dativ", english: "to count as / be among", arabic: "يُعتبر من / يُعد من" },
+            { german: "gratulieren zu", case: "Dativ", english: "to congratulate on", arabic: "يبارك على / يهنئ بـ" },
+            { german: "sich orientieren an", case: "Dativ", english: "to orient oneself by", arabic: "يسترشد بـ / يمشي على نهج" },
+            { german: "teilnehmen an", case: "Dativ", english: "to participate in", arabic: "يشارك في / يحضر" },
+            { german: "sich treffen mit", case: "Dativ", english: "to meet with", arabic: "يتقابل مع" }
+        ];
+
+        // NEW: 1.5 Wichtige Wendungen (Lexical Chunks & Expressions)
+        const wendungenData = [
+            { category: "Alltag", german: "um 7.00 Uhr aufstehen", english: "to get up at 7:00 am", arabic: "يصحى الساعة 7 الصبح" },
+            { category: "Alltag", german: "mit dem Bus ins Büro fahren", english: "to go to the office by bus", arabic: "يروح الشغل بالأتوبيس" },
+            { category: "Alltag", german: "im Stau stehen", english: "to stand in a traffic jam", arabic: "يقف في الزحمة" },
+            { category: "Alltag", german: "auf den Fahrstuhl warten", english: "to wait for the elevator", arabic: "يستنى الأسانسير" },
+            { category: "Alltag", german: "abends fernsehen", english: "to watch TV in the evening", arabic: "يتفرج عالتليفزيون بالليل" },
+            { category: "Alltag", german: "regelmäßig auf das Smartphone schauen", english: "to look at the smartphone regularly", arabic: "يبص في الموبايل عمال على بطال" },
+            { category: "Alltag", german: "Lebensmittel einkaufen", english: "to buy groceries", arabic: "يشتري طلبات البيت (بقالة)" },
+            { category: "Alltag", german: "die Wohnung aufräumen", english: "to tidy up the apartment", arabic: "يروق الشقة" },
+            { category: "Alltag", german: "Wäsche waschen", english: "to wash laundry", arabic: "يغسل الهدوم" },
+
+            { category: "Büro & Uni", german: "E-Mails checken und beantworten", english: "to check and answer emails", arabic: "يشوف الإيميلات ويرد عليها" },
+            { category: "Büro & Uni", german: "eine Besprechung haben", english: "to have a meeting", arabic: "عنده اجتماع" },
+            { category: "Büro & Uni", german: "Probleme lösen", english: "to solve problems", arabic: "يحل مشاكل" },
+            { category: "Büro & Uni", german: "Ideen sammeln", english: "to brainstorm / collect ideas", arabic: "يجمع أفكار" },
+            { category: "Büro & Uni", german: "an einer Konferenz teilnehmen", english: "to participate in a conference", arabic: "يحضر مؤتمر" },
+            { category: "Büro & Uni", german: "Vorlesungen besuchen", english: "to attend lectures", arabic: "يحضر محاضرات" },
+            { category: "Büro & Uni", german: "kurze Kurse besuchen", english: "to attend short courses", arabic: "يحضر كورسات قصيرة" },
+            { category: "Büro & Uni", german: "Arbeitsergebnisse präsentieren", english: "to present work results", arabic: "يعرض نتايج شغله" },
+            { category: "Büro & Uni", german: "gute Noten bekommen", english: "to get good grades", arabic: "يجيب درجات عالية" },
+
+            { category: "Freude & Ärger", german: "mit dem Alltag zufrieden sein", english: "to be satisfied with everyday life", arabic: "راضي عن حياته اليومية" },
+            { category: "Freude & Ärger", german: "sein Leben selbst bestimmen können", english: "to be able to control one's own life", arabic: "يقدر يتحكم في حياته بنفسه" },
+            { category: "Freude & Ärger", german: "sich über die Arbeit ärgern", english: "to be annoyed about work", arabic: "يتعصب من الشغل" },
+            { category: "Freude & Ärger", german: "Mich nervt es, wenn...", english: "It annoys me when...", arabic: "بيستفزني أوي لما..." },
+            { category: "Freude & Ärger", german: "ein Lob bekommen", english: "to receive praise", arabic: "ياخد مدح / حد يشكر فيه" },
+            { category: "Freude & Ärger", german: "von mehr Freizeit träumen", english: "to dream of more free time", arabic: "يحلم بوقت فراغ أكتر" },
+            { category: "Freude & Ärger", german: "viel zu tun haben", english: "to have a lot to do", arabic: "عنده شغل كتير / مسحول" },
+            { category: "Freude & Ärger", german: "etwas nicht selbst entscheiden dürfen", english: "to not be allowed to decide oneself", arabic: "ممنوع ياخد قراره بنفسه" },
+
+            { category: "Grammatik-Chunks", german: "Ich weiß nicht, ob...", english: "I don't know whether/if...", arabic: "مش عارف إذا كان..." },
+            { category: "Grammatik-Chunks", german: "Ich finde es interessant, dass...", english: "I find it interesting that...", arabic: "شايف إنه شيء مثير للاهتمام إن..." },
+            { category: "Grammatik-Chunks", german: "Worauf wartest du?", english: "What are you waiting for?", arabic: "مستني إيه؟ (لغير العاقل)" },
+            { category: "Grammatik-Chunks", german: "Ich warte darauf.", english: "I'm waiting for it.", arabic: "مستنيه. (لغير العاقل)" },
+            { category: "Grammatik-Chunks", german: "Wovon träumst du?", english: "What do you dream of?", arabic: "بتحلم بإيه؟ (لغير العاقل)" },
+            { category: "Grammatik-Chunks", german: "Ich träume davon.", english: "I dream of it.", arabic: "بحلم بيه. (لغير العاقل)" },
+
+            { category: "Umfragen", german: "Einer Umfrage zufolge...", english: "According to a survey...", arabic: "وفقاً لاستطلاع رأي..." },
+            { category: "Umfragen", german: "Laut einer Studie...", english: "According to a study...", arabic: "بناءً على دراسة..." },
+            { category: "Umfragen", german: "Eine Umfrage ergab, dass...", english: "A survey revealed that...", arabic: "استطلاع رأي وضح إن..." },
+            { category: "Umfragen", german: "Aus der Statistik geht hervor, dass...", english: "From the statistics, it emerges that...", arabic: "من الإحصائيات نستنتج إن..." },
+            { category: "Umfragen", german: "eine wichtige Rolle spielen", english: "to play an important role", arabic: "يلعب دور مهم" },
+            { category: "Umfragen", german: "nicht auf den vorderen Plätzen liegen", english: "to not rank in the top spots", arabic: "مش في المراكز الأولى" },
+
+            { category: "Krimis", german: "am liebsten Krimis sehen", english: "to prefer watching crime shows", arabic: "أكتر حاجة بيحبها فرجة أفلام الجريمة" },
+            { category: "Krimis", german: "Spannung bieten", english: "to offer suspense", arabic: "يقدم إثارة وتشويق" },
+            { category: "Krimis", german: "Straftaten aufklären", english: "to solve crimes", arabic: "يحل الجرائم" },
+            { category: "Krimis", german: "die Zuschauer um Mithilfe bitten", english: "to ask viewers for help", arabic: "يطلب مساعدة المشاهدين" },
+            { category: "Krimis", german: "Spitzenreiter sein", english: "to be the frontrunner/leader", arabic: "يكون متصدر / رقم واحد" },
+            { category: "Krimis", german: "die Bösen besiegen", english: "to defeat the bad guys", arabic: "يهزم الأشرار" },
+
+            { category: "Freizeit", german: "zum Alltag gehören", english: "to belong to everyday life", arabic: "جزء من الروتين اليومي" },
+            { category: "Freizeit", german: "auf Platz eins liegen", english: "to rank first", arabic: "يحتل المركز الأول" },
+            { category: "Freizeit", german: "im Netz surfen", english: "to surf the net", arabic: "يتصفح النت" },
+            { category: "Freizeit", german: "nichts tun und faulenzen", english: "to do nothing and laze around", arabic: "ميعملش حاجة وينتنخ" },
+
+            { category: "Veränderungen", german: "an Attraktivität gewinnen", english: "to gain attractiveness", arabic: "جاذبيته تزيد" },
+            { category: "Veränderungen", german: "zu den Gewinnern zählen", english: "to be among the winners", arabic: "يُعتبر من الكسبانين" },
+            { category: "Veränderungen", german: "Das Interesse steigt", english: "Interest is increasing", arabic: "الاهتمام بيزيد" },
+            { category: "Veränderungen", german: "im Trend liegen", english: "to be trending", arabic: "طالع موضة / تريند" },
+
+            { category: "Biografie", german: "geboren werden", english: "to be born", arabic: "يتولد" },
+            { category: "Biografie", german: "einen Ort verlassen", english: "to leave a place", arabic: "يسيب مكان / يهاجر" },
+            { category: "Biografie", german: "das Studium abschließen", english: "to graduate / complete studies", arabic: "يخلص دراسة جامعة" },
+            { category: "Biografie", german: "Preise erhalten", english: "to receive awards", arabic: "ياخد جوايز" }
+        ];
+
+        // 2. All Textbook Vocabulary (Passages 1-15 + Wichtige Wörter - SCRUTINIZED AND COMPLETE)
+        const vocabData = [
+            // Passage 1
+            { category: "Passage 1", german: "die Sprachhandlungen", english: "Speech acts", arabic: "أفعال الكلام" },
+            { category: "Passage 1", german: "die Lernziele", english: "Learning objectives", arabic: "أهداف التعليم" },
+            { category: "Passage 1", german: "der Alltagsbericht", english: "Daily report", arabic: "تقرير يومي" },
+            { category: "Passage 1", german: "berichten über", english: "To report about", arabic: "يبلغ عن / يحكي عن" },
+            { category: "Passage 1", german: "die Freude", english: "Joy / happiness", arabic: "فرحة / سعادة" },
+            { category: "Passage 1", german: "der Ärger", english: "Anger / annoyance", arabic: "غضب / زعل" },
+            { category: "Passage 1", german: "die Umfrage", english: "Survey / poll", arabic: "استطلاع رأي" },
+            { category: "Passage 1", german: "durchführen", english: "To conduct / carry out", arabic: "ينفذ / يعمل (دراسة)" },
+            { category: "Passage 1", german: "das Umfrageergebnis", english: "Survey result", arabic: "نتيجة الاستطلاع" },
+            { category: "Passage 1", german: "die Studie", english: "Academic study", arabic: "دراسة" },
+            { category: "Passage 1", german: "vergleichen", english: "To compare", arabic: "يقارن" },
+            { category: "Passage 1", german: "die Freizeitgestaltung", english: "Leisure time organization", arabic: "تنظيم وقت الفراغ" },
+            { category: "Passage 1", german: "wiedergeben", english: "To recount / convey", arabic: "ينقل كلام / يحكي" },
+            { category: "Passage 1", german: "die Vergangenheit", english: "The past", arabic: "الماضي" },
+            { category: "Passage 1", german: "der Diskussionsbeitrag", english: "Discussion contribution", arabic: "مشاركة في نقاش" },
+            { category: "Passage 1", german: "verfassen", english: "To compose / write", arabic: "يألف / يكتب (رسمي)" },
+            { category: "Passage 1", german: "die Kurzbiografie", english: "Short biography", arabic: "سيرة ذاتية قصيرة" },
+            { category: "Passage 1", german: "der Grund", english: "Reason", arabic: "سبب" },
+            { category: "Passage 1", german: "die Reaktion", english: "Reaction", arabic: "رد فعل" },
+            { category: "Passage 1", german: "erfahren", english: "To find out / learn", arabic: "يعرف (من خلال التجربة أو السمع)" },
+            
+            // Passage 2 & 3
+            { category: "Passage 2-3", german: "im Allgemeinen", english: "In general", arabic: "بشكل عام" },
+            { category: "Passage 2-3", german: "zufrieden", english: "Satisfied / content", arabic: "راضي / مقتنع" },
+            { category: "Passage 2-3", german: "der Stau", english: "Traffic jam", arabic: "الزحمة / اختناق مروري" },
+            { category: "Passage 2-3", german: "der Redakteur", english: "Editor", arabic: "محرر" },
+            { category: "Passage 2-3", german: "der Verlag", english: "Publishing house", arabic: "دار نشر" },
+            { category: "Passage 2-3", german: "sich befinden", english: "To be located", arabic: "يتواجد / يقع في" },
+            { category: "Passage 2-3", german: "das Hochhaus", english: "High-rise building", arabic: "عمارة عالية / ناطحة سحاب" },
+            { category: "Passage 2-3", german: "die Etage", english: "Floor / story", arabic: "دور / طابق" },
+            { category: "Passage 2-3", german: "der Fahrstuhl", english: "Elevator", arabic: "الأسانسير" },
+            { category: "Passage 2-3", german: "das Manuskript", english: "Manuscript", arabic: "مخطوطة كتاب" },
+            { category: "Passage 2-3", german: "die Besprechung", english: "Meeting", arabic: "اجتماع" },
+            { category: "Passage 2-3", german: "die Sitzung", english: "Session / meeting", arabic: "جلسة / اجتماع" },
+            { category: "Passage 2-3", german: "das Projekt", english: "Project", arabic: "مشروع" },
+            { category: "Passage 2-3", german: "der Kampf", english: "Fight / struggle", arabic: "صراع / كفاح" },
+            { category: "Passage 2-3", german: "der Buchmarkt", english: "Book market", arabic: "سوق الكتب" },
+            { category: "Passage 2-3", german: "hart", english: "Hard / tough", arabic: "صعب / قاسي" },
+            { category: "Passage 2-3", german: "die Lieblingstätigkeit", english: "Favorite activity", arabic: "النشاط المفضل" },
+            { category: "Passage 2-3", german: "das Seminar", english: "Seminar", arabic: "سيمينار / حلقة نقاشية" },
+            { category: "Passage 2-3", german: "präsentieren", english: "To present", arabic: "يعرض / يقدم" },
+            { category: "Passage 2-3", german: "die Kommilitonen", english: "Fellow university students", arabic: "زملاء الجامعة" },
+            { category: "Passage 2-3", german: "regelmäßig", english: "Regularly", arabic: "بانتظام" },
+            { category: "Passage 2-3", german: "vor allem", english: "Above all / especially", arabic: "خصوصاً / قبل كل شيء" },
+            { category: "Passage 2-3", german: "kontrollieren", english: "To check / control", arabic: "يراجع / يتأكد" },
+            { category: "Passage 2-3", german: "die Note", english: "Grade / mark", arabic: "درجة (في الامتحان)" },
+            { category: "Passage 2-3", german: "sauber machen", english: "To clean up", arabic: "ينضف" },
+            
+            // Passage 4 & 5
+            { category: "Passage 4-5", german: "die Tätigkeit", english: "Activity / task", arabic: "نشاط / مهمة" },
+            { category: "Passage 4-5", german: "die Vorlesung", english: "University lecture", arabic: "محاضرة جامعة" },
+            { category: "Passage 4-5", german: "die Mensa", english: "University cafeteria", arabic: "كافتيريا الجامعة" },
+            { category: "Passage 4-5", german: "die Kantine", english: "Canteen", arabic: "كانتين / كافتيريا الشغل" },
+            { category: "Passage 4-5", german: "das Arbeitsergebnis", english: "Work result", arabic: "نتيجة الشغل" },
+            { category: "Passage 4-5", german: "das Formular", english: "Form (document)", arabic: "استمارة" },
+            { category: "Passage 4-5", german: "der Kopierer", english: "Copier", arabic: "ماكينة تصوير" },
+            { category: "Passage 4-5", german: "das Intranet", english: "Intranet", arabic: "الشبكة الداخلية للشركة" },
+            { category: "Passage 4-5", german: "die Marketingstrategie", english: "Marketing strategy", arabic: "استراتيجية التسويق" },
+            { category: "Passage 4-5", german: "anschließend", english: "Subsequently / afterwards", arabic: "بعد كده (رسمية)" },
+            { category: "Passage 4-5", german: "erstellen", english: "To create / compile", arabic: "ينشئ / يعمل (قايمة/تقرير)" },
+            { category: "Passage 4-5", german: "ankreuzen", english: "To tick off (a box)", arabic: "يعلم علامة صح" },
+            { category: "Passage 4-5", german: "ausfüllen", english: "To fill out", arabic: "يملى (استمارة)" },
+            { category: "Passage 4-5", german: "einen Termin vereinbaren", english: "To arrange an appointment", arabic: "يحدد ميعاد" },
+            { category: "Passage 4-5", german: "der Bericht", english: "Report", arabic: "تقرير" },
+            { category: "Passage 4-5", german: "die Struktur", english: "Structure", arabic: "هيكل / تركيب" },
+            { category: "Passage 4-5", german: "die Regel", english: "Rule", arabic: "قاعدة" },
+            { category: "Passage 4-5", german: "unregelmäßig", english: "Irregular", arabic: "غير منتظم / شاذ" },
+            { category: "Passage 4-5", german: "zuordnen", english: "To assign / match up", arabic: "يوصل / يطابق" },
+            { category: "Passage 4-5", german: "unterstreichen", english: "To underline", arabic: "يحط خط تحت" },
+            { category: "Passage 4-5", german: "die Endung", english: "Ending / suffix", arabic: "نهاية الكلمة" },
+            { category: "Passage 4-5", german: "der Vokalwechsel", english: "Vowel change", arabic: "تغيير حرف العلة" },
+            { category: "Passage 4-5", german: "das Präfix", english: "Prefix", arabic: "بادئة الكلمة" },
+            { category: "Passage 4-5", german: "trennbar", english: "Separable", arabic: "قابل للانفصال" },
+            { category: "Passage 4-5", german: "nicht trennbar", english: "Inseparable", arabic: "غير قابل للانفصال" },
+            { category: "Passage 4-5", german: "in der Regel", english: "As a rule / generally", arabic: "في العادة / كقاعدة" },
+            
+            // Passage 6 & 7
+            { category: "Passage 6-7", german: "die Verkehrsmittel", english: "Means of transport", arabic: "وسائل المواصلات" },
+            { category: "Passage 6-7", german: "die Bürokratie", english: "Bureaucracy", arabic: "البيروقراطية / الروتين" },
+            { category: "Passage 6-7", german: "die Abwechslung", english: "Variety / change", arabic: "تغيير / كسر الروتين" },
+            { category: "Passage 6-7", german: "das Gerät", english: "Device / appliance", arabic: "جهاز" },
+            { category: "Passage 6-7", german: "das Kompliment", english: "Compliment", arabic: "مجاملة / كلمة حلوة" },
+            { category: "Passage 6-7", german: "die Hausarbeiten", english: "Household chores", arabic: "شغل البيت" },
+            { category: "Passage 6-7", german: "nerven", english: "To annoy", arabic: "يعصب / يستفز" },
+            { category: "Passage 6-7", german: "bügeln", english: "To iron", arabic: "يكوي" },
+            { category: "Passage 6-7", german: "staubsaugen", english: "To vacuum", arabic: "يكنس بالمكنسة" },
+            { category: "Passage 6-7", german: "entscheiden", english: "To decide", arabic: "يقرر" },
+            { category: "Passage 6-7", german: "bestimmen", english: "To dictate / determine", arabic: "يحدد / يتحكم" },
+            { category: "Passage 6-7", german: "sparen", english: "To save", arabic: "يوفر (فلوس أو وقت)" },
+            { category: "Passage 6-7", german: "die Alltagszufriedenheit", english: "Everyday satisfaction", arabic: "الرضا عن الحياة اليومية" },
+            { category: "Passage 6-7", german: "die Befragten", english: "Respondents", arabic: "الناس اللي اتسألوا في الاستطلاع" },
+            { category: "Passage 6-7", german: "das Gefühl", english: "Feeling / emotion", arabic: "إحساس / شعور" },
+            { category: "Passage 6-7", german: "der Einfluss", english: "Influence / impact", arabic: "تأثير" },
+            { category: "Passage 6-7", german: "die Anerkennung", english: "Recognition", arabic: "تقدير" },
+            { category: "Passage 6-7", german: "materielle Aspekte", english: "Material aspects", arabic: "نواحي مادية" },
+            { category: "Passage 6-7", german: "die Verspätung", english: "Delay", arabic: "تأخير" },
+            
+            // Passage 9 & 10
+            { category: "Passage 9-10", german: "die Statistik", english: "Statistics", arabic: "إحصائيات" },
+            { category: "Passage 9-10", german: "der Fünf-Jahres-Vergleich", english: "Five-year comparison", arabic: "مقارنة لمدة خمس سنين" },
+            { category: "Passage 9-10", german: "das Lagerfeuer", english: "Campfire", arabic: "نار المعسكر (استعارة)" },
+            { category: "Passage 9-10", german: "die Nutzung", english: "Usage", arabic: "استخدام" },
+            { category: "Passage 9-10", german: "der Gebrauch", english: "Use / usage", arabic: "استعمال" },
+            { category: "Passage 9-10", german: "der Bundesbürger", english: "German citizen", arabic: "مواطن ألماني" },
+            { category: "Passage 9-10", german: "das Netz", english: "The web / internet", arabic: "الشبكة / النت" },
+            { category: "Passage 9-10", german: "der Alleskönner", english: "Jack-of-all-trades", arabic: "بتاع كله (بيعمل كل حاجة)" },
+            { category: "Passage 9-10", german: "der Anteil", english: "Proportion / share", arabic: "نسبة / حصة" },
+            { category: "Passage 9-10", german: "die Attraktivität", english: "Attractiveness", arabic: "جاذبية" },
+            { category: "Passage 9-10", german: "zunehmen", english: "To increase", arabic: "يزيد" },
+            { category: "Passage 9-10", german: "zurückgehen", english: "To decline", arabic: "يتراجع / يقل" },
+            { category: "Passage 9-10", german: "faulenzen", english: "To laze around", arabic: "ينتنخ / ميعملش حاجة" },
+            { category: "Passage 9-10", german: "die Spannung", english: "Suspense", arabic: "إثارة وتشويق" },
+            { category: "Passage 9-10", german: "der Mord", english: "Murder", arabic: "جريمة قتل" },
+            { category: "Passage 9-10", german: "der Totschlag", english: "Manslaughter", arabic: "القتل الخطأ" },
+            { category: "Passage 9-10", german: "die Kriminalpolizei", english: "CID", arabic: "المباحث" },
+            { category: "Passage 9-10", german: "die Mithilfe", english: "Assistance", arabic: "مساعدة (للبوليس)" },
+            { category: "Passage 9-10", german: "der Spitzenreiter", english: "Frontrunner", arabic: "المتصدر / الأول" },
+            { category: "Passage 9-10", german: "die Verbrecherjagd", english: "Manhunt", arabic: "مطاردة المجرمين" },
+            { category: "Passage 9-10", german: "der Täter", english: "Perpetrator", arabic: "الجاني / المجرم" },
+            { category: "Passage 9-10", german: "das Verbrechen", english: "Crime", arabic: "جريمة" },
+            { category: "Passage 9-10", german: "die Faszination", english: "Fascination", arabic: "انبهار / سحر" },
+            { category: "Passage 9-10", german: "konsumieren", english: "To consume", arabic: "يستهلك" },
+            { category: "Passage 9-10", german: "aufklären", english: "To solve (a crime)", arabic: "يحل (لغز الجريمة)" },
+            { category: "Passage 9-10", german: "verhaften", english: "To arrest", arabic: "يقبض على" },
+            { category: "Passage 9-10", german: "besiegen", english: "To defeat", arabic: "يهزم" },
+            { category: "Passage 9-10", german: "ausüben", english: "To exert / practice", arabic: "يمارس / يمارس تأثير" },
+            { category: "Passage 9-10", german: "boomen", english: "To boom", arabic: "يزدهر / يضرب في السوق" },
+            { category: "Passage 9-10", german: "verfilmen", english: "To adapt into a film", arabic: "يحوله لفيلم سينما" },
+            
+            // Passages 11-15
+            { category: "Passage 11-15", german: "der Verdächtige", english: "Suspect", arabic: "المشتبه فيه" },
+            { category: "Passage 11-15", german: "der Straftäter", english: "Offender / criminal", arabic: "المذنب / المجرم" },
+            { category: "Passage 11-15", german: "die Geburtsstunde", english: "Hour of birth / inception", arabic: "ساعة الميلاد / البداية" },
+            { category: "Passage 11-15", german: "der Kurort", english: "Spa town", arabic: "منتجع صحي" },
+            { category: "Passage 11-15", german: "die Jagd", english: "The hunt", arabic: "الصيد / المطاردة" },
+            { category: "Passage 11-15", german: "der Auftrag", english: "Commission / order", arabic: "تكليف / مهمة" },
+            { category: "Passage 11-15", german: "der Kabarettist", english: "Cabaret artist", arabic: "فنان مسرحي كوميدي" },
+            { category: "Passage 11-15", german: "die Anfänge", english: "Beginnings", arabic: "البدايات" },
+            { category: "Passage 11-15", german: "die Entwicklung", english: "Development", arabic: "التطور / التنمية" },
+            { category: "Passage 11-15", german: "der Berufsverbrecher", english: "Career criminal", arabic: "مجرم محترف" },
+            { category: "Passage 11-15", german: "das Grundmotiv", english: "Basic motive", arabic: "الدافع الأساسي" },
+            { category: "Passage 11-15", german: "der Privatdetektiv", english: "Private detective", arabic: "محقق خاص" },
+            { category: "Passage 11-15", german: "die Gerechtigkeit", english: "Justice", arabic: "العدالة" },
+            { category: "Passage 11-15", german: "die Wendung", english: "Plot twist", arabic: "تحول في الأحداث" },
+            { category: "Passage 11-15", german: "die Entwicklungsstufe", english: "Developmental stage", arabic: "مرحلة التطور" },
+            { category: "Passage 11-15", german: "die Stimmung", english: "Mood / atmosphere", arabic: "الحالة المزاجية / الأجواء" },
+            { category: "Passage 11-15", german: "der Spaß", english: "Fun", arabic: "المتعة / الهزار" },
+            { category: "Passage 11-15", german: "bewusst", english: "Consciously", arabic: "بوعي / عن قصد" },
+            { category: "Passage 11-15", german: "die Kunstausstellung", english: "Art exhibition", arabic: "معرض فني" },
+            { category: "Passage 11-15", german: "der Verein", english: "Club / association", arabic: "نادي / جمعية" },
+            { category: "Passage 11-15", german: "die Freiwilligenarbeit", english: "Volunteer work", arabic: "عمل تطوعي" },
+            { category: "Passage 11-15", german: "die Leistung", english: "Performance", arabic: "أداء / إنجاز" },
+            { category: "Passage 11-15", german: "der Schiedsrichter", english: "Referee", arabic: "الحكم (في الماتش)" },
+            { category: "Passage 11-15", german: "das Angebot", english: "Offer", arabic: "عرض" },
+            { category: "Passage 11-15", german: "der Nachwuchssportler", english: "Young athlete", arabic: "رياضي ناشئ" },
+            { category: "Passage 11-15", german: "gestattet", english: "Permitted / allowed", arabic: "مسموح" },
+            { category: "Passage 11-15", german: "stören", english: "To disturb", arabic: "يزعج / يضايق" },
+            { category: "Passage 11-15", german: "der Nachtmensch", english: "Night owl", arabic: "كائن ليلي (بيسهر)" },
+            { category: "Passage 11-15", german: "tagsüber", english: "During the day", arabic: "بالنهار" },
+            { category: "Passage 11-15", german: "züchten", english: "To breed", arabic: "يربي (حيوانات)" },
+            { category: "Passage 11-15", german: "die Gesellschaft", english: "Society / company", arabic: "المجتمع / الصحبة" },
+            { category: "Passage 11-15", german: "der Einbrecher", english: "Burglar", arabic: "حرامي بيوت" },
+            { category: "Passage 11-15", german: "einbrechen", english: "To break in", arabic: "يقتحم (عشان يسرق)" },
+            { category: "Passage 11-15", german: "der Dieb", english: "Thief", arabic: "لص / حرامي" },
+            { category: "Passage 11-15", german: "der Inhaber", english: "Owner / holder", arabic: "المالك / صاحب الشأن" },
+            { category: "Passage 11-15", german: "stecken", english: "To be stuck", arabic: "محشور / متعلق" },
+            { category: "Passage 11-15", german: "gewaltsam", english: "Forcibly", arabic: "بالعافية / بالقوة" },
+            { category: "Passage 11-15", german: "die Wirkung", english: "Effect", arabic: "تأثير / مفعول" },
+            { category: "Passage 11-15", german: "offensichtlich", english: "Obviously", arabic: "واضح جداً / بديهي" },
+            { category: "Passage 11-15", german: "entwickeln", english: "To develop", arabic: "يطور" },
+            { category: "Passage 11-15", german: "auszeichnen", english: "To award / honor", arabic: "يكرم / يمنح جايزة" },
+            { category: "Passage 11-15", german: "gründen", english: "To found / establish", arabic: "يأسس" },
+            { category: "Passage 11-15", german: "dienen", english: "To serve", arabic: "يخدم" },
+            { category: "Passage 11-15", german: "suchen", english: "To search / look for", arabic: "يدور على" }
+        ];
+
+        // 3. Verb Conjugations (Präsens -> Präteritum -> Perfekt + HISTORICAL VERBS ADDED)
+        const conjugationData = [
+            { infinitive: "abschließen", praesens: "schließt ab", praeteritum: "schloss ab", perfekt: "hat abgeschlossen", arabic: "يخلص/ينهي" },
+            { infinitive: "aufbrechen", praesens: "bricht auf", praeteritum: "brach auf", perfekt: "hat aufgebrochen", arabic: "يقتحم" },
+            { infinitive: "aufstehen", praesens: "steht auf", praeteritum: "stand auf", perfekt: "ist aufgestanden", arabic: "يصحى من النوم" },
+            { infinitive: "auftauchen", praesens: "taucht auf", praeteritum: "tauchte auf", perfekt: "ist aufgetaucht", arabic: "يظهر فجأة" },
+            { infinitive: "begehen", praesens: "begeht", praeteritum: "beging", perfekt: "hat begangen", arabic: "يرتكب (جريمة)" },
+            { infinitive: "beginnen", praesens: "beginnt", praeteritum: "begann", perfekt: "hat begonnen", arabic: "يبدأ" },
+            { infinitive: "bekommen", praesens: "bekommt", praeteritum: "bekam", perfekt: "hat bekommen", arabic: "يحصل على" },
+            { infinitive: "bitten", praesens: "bittet", praeteritum: "bat", perfekt: "hat gebeten", arabic: "يطلب" },
+            { infinitive: "darstellen", praesens: "stellt dar", praeteritum: "stellte dar", perfekt: "hat dargestellt", arabic: "يمثل / يعرض" },
+            { infinitive: "denken", praesens: "denkt", praeteritum: "dachte", perfekt: "hat gedacht", arabic: "يفكر" },
+            { infinitive: "einschlafen", praesens: "schläft ein", praeteritum: "schlief ein", perfekt: "ist eingeschlafen", arabic: "يروح في النوم" },
+            { infinitive: "entstehen", praesens: "entsteht", praeteritum: "entstand", perfekt: "ist entstanden", arabic: "ينشأ / يظهر" },
+            { infinitive: "erfinden", praesens: "erfindet", praeteritum: "erfand", perfekt: "hat erfunden", arabic: "يخترع" },
+            { infinitive: "erhalten", praesens: "erhält", praeteritum: "erhielt", perfekt: "hat erhalten", arabic: "يستلم/يحصل على" },
+            { infinitive: "erscheinen", praesens: "erscheint", praeteritum: "erschien", perfekt: "ist erschienen", arabic: "يظهر / يُنشر" },
+            { infinitive: "fahren", praesens: "fährt", praeteritum: "fuhr", perfekt: "ist gefahren", arabic: "يسوق / يسافر" },
+            { infinitive: "fernsehen", praesens: "sieht fern", praeteritum: "sah fern", perfekt: "hat ferngesehen", arabic: "يتفرج عالتليفزيون" },
+            { infinitive: "fliehen", praesens: "flieht", praeteritum: "floh", perfekt: "ist geflohen", arabic: "يهرب" },
+            { infinitive: "geben", praesens: "gibt", praeteritum: "gab", perfekt: "hat gegeben", arabic: "يعطي / يوجد" },
+            { infinitive: "gehen", praesens: "geht", praeteritum: "ging", perfekt: "ist gegangen", arabic: "يذهب" },
+            { infinitive: "gelten", praesens: "gilt", praeteritum: "galt", perfekt: "hat gegolten", arabic: "يُعتبر / يسري" },
+            { infinitive: "gewinnen", praesens: "gewinnt", praeteritum: "gewann", perfekt: "hat gewonnen", arabic: "يكسب" },
+            { infinitive: "lassen", praesens: "lässt", praeteritum: "ließ", perfekt: "hat gelassen", arabic: "يترك / يخلي" },
+            { infinitive: "liegen", praesens: "liegt", praeteritum: "lag", perfekt: "hat gelegen", arabic: "يقع / يرقد" },
+            { infinitive: "schreiben", praesens: "schreibt", praeteritum: "schrieb", perfekt: "hat geschrieben", arabic: "يكتب" },
+            { infinitive: "sehen", praesens: "sieht", praeteritum: "sah", perfekt: "hat gesehen", arabic: "يشوف" },
+            { infinitive: "sinken", praesens: "sinkt", praeteritum: "sank", perfekt: "ist gesunken", arabic: "يغرق / ينخفض" },
+            { infinitive: "sprechen", praesens: "spricht", praeteritum: "sprach", perfekt: "hat gesprochen", arabic: "يتكلم" },
+            { infinitive: "stehen", praesens: "steht", praeteritum: "stand", perfekt: "hat gestanden", arabic: "يقف" },
+            { infinitive: "steigen", praesens: "steigt", praeteritum: "stieg", perfekt: "ist gestiegen", arabic: "يرتفع / يصعد" },
+            { infinitive: "suchen", praesens: "sucht", praeteritum: "suchte", perfekt: "hat gesucht", arabic: "يدور على" },
+            { infinitive: "sich treffen", praesens: "trifft sich", praeteritum: "traf sich", perfekt: "hat sich getroffen", arabic: "يتقابل" },
+            { infinitive: "teilnehmen", praesens: "nimmt teil", praeteritum: "nahm teil", perfekt: "hat teilgenommen", arabic: "يشارك" },
+            { infinitive: "tun", praesens: "tut", praeteritum: "tat", perfekt: "hat getan", arabic: "يفعل" },
+            { infinitive: "verlassen", praesens: "verlässt", praeteritum: "verließ", perfekt: "hat verlassen", arabic: "يغادر / يسيب" },
+            { infinitive: "verlieren", praesens: "verliert", praeteritum: "verlor", perfekt: "hat verloren", arabic: "يخسر / يضيع" },
+            { infinitive: "zusammenhängen", praesens: "hängt zusammen", praeteritum: "hing zusammen", perfekt: "hat zusammengehangen", arabic: "يرتبط بـ / له علاقة بـ" },
+            { infinitive: "entwickeln", praesens: "entwickelt", praeteritum: "entwickelte", perfekt: "hat entwickelt", arabic: "يطور" },
+            { infinitive: "auszeichnen", praesens: "zeichnet aus", praeteritum: "zeichnete aus", perfekt: "hat ausgezeichnet", arabic: "يكرم / يميز" },
+            { infinitive: "gründen", praesens: "gründet", praeteritum: "gründete", perfekt: "hat gegründet", arabic: "يأسس" },
+            { infinitive: "dienen", praesens: "dient", praeteritum: "diente", perfekt: "hat gedient", arabic: "يخدم" }
+        ];
+
+        // --- Data: Role Plays (Listening Mode) ---
+        const rolePlaysData = [
+            {
+                title: "محادثة 1: الأصدقاء والرياضة",
+                messages: [
+                    { role: 'bot', text: "Was machen Sie in Ihrer Freizeit am liebsten?", en: "What do you like to do most in your free time?", ar: "بتحب تعمل إيه أكتر حاجة في وقت فراغك؟" },
+                    { role: 'user', text: "Ich treffe mich am liebsten mit Freunden oder spiele Fußball.", en: "I prefer meeting friends or playing football.", ar: "أكتر حاجة بحب أتقابل مع أصحابي أو ألعب كورة." },
+                    { role: 'bot', text: "Wie oft treffen Sie sich mit Freunden?", en: "How often do you meet with friends?", ar: "بتتقابلوا كل قد إيه؟" },
+                    { role: 'user', text: "Meistens am Wochenende, weil ich in der Woche arbeite.", en: "Mostly on weekends, because I work during the week.", ar: "غالباً في الويك إند، عشان بشتغل في نص الأسبوع." },
+                    { role: 'bot', text: "Und was machen Sie normalerweise zusammen?", en: "And what do you usually do together?", ar: "وبتعملوا إيه مع بعض عادة؟" },
+                    { role: 'user', text: "Wir gehen oft in ein Café oder spielen Fußball im Park.", en: "We often go to a cafe or play football in the park.", ar: "بنروح كافيه كتير أو بنلعب كورة في الجنينة." },
+                    { role: 'bot', text: "Das klingt gut! Gehen Sie auch zusammen ins Kino?", en: "That sounds good! Do you also go to the cinema together?", ar: "ده كلام جميل! بتروحوا السينما مع بعض برضه؟" },
+                    { role: 'user', text: "Manchmal, aber nicht sehr oft. Wir sind lieber draußen.", en: "Sometimes, but not very often. We prefer to be outside.", ar: "أحياناً، بس مش كتير. بنحب نكون بره أكتر." },
+                    { role: 'bot', text: "Was für Sportarten machen Sie noch gerne?", en: "What other sports do you like to do?", ar: "إيه الرياضات التانية اللي بتحب تلعبها؟" },
+                    { role: 'user', text: "Ich gehe manchmal schwimmen oder fahre mit dem Fahrrad.", en: "Sometimes I go swimming or ride my bike.", ar: "أحياناً بروح أعوم أو أركب عجل." }
+                ]
+            },
+            {
+                title: "محادثة 2: الميديا والتكنولوجيا",
+                messages: [
+                    { role: 'bot', text: "Wie lange sehen Sie täglich fern?", en: "How long do you watch TV daily?", ar: "بتتفرج عالتلفزيون قد إيه كل يوم؟" },
+                    { role: 'user', text: "Ich schaue fast gar nicht fern. Vielleicht eine Stunde.", en: "I hardly watch TV. Maybe an hour.", ar: "مبتفرجش تقريباً. ممكن ساعة بالكتير." },
+                    { role: 'bot', text: "Auf welches Gerät können Sie nicht mehr verzichten?", en: "Which device can you no longer do without?", ar: "إيه الجهاز اللي متقدرش تستغنى عنه؟" },
+                    { role: 'user', text: "Ganz klar, mein Smartphone! Ich brauche es für alles.", en: "Definitely my smartphone! I need it for everything.", ar: "أكيد موبايلي! بحتاجه في كل حاجة." },
+                    { role: 'bot', text: "Wofür nutzen Sie es am meisten in Ihrer Freizeit?", en: "What do you use it for the most in your free time?", ar: "بتستخدمه في إيه أكتر حاجة في وقت فراغك؟" },
+                    { role: 'user', text: "Ich schreibe Nachrichten, höre Musik und lese die Nachrichten.", en: "I write messages, listen to music and read the news.", ar: "ببعت رسايل، وبسمع مزيكا، وبقرأ الأخبار." },
+                    { role: 'bot', text: "Nutzen Sie auch einen Laptop oder ein Tablet?", en: "Do you also use a laptop or a tablet?", ar: "بتستخدم لاب توب أو تابلت برضه؟" },
+                    { role: 'user', text: "Ja, ich nutze meinen Laptop am Abend, um Serien zu schauen.", en: "Yes, I use my laptop in the evening to watch series.", ar: "آه، بستخدم اللاب توب بالليل عشان أتفرج على مسلسلات." },
+                    { role: 'bot', text: "Welche Serien schauen Sie momentan?", en: "Which series are you watching right now?", ar: "بتتفرج على مسلسلات إيه دلوقتي؟" },
+                    { role: 'user', text: "Ich schaue gerade eine spannende Krimiserie auf Netflix.", en: "I am currently watching a thrilling crime series on Netflix.", ar: "بتفرج حالياً على مسلسل جريمة مشوق على نتفليكس." }
+                ]
+            },
+            {
+                title: "محادثة 3: الثقافة والأمنيات",
+                messages: [
+                    { role: 'bot', text: "Besuchen Sie Kulturveranstaltungen? Wenn ja, welche?", en: "Do you visit cultural events? If so, which ones?", ar: "بتروح مناسبات ثقافية؟ لو آه، زي إيه؟" },
+                    { role: 'user', text: "Ja, ich gehe gerne ins Kino oder besuche Konzerte.", en: "Yes, I like going to the cinema or attending concerts.", ar: "آه، بحب أروح السينما أو أحضر حفلات موسيقية." },
+                    { role: 'bot', text: "Auf was für Konzerte gehen Sie am liebsten?", en: "What kind of concerts do you prefer to go to?", ar: "بتحب تروح حفلات إيه أكتر؟" },
+                    { role: 'user', text: "Ich liebe Popmusik und besuche oft Konzerte von lokalen Bands.", en: "I love pop music and often go to concerts by local bands.", ar: "بحب موسيقى البوب وبرروح كتير حفلات لفرق محلية." },
+                    { role: 'bot', text: "Das ist interessant! Was möchten Sie gerne in Ihrer Freizeit mehr machen?", en: "That is interesting! What would you like to do more in your free time?", ar: "ده شيء ممتع! نفسك تعمل إيه أكتر في وقت فراغك؟" },
+                    { role: 'user', text: "Ich würde gerne mehr Sport machen und weniger am Handy sein.", en: "I would like to do more sports and be on my phone less.", ar: "نفسي ألعب رياضة أكتر وأمسك الموبايل أقل." },
+                    { role: 'bot', text: "Das ist ein guter Plan. Welchen Sport möchten Sie machen?", en: "That is a good plan. What sport would you like to do?", ar: "دي خطة كويسة. عايز تلعب رياضة إيه؟" },
+                    { role: 'user', text: "Ich möchte anfangen, regelmäßig schwimmen zu gehen.", en: "I want to start swimming regularly.", ar: "عايز أبدأ أروح أعوم بانتظام." },
+                    { role: 'bot', text: "Gehen Sie auch gerne ins Museum?", en: "Do you also like going to the museum?", ar: "بتحب تروح المتاحف برضه؟" },
+                    { role: 'user', text: "Ja, ich besuche sehr gerne Kunstausstellungen.", en: "Yes, I really enjoy visiting art exhibitions.", ar: "آه، بحب جداً أزور معارض فنية." }
+                ]
+            },
+            {
+                title: "محادثة 4: الجريمة والمسلسلات البوليسية (Krimis)",
+                messages: [
+                    { role: 'bot', text: "Mögen Sie Krimis?", en: "Do you like crime thrillers?", ar: "بتحب الروايات أو المسلسلات البوليسية؟" },
+                    { role: 'user', text: "Oh ja, ich liebe Krimis! Sie sind immer sehr spannend.", en: "Oh yes, I love crime thrillers! They are always very exciting.", ar: "أوه آه، بحبها جداً! دايماً بتكون مشوقة." },
+                    { role: 'bot', text: "Sind Krimis in Ihrem Heimatland beliebt?", en: "Are crime thrillers popular in your home country?", ar: "هل المسلسلات البوليسية مشهورة في بلدك؟" },
+                    { role: 'user', text: "Ja, sehr. Fast jeder schaut am Wochenende einen Krimi im Fernsehen.", en: "Yes, very. Almost everyone watches a crime thriller on TV on weekends.", ar: "آه جداً. تقريباً كل الناس بتتفرج على مسلسل بوليسي في الويك إند." },
+                    { role: 'bot', text: "Kennen Sie deutsche Krimis? Wenn ja, welche?", en: "Do you know German crime thrillers? If so, which ones?", ar: "تعرف مسلسلات ألماني بوليسية؟ لو آه، زي إيه؟" },
+                    { role: 'user', text: "Ich kenne ein paar. 'Babylon Berlin' finde ich zum Beispiel super.", en: "I know a few. I think 'Babylon Berlin', for example, is great.", ar: "أعرف شوية. 'بابل برلين' مثلاً شايفه ممتاز." },
+                    { role: 'bot', text: "Kennen Sie auch die Serie 'Tatort'?", en: "Do you also know the series 'Tatort'?", ar: "طب تعرف مسلسل 'تات أورت' (مسرح الجريمة)؟" },
+                    { role: 'user', text: "Ja, natürlich! Das ist ein Klassiker. Ich schaue sie oft am Sonntagabend.", en: "Yes, of course! That's a classic. I often watch it on Sunday evenings.", ar: "آه طبعاً! ده مسلسل كلاسيكي. بتفرج عليه كتير يوم الأحد بالليل." }
+                ]
+            }
+        ];
+
+        const interactiveSessionsData = [
+            [
+                {
+                    q: "Was machen Sie in Ihrer Freizeit am liebsten?", en: "What do you like to do most in your free time?", ar: "بتحب تعمل إيه أكتر حاجة في وقت فراغك؟",
+                    answers: [
+                        { text: "Ich lese gerne Bücher.", en: "I like reading books.", ar: "بحب أقرأ كتب." },
+                        { text: "Ich treffe mich mit Freunden.", en: "I meet with friends.", ar: "بخرج مع أصحابي." },
+                        { text: "Ich mache am liebsten Sport.", en: "I prefer doing sports.", ar: "أكتر حاجة بحب ألعب رياضة." }
+                    ]
+                },
+                {
+                    q: "Wie oft treffen Sie sich mit Freunden oder Verwandten?", en: "How often do you meet with friends or relatives?", ar: "بتتقابل مع أصحابك أو قرايبك كل قد إيه؟",
+                    answers: [
+                        { text: "Ich treffe sie mehrmals pro Woche.", en: "I meet them several times a week.", ar: "بقابلهم كذا مرة في الأسبوع." },
+                        { text: "Meistens nur am Wochenende.", en: "Mostly only on weekends.", ar: "غالباً في الويك إند بس." }
+                    ]
+                }
+            ],
+            [
+                {
+                    q: "Wie lange sehen Sie täglich fern?", en: "How long do you watch TV daily?", ar: "بتتفرج عالتلفزيون قد إيه كل يوم؟",
+                    answers: [
+                        { text: "Ich sehe etwa eine Stunde am Tag fern.", en: "I watch TV for about an hour a day.", ar: "بتفرج حوالي ساعة في اليوم." },
+                        { text: "Ich schaue fast gar nicht fern.", en: "I hardly watch TV at all.", ar: "مبتفرجش على تلفزيون تقريباً." }
+                    ]
+                },
+                {
+                    q: "Auf welches Gerät können Sie in Ihrer Freizeit nicht mehr verzichten?", en: "Which device can you no longer do without?", ar: "إيه الجهاز اللي متقدرش تستغنى عنه؟",
+                    answers: [
+                        { text: "Ich kann auf mein Smartphone nicht verzichten.", en: "I can't do without my smartphone.", ar: "مقدرش أستغنى عن موبايلي." },
+                        { text: "Mein Laptop ist mir sehr wichtig.", en: "My laptop is very important to me.", ar: "اللاب توب بتاعي مهم جداً ليا." }
+                    ]
+                }
+            ],
+            [
+                {
+                    q: "Besuchen Sie Kulturveranstaltungen? Wenn ja, welche?", en: "Do you visit cultural events? If so, which ones?", ar: "بتروح مناسبات ثقافية؟ لو آه، زي إيه؟",
+                    answers: [
+                        { text: "Ja, ich gehe oft ins Theater oder ins Kino.", en: "Yes, I often go to the theater or cinema.", ar: "آه، بروح المسرح أو السينما كتير." },
+                        { text: "Nein, das interessiert mich nicht sehr.", en: "No, that doesn't interest me much.", ar: "لأ، مليش في الحاجات دي أوي." }
+                    ]
+                },
+                {
+                    q: "Was möchten Sie gerne in Ihrer Freizeit mehr, was weniger machen?", en: "What would you like to do more of, and what less?", ar: "نفسك تعمل إيه أكتر في وقت فراغك، وإيه أقل؟",
+                    answers: [
+                        { text: "Ich würde gerne mehr reisen und weniger arbeiten.", en: "I would like to travel more and work less.", ar: "نفسي أسافر أكتر وأشتغل أقل." },
+                        { text: "Mehr Sport machen und weniger am Handy sein.", en: "Do more sports and be on my phone less.", ar: "ألعب رياضة أكتر وأمسك الموبايل أقل." }
+                    ]
+                }
+            ],
+            [
+                {
+                    q: "Mögen Sie Krimis?", en: "Do you like crime thrillers?", ar: "بتحب الروايات أو المسلسلات البوليسية (Krimis)؟",
+                    answers: [
+                        { text: "Ja, ich love Krimis und spannende Bücher.", en: "Yes, I love crime thrillers and exciting books.", ar: "آه، بحب الروايات البوليسية والكتب المشوقة." },
+                        { text: "Ne인, ich schaue lieber Komödien.", en: "No, I prefer watching comedies.", ar: "لأ، بفضل أتفرج على كوميديا." }
+                    ]
+                },
+                {
+                    q: "Sind Krimis in Ihrem Heimatland beliebt?", en: "Are crime thrillers popular in your home country?", ar: "هل المسلسلات البوليسية مشهورة في بلدك؟",
+                    answers: [
+                        { text: "Ja, Krimis sind bei uns sehr beliebt.", en: "Yes, crime thrillers are very popular here.", ar: "آه، مسلسلات الجريمة مشهورة جداً عندنا." },
+                        { text: "Nicht so sehr, die Leute mögen eher Dramen.", en: "Not so much, people prefer dramas.", ar: "مش أوي، الناس بتحب الدراما أكتر." }
+                    ]
+                }
+            ]
+        ];
+
+        // ================= ICONS =================
+        const VolumeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>;
+        const MicIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>;
+        const FlipIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>;
+        const CardsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"></rect><path d="M8 22h8"></path><path d="M12 2v20"></path></svg>;
+
+        // ================= COMPONENTS =================
+
+        // Generic Flashcard Wrapper to handle TTS and STT
+        const BaseFlashcard = ({ frontContent, backContent, targetGerman, cardColor = "bg-white", backColor = "bg-slate-800" }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+            const [isListening, setIsListening] = useState(false);
+            const [feedback, setFeedback] = useState(null);
+
+            const handleTTS = (e, text) => {
+                e.stopPropagation();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'de-DE';
+                window.speechSynthesis.speak(utterance);
+            };
+
+            const cleanString = (str) => {
+                return str.toLowerCase().replace(/[\(\)\.\,\/\-\+]/g, '').trim();
+            };
+
+            const handleSTT = (e, targetText) => {
+                e.stopPropagation();
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                
+                if (!SpeechRecognition) {
+                    alert("المتصفح بتاعك مش بيدعم التعرف على الصوت، جرب تستخدم Google Chrome.");
+                    return;
+                }
+
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onstart = () => {
+                    setIsListening(true);
+                    setFeedback(null);
+                };
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    const cleanTranscript = cleanString(transcript);
+                    const cleanTarget = cleanString(targetText);
+                    
+                    // Allow match if spoken word is inside target or vice versa
+                    if (cleanTarget.includes(cleanTranscript) || cleanTranscript.includes(cleanTarget)) {
+                        setFeedback({ type: 'success', msg: `عاش! نطقت صح: "${transcript}"` });
+                    } else {
+                        setFeedback({ type: 'error', msg: `حاول تاني، انت قولت: "${transcript}"` });
+                    }
+                };
+
+                recognition.onerror = (event) => {
+                    setFeedback({ type: 'error', msg: `مشكلة في المايك: ${event.error}` });
+                    setIsListening(false);
+                };
+
+                recognition.onend = () => {
+                    setIsListening(false);
+                };
+
+                recognition.start();
+            };
+
+            return (
+                <div className="w-full h-64 cursor-pointer perspective-1000" onClick={() => setIsFlipped(!isFlipped)}>
+                    <div className={`flashcard-inner relative w-full h-full text-center rounded-2xl shadow-lg transition-transform duration-700 ${isFlipped ? 'rotate-y-180' : ''}`}>
+                        
+                        {/* Front */}
+                        <div className={`absolute w-full h-full border-2 border-slate-100 rounded-2xl flex flex-col justify-center items-center p-6 backface-hidden ${cardColor}`}>
+                            {frontContent}
+                            
+                            {/* Controls */}
+                            <div className="absolute bottom-4 right-4 flex space-x-2">
+                                <button 
+                                    onClick={(e) => handleTTS(e, targetGerman)}
+                                    className="p-2 bg-slate-100 text-slate-700 rounded-full hover:bg-slate-200 transition-colors"
+                                    title="اسمع النطق"
+                                >
+                                    <VolumeIcon />
+                                </button>
+                                <button 
+                                    onClick={(e) => handleSTT(e, targetGerman)}
+                                    className={`p-2 rounded-full transition-colors text-white ${isListening ? 'bg-red-500 pulse-animation' : 'bg-blue-600 hover:bg-blue-700'}`}
+                                    title="درب نطقك"
+                                >
+                                    <MicIcon />
+                                </button>
+                            </div>
+
+                            <div className="absolute bottom-4 left-4 text-slate-400 flex items-center space-x-1">
+                                <FlipIcon /> <span className="text-xs">اضغط للقلب</span>
+                            </div>
+
+                            {feedback && !isFlipped && (
+                                <div className={`absolute top-4 right-4 text-xs px-3 py-1 rounded-full shadow-sm font-bold ${feedback.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                    {feedback.msg}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Back */}
+                        <div className={`absolute w-full h-full text-white rounded-2xl flex flex-col justify-center items-center p-6 backface-hidden rotate-y-180 ${backColor}`}>
+                            {backContent}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Specific Card Types using the Base Wrapper
+        const VocabCard = ({ data }) => {
+            const front = (
+                <>
+                    <span className="absolute top-4 left-4 text-xs font-semibold text-slate-500 uppercase tracking-wide bg-slate-100 px-2 py-1 rounded">
+                        {data.category}
+                    </span>
+                    <h3 className="text-2xl font-bold text-slate-800 mb-2">{data.german}</h3>
+                </>
+            );
+            const back = (
+                <>
+                    <p className="text-xl font-medium mb-4 text-center text-blue-100">{data.english}</p>
+                    <div className="w-16 h-px bg-slate-500 mb-4"></div>
+                    <p className="text-3xl font-bold text-center text-white leading-tight" dir="rtl">{data.arabic}</p>
+                </>
+            );
+            return <BaseFlashcard frontContent={front} backContent={back} targetGerman={data.german} backColor="bg-slate-800" />;
+        };
+
+        const PrepCard = ({ data }) => {
+            const isAkk = data.case === "Akkusativ";
+            const caseColor = isAkk ? "text-red-400" : "text-blue-400";
+            
+            const front = (
+                <>
+                    <h3 className="text-3xl font-extrabold text-slate-800 tracking-tight">{data.german}</h3>
+                    <p className="text-sm text-slate-400 mt-2 font-medium uppercase tracking-widest">Verb + Präposition</p>
+                </>
+            );
+            const back = (
+                <>
+                    <h4 className={`text-2xl font-black uppercase tracking-widest mb-4 border-b-2 pb-2 ${isAkk ? 'border-red-400 text-red-400' : 'border-blue-400 text-blue-400'}`}>
+                        + {data.case}
+                    </h4>
+                    <p className="text-lg font-medium mb-4 text-center">{data.english}</p>
+                    <p className="text-3xl font-bold text-center text-white" dir="rtl">{data.arabic}</p>
+                </>
+            );
+            return <BaseFlashcard frontContent={front} backContent={back} targetGerman={data.german} backColor="bg-slate-900" />;
+        };
+
+        const ConjugationCard = ({ data }) => {
+            const front = (
+                <>
+                    <span className="absolute top-4 left-4 text-xs font-semibold text-emerald-600 uppercase tracking-wide bg-emerald-50 px-2 py-1 rounded border border-emerald-200">
+                        Infinitive
+                    </span>
+                    <h3 className="text-4xl font-extrabold text-emerald-900 mb-2">{data.infinitive}</h3>
+                    <p className="text-lg text-emerald-700 font-bold mt-4" dir="rtl">{data.arabic}</p>
+                </>
+            );
+            const back = (
+                <div className="w-full">
+                    <h4 className="text-sm text-emerald-200 uppercase tracking-widest mb-4 font-semibold text-center border-b border-emerald-600 pb-2">Conjugations</h4>
+                    <div className="space-y-3 text-left w-full pl-4">
+                        <div className="flex justify-between items-center bg-emerald-800 p-2 rounded">
+                            <span className="text-emerald-300 text-xs uppercase font-bold w-1/3">Präsens:</span>
+                            <span className="font-bold text-lg w-2/3 text-right">{data.praesens}</span>
+                        </div>
+                        <div className="flex justify-between items-center bg-emerald-800 p-2 rounded">
+                            <span className="text-emerald-300 text-xs uppercase font-bold w-1/3">Präteritum:</span>
+                            <span className="font-bold text-lg w-2/3 text-right">{data.praeteritum}</span>
+                        </div>
+                        <div className="flex justify-between items-center bg-emerald-800 p-2 rounded">
+                            <span className="text-emerald-300 text-xs uppercase font-bold w-1/3">Perfekt:</span>
+                            <span className="font-bold text-lg w-2/3 text-right text-emerald-100">{data.perfekt}</span>
+                        </div>
+                    </div>
+                </div>
+            );
+            return <BaseFlashcard frontContent={front} backContent={back} targetGerman={data.infinitive} cardColor="bg-emerald-50" backColor="bg-emerald-900" />;
+        };
+
+        const WendungCard = ({ data }) => {
+            const front = (
+                <>
+                    <span className="absolute top-4 left-4 text-xs font-semibold text-purple-600 uppercase tracking-wide bg-purple-100 px-2 py-1 rounded border border-purple-200">
+                        {data.category}
+                    </span>
+                    <h3 className="text-xl font-bold text-slate-800 mb-2 mt-4 leading-snug">{data.german}</h3>
+                </>
+            );
+            const back = (
+                <>
+                    <p className="text-lg font-medium mb-4 text-center text-purple-200">{data.english}</p>
+                    <div className="w-16 h-px bg-slate-500 mb-4"></div>
+                    <p className="text-2xl font-bold text-center text-white leading-tight" dir="rtl">{data.arabic}</p>
+                </>
+            );
+            return <BaseFlashcard frontContent={front} backContent={back} targetGerman={data.german} cardColor="bg-purple-50" backColor="bg-slate-900" />;
+        };
+
+        // ================= CONVERSATION COMPONENT =================
+        const apiKey = "AIzaSyBvmF9K3C8fTXWcKOnvm51Zyh3ebJT7N3c";
+
+        const evaluateAnswer = async (question, userAnswer) => {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            const systemPrompt = `أنت مدرس لغة ألمانية محترف. سؤالك للمتدرب كان: "${question}". المتدرب أجاب: "${userAnswer}". قيم الإجابة وصححها إذا لزم الأمر حتى لو كانت خارج الإجابات المقترحة المهم أن تكون مفهومة ومنطقية ومناسبة للسؤال. رد بتنسيق JSON فقط يحتوي على: { "is_good": boolean, "feedback_ar": "تعليق تشجيعي قصير جدا بالمصري", "correction_de": "الإجابة الألمانية الصحيحة نحوياً إذا كانت إجابته بها أخطاء" }`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: "Evaluate this answer." }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] },
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
+                const data = await response.json();
+                return JSON.parse(data.candidates[0].content.parts[0].text);
+            } catch (e) {
+                console.error("AI Evaluation error:", e);
+                return null;
+            }
+        };
+
+        const ConversationTab = () => {
+            const [view, setView] = useState('menu'); // 'menu', 'chat'
+            const [mode, setMode] = useState(''); // 'roleplay', 'interactive'
+            const [topicIndex, setTopicIndex] = useState(0);
+            const [chatHistory, setChatHistory] = useState([]);
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [isListening, setIsListening] = useState(false);
+            const [micText, setMicText] = useState('جاهز للبدء...');
+            const [isPlaying, setIsPlaying] = useState(false);
+            const [suggestions, setSuggestions] = useState([]);
+            const [statusText, setStatusText] = useState('متصل...');
+            const [statusColor, setStatusColor] = useState('text-green-600');
+            const [isEvaluating, setIsEvaluating] = useState(false);
+
+            const silenceTimer = useRef(null);
+            const recognition = useRef(null);
+
+            useEffect(() => {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (SpeechRecognition) {
+                    recognition.current = new SpeechRecognition();
+                    recognition.current.lang = 'de-DE';
+                    recognition.current.interimResults = true;
+                    recognition.current.continuous = true;
+                }
+                return () => {
+                    stopAll();
+                };
+            }, []);
+
+            const speak = (text, pitch = 1) => {
+                return new Promise((resolve) => {
+                    window.speechSynthesis.cancel();
+                    setTimeout(() => {
+                        const utterance = new SpeechSynthesisUtterance(text);
+                        utterance.lang = 'de-DE';
+                        utterance.rate = 0.9;
+                        utterance.pitch = pitch;
+                        const voices = window.speechSynthesis.getVoices();
+                        const deVoice = voices.find(v => v.lang === 'de-DE' || v.lang === 'de_DE');
+                        if (deVoice) utterance.voice = deVoice;
+                        utterance.onend = () => resolve();
+                        utterance.onerror = () => resolve();
+                        window.speechSynthesis.speak(utterance);
+                    }, 100);
+                });
+            };
+
+            const startRolePlay = async (index) => {
+                setView('chat');
+                setMode('roleplay');
+                setTopicIndex(index);
+                setChatHistory([]);
+                setIsPlaying(true);
+                const rp = rolePlaysData[index];
+
+                for (let i = 0; i < rp.messages.length; i++) {
+                    if (!window.isPlayingTemp) break; // Using a temp flag for immediate stop check
+                    const msg = rp.messages[i];
+                    if (msg.role === 'bot') {
+                        setMicStatus('speaking_bot');
+                        setChatHistory(prev => [...prev, { ...msg, id: Date.now() }]);
+                        await speak(msg.text, 1.0);
+                    } else {
+                        setMicStatus('speaking_user');
+                        setChatHistory(prev => [...prev, { ...msg, id: Date.now(), simulated: true }]);
+                        await speak(msg.text, 1.2);
+                    }
+                    setMicStatus('idle');
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            };
+
+            const startInteractiveTraining = (index) => {
+                if (!recognition.current) {
+                    alert("التعرف على الصوت غير مدعوم في هذا المتصفح.");
+                    return;
+                }
+                setView('chat');
+                setMode('interactive');
+                setTopicIndex(index);
+                setCurrentIndex(0);
+                setChatHistory([]);
+                setIsPlaying(true);
+                window.isPlayingTemp = true;
+                playInteractiveQuestion(index, 0);
+            };
+
+            const playInteractiveQuestion = async (tIdx, qIdx) => {
+                const data = interactiveSessionsData[tIdx][qIdx];
+                setMicStatus('speaking_bot');
+                setChatHistory(prev => [...prev, { role: 'bot', text: data.q, en: data.en, ar: data.ar, id: Date.now() }]);
+                setSuggestions(data.answers);
+                await speak(data.q);
+                if (window.isPlayingTemp) startListeningProcess(data.q);
+            };
+
+            const startListeningProcess = (question) => {
+                setMicStatus('listening');
+                let finalTranscript = '';
+                const userMsgId = Date.now();
+                setChatHistory(prev => [...prev, { role: 'user', text: '', id: userMsgId, interim: true }]);
+
+                recognition.current.onresult = (event) => {
+                    clearTimeout(silenceTimer.current);
+                    silenceTimer.current = setTimeout(() => recognition.current.stop(), 3000);
+                    let interimTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
+                        else interimTranscript += event.results[i][0].transcript;
+                    }
+                    setChatHistory(prev => prev.map(m => m.id === userMsgId ? { ...m, text: finalTranscript + interimTranscript } : m));
+                };
+
+                recognition.current.onend = async () => {
+                    clearTimeout(silenceTimer.current);
+                    if (!window.isPlayingTemp) return;
+                    setMicStatus('idle');
+                    if (!finalTranscript.trim()) {
+                        setChatHistory(prev => prev.map(m => m.id === userMsgId ? { ...m, text: 'لم يتم التعرف على صوت...', interim: false, error: true } : m));
+                    } else {
+                        setChatHistory(prev => prev.map(m => m.id === userMsgId ? { ...m, text: finalTranscript, interim: false } : m));
+                        
+                        // --- AI Evaluation ---
+                        setStatusText("بيصحح الإجابة...");
+                        const evalId = Date.now() + 1;
+                        setChatHistory(prev => [...prev, { role: 'bot', text: 'جاري تحليل الإجابة...', id: evalId, isEval: true, loading: true }]);
+                        
+                        const aiResult = await evaluateAnswer(question, finalTranscript);
+                        if (aiResult && window.isPlayingTemp) {
+                            let evalHtml = `<strong>${aiResult.is_good ? '✨ ممتاز!' : '💡 ملاحظة:'}</strong> ${aiResult.feedback_ar || ''}`;
+                            if (aiResult.correction_de) {
+                                evalHtml += `<br><span class="text-xs text-blue-700 font-bold bg-yellow-50 p-1 rounded mt-1 block">${aiResult.correction_de}</span>`;
+                                speak(aiResult.correction_de);
+                            } else if (aiResult.is_good) {
+                                speak("Sehr gut!");
+                            }
+                            setChatHistory(prev => prev.map(m => m.id === evalId ? { ...m, text: evalHtml, loading: false } : m));
+                        } else {
+                            setChatHistory(prev => prev.map(m => m.id === evalId ? { ...m, text: 'عذراً، تعذر التقييم حالياً.', loading: false, error: true } : m));
+                        }
+                        setMicStatus('idle');
+                    }
+                };
+                
+                recognition.current.start();
+                silenceTimer.current = setTimeout(() => recognition.current.stop(), 5000);
+            };
+
+            const setMicStatus = (state) => {
+                if (state === 'idle') {
+                    setMicText('جاهز');
+                    setStatusText('متصل');
+                    setStatusColor('text-green-600');
+                } else if (state === 'speaking_bot') {
+                    setMicText('المدرب يتحدث...');
+                    setStatusText('يتحدث...');
+                    setStatusColor('text-blue-600');
+                } else if (state === 'listening') {
+                    setMicText('جاري الاستماع...');
+                    setStatusText('في انتظار إجابتك...');
+                    setStatusColor('text-orange-500');
+                }
+            };
+
+            const stopAll = () => {
+                setIsPlaying(false);
+                window.isPlayingTemp = false;
+                window.speechSynthesis.cancel();
+                if (recognition.current) recognition.current.stop();
+                setView('menu');
+            };
+
+            return (
+                <div className="w-full max-w-4xl mx-auto font-['Cairo']">
+                    {view === 'menu' ? (
+                        <div className="space-y-6">
+                             <div className="bg-white rounded-2xl shadow-sm p-6 text-center border-t-4 border-green-500">
+                                <h1 className="text-3xl font-bold text-gray-800 mb-2">11 Interview: Freizeit</h1>
+                                <p className="text-gray-600 mb-4">Fragen Sie zwei Kursteilnehmer und notieren Sie die Antworten.</p>
+                                <p className="text-sm text-gray-500 bg-gray-50 p-2 rounded border border-gray-100 italic">
+                                    اختر "استماع" لسماع محادثات كاملة، أو "تدريب تفاعلي" للتدرب على النطق بنفسك.
+                                </p>
+                            </div>
+                            
+                            {[
+                                { title: "1. الأصدقاء والرياضة (Freunde & Sport)", icon: "fa-users", color: "text-blue-500" },
+                                { title: "2. الميديا والتكنولوجيا (Medien & Technik)", icon: "fa-tv", color: "text-purple-500" },
+                                { title: "3. الثقافة والأمنيات (Kultur & Wünsche)", icon: "fa-theater-masks", color: "text-orange-500" },
+                                { title: "4. مسلسلات الجريمة (Krimis)", icon: "fa-user-secret", color: "text-red-500" }
+                            ].map((topic, i) => (
+                                <div key={i} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="text-lg font-bold text-gray-800">{topic.title}</h3>
+                                        <i className={`fas ${topic.icon} ${topic.color} text-xl`}></i>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <button onClick={() => { window.isPlayingTemp = true; startRolePlay(i); }} className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                                            <i className="fas fa-headphones"></i> استماع للمحادثة
+                                        </button>
+                                        <button onClick={() => startInteractiveTraining(i)} className="bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                                            <i className="fas fa-microphone-alt"></i> تدريب تفاعلي
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col h-[600px] bg-[#e5ddd5] rounded-2xl shadow-xl overflow-hidden border border-gray-300 relative">
+                             <div className="bg-gray-100 border-b border-gray-300 p-3 flex justify-between items-center z-10">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white shadow">
+                                        <i className="fas fa-robot text-xl"></i>
+                                    </div>
+                                    <div className="text-right">
+                                        <h2 className="font-bold text-gray-800 text-lg leading-tight">المدرب الآلي</h2>
+                                        <p className={`text-xs font-semibold ${statusText === 'متصل' ? 'text-green-600' : statusText === 'يتحدث...' ? 'text-blue-600' : 'text-orange-500'}`}>{statusText}</p>
+                                    </div>
+                                </div>
+                                <button onClick={stopAll} className="text-gray-500 hover:text-red-600 bg-white hover:bg-red-50 border border-gray-300 rounded-lg px-3 py-1.5 transition text-sm font-bold flex items-center gap-2 shadow-sm">
+                                    <i className="fas fa-sign-out-alt"></i> إنهاء المحادثة
+                                </button>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto p-4 space-y-4" dir="ltr" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }}>
+                                {chatHistory.map((m, i) => (
+                                    <div key={i} className={`flex w-full ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`flex max-w-[80%] items-start gap-2 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${m.role === 'user' ? 'bg-green-500' : 'bg-blue-500'}`}>
+                                                <i className={`fas ${m.role === 'user' ? 'fa-user' : 'fa-robot'}`}></i>
+                                            </div>
+                                            <div className={`p-3 rounded-2xl shadow-sm relative ${m.role === 'user' ? 'bg-[#005c4b] text-white' : 'bg-white text-gray-800'}`}>
+                                                {m.isEval ? (
+                                                    <div dangerouslySetInnerHTML={{ __html: m.text }} />
+                                                ) : (
+                                                    <p className="font-medium">{m.text || '...'}</p>
+                                                )}
+                                                {m.en && (
+                                                    <div className={`text-[10px] mt-2 border-t pt-1 opacity-80 ${m.role === 'user' ? 'border-white/20' : 'border-gray-100'}`}>
+                                                        <p className="italic">{m.en}</p>
+                                                        <p dir="rtl" className="mt-1 font-bold">{m.ar}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {mode === 'interactive' && suggestions.length > 0 && (
+                                <div className="bg-gray-50 border-t border-gray-200 p-3">
+                                    <p className="text-xs text-gray-500 mb-2 font-bold text-right"><i className="fas fa-lightbulb text-yellow-500 ml-1"></i> إجابات مقترحة:</p>
+                                    <div className="flex flex-col gap-2">
+                                        {suggestions.map((s, i) => (
+                                            <button key={i} onClick={() => speak(s.text)} className="bg-white hover:bg-gray-100 border border-gray-300 rounded-xl p-2 text-xs flex justify-between items-center">
+                                                <span dir="ltr" className="font-bold">{s.text}</span>
+                                                <i className="fas fa-volume-up text-blue-500"></i>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="bg-gray-100 border-t border-gray-300 p-3 flex justify-between items-center" dir="rtl">
+                                <div className="flex items-center gap-2">
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${isPlaying ? 'bg-red-500 animate-pulse' : 'bg-gray-300'}`}>
+                                        <i className="fas fa-microphone"></i>
+                                    </div>
+                                    <span className="text-xs font-bold text-gray-500">{micText}</span>
+                                </div>
+                                {mode === 'interactive' && currentIndex < (interactiveSessionsData[topicIndex] ? interactiveSessionsData[topicIndex].length - 1 : 0) && (
+                                    <button onClick={() => {
+                                        const next = currentIndex + 1;
+                                        setCurrentIndex(next);
+                                        playInteractiveQuestion(topicIndex, next);
+                                    }} className="bg-green-500 text-white px-4 py-2 rounded-xl text-sm font-bold">التالي</button>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // ================= SCHREIBEN HELFER COMPONENT =================
+        const argerData = [
+            {de: "Staus oder volle/unpünktliche Verkehrsmittel", eg: "زحمة المرور أو المواصلات المليانة/المتأخرة", en: "Traffic jams or full/late transport", prefix: "Ich ärgere mich über", suffix: "."},
+            {de: "andere Autofahrer", eg: "سواقين تانيين", en: "Other drivers", prefix: "Mich nerven", suffix: "."},
+            {de: "unfreundliche Nachbarn/Kollegen", eg: "جيران/زملاء مش لطاف", en: "Unfriendly neighbors/colleagues", prefix: "Mich nerven", suffix: "."},
+            {de: "schlechtes Wetter", eg: "الجو الوحش", en: "Bad weather", prefix: "Ich ärgere mich über", suffix: "."},
+            {de: "Werbung im Internet", eg: "إعلانات الإنترنت", en: "Internet advertising", prefix: "Mich nervt", suffix: "."},
+            {de: "Warten (z. B. an Fahrstühlen, Supermarktkassen)", eg: "الانتظار (في الأسانسير، السوبر ماركت)", en: "Waiting (e.g., at elevators, checkouts)", prefix: "Ich ärgere mich über das", suffix: "."},
+            {de: "zu viel Bürokratie im Alltag", eg: "الروتين/البيروقراطية في الحياة اليومية", en: "Too much bureaucracy in everyday life", prefix: "Mich nervt", suffix: "."},
+            {de: "Hausarbeiten wie Bügeln, Staubsaugen", eg: "شغل البيت زي الكوي والكنس", en: "Housework like ironing, vacuuming", prefix: "Ich mag", suffix: "nicht."},
+            {de: "langweilige Arbeit/keine Abwechslung", eg: "الشغل الممل/مفيش تجديد", en: "Boring work/no variety", prefix: "Ich ärgere mich über", suffix: "."},
+            {de: "schlechter Service beim Einkaufen", eg: "الخدمة السيئة في التسوق", en: "Bad service when shopping", prefix: "Mich nervt", suffix: "."},
+            {de: "etwas nicht selbst entscheiden dürfen", eg: "إنك متقدرش تقرر أو تختار بنفسك", en: "Not being allowed to decide yourself", prefix: "Ich mag es nicht, wenn ich", suffix: "."}
+        ];
+
+        const freudeData = [
+            {de: "kleine Komplimente", eg: "مجاملات بسيطة", en: "Small compliments", prefix: "Ich freue mich über", suffix: "."},
+            {de: "beim Einkaufen etwas sparen können", eg: "توفير فلوس أثناء التسوق", en: "Saving money while shopping", prefix: "Ich freue mich, wenn ich", suffix: "."},
+            {de: "pünktliche Verkehrsmittel/leere Straßen", eg: "مواصلات في ميعادها/شوارع فاضية", en: "Punctual transport/empty streets", prefix: "Ich freue mich über", suffix: "."},
+            {de: "neue Freunde in sozialen Netzwerken", eg: "أصدقاء جداد على السوشيال ميديا", en: "New friends on social media", prefix: "Ich freue mich über", suffix: "."},
+            {de: "neue Schuhe/Kleidung/technische Geräte", eg: "ملابس/أجهزة إلكترونية جديدة", en: "New clothes/technical devices", prefix: "Ich freue mich über", suffix: "."},
+            {de: "Zeit für sich selbst", eg: "وقت لنفسي", en: "Time for oneself", prefix: "Für mich ist es sehr wichtig, dass ich", suffix: "habe."},
+            {de: "kleine Erfolge im Beruf/Studium", eg: "نجاحات بسيطة في الشغل/الدراسة", en: "Small successes at work/studies", prefix: "Ich freue mich über", suffix: "."},
+            {de: "nette Kollegen/Nachbarn", eg: "زملاء/جيران لطاف", en: "Nice colleagues/neighbors", prefix: "Ich freue mich über", suffix: "."},
+            {de: "gutes Essen/mit anderen kochen", eg: "أكل حلو/الطبخ مع ناس تانية", en: "Good food/cooking with others", prefix: "Ich freue mich über", suffix: "."},
+            {de: "interessante/abwechslungsreiche Aufgaben", eg: "مهام شيقة/متنوعة", en: "Interesting/varied tasks", prefix: "Ich freue mich über", suffix: "."},
+            {de: "Zeit mit Freunden/der Familie", eg: "وقت مع الصحاب/العيلة", en: "Time with friends/family", prefix: "Für mich ist es wichtig,", suffix: "zu verbringen."}
+        ];
+
+        const statsData = [
+            {de: "Internet nutzen", val: "+ 56 %", color: "emerald", pre: "Aus der Statistik geht hervor, dass die Nutzung des Internets stark", post: "hat."},
+            {de: "Musik hören", val: "+ 31 %", color: "emerald", pre: "Man kann deutlich sehen, dass das Interesse an Musik", post: "."},
+            {de: "Sport treiben", val: "+ 16 %", color: "emerald", pre: "Sport treiben ist ein", post: "im Fünfjahresvergleich."},
+            {de: "Kulturveranstaltungen", val: "- 32 %", color: "rose", pre: "Kulturveranstaltungen haben deutlich an Attraktivität", post: "."},
+            {de: "mit Freunden unternehmen", val: "- 28 %", color: "rose", pre: "Persönliche Treffen zählen zu den", post: "."},
+            {de: "Bücher lesen", val: "- 10 %", color: "rose", pre: "Das Interesse an Büchern geht etwas", post: "."}
+        ];
+
+        const argerPrompts = [
+            "Worüber ärgern Sie sich?", "Worüber ärgern Sie sich?", "Worüber ärgern Sie sich?",
+            "Was mögen Sie nicht?", "Was mögen Sie nicht?", "Worüber ärgern Sie sich?",
+            "Was mögen Sie nicht?", "Was mögen Sie nicht?", "Worüber ärgern Sie sich?",
+            "Was mögen Sie nicht?", "Was mögen Sie nicht?"
+        ];
+
+        const freudePrompts = [
+            "Worüber freuen Sie sich?", "Was finden Sie wichtig?", "Worüber freuen Sie sich?",
+            "Worüber freuen Sie sich?", "Worüber freuen Sie sich?", "Was finden Sie wichtig?",
+            "Worüber freuen Sie sich?", "Was finden Sie wichtig?", "Worüber freuen Sie sich?",
+            "Worüber freuen Sie sich?", "Was finden Sie wichtig?"
+        ];
+
+        const prepData = [
+            {de: "1. [............] 97 Prozent ▪ das Fernsehen ▪ bei der Freizeitgestaltung ▪ auf Platz eins ▪ liegen (Präsens)", eg: "حوالي 97% ▪ التلفزيون ▪ في قضاء وقت الفراغ ▪ يقع في المركز الأول (مضارع)"},
+            {de: "2. drei Viertel der Bundesbürger ▪ inzwischen ▪ regelmäßig ▪ [............] Netz ▪ surfen (Präsens)", eg: "ثلاثة أربع المواطنين ▪ الآن ▪ بانتظام ▪ يتصفحون [في] الإنترنت (مضارع)"},
+            {de: "3. der große Verlierer [............] den Freizeitaktivitäten ▪ persönliche Treffen ▪ sein (Präsens)", eg: "الخاسر الأكبر [بين] أنشطة وقت الفراغ ▪ يكون اللقاءات الشخصية (مضارع)"},
+            {de: "4. die Kommunikation [............] soziale Netzwerke ▪ zunehmen (Perfekt)", eg: "التواصل [عبر] شبكات التواصل الاجتماعي ▪ ازداد (ماضي تام)"},
+            {de: "5. Sport ▪ ebenfalls ▪ [............] Trend ▪ liegen (Präsens)", eg: "الرياضة ▪ أيضاً ▪ تقع [في] الاتجاه الشائع (مضارع)"},
+            {de: "6. Kulturveranstaltungen wie Opernaufführungen ▪ [............] Attraktivität ▪ verlieren (Perfekt)", eg: "الفعاليات الثقافية مثل عروض الأوبرا ▪ فقدت [في] الجاذبية (ماضي تام)"},
+            {de: "7. der Wunsch [............] Ruhe ▪ bleiben (Perfekt)", eg: "الرغبة [في] الهدوء ▪ بقيت (ماضي تام)"}
+        ];
+
+        const SchreibenHelferTab = () => {
+            const [activeTopic, setActiveTopic] = useState('topic1');
+            const [activeMode, setActiveMode] = useState('guided');
+            const [responses, setResponses] = useState({});
+
+            const handleInputChange = (id, val) => {
+                setResponses(prev => ({ ...prev, [id]: val }));
+            };
+
+            const speak = (text) => {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'de-DE';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            };
+
+            const dictate = (id) => {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    alert("المتصفح لا يدعم التعرف على الصوت.");
+                    return;
+                }
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    handleInputChange(id, (responses[id] || '') + ' ' + transcript);
+                };
+                recognition.start();
+            };
+
+            const printResponses = () => {
+                let html = `
+                <html lang="de" dir="ltr">
+                <head>
+                    <title>إجابات الطالب - Schreiben Helfer</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #333; }
+                        h1 { text-align: center; color: #1e293b; border-bottom: 2px solid #cbd5e1; padding-bottom: 10px; font-family: Arial, sans-serif; direction: rtl;}
+                        h2 { color: #2563eb; margin-top: 30px; border-bottom: 1px solid #bfdbfe; padding-bottom: 5px; font-family: Arial, sans-serif; direction: rtl;}
+                        .qa-block { margin-bottom: 15px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 5px solid #3b82f6; page-break-inside: avoid; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                        .question { font-weight: bold; color: #475569; margin-bottom: 8px; font-size: 1.05em; display: flex; align-items: center; gap: 8px;}
+                        .question::before { content: "❓ "; }
+                        .answer { color: #0f172a; font-size: 1.1em; font-weight: 600; padding-left: 28px;}
+                        .empty { color: #ef4444; font-style: italic; font-size: 0.9em; font-weight: normal;}
+                    </style>
+                </head>
+                <body>
+                    <h1>📝 تقرير إجابات الطالب (Student Responses)</h1>`;
+
+                let hasAnyAnswer = false;
+                Object.entries(responses).forEach(([id, val]) => {
+                    if (val.trim()) {
+                        hasAnyAnswer = true;
+                        html += `
+                        <div class="qa-block">
+                            <div class="question">${id}</div>
+                            <div class="answer">${val}</div>
+                        </div>`;
+                    }
+                });
+
+                if (!hasAnyAnswer) {
+                    alert("لا توجد إجابات لطباعتها بعد.");
+                    return;
+                }
+
+                html += `</body></html>`;
+                const win = window.open('', '_blank');
+                win.document.write(html);
+                win.document.close();
+                setTimeout(() => win.print(), 500);
+            };
+
+            return (
+                <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden" dir="rtl">
+                    <header className="bg-slate-800 text-white p-6 text-center">
+                        <h1 className="text-3xl font-bold mb-2">مساعد الكتابة والنطق - Schreiben & Sprechen Helfer</h1>
+                        <p className="text-slate-300 text-sm md:text-base">🇪🇬 مواضيع التدريب للمستوى A2 | 🇬🇧 A2 Level Practice Topics</p>
+                    </header>
+
+                    <div className="flex flex-wrap justify-center gap-4 p-4 bg-slate-100 border-b border-gray-200">
+                        <button onClick={() => setActiveTopic('topic1')} className={`px-6 py-2 rounded-full font-bold transition ${activeTopic === 'topic1' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-200 text-gray-700'}`}>1. Ärger & Freude</button>
+                        <button onClick={() => setActiveTopic('topic2')} className={`px-6 py-2 rounded-full font-bold transition ${activeTopic === 'topic2' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-700'}`}>2. Freizeitgestaltung</button>
+                        <button onClick={printResponses} className="px-6 py-2 rounded-full font-bold bg-emerald-600 text-white shadow-md hover:bg-emerald-700 transition flex items-center gap-2">🖨️ طباعة الإجابات</button>
+                    </div>
+
+                    <div className="flex border-b border-gray-200 bg-gray-50 text-center">
+                        <button onClick={() => setActiveMode('guided')} className={`flex-1 py-4 font-semibold transition ${activeMode === 'guided' ? 'border-b-4 border-blue-500 text-blue-700' : 'text-gray-600'}`}>{activeTopic === 'topic1' ? '📚 توجيه وتدريب | Guided' : '📊 توجيه الإحصائيات | Guided Stats'}</button>
+                        <button onClick={() => setActiveMode('challenge')} className={`flex-1 py-4 font-semibold transition ${activeMode === 'challenge' ? 'border-b-4 border-blue-500 text-blue-700' : 'text-gray-600'}`}>{activeTopic === 'topic1' ? '✍️ التحدي | Challenge' : '✍️ تحدي الوصف | Challenge'}</button>
+                    </div>
+
+                    {activeTopic === 'topic1' && activeMode === 'guided' && (
+                        <div className="p-4 md:p-8">
+                            <div className="mb-10">
+                                <h2 className="text-2xl font-bold text-slate-800 mb-2 border-b pb-2">📖 🇪🇬 دليل الكتابة | 🇬🇧 Writing Guide</h2>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 shadow-sm">
+                                        <h3 className="text-rose-700 font-bold mb-3 text-lg">😡 للتعبير عن الضيق</h3>
+                                        <ul className="space-y-3">
+                                            {["Ich ärgere mich über + Akk", "Mich nervt es, wenn...", "Ich mag es nicht, wenn..."].map((text, i) => (
+                                                <li key={i} className="bg-white p-2 rounded border border-rose-100 flex items-center gap-2">
+                                                    <button onClick={() => speak(text)} className="speak-btn text-xl">🔊</button>
+                                                    <div>
+                                                        <span className="german-text block font-bold text-rose-600">{text}</span>
+                                                        <span className="text-xs text-gray-600">{i===0 ? "بتضايق من..." : i===1 ? "بيعصبني لما..." : "مابحبش لما..."}</span>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 shadow-sm">
+                                        <h3 className="text-emerald-700 font-bold mb-3 text-lg">😊 للتعبير عن الفرح</h3>
+                                        <ul className="space-y-3">
+                                            {["Ich freue mich über + Akk", "Ich freue mich, wenn...", "Für mich ist es sehr wichtig, dass..."].map((text, i) => (
+                                                <li key={i} className="bg-white p-2 rounded border border-emerald-100 flex items-center gap-2">
+                                                    <button onClick={() => speak(text)} className="speak-btn text-xl">🔊</button>
+                                                    <div>
+                                                        <span className="german-text block font-bold text-emerald-600">{text}</span>
+                                                        <span className="text-xs text-gray-600">{i===0 ? "بفرح بـ..." : i===1 ? "بفرح لما..." : "مهم جداً بالنسبالي إن..."}</span>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-2 border-b pb-2">📝 🇪🇬 تدريبات موجهة | 🇬🇧 Guided Exercises</h2>
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold text-rose-700 mb-4 mt-8">😡 مواقف تسبب الضيق</h3>
+                                {argerData.map((item, i) => (
+                                    <div key={i} className="bg-white border rounded-lg p-3 shadow-sm hover:shadow-md transition">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <button onClick={() => speak(item.de)} className="speak-btn text-lg">🔊</button>
+                                            <span className="font-bold text-slate-800 german-text">{i + 1}. {item.de}</span>
+                                        </div>
+                                        <p className="text-xs text-gray-500 mb-3 px-8">🇪🇬 {item.eg} | 🇬🇧 {item.en}</p>
+                                        <div className="flex flex-wrap items-center gap-2 german-text text-sm bg-gray-50 p-2 rounded">
+                                            <button onClick={() => speak(item.prefix)} className="speak-btn text-blue-500">🔊</button>
+                                            <span className="font-semibold text-gray-700">{item.prefix}</span>
+                                            <div className="flex-1 min-w-[150px] flex items-center bg-white border border-gray-300 rounded px-2 focus-within:ring-2 focus-within:ring-blue-400">
+                                                <input value={responses[`t1a_g_${i}`] || ''} onChange={(e) => handleInputChange(`t1a_g_${i}`, e.target.value)} className="w-full py-1 outline-none text-blue-700 bg-transparent" />
+                                                <button onClick={() => dictate(`t1a_g_${i}`)} className="mic-btn text-gray-400 hover:text-red-500 ml-1 text-lg">🎤</button>
+                                            </div>
+                                            <span className="font-semibold text-gray-700">{item.suffix}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                                <h3 className="text-xl font-bold text-emerald-700 mb-4 mt-10">😊 مواقف تسبب الفرح</h3>
+                                {freudeData.map((item, i) => (
+                                    <div key={i} className="bg-white border rounded-lg p-3 shadow-sm hover:shadow-md transition">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <button onClick={() => speak(item.de)} className="speak-btn text-lg">🔊</button>
+                                            <span className="font-bold text-slate-800 german-text">{i + 1}. {item.de}</span>
+                                        </div>
+                                        <p className="text-xs text-gray-500 mb-3 px-8">🇪🇬 {item.eg} | 🇬🇧 {item.en}</p>
+                                        <div className="flex flex-wrap items-center gap-2 german-text text-sm bg-gray-50 p-2 rounded">
+                                            <button onClick={() => speak(item.prefix)} className="speak-btn text-blue-500">🔊</button>
+                                            <span className="font-semibold text-gray-700">{item.prefix}</span>
+                                            <div className="flex-1 min-w-[150px] flex items-center bg-white border border-gray-300 rounded px-2 focus-within:ring-2 focus-within:ring-blue-400">
+                                                <input value={responses[`t1f_g_${i}`] || ''} onChange={(e) => handleInputChange(`t1f_g_${i}`, e.target.value)} className="w-full py-1 outline-none text-blue-700 bg-transparent" />
+                                                <button onClick={() => dictate(`t1f_g_${i}`)} className="mic-btn text-gray-400 hover:text-red-500 ml-1 text-lg">🎤</button>
+                                            </div>
+                                            <span className="font-semibold text-gray-700">{item.suffix}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTopic === 'topic1' && activeMode === 'challenge' && (
+                        <div className="p-4 md:p-8 bg-slate-50">
+                            <h2 className="text-2xl font-bold text-slate-800 mb-2 border-b pb-2">🎯 🇪🇬 تحدي الكتابة | 🇬🇧 Writing Challenge</h2>
+                            <h3 className="text-xl font-bold text-rose-700 mb-4">😡 الضيق | 🇬🇧 Ärger</h3>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+                                {argerData.map((item, i) => (
+                                    <div key={i} className="bg-white rounded-xl shadow p-4 border-t-4 border-rose-400 flex flex-col">
+                                        <div className="flex items-start justify-between mb-1">
+                                            <h3 className="german-text text-sm font-bold text-slate-800 flex-1">{i+1}. {item.de}</h3>
+                                            <button onClick={() => speak(item.de)} className="speak-btn text-sm">🔊</button>
+                                        </div>
+                                        <div className="flex items-center gap-1 mb-2">
+                                            <button onClick={() => speak(argerPrompts[i] || "Worüber ärgern Sie sich?")} className="speak-btn text-xs text-rose-500">🔊</button>
+                                            <p className="text-xs text-rose-500 font-bold german-text">{argerPrompts[i] || "Worüber ärgern Sie sich?"}</p>
+                                        </div>
+                                        <div className="relative mt-auto">
+                                            <textarea value={responses[`t1c_a_${i}`] || ''} onChange={(e) => handleInputChange(`t1c_a_${i}`, e.target.value)} className="german-text w-full bg-gray-50 border border-gray-200 rounded-lg p-2 pr-8 h-20 focus:ring-2 focus:ring-rose-400 outline-none resize-none" placeholder="Schreiben Sie..."></textarea>
+                                            <button onClick={() => dictate(`t1c_a_${i}`)} className="mic-btn absolute top-2 right-2 text-gray-400 hover:text-red-500 text-lg">🎤</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <h3 className="text-xl font-bold text-emerald-700 mb-4">😊 الفرح | 🇬🇧 Freude</h3>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {freudeData.map((item, i) => (
+                                    <div key={i} className="bg-white rounded-xl shadow p-4 border-t-4 border-emerald-400 flex flex-col">
+                                        <div className="flex items-start justify-between mb-1">
+                                            <h3 className="german-text text-sm font-bold text-slate-800 flex-1">{i+1}. {item.de}</h3>
+                                            <button onClick={() => speak(item.de)} className="speak-btn text-sm">🔊</button>
+                                        </div>
+                                        <div className="flex items-center gap-1 mb-2">
+                                            <button onClick={() => speak(freudePrompts[i] || "Worüber freuen Sie sich?")} className="speak-btn text-xs text-emerald-500">🔊</button>
+                                            <p className="text-xs text-emerald-500 font-bold german-text">{freudePrompts[i] || "Worüber freuen Sie sich?"}</p>
+                                        </div>
+                                        <div className="relative mt-auto">
+                                            <textarea value={responses[`t1c_f_${i}`] || ''} onChange={(e) => handleInputChange(`t1c_f_${i}`, e.target.value)} className="german-text w-full bg-gray-50 border border-gray-200 rounded-lg p-2 pr-8 h-20 focus:ring-2 focus:ring-emerald-400 outline-none resize-none" placeholder="Schreiben Sie..."></textarea>
+                                            <button onClick={() => dictate(`t1c_f_${i}`)} className="mic-btn absolute top-2 right-2 text-gray-400 hover:text-red-500 text-lg">🎤</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTopic === 'topic2' && activeMode === 'guided' && (
+                        <div className="p-4 md:p-8">
+                            <div className="mb-10">
+                                <h2 className="text-2xl font-bold text-slate-800 mb-2 border-b pb-2">📖 🇪🇬 دليل الإحصائيات | 🇬🇧 Stats Guide</h2>
+                                <div className="grid md:grid-cols-3 gap-4">
+                                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm">
+                                        <h3 className="text-blue-700 font-bold mb-3 text-lg">📊 مقدمة | Intro</h3>
+                                        <ul className="space-y-3">
+                                            {["Aus der Statistik geht hervor, dass...", "Man kann deutlich sehen, dass..."].map((text, i) => (
+                                                <li key={i} className="bg-white p-2 rounded border border-blue-100 flex items-start gap-2">
+                                                    <button onClick={() => speak(text)} className="speak-btn">🔊</button>
+                                                    <div><span className="german-text font-bold text-blue-600 block">{text}</span><span className="text-xs text-gray-600">{i===0 ? "يتضح من الإحصائية أن..." : "يمكننا أن نرى بوضوح أن..."}</span></div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 shadow-sm">
+                                        <h3 className="text-emerald-700 font-bold mb-3 text-lg">📈 الزيادة | Increase</h3>
+                                        <ul className="space-y-3">
+                                            {["(stark) zunehmen / steigen", "der (große) Gewinner sein"].map((text, i) => (
+                                                <li key={i} className="bg-white p-2 rounded border border-emerald-100 flex items-start gap-2">
+                                                    <button onClick={() => speak(text)} className="speak-btn">🔊</button>
+                                                    <div><span className="german-text font-bold text-emerald-600 block">{text}</span><span className="text-xs text-gray-600">{i===0 ? "يزيد (بشدة) / يرتفع" : "يكون الفائز (الأكبر)"}</span></div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 shadow-sm">
+                                        <h3 className="text-rose-700 font-bold mb-3 text-lg">📉 النقصان | Decrease</h3>
+                                        <ul className="space-y-3">
+                                            {["abnehmen / zurückgehen", "zu den Verlierern zählen"].map((text, i) => (
+                                                <li key={i} className="bg-white p-2 rounded border border-rose-100 flex items-start gap-2">
+                                                    <button onClick={() => speak(text)} className="speak-btn">🔊</button>
+                                                    <div><span className="german-text font-bold text-rose-600 block">{text}</span><span className="text-xs text-gray-600">{i===0 ? "يقل / يتراجع" : "يُعد من الخاسرين"}</span></div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-2 border-b pb-2">📝 تدريبات الإحصائيات</h2>
+                            <div className="space-y-4">
+                                {statsData.map((item, i) => (
+                                    <div key={i} className="bg-white border rounded-lg p-3 shadow-sm hover:shadow-md transition">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <button onClick={() => speak(item.de)} className="speak-btn text-lg">🔊</button>
+                                                <span className="font-bold text-slate-800 german-text">{i+1}. {item.de}</span>
+                                            </div>
+                                            <span className={`bg-${item.color}-100 text-${item.color}-800 px-2 py-1 rounded text-sm font-bold german-text`}>{item.val}</span>
+                                        </div>
+                                        <div className="flex flex-wrap items-center gap-2 german-text text-sm bg-gray-50 p-2 rounded">
+                                            <button onClick={() => speak(item.pre)} className="speak-btn text-blue-500">🔊</button>
+                                            <span>{item.pre}</span>
+                                            <div className="flex-1 min-w-[150px] flex items-center bg-white border border-gray-300 rounded px-2 focus-within:ring-2 focus-within:ring-blue-400">
+                                                <input value={responses[`t2_g_s_${i}`] || ''} onChange={(e) => handleInputChange(`t2_g_s_${i}`, e.target.value)} className="w-full py-1 outline-none text-blue-700 bg-transparent" />
+                                                <button onClick={() => dictate(`t2_g_s_${i}`)} className="mic-btn text-gray-400 hover:text-red-500 ml-1 text-lg">🎤</button>
+                                            </div>
+                                            <span>{item.post}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-12">
+                                <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b pb-2">🧩 بناء الجمل وحروف الجر</h2>
+                                <div className="bg-violet-50 border border-violet-200 rounded-xl p-5 mb-8 shadow-sm">
+                                    <h3 className="text-violet-700 font-bold mb-3 text-lg">💡 دليل المذاكرة</h3>
+                                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                        {["Bei (97 Prozent)", "im (Netz surfen)", "unter (den Aktivitäten)", "über (Netzwerke)", "im (Trend liegen)", "an (Attraktivität)", "nach (Ruhe)"].map((text, i) => (
+                                            <div key={i} className="bg-white p-2 rounded border border-violet-100 flex items-start gap-2">
+                                                <button onClick={() => speak(text)} className="speak-btn">🔊</button>
+                                                <div><span className="german-text font-bold text-violet-600 block">{text}</span></div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    {prepData.map((item, i) => (
+                                        <div key={i} className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition">
+                                            <div className="flex items-start gap-2 mb-2">
+                                                <button onClick={() => speak(item.de.replace(/\[\.\.\.\.\.\.\.\.\.\.\.\.\]|▪|\(Präsens\)|\(Perfekt\)/g, ''))} className="speak-btn text-lg mt-1">🔊</button>
+                                                <div><p className="german-text text-gray-700 text-sm font-semibold">{item.de}</p></div>
+                                            </div>
+                                            <div className="relative w-full flex items-center bg-gray-50 border-b-2 border-gray-300 rounded px-2 focus-within:border-violet-500 mt-2">
+                                                <input value={responses[`t2_g_p_${i}`] || ''} onChange={(e) => handleInputChange(`t2_g_p_${i}`, e.target.value)} className="german-text w-full outline-none py-2 text-violet-700 bg-transparent" placeholder="Schreiben Sie den ganzen Satz..." />
+                                                <button onClick={() => dictate(`t2_g_p_${i}`)} className="mic-btn text-gray-400 hover:text-red-500 text-xl ml-2">🎤</button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="mt-12">
+                                <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b pb-2">💬 منتدى النقاش</h2>
+                                <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-6 shadow-sm">
+                                    <p className="german-text text-gray-700 text-sm mb-2 leading-relaxed">
+                                        ▪ Was hat Sie überrascht? ▪ Was haben Sie erwartet? ▪ Gibt es in Ihrem Heimatland ähnliche Tendenzen?
+                                    </p>
+                                    <div className="space-y-4">
+                                        {["Was hat Sie überrascht?", "Was haben Sie erwartet?", "Tendenzen im Heimatland?"].map((label, i) => (
+                                            <div key={i} className="relative">
+                                                <label className="german-text block text-sm font-bold text-gray-700 mb-1">{label}</label>
+                                                <textarea value={responses[`t2_g_f_${i+1}`] || ''} onChange={(e) => handleInputChange(`t2_g_f_${i+1}`, e.target.value)} className="german-text w-full border border-gray-300 rounded p-2 pr-10 focus:ring-2 focus:ring-amber-400 outline-none resize-none" rows="2" />
+                                                <button onClick={() => dictate(`t2_g_f_${i+1}`)} className="mic-btn absolute right-2 top-8 text-gray-400 hover:text-red-500 text-xl">🎤</button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTopic === 'topic2' && activeMode === 'challenge' && (
+                        <div className="p-4 md:p-8 bg-slate-50">
+                            <h2 className="text-2xl font-bold text-slate-800 mb-2 border-b pb-2">🎯 🇪🇬 تحدي الإحصائيات | 🇬🇧 Stats Challenge</h2>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {statsData.map((item, i) => (
+                                    <div key={i} className="bg-white rounded-xl shadow p-4 border-t-4 border-emerald-400 flex flex-col">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <div className="flex items-center gap-2">
+                                                <button onClick={() => speak(item.de)} className="speak-btn text-lg">🔊</button>
+                                                <h3 className="german-text text-lg font-bold text-slate-800">{item.de}</h3>
+                                            </div>
+                                            <span className={`bg-${item.color}-100 text-${item.color}-800 px-2 py-1 rounded text-sm font-bold german-text`}>{item.val}</span>
+                                        </div>
+                                        <div className="relative mt-auto">
+                                            <textarea value={responses[`t2_c_s_${i}`] || ''} onChange={(e) => handleInputChange(`t2_c_s_${i}`, e.target.value)} className="german-text w-full bg-gray-50 border border-gray-200 rounded-lg p-3 pr-10 h-20 focus:ring-2 focus:ring-blue-400 outline-none resize-none" placeholder="Beschreiben Sie die Veränderung..."></textarea>
+                                            <button onClick={() => dictate(`t2_c_s_${i}`)} className="mic-btn absolute right-2 top-3 text-gray-400 hover:text-red-500 text-xl">🎤</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-12">
+                                <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b pb-2">🎯 تحدي بناء الجمل</h2>
+                                <div className="bg-white p-6 rounded-xl shadow-md border-t-4 border-violet-500">
+                                    <ul className="space-y-6 german-text text-gray-800">
+                                        {prepData.map((item, i) => (
+                                            <li key={i}>
+                                                <div className="flex items-start gap-2 mb-2">
+                                                    <button onClick={() => speak(item.de.replace(/\[\.\.\.\.\.\.\.\.\.\.\.\.\]|▪|\(Präsens\)|\(Perfekt\)/g, ''))} className="speak-btn mt-1">🔊</button>
+                                                    <p className="font-semibold text-sm">{item.de}</p>
+                                                </div>
+                                                <div className="relative flex items-center bg-gray-50 border border-gray-200 rounded focus-within:ring-2 focus-within:ring-violet-400">
+                                                    <input value={responses[`t2_c_p_${i}`] || ''} onChange={(e) => handleInputChange(`t2_c_p_${i}`, e.target.value)} className="w-full bg-transparent p-2 outline-none" placeholder="Ihr Satz..." />
+                                                    <button onClick={() => dictate(`t2_c_p_${i}`)} className="mic-btn text-gray-400 hover:text-red-500 text-xl mr-2 ml-2">🎤</button>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="mt-12">
+                                <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b pb-2">🏆 تحدي المنتدى (80 كلمة)</h2>
+                                <div className="bg-white rounded-xl shadow-lg border-t-4 border-amber-500 overflow-hidden">
+                                    <div className="p-5 relative">
+                                        <textarea value={responses[`t2_c_f_1`] || ''} onChange={(e) => handleInputChange(`t2_c_f_1`, e.target.value)} className="german-text w-full h-48 bg-gray-50 border border-gray-300 rounded-lg p-4 pr-12 focus:ring-2 focus:ring-amber-400 outline-none resize-y" placeholder="Schreiben Sie hier Ihren Forenbeitrag..."></textarea>
+                                        <button onClick={() => dictate(`t2_c_f_1`)} className="mic-btn absolute right-8 top-8 text-gray-400 hover:text-red-500 text-2xl">🎤</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // ================= MAIN APP =================
+        const App = () => {
+            const [activeCategory, setActiveCategory] = useState('prepVerbs');
+
+            const categories = [
+                { id: 'prepVerbs', name: 'Verben mit Dativ/Akkusativ', desc: 'أفعال حروف الجر مع الحالات الإعرابية', count: prepVerbsData.length },
+                { id: 'wendungen', name: 'Wichtige Wendungen', desc: 'التعبيرات الثابتة والجمل (Chunks)', count: wendungenData.length },
+                { id: 'vocab', name: 'Alle Vokabeln (1-15)', desc: 'كل كلمات القطع وشرح الكتاب بالتفصيل', count: vocabData.length },
+                { id: 'conjugation', name: 'Zeitformen der Verben', desc: 'تصريفات الأفعال في كل الأزمنة', count: conjugationData.length },
+                { id: 'conversation', name: 'Interview: Freizeit', desc: 'تدريب المحادثة التفاعلي', count: rolePlaysData.length },
+                { id: 'schreiben', name: 'Schreiben: A2', desc: 'مساعد الكتابة والنطق للمستوى A2', count: 2 }
+            ];
+
+            return (
+                <div className="min-h-screen flex flex-col items-center p-6">
+                    
+                    {/* Header */}
+                    <header className="w-full max-w-6xl mb-8 text-center bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                        <h1 className="text-4xl font-extrabold text-slate-900 mb-4">German B1 Masterclass <span className="text-blue-600">Pro</span></h1>
+                        <p className="text-lg text-slate-600 font-medium mb-6" dir="rtl">تطبيق الـ Flashcards الشامل: درب نطقك واسمع الكلمات مع الترجمة بالمصري.</p>
+                        
+                        {/* Navigation Pills */}
+                        <div className="flex flex-wrap justify-center gap-4 mt-6" dir="rtl">
+                            {categories.map(cat => (
+                                <button 
+                                    key={cat.id}
+                                    onClick={() => setActiveCategory(cat.id)}
+                                    className={`flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200 ${activeCategory === cat.id ? 'bg-blue-50 border-blue-500 shadow-md transform scale-105' : 'bg-white border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}
+                                    style={{ width: '250px' }}
+                                >
+                                    <span className={`text-xl font-bold mb-1 ${activeCategory === cat.id ? 'text-blue-700' : 'text-slate-700'}`}>{cat.name}</span>
+                                    <span className="text-xs text-slate-500 text-center">{cat.desc}</span>
+                                    <span className={`mt-3 px-3 py-1 rounded-full text-xs font-bold ${activeCategory === cat.id ? 'bg-blue-200 text-blue-800' : 'bg-slate-100 text-slate-600'}`}>
+                                        {cat.count} كارت
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </header>
+
+                    {/* Main Content Area */}
+                    <div className="w-full max-w-6xl">
+                        
+                        {/* 1. Prepositional Verbs (Dativ/Akkusativ) */}
+                        {activeCategory === 'prepVerbs' && (
+                            <div className="animate-fade-in">
+                                <div className="mb-6 text-center" dir="rtl">
+                                    <h2 className="text-2xl font-bold text-slate-800">أفعال حروف الجر (Dativ و Akkusativ)</h2>
+                                    <p className="text-slate-500 mt-2">اقلب الكارت عشان تعرف الفعل بياخد أنهي حالة. <span className="text-red-500 font-bold">Akkusativ</span> ولا <span className="text-blue-500 font-bold">Dativ</span>؟</p>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-10">
+                                    {prepVerbsData.map((data, index) => (
+                                        <PrepCard key={index} data={data} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 1.5 Wendungen (Lexical Chunks) */}
+                        {activeCategory === 'wendungen' && (
+                            <div className="animate-fade-in">
+                                <div className="mb-6 text-center" dir="rtl">
+                                    <h2 className="text-2xl font-bold text-slate-800">التعبيرات والجمل الثابتة (Wendungen)</h2>
+                                    <p className="text-slate-500 mt-2">سر الطلاقة في الألماني إنك تحفظ التعبيرات دي على بعضها كـ (Chunk) بدل ما تترجم كلمة كلمة.</p>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-10">
+                                    {wendungenData.map((data, index) => (
+                                        <WendungCard key={index} data={data} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 2. All Vocabulary */}
+                        {activeCategory === 'vocab' && (
+                            <div className="animate-fade-in">
+                                <div className="mb-6 text-center" dir="rtl">
+                                    <h2 className="text-2xl font-bold text-slate-800">كلمات القطع بالكامل (بدون اختصار)</h2>
+                                    <p className="text-slate-500 mt-2">كل الكلمات المعقدة والمركبة من صفحة 9 لحد 26، مترجمة بالمصري.</p>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-10">
+                                    {vocabData.map((data, index) => (
+                                        <VocabCard key={index} data={data} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 3. Verb Conjugations */}
+                        {activeCategory === 'conjugation' && (
+                            <div className="animate-fade-in">
+                                <div className="mb-6 text-center" dir="rtl">
+                                    <h2 className="text-2xl font-bold text-slate-800">تصريفات الأفعال (Zeitformen)</h2>
+                                    <p className="text-slate-500 mt-2">درب نفسك على المضارع والماضي البسيط والماضي التام (Perfekt) للأفعال الشاذة والمنتظمة.</p>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-10">
+                                    {conjugationData.map((data, index) => (
+                                        <ConjugationCard key={index} data={data} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 4. Conversation Tab */}
+                        {activeCategory === 'conversation' && (
+                            <div className="animate-fade-in pb-10">
+                                <ConversationTab />
+                            </div>
+                        )}
+
+                        {/* 5. Schreiben Helfer Tab */}
+                        {activeCategory === 'schreiben' && (
+                            <div className="animate-fade-in pb-10">
+                                <SchreibenHelferTab />
+                            </div>
+                        )}
+
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
