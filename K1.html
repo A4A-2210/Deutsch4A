@@ -746,6 +746,7 @@
   
 
         const evaluateAnswer = async (question, userAnswer) => {
+            const apiKey = window.GEMINI_CONFIG.API_KEY; // بنادي عليه من الـ window;
            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
             const systemPrompt = `أنت مدرس لغة ألمانية محترف. سؤالك للمتدرب كان: "${question}". المتدرب أجاب: "${userAnswer}". قيم الإجابة وصححها إذا لزم الأمر حتى لو كانت خارج الإجابات المقترحة المهم أن تكون مفهومة ومنطقية ومناسبة للسؤال. رد بتنسيق JSON فقط يحتوي على: { "is_good": boolean, "feedback_ar": "تعليق تشجيعي قصير جدا بالمصري", "correction_de": "الإجابة الألمانية الصحيحة نحوياً إذا كانت إجابته بها أخطاء" }`;
 
