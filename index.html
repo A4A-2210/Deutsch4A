@@ -100,63 +100,115 @@
                 </span>
                 <span class="bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full text-emerald-400 text-sm font-bold">
                     <i class="fas fa-check-circle ml-2"></i> Pro Edition
-                </span>
+                <!-- Tabs Navigation -->
+        <div class="flex justify-center mb-12 animate-fade delay-1">
+            <div class="bg-slate-800/50 p-1.5 rounded-2xl flex gap-2 border border-slate-700/50 backdrop-blur-md">
+                <button id="showChapters" onclick="switchTab('chapters')" class="px-8 py-3 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20">
+                    <i class="fas fa-book"></i> الدروس
+                </button>
+                <button id="showGrammar" onclick="switchTab('grammar')" class="px-8 py-3 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-700/50">
+                    <i class="fas fa-graduation-cap"></i> القواعد
+                </button>
             </div>
-        </header>
-
-        <!-- Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            <!-- Chapter Cards Generated Dynamically for Cleanliness -->
-            <script>
-                const chapters = [
-                    { id: 1, title: "Guten Tag", desc: "Begrüßung, Alphabet, Zahlen", status: "ready" },
-                    { id: 2, title: "Erste Kontakte", desc: "Berufe, Länder, Sprachen", status: "pending" },
-                    { id: 3, title: "Im Deutschkurs", desc: "Gegenstände, Farben, Schule", status: "pending" },
-                    { id: 4, title: "Städte - Länder - Sprachen", desc: "Geografie, Sehenswürdigkeiten", status: "pending" },
-                    { id: 5, title: "Menschen und Häuser", desc: "Wohnen, Möbel, Haushalt", status: "pending" },
-                    { id: 6, title: "Termine", desc: "Uhrzeit, Wochentage, Freizeit", status: "pending" },
-                    { id: 7, title: "Essen und Trinken", desc: "Lebensmittel, Restaurant, Markt", status: "pending" },
-                    { id: 8, title: "Alltag", desc: "Tagesablauf, Arbeit, Routine", status: "pending" },
-                    { id: 9, title: "Reisen", desc: "Urlaub, Wetter, Verkehr", status: "pending" },
-                    { id: 10, title: "Kleidung und Mode", desc: "Farben, Kleidung, Aussehen", status: "pending" },
-                    { id: 11, title: "Gesundheit", desc: "Körper, Krankheit, Ratgeber", status: "pending" },
-                    { id: 12, title: "Wünsche und Träume", desc: "Zukunft, Vergangenheit, Pläne", status: "pending" }
-                ];
-
-                const container = document.currentScript.parentElement;
-                
-                chapters.forEach((ch, index) => {
-                    const card = document.createElement('a');
-                    card.href = `K${ch.id}.html`;
-                    card.className = `glass-card p-6 flex flex-col h-full animate-fade`;
-                    card.style.animationDelay = `${index * 0.05}s`;
-                    
-                    const statusHtml = ch.status === 'ready' 
-                        ? `<span class="text-xs font-bold text-emerald-600 flex items-center"><span class="status-dot bg-emerald-500"></span> جاهز</span>`
-                        : `<span class="text-xs font-bold text-slate-400 flex items-center"><span class="status-dot bg-slate-300"></span> قريباً</span>`;
-
-                    card.innerHTML = `
-                        <div class="flex justify-between items-start mb-6 w-full">
-                            <span class="chapter-number text-4xl">0${ch.id}</span>
-                            ${statusHtml}
-                        </div>
-                        <h2 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition-colors uppercase tracking-wide german-font">
-                            ${ch.title}
-                        </h2>
-                        <p class="text-slate-500 text-sm mb-6 flex-grow leading-relaxed">
-                            ${ch.desc}
-                        </p>
-                        <div class="mt-auto pt-4 border-t border-slate-200/50 flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Kapitel</span>
-                            <div class="w-8 h-8 rounded-full btn-fancy flex items-center justify-center text-white text-xs shadow-lg">
-                                <i class="fas fa-arrow-left"></i>
-                            </div>
-                        </div>
-                    `;
-                    document.write(card.outerHTML);
-                });
-            </script>
         </div>
+
+        <!-- Chapters View -->
+        <div id="chaptersView" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <!-- Chapter Cards Generated Dynamically -->
+        </div>
+
+        <!-- Grammar View (Hidden by default) -->
+        <div id="grammarView" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <!-- Grammar cards will go here -->
+            <a href="prepositions.html" class="glass-card p-6 flex flex-col h-full animate-fade">
+                <div class="flex justify-between items-start mb-6 w-full">
+                    <span class="chapter-number text-4xl">G1</span>
+                    <span class="text-xs font-bold text-emerald-600 flex items-center"><span class="status-dot bg-emerald-500"></span> جاهز</span>
+                </div>
+                <h2 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition-colors uppercase tracking-wide german-font">
+                    Prepositions 
+                </h2>
+                <p class="text-slate-500 text-sm mb-6 flex-grow leading-relaxed">
+                    Verben mit Präpositionen (Dativ & Akkusativ).
+                    تدريب على الأفعال والمجرور والمنصوب.
+                </p>
+                <div class="mt-auto pt-4 border-t border-slate-200/50 flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Grammatik</span>
+                    <div class="w-8 h-8 rounded-full btn-fancy flex items-center justify-center text-white text-xs shadow-lg">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <script>
+            const chapters = [
+                { id: 1, title: "Guten Tag", desc: "Begrüßung, Alphabet, Zahlen", status: "ready" },
+                { id: 2, title: "Erste Kontakte", desc: "Berufe, Länder, Sprachen", status: "pending" },
+                { id: 3, title: "Im Deutschkurs", desc: "Gegenstände, Farben, Schule", status: "pending" },
+                { id: 4, title: "Städte - Länder - Sprachen", desc: "Geografie, Sehenswürdigkeiten", status: "pending" },
+                { id: 5, title: "Menschen und Häuser", desc: "Wohnen, Möbel, Haushalt", status: "pending" },
+                { id: 6, title: "Termine", desc: "Uhrzeit, Wochentage, Freizeit", status: "pending" },
+                { id: 7, title: "Essen und Trinken", desc: "Lebensmittel, Restaurant, Markt", status: "pending" },
+                { id: 8, title: "Alltag", desc: "Tagesablauf, Arbeit, Routine", status: "pending" },
+                { id: 9, title: "Reisen", desc: "Urlaub, Wetter, Verkehr", status: "pending" },
+                { id: 10, title: "Kleidung und Mode", desc: "Farben, Kleidung, Aussehen", status: "pending" },
+                { id: 11, title: "Gesundheit", desc: "Körper, Krankheit, Ratgeber", status: "pending" },
+                { id: 12, title: "Wünsche und Träume", desc: "Zukunft, Vergangenheit, Pläne", status: "pending" }
+            ];
+
+            const chaptersView = document.getElementById('chaptersView');
+            
+            chapters.forEach((ch, index) => {
+                const card = document.createElement('a');
+                card.href = `K${ch.id}.html`;
+                card.className = `glass-card p-6 flex flex-col h-full animate-fade`;
+                card.style.animationDelay = `${index * 0.05}s`;
+                
+                const statusHtml = ch.status === 'ready' 
+                    ? `<span class="text-xs font-bold text-emerald-600 flex items-center"><span class="status-dot bg-emerald-500"></span> جاهز</span>`
+                    : `<span class="text-xs font-bold text-slate-400 flex items-center"><span class="status-dot bg-slate-300"></span> قريباً</span>`;
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-6 w-full">
+                        <span class="chapter-number text-4xl">${ch.id < 10 ? '0' + ch.id : ch.id}</span>
+                        ${statusHtml}
+                    </div>
+                    <h2 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition-colors uppercase tracking-wide german-font">
+                        ${ch.title}
+                    </h2>
+                    <p class="text-slate-500 text-sm mb-6 flex-grow leading-relaxed">
+                        ${ch.desc}
+                    </p>
+                    <div class="mt-auto pt-4 border-t border-slate-200/50 flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Kapitel ${ch.id}</span>
+                        <div class="w-8 h-8 rounded-full btn-fancy flex items-center justify-center text-white text-xs shadow-lg">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </div>
+                `;
+                chaptersView.appendChild(card);
+            });
+
+            function switchTab(tab) {
+                const chaptersView = document.getElementById('chaptersView');
+                const grammarView = document.getElementById('grammarView');
+                const showChapters = document.getElementById('showChapters');
+                const showGrammar = document.getElementById('showGrammar');
+
+                if (tab === 'chapters') {
+                    chaptersView.classList.remove('hidden');
+                    grammarView.classList.add('hidden');
+                    showChapters.className = "px-8 py-3 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20";
+                    showGrammar.className = "px-8 py-3 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-700/50";
+                } else {
+                    chaptersView.classList.add('hidden');
+                    grammarView.classList.remove('hidden');
+                    showChapters.className = "px-8 py-3 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-700/50";
+                    showGrammar.className = "px-8 py-3 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20";
+                }
+            }
+        </script>
 
         <!-- Footer -->
         <footer class="mt-20 text-center border-t border-slate-800 pt-10 pb-10">

@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تدريب المحادثة الألمانية - Essen und Essgewohnheiten</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="config.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f0f2f5; 
+        }
+        .pulse-animation {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .hidden { display: none !important; }
+        
+        /* شريط التمرير */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .translation-block {
+            font-size: 0.75rem;
+            line-height: 1.1rem;
+            opacity: 0.85;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        .user-translation-block {
+            border-top: 1px solid rgba(255,255,255,0.2);
+            color: #d1fae5;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased h-screen flex flex-col items-center py-6 px-4">
+
+    <!-- Dashboard View (Tabs + Menus) -->
+    <div id="dashboardView" class="w-full flex flex-col items-center">
+        
+        <!-- Global Header -->
+        <header class="max-w-4xl w-full bg-white rounded-2xl shadow-sm p-6 mb-4 text-center border-t-4 border-green-500">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2" dir="ltr">Kapitel 2</h1>
+            <p class="text-gray-600" dir="ltr">Wählen Sie ein Thema aus.</p>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <div class="max-w-4xl w-full flex border-b border-gray-300 mb-6 bg-white rounded-2xl shadow-sm overflow-hidden">
+            <button id="btn-tab-1" onclick="switchTab(1)" class="w-1/2 py-4 font-bold text-green-600 border-b-4 border-green-600 bg-green-50 transition flex items-center justify-center gap-2">
+                <i class="fas fa-utensils"></i> Essen und Essgewohnheiten
+            </button>
+            <button id="btn-tab-2" onclick="switchTab(2)" class="w-1/2 py-4 font-bold text-gray-500 border-b-4 border-transparent hover:text-green-600 hover:bg-green-50 transition flex items-center justify-center gap-2">
+                <i class="fas fa-graduation-cap"></i> E-Learning Portal
+            </button>
+        </div>
+
+        <!-- Message Box -->
+        <div id="messageBox" class="max-w-4xl w-full bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
+            <span class="block sm:inline" id="messageText"></span>
+            <span class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer" onclick="closeMessage()">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+
+        <!-- Tab 1 Content (Original Content) -->
+        <div id="tab1" class="w-full flex flex-col items-center">
+            <div class="max-w-4xl w-full bg-white rounded-2xl shadow-sm p-6 mb-6 text-center">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2" dir="ltr">Essen und Essgewohnheiten</h2>
+                <p class="text-gray-600 mb-4" dir="ltr">Interview: Fragen Sie Kursteilnehmer und notieren Sie die Antworten.</p>
+                <p class="text-sm text-gray-500 bg-gray-50 p-2 rounded border border-gray-100">
+                    اختر "استماع" لسماع محادثات كاملة، أو "تدريب تفاعلي" للتدرب على النطق بنفسك (مترجم بالمصري والإنجليزي).
+                </p>
+            </div>
+
+            <!-- Main Controls (Topics List) -->
+            <div id="mainControls" class="max-w-4xl w-full flex flex-col gap-5 mb-8">
+                
+                <!-- Topic 1 -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">1. مهارات الطبخ (Kochen)</h3>
+                        <i class="fas fa-kitchen-set text-orange-500 text-xl"></i>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button onclick="startRolePlay(0)" class="bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fas fa-headphones"></i> استماع للمحادثة
+                        </button>
+                        <button onclick="startInteractiveTraining(0)" class="bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fas fa-microphone-alt"></i> تدريب تفاعلي
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Topic 2 -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">2. عادات الأكل في ألمانيا (Experteninterview)</h3>
+                        <i class="fas fa-comments text-blue-500 text-xl"></i>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button onclick="startRolePlay(1)" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fas fa-headphones"></i> استماع للمحادثة
+                        </button>
+                        <button onclick="startInteractiveTraining(1)" class="bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fas fa-microphone-alt"></i> تدريب تفاعلي
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Topic 3 -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">3. عادات الأكل في بلدك (Im Heimatland)</h3>
+                        <i class="fas fa-earth-africa text-emerald-500 text-xl"></i>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button onclick="startRolePlay(2)" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fas fa-headphones"></i> استماع للمحادثة
+                        </button>
+                        <button onclick="startInteractiveTraining(2)" class="bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fas fa-microphone-alt"></i> تدريب تفاعلي
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Topic 4 -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">4. المطاعم (Restaurants)</h3>
+                        <i class="fas fa-utensils text-rose-500 text-xl"></i>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button onclick="startRolePlay(3)" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fas fa-headphones"></i> استماع للمحادثة
+                        </button>
+                        <button onclick="startInteractiveTraining(3)" class="bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fas fa-microphone-alt"></i> تدريب تفاعلي
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Tab 2 Content (Portal) -->
+        <div id="tab2" class="w-full hidden flex-col items-center bg-slate-50 text-slate-800 font-sans selection:bg-indigo-200" dir="ltr">
+            <div id="app-root" class="w-full max-w-5xl mx-auto"></div>
+        </div>
+
+    </div>
+
+    <!-- Chat Interface -->
+    <div id="chatInterface" class="hidden flex-col w-full max-w-4xl h-full max-h-[800px] bg-[#e5ddd5] rounded-2xl shadow-xl overflow-hidden border border-gray-300 relative">
+        
+        <!-- Chat Header -->
+        <div class="bg-gray-100 border-b border-gray-300 p-3 flex justify-between items-center z-10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white shadow">
+                    <i class="fas fa-robot text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-gray-800 text-lg leading-tight" id="chatTitle">المدرب الآلي</h2>
+                    <p id="chatStatusText" class="text-xs text-green-600 font-semibold">متصل...</p>
+                </div>
+            </div>
+            <button onclick="stopAll()" class="text-gray-500 hover:text-red-600 bg-white hover:bg-red-50 border border-gray-300 rounded-lg px-3 py-1.5 transition text-sm font-bold flex items-center gap-2 shadow-sm">
+                <i class="fas fa-sign-out-alt"></i> إنهاء المحادثة
+            </button>
+        </div>
+
+        <!-- Chat History -->
+        <div id="chatHistory" class="flex-1 overflow-y-auto p-4 space-y-4" dir="ltr" style="background-image: url('https://www.transparenttextures.com/patterns/cubes.png');">
+            <!-- Messages injected here via JS -->
+        </div>
+
+        <!-- Suggested Answers (Only for Interactive Mode) -->
+        <div id="suggestionsBox" class="bg-gray-50 border-t border-gray-200 p-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] hidden transition-all">
+            <p class="text-xs text-gray-500 mb-2 font-bold text-right" dir="rtl"><i class="fas fa-lightbulb text-yellow-500 ml-1"></i> إجابات مقترحة (اضغط للاستماع):</p>
+            <div id="suggestionsList" class="flex flex-col gap-2" dir="ltr">
+                <!-- Suggestions injected here -->
+            </div>
+        </div>
+
+        <!-- Controls & Mic Area -->
+        <div class="bg-gray-100 border-t border-gray-300 p-3 flex justify-between items-center" dir="rtl">
+            
+            <div id="micStatusIndicator" class="flex items-center gap-3 text-gray-500">
+                <div id="micIcon" class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white transition-colors">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <span id="micText" class="text-sm font-semibold">جاهز للبدء...</span>
+            </div>
+
+            <div class="flex gap-2">
+                <button id="retryBtn" onclick="retryListening()" class="hidden bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2.5 rounded-xl font-bold transition shadow flex items-center gap-2 text-sm">
+                    إعادة المحاولة <i class="fas fa-redo"></i>
+                </button>
+                <button id="nextBtn" onclick="nextAction()" class="hidden bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-xl font-bold transition shadow flex items-center gap-2">
+                    التالي <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Data: Role Plays (Listening Mode) ---
+        const rolePlaysData = [
+            {
+                title: "محادثة 1: مهارات الطبخ (Kochen)",
+                messages: [
+                    { role: 'bot', text: "Können Sie kochen? Wenn ja, was kochen Sie gern/oft?", en: "Can you cook? If so, what do you like to cook often?", ar: "بتعرف تطبخ؟ لو آه، بتحب تطبخ إيه كتير؟" },
+                    { role: 'user', text: "Ja, ich koche sehr gerne! Am liebsten mache ich Nudeln oder koche Suppe.", en: "Yes, I like cooking a lot! I prefer making pasta or cooking soup.", ar: "آه، بحب أطبخ جداً! أكتر حاجة بعملها مكرونة أو شوربة." },
+                    { role: 'bot', text: "Das klingt lecker. Essen Sie auch gern Fleisch oder Fisch dazu?", en: "That sounds delicious. Do you also like to eat meat or fish with it?", ar: "ده يبان لذيذ. بتحب تاكل لحمة أو سمك معاها؟" },
+                    { role: 'user', text: "Manchmal Fleisch, aber ich koche oft vegetarisch. Das ist sehr gesund.", en: "Sometimes meat, but I often cook vegetarian. That is very healthy.", ar: "أحياناً لحمة، بس أنا بطبخ نباتي كتير. ده صحي جداً." },
+                    { role: 'bot', text: "Wo und von wem haben Sie kochen gelernt?", en: "Where and from whom did you learn to cook?", ar: "فين ومن مين اتعلمت الطبخ؟" },
+                    { role: 'user', text: "Ich habe viel zu Hause von meiner Mutter gelernt. Sie ist eine tolle Köchin.", en: "I learned a lot at home from my mother. She is a great cook.", ar: "اتعلمت كتير في البيت من والدتي. هي طباخة ممتازة." },
+                    { role: 'bot', text: "Was ist das beste Gericht Ihrer Mutter?", en: "What is your mother's best dish?", ar: "إيه أحسن أكلة والدتك بتعملها؟" },
+                    { role: 'user', text: "Ihr Braten mit Kartoffeln und Soße ist einfach unglaublich.", en: "Her roast with potatoes and gravy is simply incredible.", ar: "اللحمة الروستو بتاعتها مع البطاطس والصوص بجد خرافية." },
+                    { role: 'bot', text: "Und für wen kochen Sie am häufigsten oder am liebsten?", en: "And who do you cook for most often or prefer to cook for?", ar: "ولمين بتطبخ في أغلب الأحيان أو أكتر حد بتحب تطبخله؟" },
+                    { role: 'user', text: "Meistens koche ich für meine Familie oder für meine Freunde, wenn sie zu Besuch kommen.", en: "Mostly I cook for my family or for my friends when they come to visit.", ar: "غالباً بطبخ لعيلتي أو لأصحابي لما بييجوا يزوروني." },
+                    { role: 'bot', text: "Was kochen Sie, wenn Sie viele Gäste haben?", en: "What do you cook when you have many guests?", ar: "بتطبخ إيه لما يكون عندك ضيوف كتير؟" },
+                    { role: 'user', text: "Ich mache oft einen großen Auflauf und einen frischen Salat. Das geht schnell.", en: "I often make a large casserole and a fresh salad. That is quick.", ar: "بعمل طاجن كبير وسلطة طازة. ده بيخلص بسرعة." },
+                    { role: 'bot', text: "Gehen Sie auch gerne auf den Markt, um frische Zutaten zu kaufen?", en: "Do you also like going to the market to buy fresh ingredients?", ar: "بتحب تنزل السوق تشتري مقادير طازة؟" },
+                    { role: 'user', text: "Ja, am Wochenende kaufe ich gerne frisches Gemüse und Obst auf dem Markt.", en: "Yes, on weekends I like to buy fresh vegetables and fruit at the market.", ar: "آه، في الويك إند بحب أشتري خضار وفاكهة طازة من السوق." },
+                    { role: 'bot', text: "Suchen Sie manchmal nach Kochrezepten im Internet?", en: "Do you sometimes look for recipes on the internet?", ar: "بتدور أحياناً على وصفات طبخ على النت؟" },
+                    { role: 'user', text: "Ja, sehr oft. Ich probiere gerne neue Ideen aus dem Internet aus.", en: "Yes, very often. I like trying out new ideas from the internet.", ar: "آه كتير جداً. بحب أجرب أفكار جديدة من النت." },
+                    { role: 'bot', text: "Haben Sie einen Lieblingskanal für Kochvideos?", en: "Do you have a favorite channel for cooking videos?", ar: "عندك قناة مفضلة لفيديوهات الطبخ؟" },
+                    { role: 'user', text: "Es gibt einen Kanal, der schnelle und einfache 15-Minuten-Rezepte zeigt. Den liebe ich.", en: "There is a channel that shows quick and easy 15-minute recipes. I love it.", ar: "فيه قناة بتعرض وصفات سريعة وسهلة في 15 دقيقة. بحبها جداً." },
+                    { role: 'bot', text: "Das ist praktisch! Kochen Sie wirklich jeden Tag frisch?", en: "That is practical! Do you really cook fresh every day?", ar: "ده عملي جداً! بتطبخ أكل طازة كل يوم بجد؟" },
+                    { role: 'user', text: "Fast jeden Tag, aber am Wochenende bestelle ich auch mal gerne eine Pizza zur Entspannung.", en: "Almost every day, but on weekends I also like to order a pizza to relax.", ar: "تقريباً كل يوم، بس في الويك إند بحب أحياناً أطلب بيتزا للراحة." }
+                ]
+            },
+            {
+                title: "محادثة 2: عادات الأكل في ألمانيا",
+                messages: [
+                    { role: 'bot', text: "Der neue Ernährungsreport zeigt, dass Ernährung und Essgewohnheiten sich in den letzten Jahrzehnten verändert haben. Woran liegt das?", en: "The new nutrition report shows that nutrition and eating habits have changed in recent decades. What is the reason for this?", ar: "تقرير التغذية الجديد بيوضح إن التغذية وعادات الأكل اتغيرت في العقود الأخيرة. إيه السبب؟" },
+                    { role: 'user', text: "Ich glaube, dass wir uns weniger bewegen als früher. Die Arbeitsbedingungen haben sich verändert: Wir arbeiten weniger körperlich und sitzen oft den ganzen Tag im Büro.", en: "I believe that we move less than before. Working conditions have changed: We do less physical work and often sit in the office all day.", ar: "أعتقد إننا بقينا نتحرك أقل من زمان. ظروف الشغل اتغيرت: مجهودنا البدني قل وغالباً بنقعد طول اليوم في المكتب." },
+                    { role: 'bot', text: "Bedeutet das, dass die Leute auch ungesünder essen?", en: "Does that mean that people also eat less healthily?", ar: "هل ده معناه إن الناس بتاكل أكل غير صحي برضه؟" },
+                    { role: 'user', text: "Ja, viele greifen schnell zu Fast Food oder Snacks am Schreibtisch.", en: "Yes, many quickly reach for fast food or snacks at their desk.", ar: "آه، كتير بيلجأوا بسرعة للفاست فود أو السناكس على المكتب." },
+                    { role: 'bot', text: "Haben wir noch genug Zeit zum Essen?", en: "Do we still have enough time to eat?", ar: "هل لسه عندنا وقت كفاية للأكل؟" },
+                    { role: 'user', text: "Nein, wir brauchen im Berufsleben eine flexible Zeitplanung. Viele essen nach dem Terminplan und nehmen sich zu wenig Zeit zum Essen.", en: "No, we need flexible time management in our professional lives. Many eat according to their schedule and take too little time to eat.", ar: "لأ، محتاجين مرونة في تنظيم الوقت في حياتنا العملية. كتير بياكلوا حسب جدول مواعيدهم ومابياخدوش وقت كفاية للأكل." },
+                    { role: 'bot', text: "Führt dieser Stress zu gesundheitlichen Problemen?", en: "Does this stress lead to health problems?", ar: "هل الضغط ده بيؤدي لمشاكل صحية؟" },
+                    { role: 'user', text: "Bestimmt. Viele Menschen haben Magenprobleme oder sind oft müde, weil die Ernährung schlecht ist.", en: "Definitely. Many people have stomach problems or are often tired because their diet is poor.", ar: "أكيد. ناس كتير بتعاني من مشاكل في المعدة أو دايماً تعبانين عشان أكلهم سيء." },
+                    { role: 'bot', text: "Was essen die Deutschen am liebsten?", en: "What do Germans like to eat most?", ar: "الألمان بيحبوا ياكلوا إيه أكتر حاجة؟" },
+                    { role: 'user', text: "Sie essen viel Fleisch und Nudeln, aber 20 Prozent der Deutschen essen am liebsten Gemüse.", en: "They eat a lot of meat and pasta, but 20 percent of Germans prefer to eat vegetables.", ar: "بياكلوا لحمة ومكرونة كتير، بس 20 في المية من الألمان بيفضلوا الخضار." },
+                    { role: 'bot', text: "Gibt es auch einen starken Trend zu veganem Essen?", en: "Is there also a strong trend towards vegan food?", ar: "هل فيه برضه توجه قوي للأكل النباتي الصرف (الفيجان)؟" },
+                    { role: 'user', text: "Ja, besonders in großen Städten gibt es heute viele vegane Restaurants und Produkte im Supermarkt.", en: "Yes, especially in large cities there are many vegan restaurants and products in the supermarket today.", ar: "آه، بالذات في المدن الكبيرة فيه مطاعم ومنتجات فيجان كتير في السوبر ماركت اليومين دول." },
+                    { role: 'bot', text: "Kann man sagen, dass die traditionellen Essgewohnheiten in Deutschland nicht mehr existieren?", en: "Can we say that traditional eating habits in Germany no longer exist?", ar: "نقدر نقول إن عادات الأكل التقليدية في ألمانيا مبقتش موجودة؟" },
+                    { role: 'user', text: "Nein, denn es gibt immer noch drei Hauptmahlzeiten: Frühstück, Mittagessen und Abendbrot.", en: "No, because there are still three main meals: breakfast, lunch, and dinner.", ar: "لأ، لسه فيه تلات وجبات رئيسية: الفطار، الغدا، والعشا." },
+                    { role: 'bot', text: "Was isst man genau zu diesen Mahlzeiten?", en: "What exactly does one eat for these meals?", ar: "الناس بتاكل إيه بالظبط في الوجبات دي؟" },
+                    { role: 'user', text: "Zum Frühstück gibt es Brot oder Brötchen und Kaffee. Mittags ein warmes Essen, oft in der Kantine. Und abends eine kalte Mahlzeit, meist belegtes Brot.", en: "For breakfast there is bread or rolls and coffee. At noon a warm meal, often in the canteen. And in the evening a cold meal, mostly sandwiches.", ar: "على الفطار فيه عيش أو كايزر وقهوة. في الغدا أكل سخن غالباً في الكانتين. وبالليل وجبة باردة، غالباً ساندويتشات." },
+                    { role: 'bot', text: "Ist das kalte Abendbrot heute immer noch so beliebt?", en: "Is the cold dinner still as popular today?", ar: "هل العشا البارد ده لسه محبوب لحد دلوقتي؟" },
+                    { role: 'user', text: "Ja, sehr. Man isst Brot mit Käse, Wurst und vielleicht ein paar Tomaten. Es ist einfach und schnell.", en: "Yes, very much. One eats bread with cheese, sausage and maybe a few tomatoes. It is simple and quick.", ar: "آه جداً. الناس بتاكل عيش بجبنة ولانشون وممكن شوية طماطم. ده سهل وسريع." },
+                    { role: 'bot', text: "Trinken die Leute auch abends noch viel Kaffee?", en: "Do people still drink a lot of coffee in the evening?", ar: "الناس لسه بتشرب قهوة كتير بالليل؟" },
+                    { role: 'user', text: "Morgens ja, sehr viel Kaffee. Aber abends trinken viele lieber Tee, Wasser oder ein Feierabendbier.", en: "In the morning yes, a lot of coffee. But in the evening many prefer to drink tea, water or an after-work beer.", ar: "الصبح آه قهوة كتير. بس بالليل كتير بيفضلوا شاي، مياه، أو بيرة بعد الشغل." }
+                ]
+            },
+            {
+                title: "محادثة 3: عادات الأكل في بلدك",
+                messages: [
+                    { role: 'bot', text: "Welche Hauptmahlzeiten gibt es in Ihrem Heimatland? Was isst/trinkt man früh, mittags, abends?", en: "Which main meals are there in your home country? What does one eat/drink early, at noon, in the evening?", ar: "إيه الوجبات الرئيسية في بلدك؟ الناس بتاكل/تشرب إيه الصبح، والضهر، وبالليل؟" },
+                    { role: 'user', text: "Wir essen früh Käse, Eier, Brot und trinken Tee. Mittags gibt es ein warmes Essen, oft Reis mit Fleisch oder Huhn. Abends essen wir etwas Leichtes.", en: "We eat cheese, eggs, bread early and drink tea. At noon there is a warm meal, often rice with meat or chicken. In the evening we eat something light.", ar: "بناكل جبنة وبيض وعيش الصبح ونشرب شاي. الضهر فيه أكل سخن غالباً رز بلحمة أو فراخ. وبالليل بناكل حاجة خفيفة." },
+                    { role: 'bot', text: "Was sind typische Gewürze, die Sie beim Kochen verwenden?", en: "What are typical spices that you use when cooking?", ar: "إيه التوابل المميزة اللي بتستخدموها في الطبخ؟" },
+                    { role: 'user', text: "Wir benutzen viel Kreuzkümmel, Koriander, Knoblauch und schwarzen Pfeffer. Das macht das Essen sehr lecker.", en: "We use a lot of cumin, coriander, garlic and black pepper. That makes the food very delicious.", ar: "بنستخدم كمون كتير وكزبرة وتوم وفلفل أسود. ده بيخلي الأكل لذيذ جداً." },
+                    { role: 'bot', text: "Das klingt sehr aromatisch! Wer kocht normalerweise in der Familie?", en: "That sounds very aromatic! Who normally cooks in the family?", ar: "ده باين عليه مليان نكهات! مين عادة بيطبخ في العيلة؟" },
+                    { role: 'user', text: "Meistens kocht die Mutter, aber heutzutage lernen auch viele junge Männer und Studenten das Kochen.", en: "Mostly the mother cooks, but nowadays many young men and students are also learning to cook.", ar: "في الغالب الأم اللي بتطبخ، بس اليومين دول شباب كتير وطلاب بيتعلموا الطبخ برضه." },
+                    { role: 'bot', text: "Gab es in den letzten Jahren Veränderungen der Essgewohnheiten in Ihrem Umfeld?", en: "Have there been changes in eating habits in your environment in recent years?", ar: "هل حصل تغييرات في عادات الأكل في محيطك السنين اللي فاتت؟" },
+                    { role: 'user', text: "Ja. Meiner Meinung nach ist die Aussage richtig, dass sich viel verändert hat. Fast Food liegt im Moment extrem im Trend.", en: "Yes. In my opinion, the statement is correct that much has changed. Fast food is currently extremely trendy.", ar: "آه. في رأيي المقولة صحيحة إن حاجات كتير اتغيرت. الفاست فود طالع موضة جداً دلوقتي." },
+                    { role: 'bot', text: "Warum ist Fast Food bei jungen Leuten so beliebt geworden?", en: "Why has fast food become so popular among young people?", ar: "ليه الفاست فود بقى مشهور أوي بين الشباب؟" },
+                    { role: 'user', text: "Es ist schnell, bequem und man kann es überall kaufen. Außerdem haben viele weniger Zeit zum Kochen.", en: "It is fast, convenient and you can buy it everywhere. Furthermore, many have less time to cook.", ar: "عشان سريع ومريح وممكن تشتريه من أي حتة. غير إن كتير معندهمش وقت يطبخوا." },
+                    { role: 'bot', text: "Welche Bedeutung haben gemeinsame Mahlzeiten? Wie viel Zeit verbringen die Menschen mit Kochen und Essen?", en: "What is the significance of shared meals? How much time do people spend cooking and eating?", ar: "إيه أهمية أكل العيلة مع بعض؟ الناس بتقضي وقت قد إيه في الطبخ والأكل؟" },
+                    { role: 'user', text: "Gemeinsame Mahlzeiten haben eine große Bedeutung. Früher haben die Menschen viel Zeit verbracht, aber heute verbringen sie weniger Zeit mit Kochen und Essen.", en: "Shared meals have a great significance. In the past, people spent a lot of time, but today they spend less time cooking and eating.", ar: "أكل العيلة مع بعض له أهمية كبيرة. زمان الناس كانت بتقضي وقت طويل، بس دلوقتي بيقضوا وقت أقل في الطبخ والأكل." },
+                    { role: 'bot', text: "Gibt es besondere Feste oder Feiertage, wo das Essen im Mittelpunkt steht?", en: "Are there special festivals or holidays where food is the main focus?", ar: "فيه أعياد أو مناسبات معينة بيكون الأكل هو محورها الأساسي؟" },
+                    { role: 'user', text: "Oh ja, an Feiertagen gibt es riesige Festessen mit der ganzen Großfamilie und viele traditionelle Süßigkeiten.", en: "Oh yes, on holidays there are huge feasts with the whole extended family and many traditional sweets.", ar: "أوه آه، في الأعياد بيبقى فيه ولائم ضخمة مع كل العيلة الكبيرة وحلويات تقليدية كتير." },
+                    { role: 'bot', text: "Essen die Leute dann auch auf der Straße oder eher im Restaurant?", en: "Do people then also eat on the street or rather in a restaurant?", ar: "الناس ساعتها بياكلوا في الشارع ولا في مطاعم أكتر؟" },
+                    { role: 'user', text: "Zu Festen isst man lieber zu Hause, aber Streetfood ist im Alltag auch sehr beliebt und günstig.", en: "For festivals people prefer to eat at home, but street food is also very popular and cheap in everyday life.", ar: "في الأعياد الناس بتفضل تاكل في البيت، بس أكل الشارع مشهور جداً ورخيص في الأيام العادية." },
+                    { role: 'bot', text: "Trinken Sie auch spezielle traditionelle Getränke?", en: "Do you also drink special traditional drinks?", ar: "بتشربوا مشروبات تقليدية مميزة برضه؟" },
+                    { role: 'user', text: "Ja, wir trinken frische Fruchtsäfte und natürlich sehr viel schwarzen Tee mit Minze nach dem Essen.", en: "Yes, we drink fresh fruit juices and of course a lot of black tea with mint after the meal.", ar: "آه، بنشرب عصاير فريش وطبعاً شاي أسود بالنعناع كتير بعد الأكل." },
+                    { role: 'bot', text: "Das hört sich nach einer sehr geselligen und leckeren Kultur an!", en: "That sounds like a very sociable and delicious culture!", ar: "ده يبان إنه ثقافة اجتماعية جداً ولذيذة!" },
+                    { role: 'user', text: "Das stimmt absolut. Essen ist bei uns nicht nur Nahrung, sondern bringt die Menschen zusammen.", en: "That is absolutely true. For us, food is not just nourishment, but brings people together.", ar: "ده صح مية في المية. الأكل عندنا مش مجرد غذاء، ده بيجمع الناس مع بعض." }
+                ]
+            },
+            {
+                title: "محادثة 4: المطاعم",
+                messages: [
+                    { role: 'bot', text: "Essen Sie gern oder oft in Restaurants? Wenn ja, in welchen?", en: "Do you like to or often eat in restaurants? If so, in which ones?", ar: "بتحب تاكل كتير في مطاعم؟ لو آه، في مطاعم إيه؟" },
+                    { role: 'user', text: "Ja, sehr gerne. Ich gehe oft in Pizzerien, weil ich die italienische Küche mag.", en: "Yes, very much. I often go to pizzerias because I like Italian cuisine.", ar: "آه، جداً. بروح كتير مطاعم بيتزا لأني بحب المطبخ الإيطالي." },
+                    { role: 'bot', text: "Was bestellen Sie dort am liebsten? Immer das Gleiche?", en: "What is your favorite thing to order there? Always the same?", ar: "بتطلب إيه أكتر حاجة هناك؟ دايماً نفس الحاجة؟" },
+                    { role: 'user', text: "Ich bestelle oft eine Pizza Margherita oder frische Spaghetti Bolognese. Das schmeckt immer.", en: "I often order a Pizza Margherita or fresh Spaghetti Bolognese. It always tastes good.", ar: "غالباً بطلب بيتزا مارجريتا أو سباجيتي بولونيز فريش. طعمهم دايماً حلو." },
+                    { role: 'bot', text: "Welches Restaurant würden Sie gerne besuchen? Begründen Sie kurz Ihre Meinung.", en: "Which restaurant would you like to visit? Briefly justify your opinion.", ar: "إيه المطعم اللي نفسك تزوره؟ برر رأيك باختصار." },
+                    { role: 'user', text: "Ich würde gerne ins Restaurant Hiltl gehen, um dort das berühmte vegetarische Buffet zu probieren.", en: "I would like to go to Restaurant Hiltl to try the famous vegetarian buffet there.", ar: "نفسي أروح مطعم 'هيلتل' عشان أجرب البوفيه النباتي المشهور هناك." },
+                    { role: 'bot', text: "Essen Sie oft vegetarisch, oder ist das eine Ausnahme?", en: "Do you often eat vegetarian, or is that an exception?", ar: "أنت بتاكل نباتي كتير، ولا دي حالة استثنائية؟" },
+                    { role: 'user', text: "Ich versuche, zwei bis drei Mal pro Woche kein Fleisch zu essen. Das tut mir gut.", en: "I try not to eat meat two to three times a week. That is good for me.", ar: "بحاول ما اكلش لحمة مرتين لتلاتة في الأسبوع. ده بيريحني." },
+                    { role: 'bot', text: "Gibt es noch ein anderes, das Sie interessant finden?", en: "Is there another one that you find interesting?", ar: "في مطعم تاني شايفه ممتع/مثير للاهتمام؟" },
+                    { role: 'user', text: "Ja, ich finde das Café Central besonders interessant, weil es eine so lange Geschichte hat.", en: "Yes, I find Café Central particularly interesting because it has such a long history.", ar: "آه، شايف 'كافيه سنترال' ممتع بشكل خاص، عشان تاريخه طويل جداً." },
+                    { role: 'bot', text: "Was würden Sie im Café Central am liebsten machen?", en: "What would you like to do most in Café Central?", ar: "إيه أكتر حاجة تحب تعملها في كافيه سنترال؟" },
+                    { role: 'user', text: "Ich würde einen schönen Kaffee trinken und ein großes Stück Kuchen in dieser tollen Atmosphäre essen.", en: "I would drink a nice coffee and eat a large piece of cake in this great atmosphere.", ar: "هشرب قهوة حلوة وهاكل حتة كيكة كبيرة في الجو الرائع ده." },
+                    { role: 'bot', text: "Und was wäre Ihre absolute Traum-Wahl für ein besonderes Essen?", en: "And what would be your absolute dream choice for a special meal?", ar: "وإيه هيكون اختيارك الحلم لأكلة مميزة؟" },
+                    { role: 'user', text: "Meine erste Wahl ist das höchste Restaurant der Schweiz, denn die Aussicht dort muss fantastisch sein!", en: "My first choice is the highest restaurant in Switzerland, because the view there must be fantastic!", ar: "خياري الأول هو 'أعلى مطعم في سويسرا'، لأن المنظر هناك أكيد هيكون خيالي!" },
+                    { role: 'bot', text: "Ist so ein Besuch nicht sehr teuer?", en: "Isn't such a visit very expensive?", ar: "أكيد زيارة زي دي غالية جداً؟" },
+                    { role: 'user', text: "Wahrscheinlich ja. Das wäre nur etwas für einen ganz besonderen Anlass, wie einen Geburtstag.", en: "Probably yes. That would only be something for a very special occasion, like a birthday.", ar: "غالباً آه. دي هتبقى حاجة لمناسبة خاصة جداً بس، زي عيد ميلاد." },
+                    { role: 'bot', text: "Geben Sie normalerweise viel Trinkgeld, wenn der Service gut ist?", en: "Do you usually leave a lot of tip if the service is good?", ar: "عادة بتسيب بقشيش (تبس) كتير لو الخدمة كانت كويسة؟" },
+                    { role: 'user', text: "Ja, in der Regel gebe ich etwa zehn Prozent Trinkgeld, wenn das Essen gut geschmeckt hat.", en: "Yes, I usually give about a ten percent tip if the food tasted good.", ar: "آه، في العادي بسيب حوالي عشرة في المية بقشيش لو الأكل عجبني." },
+                    { role: 'bot', text: "Gehen Sie lieber mittags oder abends ins Restaurant?", en: "Do you prefer to go to a restaurant at noon or in the evening?", ar: "بتفضل تروح المطعم الضهر ولا بالليل؟" },
+                    { role: 'user', text: "Abends, weil die Atmosphäre dann ruhiger ist und man viel mehr Zeit für das Essen hat.", en: "In the evening, because the atmosphere is calmer then and you have much more time for the food.", ar: "بالليل، عشان الجو بيكون أهدى والواحد بياخد وقته أكتر في الأكل." }
+                ]
+            }
+        ];
+
+        // --- Data: Interactive Training (Grouped by Topic) ---
+        const interactiveSessionsData = [
+            // Topic 0: Kochen
+            [
+                {
+                    q: "Von wem haben Sie kochen gelernt?", en: "Who did you learn to cook from?", ar: "اتعلمت الطبخ من مين؟",
+                    answers: [
+                        { text: "Ich habe das Kochen von meiner Mutter gelernt.", en: "I learned cooking from my mother.", ar: "اتعلمت الطبخ من والدتي." },
+                        { text: "Ich habe es mir selbst mit Videos aus dem Internet beigebracht.", en: "I taught myself using videos from the internet.", ar: "علمت نفسي بنفسي من فيديوهات ع النت." }
+                    ]
+                },
+                {
+                    q: "Für wen kochen Sie am häufigsten oder am liebsten?", en: "Who do you cook for most often or prefer to cook for?", ar: "ولمين بتطبخ كتير أو أكتر حد بتحب تطبخله؟",
+                    answers: [
+                        { text: "Meistens koche ich für meine Familie.", en: "Mostly I cook for my family.", ar: "غالباً بطبخ لعيلتي." },
+                        { text: "Am liebsten koche ich für meine Freunde.", en: "I prefer to cook for my friends.", ar: "أكتر حاجة بحب أطبخ لأصحابي." }
+                    ]
+                },
+                {
+                    q: "Suchen Sie manchmal nach Kochrezepten im Internet?", en: "Do you sometimes look for recipes on the internet?", ar: "بتدور أحياناً على وصفات طبخ على النت؟",
+                    answers: [
+                        { text: "Ja, sehr oft! Man findet dort immer neue Ideen.", en: "Yes, very often! You always find new ideas there.", ar: "آه كتير! الواحد دايماً بيلاقي أفكار جديدة هناك." },
+                        { text: "Nein, ich habe ein altes Kochbuch von meiner Oma.", en: "No, I have an old cookbook from my grandma.", ar: "لأ، عندي كتاب طبخ قديم بتاع جدتي." }
+                    ]
+                }
+            ],
+            // Topic 1: Experteninterview
+            [
+                {
+                    q: "Haben wir genug Zeit zum Essen im Berufsleben?", en: "Do we have enough time to eat in our professional lives?", ar: "هل عندنا وقت كفاية للأكل في الحياة العملية؟",
+                    answers: [
+                        { text: "Nein, viele essen nach dem Terminplan.", en: "No, many eat according to their schedule.", ar: "لأ، ناس كتير بتاكل حسب جدول المواعيد." },
+                        { text: "Wir brauchen eine flexible Zeitplanung.", en: "We need flexible time management.", ar: "إحنا محتاجين مرونة في تنظيم الوقت." }
+                    ]
+                },
+                {
+                    q: "Was essen die Deutschen traditionell zum Frühstück und mittags?", en: "What do Germans traditionally eat for breakfast and at noon?", ar: "الألمان بياكلوا إيه تقليدياً في الفطار وفي الضهر؟",
+                    answers: [
+                        { text: "Zum Frühstück Brot oder Brötchen und Kaffee.", en: "For breakfast bread or rolls and coffee.", ar: "على الفطار عيش أو كايزر وقهوة." },
+                        { text: "Mittags ein warmes Essen, oft in der Kantine.", en: "At noon a warm meal, often in the canteen.", ar: "في الضهر أكل سخن، غالباً في الكانتين." }
+                    ]
+                },
+                {
+                    q: "Und was gibt es abends?", en: "And what is there in the evening?", ar: "وبالليل فيه إيه؟",
+                    answers: [
+                        { text: "Abends eine kalte Mahlzeit, meist belegtes Brot.", en: "In the evening a cold meal, mostly sandwiches.", ar: "بالليل وجبة باردة، غالباً ساندويتشات." },
+                        { text: "Meiner Meinung nach ist diese Aussage richtig.", en: "In my opinion, this statement is correct.", ar: "في رأيي المقولة دي صحيحة." }
+                    ]
+                },
+                {
+                    q: "Bewegen wir uns heute mehr oder weniger als früher?", en: "Do we move more or less today than in the past?", ar: "إحنا بنتحرك دلوقتي أكتر ولا أقل من زمان؟",
+                    answers: [
+                        { text: "Ich habe das Gefühl, dass wir uns weniger bewegen.", en: "I have the feeling that we move less.", ar: "عندي إحساس إننا بنتحرك أقل." },
+                        { text: "Wir arbeiten weniger körperlich im Büro.", en: "We do less physical work in the office.", ar: "مجهودنا البدني في المكتب بقى أقل." }
+                    ]
+                }
+            ],
+            // Topic 2: Heimatland
+            [
+                {
+                    q: "Was isst und trinkt man in Ihrem Heimatland früh, mittags und abends?", en: "What does one eat and drink in your home country early, at noon and in the evening?", ar: "الناس بتاكل وتشرب إيه في بلدك الصبح، والضهر، وبالليل؟",
+                    answers: [
+                        { text: "Mittags essen wir warm, oft Reis mit Fleisch.", en: "At noon we eat a warm meal, often rice with meat.", ar: "الضهر بناكل أكل سخن، غالباً رز ولحمة." },
+                        { text: "Früh trinken wir meistens nur Kaffee oder Tee.", en: "Early we mostly just drink coffee or tea.", ar: "الصبح بنشرب غالباً قهوة أو شاي بس." }
+                    ]
+                },
+                {
+                    q: "Was liegt im Moment bei den Essgewohnheiten im Trend?", en: "What is currently trending in eating habits?", ar: "إيه اللي طالع موضة دلوقتي في عادات الأكل؟",
+                    answers: [
+                        { text: "Fast Food liegt bei jungen Leuten im Trend.", en: "Fast food is trending among young people.", ar: "الفاست فود طالع موضة بين الشباب." },
+                        { text: "Ich weiß aus Erfahrung, dass viele gesund essen wollen.", en: "I know from experience that many want to eat healthy.", ar: "أعرف من واقع التجربة إن كتير عايزين ياكلوا أكل صحي." }
+                    ]
+                },
+                {
+                    q: "Wie viel Zeit verbringen die Menschen mit Kochen und Essen?", en: "How much time do people spend cooking and eating?", ar: "الناس بتقضي وقت قد إيه في الطبخ والأكل؟",
+                    answers: [
+                        { text: "Heute verbringen sie leider weniger Zeit damit.", en: "Today they unfortunately spend less time on it.", ar: "للأسف دلوقتي بيقضوا وقت أقل في ده." },
+                        { text: "Die Familien nehmen sich am Wochenende viel Zeit.", en: "Families take a lot of time on the weekend.", ar: "العائلات بتاخد وقت طويل في الويك إند." }
+                    ]
+                }
+            ],
+            // Topic 3: Restaurants
+            [
+                {
+                    q: "Essen Sie gern oder oft in Restaurants?", en: "Do you like to or often eat in restaurants?", ar: "بتحب أو بتروح تاكل في مطاعم كتير؟",
+                    answers: [
+                        { text: "Ja, ich esse sehr gern im Restaurant.", en: "Yes, I really like eating in a restaurant.", ar: "آه، بحب جداً أكل في المطعم." },
+                        { text: "Nein, ich koche lieber zu Hause.", en: "No, I prefer to cook at home.", ar: "لأ، بفضل أطبخ في البيت." }
+                    ]
+                },
+                {
+                    q: "Welches Restaurant würden Sie gerne mal besuchen?", en: "Which restaurant would you like to visit sometime?", ar: "نفسك تزور مطعم إيه؟",
+                    answers: [
+                        { text: "Ich würde gerne ins Restaurant Hiltl gehen, um gut zu essen.", en: "I would like to go to Restaurant Hiltl to eat well.", ar: "نفسي أروح مطعم 'هيلتل' عشان أكل كويس." },
+                        { text: "Meine erste Wahl ist das höchste Restaurant der Schweiz.", en: "My first choice is the highest restaurant in Switzerland.", ar: "خياري الأول هو 'أعلى مطعم في سويسرا'." }
+                    ]
+                },
+                {
+                    q: "Warum finden Sie dieses Restaurant interessant?", en: "Why do you find this restaurant interesting?", ar: "ليه شايف إن المطعم ده ممتع؟",
+                    answers: [
+                        { text: "Ich finde das Café Central besonders interessant, weil es alt ist.", en: "I find Café Central particularly interesting because it is old.", ar: "شايف 'كافيه سنترال' ممتع بشكل خاص لأنه قديم." },
+                        { text: "Meine Wahl ist dieses Restaurant, denn die Aussicht ist toll.", en: "My choice is this restaurant, because the view is great.", ar: "اختياري المطعم ده، لأن المنظر هناك روعة." }
+                    ]
+                }
+            ]
+        ];
+
+        let currentMode = ''; 
+        let currentTopicIndex = 0;
+        let currentIndex = 0;
+        let currentUserBubbleId = null;
+        let currentEvalBubbleId = null;
+        let isPlaying = false;
+        let silenceTimer = null; 
+        
+        const apiKey = GEMINI_API_KEY; // API Key for AI validation (Injected by environment)
+        
+        // Speech API initialization
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'de-DE'; 
+            recognition.interimResults = true; 
+            recognition.continuous = true; 
+        }
+
+        // Variable for Portal's isolated recognition to prevent conflicts
+        let portalRecognition = null;
+
+        // --- Utility Functions ---
+
+        function showMessage(msg) {
+            document.getElementById('messageText').innerText = msg;
+            document.getElementById('messageBox').classList.remove('hidden');
+        }
+
+        function closeMessage() {
+            document.getElementById('messageBox').classList.add('hidden');
+        }
+
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+        function scrollToBottom() {
+            const history = document.getElementById('chatHistory');
+            history.scrollTop = history.scrollHeight;
+        }
+
+        // --- TTS Engine ---
+        if (typeof window.speechSynthesis !== 'undefined') {
+            window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        }
+
+        function speak(text, pitch = 1) {
+            return new Promise((resolve) => {
+                window.speechSynthesis.cancel(); 
+                
+                setTimeout(() => {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'de-DE';
+                    utterance.rate = 0.9; 
+                    utterance.pitch = pitch;
+                    
+                    const voices = window.speechSynthesis.getVoices();
+                    const deVoice = voices.find(v => v.lang === 'de-DE' || v.lang === 'de_DE');
+                    if (deVoice) utterance.voice = deVoice;
+                    
+                    utterance.onend = () => resolve();
+                    utterance.onerror = () => resolve(); 
+                    
+                    window.speechSynthesis.speak(utterance);
+                }, 100); 
+            });
+        }
+
+        // --- Chat UI Functions ---
+
+        function setMicState(state) {
+            const micIcon = document.getElementById('micIcon');
+            const micText = document.getElementById('micText');
+            const statusText = document.getElementById('chatStatusText');
+            
+            micIcon.className = "w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors ";
+            
+            if(state === 'idle') {
+                micIcon.className += "bg-gray-300";
+                micText.innerText = "جاهز";
+                statusText.innerText = "متصل";
+                statusText.className = "text-xs text-green-600 font-semibold";
+            } else if(state === 'speaking_bot') {
+                micIcon.className += "bg-blue-400";
+                micText.innerText = "المدرب يتحدث...";
+                statusText.innerText = "يكتب/يتحدث...";
+                statusText.className = "text-xs text-blue-600 font-semibold";
+            } else if(state === 'speaking_user') {
+                micIcon.className += "bg-green-400";
+                micText.innerText = "المُتدرب (محاكاة) يتحدث...";
+                statusText.innerText = "استماع للمحاكاة...";
+                statusText.className = "text-xs text-gray-600 font-semibold";
+            } else if(state === 'listening') {
+                micIcon.className += "bg-red-500 pulse-animation";
+                micText.innerText = "جاري الاستماع... (تحدث الآن)";
+                statusText.innerText = "في انتظار إجابتك...";
+                statusText.className = "text-xs text-orange-500 font-semibold";
+            }
+        }
+
+        function addBotMessage(text, en, ar, id = null) {
+            const history = document.getElementById('chatHistory');
+            const elementId = id ? `id="${id}"` : '';
+            const msgHtml = `
+                <div ${elementId} class="flex w-full mt-2 space-x-3 max-w-[90%] md:max-w-[75%]">
+                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center shadow-sm mt-1">
+                        <i class="fas fa-robot text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="bg-white p-3.5 rounded-r-xl rounded-bl-xl shadow-sm border border-gray-100 relative">
+                            <div class="absolute w-3 h-3 bg-white border-l border-t border-gray-100 transform -rotate-45 top-3 -left-1.5"></div>
+                            <div class="bot-msg-content">
+                                <p class="text-md font-medium text-gray-800 leading-relaxed font-sans">${text}</p>
+                                ${en && ar ? `
+                                <div class="translation-block text-gray-500">
+                                    <p dir="ltr" class="italic">${en}</p>
+                                    <p dir="rtl" class="text-gray-600 font-medium mt-1">"${ar}"</p>
+                                </div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            history.insertAdjacentHTML('beforeend', msgHtml);
+            scrollToBottom();
+        }
+
+        function updateBotMessage(id, newText) {
+            const bubble = document.getElementById(id);
+            if (bubble) {
+                bubble.querySelector('.bot-msg-content').innerHTML = `<p class="text-md font-medium text-gray-800 leading-relaxed font-sans">${newText}</p>`;
+                scrollToBottom();
+            }
+        }
+
+        function addSimulatedUserMessage(text, en, ar) {
+            const history = document.getElementById('chatHistory');
+            const msgHtml = `
+                <div class="flex w-full mt-4 space-x-3 max-w-[90%] md:max-w-[75%] ml-auto justify-end">
+                    <div>
+                        <div class="bg-[#005c4b] p-3.5 rounded-l-xl rounded-br-xl shadow-sm relative">
+                            <div class="absolute w-3 h-3 bg-[#005c4b] transform -rotate-45 top-3 -right-1.5"></div>
+                            <p class="text-md font-medium text-white leading-relaxed font-sans">${text}</p>
+                            ${en && ar ? `
+                            <div class="translation-block user-translation-block">
+                                <p dir="ltr" class="italic opacity-80">${en}</p>
+                                <p dir="rtl" class="font-medium mt-1 opacity-90">"${ar}"</p>
+                            </div>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-gray-400 flex items-center justify-center shadow-sm mt-1">
+                        <i class="fas fa-user-friends text-white text-sm"></i>
+                    </div>
+                </div>
+            `;
+            history.insertAdjacentHTML('beforeend', msgHtml);
+            scrollToBottom();
+        }
+
+        function addUserMessageBubble(id, text, isInterim = false) {
+            const history = document.getElementById('chatHistory');
+            let bubble = document.getElementById(id);
+            
+            const contentHtml = `
+                <p class="text-md font-medium leading-relaxed font-sans ${isInterim ? 'text-green-100 italic' : 'text-white'}">
+                    ${text || '<i class="fas fa-ellipsis-h pulse-animation"></i>'}
+                </p>
+            `;
+
+            if (!bubble) {
+                const msgHtml = `
+                    <div id="${id}" class="flex w-full mt-4 space-x-3 max-w-[90%] md:max-w-[75%] ml-auto justify-end">
+                        <div>
+                            <div class="bg-[#005c4b] p-3.5 rounded-l-xl rounded-br-xl shadow-sm relative">
+                                <div class="absolute w-3 h-3 bg-[#005c4b] transform -rotate-45 top-3 -right-1.5"></div>
+                                <div class="bubble-content">${contentHtml}</div>
+                                <div class="text-right mt-1"><i class="fas fa-check-double text-[10px] text-blue-300"></i></div>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 h-8 w-8 rounded-full bg-green-500 flex items-center justify-center shadow-sm mt-1">
+                            <i class="fas fa-user text-white text-sm"></i>
+                        </div>
+                    </div>
+                `;
+                history.insertAdjacentHTML('beforeend', msgHtml);
+            } else {
+                bubble.querySelector('.bubble-content').innerHTML = contentHtml;
+            }
+            scrollToBottom();
+        }
+
+        function showSuggestions(answers) {
+            const box = document.getElementById('suggestionsBox');
+            const list = document.getElementById('suggestionsList');
+            list.innerHTML = '';
+            
+            answers.forEach((ans) => {
+                const btn = document.createElement('button');
+                btn.className = "bg-white hover:bg-gray-100 border border-gray-300 rounded-xl p-3 text-sm transition shadow-sm flex flex-col items-start gap-1 w-full text-left";
+                btn.dir = "ltr";
+                btn.onclick = () => speak(ans.text);
+                
+                btn.innerHTML = `
+                    <div class="font-bold text-gray-800 text-base flex items-center gap-2">
+                        <i class="fas fa-volume-up text-blue-500 bg-blue-50 p-1.5 rounded-full"></i> ${ans.text}
+                    </div>
+                    <div class="text-xs text-gray-500 pl-8 italic">${ans.en}</div>
+                    <div class="text-xs text-gray-600 pl-8 font-medium w-full" dir="rtl">${ans.ar}</div>
+                `;
+                list.appendChild(btn);
+            });
+            
+            box.classList.remove('hidden');
+        }
+
+        function hideSuggestions() {
+            document.getElementById('suggestionsBox').classList.add('hidden');
+        }
+
+        async function evaluateAnswer(question, userAnswer) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const systemPrompt = `أنت مدرس لغة ألمانية محترف.
+سؤالك للمتدرب كان: "${question}"
+المتدرب أجاب: "${userAnswer}"
+
+قيم الإجابة وصححها إذا لزم الأمر حتى لو كانت خارج الإجابات المقترحة المهم أن تكون مفهومة ومنطقية ومناسبة للسؤال.
+رد بتنسيق JSON فقط يحتوي على:
+{
+  "is_good": boolean (هل الإجابة مقبولة ومنطقية؟),
+  "feedback_ar": "تعليق تشجيعي قصير جدا بالمصري (مثال: عاش جدا! أو إجابتك قريبة بس الأصح نقول...)",
+  "correction_de": "الإجابة الألمانية الصحيحة نحوياً إذا كانت إجابته بها أخطاء (اتركها فارغة لو الإجابة ممتازة)"
+}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: "Evaluate this answer." }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            is_good: { type: "BOOLEAN" },
+                            feedback_ar: { type: "STRING" },
+                            correction_de: { type: "STRING" }
+                        }
+                    }
+                }
+            };
+
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const data = await response.json();
+                    return JSON.parse(data.candidates[0].content.parts[0].text);
+                } catch (e) {
+                    if (i === 4) return null; 
+                    await new Promise(res => setTimeout(res, delays[i]));
+                }
+            }
+        }
+
+        function setupInterface(title) {
+            clearTimeout(silenceTimer);
+            window.speechSynthesis.cancel();
+            if(recognition) recognition.stop();
+            isPlaying = true;
+            
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('chatInterface').classList.remove('hidden');
+            document.getElementById('chatInterface').classList.add('flex');
+            document.getElementById('chatTitle').innerText = title;
+            document.getElementById('chatHistory').innerHTML = ''; 
+            document.getElementById('nextBtn').classList.add('hidden');
+            document.getElementById('retryBtn').classList.add('hidden');
+            hideSuggestions();
+        }
+
+        // --- Role Play Logic ---
+
+        async function startRolePlay(index) {
+            currentMode = 'roleplay';
+            const rp = rolePlaysData[index];
+            setupInterface(rp.title);
+
+            for (let i = 0; i < rp.messages.length; i++) {
+                if(!isPlaying) return; // Exit if user clicked stop
+
+                const msg = rp.messages[i];
+                if (msg.role === 'bot') {
+                    setMicState('speaking_bot');
+                    addBotMessage(msg.text, msg.en, msg.ar);
+                    await speak(msg.text, 1.0); // Normal pitch
+                } else {
+                    setMicState('speaking_user');
+                    addSimulatedUserMessage(msg.text, msg.en, msg.ar);
+                    await speak(msg.text, 1.2); // Slightly higher pitch for user
+                }
+                
+                setMicState('idle');
+                await delay(1000); 
+            }
+            if(isPlaying) {
+                document.getElementById('nextBtn').innerText = "عودة للقائمة";
+                document.getElementById('nextBtn').classList.remove('hidden');
+            }
+        }
+
+        // --- Interactive Training Logic ---
+
+        function startInteractiveTraining(topicIndex) {
+            if (!recognition) {
+                showMessage("التعرف على الصوت غير مدعوم في هذا المتصفح. يرجى استخدام متصفح Google Chrome المكتبي.");
+                return;
+            }
+            currentMode = 'interactive';
+            currentTopicIndex = topicIndex;
+            currentIndex = 0;
+            
+            const titles = ["التدريب: الطبخ (Kochen)", "التدريب: عادات الأكل (Experteninterview)", "التدريب: في بلدك (Heimatland)", "التدريب: المطاعم (Restaurants)"];
+            setupInterface(titles[topicIndex]);
+            playCurrentInteractiveQuestion();
+        }
+
+        async function playCurrentInteractiveQuestion() {
+            if(!isPlaying) return;
+            document.getElementById('nextBtn').classList.add('hidden');
+            document.getElementById('retryBtn').classList.add('hidden');
+            hideSuggestions();
+            
+            const data = interactiveSessionsData[currentTopicIndex][currentIndex];
+            
+            // 1. Bot Sends Message & Speaks
+            setMicState('speaking_bot');
+            addBotMessage(data.q, data.en, data.ar);
+            await speak(data.q);
+            if(!isPlaying) return;
+            
+            // 2. Show suggestions
+            showSuggestions(data.answers);
+            
+            // 3. Open Mic
+            startListening();
+        }
+
+        function startListening() {
+            setMicState('listening');
+            currentUserBubbleId = 'user-msg-' + Date.now();
+            addUserMessageBubble(currentUserBubbleId, '', true); 
+            
+            let finalTranscript = '';
+            
+            // إيقاف أي مؤقت قديم
+            clearTimeout(silenceTimer);
+
+            recognition.onresult = (event) => {
+                // تصفير المؤقت كلما التقط الميكروفون صوتاً جديداً (يعني أنك تتحدث)
+                clearTimeout(silenceTimer);
+                
+                // إعادة ضبط المؤقت لانتظار 3 ثوانٍ من الصمت
+                silenceTimer = setTimeout(() => {
+                    if (recognition && isPlaying) {
+                        recognition.stop();
+                    }
+                }, 3000);
+
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript + ' '; // إضافة مسافة احتياطية
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                addUserMessageBubble(currentUserBubbleId, finalTranscript + interimTranscript, !event.results[event.results.length-1].isFinal);
+            };
+
+            recognition.onend = async () => {
+                clearTimeout(silenceTimer);
+                if(!isPlaying) return;
+                setMicState('idle');
+                
+                if(!finalTranscript.trim()) {
+                    addUserMessageBubble(currentUserBubbleId, '<span class="text-red-300 text-sm">لم يتم التعرف على صوت... يمكنك المحاولة أو قراءة الاقتراحات</span>', false);
+                    document.getElementById('retryBtn').classList.remove('hidden');
+                    document.getElementById('nextBtn').innerText = (currentIndex === interactiveSessionsData[currentTopicIndex].length - 1) ? "إنهاء التدريب" : "السؤال التالي";
+                    document.getElementById('nextBtn').innerHTML += ' <i class="fas fa-arrow-left ml-2"></i>';
+                    document.getElementById('nextBtn').classList.remove('hidden');
+                } else {
+                    addUserMessageBubble(currentUserBubbleId, finalTranscript, false);
+                    
+                    // --- AI Evaluation ---
+                    document.getElementById('nextBtn').classList.add('hidden');
+                    document.getElementById('retryBtn').classList.add('hidden');
+                    
+                    const currentQ = interactiveSessionsData[currentTopicIndex][currentIndex].q;
+                    setMicState('speaking_bot');
+                    document.getElementById('chatStatusText').innerText = "بيصحح الإجابة...";
+                    
+                    currentEvalBubbleId = 'ai-eval-' + Date.now();
+                    addBotMessage('<i class="fas fa-spinner fa-spin text-blue-500 ml-2"></i> جاري تحليل الإجابة بالذكاء الاصطناعي...', '', '', currentEvalBubbleId);
+                    
+                    const aiResult = await evaluateAnswer(currentQ, finalTranscript);
+                    
+                    if(!isPlaying) return; // check if user closed while fetching
+                    
+                    if (aiResult) {
+                        let evalHtml = `<strong>${aiResult.is_good ? '✨ ممتاز!' : '💡 ملاحظة:'}</strong> ${aiResult.feedback_ar || ''}`;
+                        if (aiResult.correction_de) {
+                            evalHtml += `<br><span class="text-sm text-gray-800 mt-2 block bg-yellow-50 p-2 rounded border border-yellow-200" dir="ltr"><strong>التصحيح:</strong> <br><span class="text-blue-700 font-bold">${aiResult.correction_de}</span></span>`;
+                        }
+                        updateBotMessage(currentEvalBubbleId, evalHtml);
+                        
+                        // Speak correction or compliment
+                        if(aiResult.correction_de) {
+                            speak(aiResult.correction_de);
+                        } else if (aiResult.is_good) {
+                            speak("Sehr gut!");
+                        }
+                    } else {
+                        updateBotMessage(currentEvalBubbleId, '<span class="text-red-500 text-sm">عذراً، لم أتمكن من تقييم الإجابة بسبب ضعف الاتصال.</span>');
+                    }
+                    
+                    setMicState('idle');
+                    // -----------------------
+
+                    document.getElementById('retryBtn').classList.remove('hidden'); // Always show retry after recording
+                    document.getElementById('nextBtn').innerText = (currentIndex === interactiveSessionsData[currentTopicIndex].length - 1) ? "إنهاء التدريب" : "السؤال التالي";
+                    document.getElementById('nextBtn').innerHTML += ' <i class="fas fa-arrow-left ml-2"></i>';
+                    document.getElementById('nextBtn').classList.remove('hidden');
+                }
+            };
+
+            recognition.onerror = (event) => {
+                clearTimeout(silenceTimer);
+                if(!isPlaying) return;
+                if(event.error === 'not-allowed') {
+                    showMessage("الرجاء السماح للمتصفح باستخدام الميكروفون.");
+                    addUserMessageBubble(currentUserBubbleId, '<span class="text-red-300 text-sm">تم رفض الوصول للميكروفون</span>', false);
+                } else {
+                    addUserMessageBubble(currentUserBubbleId, '<span class="text-red-300 text-sm">حدث خطأ أو لم يتم التقاط الصوت...</span>', false);
+                    document.getElementById('retryBtn').classList.remove('hidden');
+                }
+                setMicState('idle');
+                document.getElementById('nextBtn').classList.remove('hidden');
+            };
+
+            try {
+                recognition.start();
+                // مؤقت ابتدائي: في حالة عدم تحدثك لأي شيء على الإطلاق، سيغلق بعد 5 ثوانٍ
+                silenceTimer = setTimeout(() => {
+                    if (recognition && isPlaying) {
+                        recognition.stop();
+                    }
+                }, 5000); 
+            } catch (e) {
+                recognition.stop();
+            }
+        }
+
+        function retryListening() {
+            const failedBubble = document.getElementById(currentUserBubbleId);
+            if (failedBubble) failedBubble.remove();
+            
+            const evalBubble = document.getElementById(currentEvalBubbleId);
+            if (evalBubble) evalBubble.remove();
+            
+            document.getElementById('retryBtn').classList.add('hidden');
+            document.getElementById('nextBtn').classList.add('hidden');
+            startListening();
+        }
+
+        function nextAction() {
+            if (currentMode === 'roleplay') {
+                stopAll();
+            } else if (currentMode === 'interactive') {
+                if (currentIndex < interactiveSessionsData[currentTopicIndex].length - 1) {
+                    currentIndex++;
+                    playCurrentInteractiveQuestion();
+                } else {
+                    stopAll();
+                }
+            }
+        }
+
+        function stopAll() {
+            isPlaying = false;
+            clearTimeout(silenceTimer);
+            window.speechSynthesis.cancel();
+            if(recognition) recognition.stop();
+            
+            document.getElementById('chatInterface').classList.add('hidden');
+            document.getElementById('chatInterface').classList.remove('flex');
+            document.getElementById('dashboardView').classList.remove('hidden');
+        }
+
+        function switchTab(tabId) {
+            // Abort any ongoing audio or listening from either tab to prevent overlaps
+            window.speechSynthesis.cancel();
+            if (recognition) { try { recognition.stop(); } catch(e) {} }
+            if (typeof portalRecognition !== 'undefined' && portalRecognition) { try { portalRecognition.stop(); } catch(e) {} }
+
+            const tab1 = document.getElementById('tab1');
+            const tab2 = document.getElementById('tab2');
+            const btn1 = document.getElementById('btn-tab-1');
+            const btn2 = document.getElementById('btn-tab-2');
+
+            if (tabId === 1) {
+                tab1.classList.remove('hidden');
+                tab1.classList.add('flex');
+                tab2.classList.add('hidden');
+                tab2.classList.remove('flex');
+                
+                btn1.className = "w-1/2 py-4 font-bold text-green-600 border-b-4 border-green-600 bg-green-50 transition flex items-center justify-center gap-2";
+                btn2.className = "w-1/2 py-4 font-bold text-gray-500 border-b-4 border-transparent hover:text-green-600 hover:bg-green-50 transition flex items-center justify-center gap-2";
+            } else {
+                tab2.classList.remove('hidden');
+                tab2.classList.add('flex');
+                tab1.classList.add('hidden');
+                tab1.classList.remove('flex');
+
+                btn2.className = "w-1/2 py-4 font-bold text-green-600 border-b-4 border-green-600 bg-green-50 transition flex items-center justify-center gap-2";
+                btn1.className = "w-1/2 py-4 font-bold text-gray-500 border-b-4 border-transparent hover:text-green-600 hover:bg-green-50 transition flex items-center justify-center gap-2";
+                
+                // Initialize Portal UI if it hasn't been yet
+                const appRoot = document.getElementById('app-root');
+                if(appRoot && appRoot.innerHTML === '') {
+                    renderPortalApp();
+                }
+            }
+        }
+
+        // =====================================================================
+        // --- PROFESSOR DR.'S E-LEARNING PORTAL (TAB 2 CONTENT) ---
+        // =====================================================================
+
+        const courseData = {
+            header: { de: "2 Essen und Essgewohnheiten", en: "2 Food and eating habits", ar: "٢ الأكل وعادات الأكل" },
+            section14: {
+                title: { de: "14 Gemeinsam etwas planen", en: "14 Planning something together", ar: "١٤ نخطط لحاجة مع بعض" },
+                intro: { de: "Lesen Sie zunächst die Aufgaben A und B und wählen Sie zu zweit eine Aufgabe aus. Bereiten Sie sich auf das Gespräch kurz vor und lesen Sie auch die angegebenen Redemittel.", en: "First read tasks A and B and choose one task in pairs. Prepare briefly for the conversation and also read the given useful phrases.", ar: "اقرأوا في الأول مهمة أ و ب واختاروا مهمة واحدة في ثنائيات. حضروا نفسكم بسرعة للمحادثة واقرأوا كمان العبارات المفيدة المكتوبة." }
+            },
+            taskA: {
+                description: { de: "Aufgabe A: Sie beenden bald Ihren Deutschkurs und planen zum Abschluss ein gemeinsames Essen. Überlegen Sie zu zweit, wie man das Essen am besten organisieren kann und wer welche Aufgaben übernimmt. Machen Sie Vorschläge und reagieren Sie auf die Vorschläge Ihrer Gesprächspartnerin/Ihres Gesprächspartners.", en: "Task A: You will soon finish your German course and are planning a joint meal to conclude. Consider in pairs how best to organize the meal and who takes on which tasks. Make suggestions and react to the suggestions of your conversation partner.", ar: "مهمة أ: أنتوا هتخلصوا كورس الألماني قريب وبتخططوا لأكلة جماعية في الآخر. فكروا مع بعض إزاي ممكن تنظموا الأكل ده بأحسن طريقة ومين هيشيل أي مهام. اقترحوا حاجات وردوا على اقتراحات شريككم في المحادثة." },
+                listTitle: { de: "Ein gemeinsames Essen planen", en: "Planning a joint meal", ar: "التخطيط لأكلة جماعية" },
+                items: [
+                    { id: "a1", de: "1. Wo?", en: "1. Where?", ar: "١. فين؟" },
+                    { id: "a2", de: "2. Wann?", en: "2. When?", ar: "٢. إمتى؟" },
+                    { id: "a3", de: "3. Kochen (Was wird gekocht?/Wer kocht?)", en: "3. Cooking (What will be cooked?/Who cooks?)", ar: "٣. الطبيخ (إيه اللي هيتطبخ؟ / مين هيطبخ؟)" },
+                    { id: "a4", de: "4. Einkaufen (Wer kauft ein? Wann? Wo? Was?)", en: "4. Shopping (Who shops? When? Where? What?)", ar: "٤. المشتريات (مين هيشتري؟ إمتى؟ منين؟ إيه؟)" },
+                    { id: "a5", de: "5. Wer wird eingeladen?", en: "5. Who will be invited?", ar: "٥. مين هيتعزم؟" }
+                ]
+            },
+            taskB: {
+                description: { de: "Aufgabe B: Die Mitarbeiter Ihrer Firma möchten dieses Jahr zur Weihnachtsfeier in ein Restaurant gehen. Sie haben die Aufgabe, zusammen mit Ihrer Gesprächspartnerin/Ihrem Gesprächspartner den Restaurantbesuch zu planen. Planen Sie gemeinsam anhand der folgenden Punkte. Machen Sie Vorschläge und reagieren Sie auf die Vorschläge Ihrer Gesprächspartnerin/Ihres Gesprächspartners.", en: "Task B: The employees of your company want to go to a restaurant for the Christmas party this year. You have the task to plan the restaurant visit together with your conversation partner. Plan together based on the following points. Make suggestions and react to the suggestions of your conversation partner.", ar: "مهمة ب: موظفين شركتك عايزين يروحوا مطعم السنة دي عشان حفلة الكريسماس. مطلوب منك تخطط لزيارة المطعم دي مع شريكك في المحادثة. خططوا مع بعض بناءً على النقط اللي جاية. اقترحوا حاجات وردوا على اقتراحات شريككم." },
+                listTitle: { de: "Eine Weihnachtsfeier in einem Restaurant planen", en: "Planning a Christmas party in a restaurant", ar: "التخطيط لحفلة كريسماس في مطعم" },
+                items: [
+                    { id: "b1", de: "1. Wann? (Datum, Uhrzeit)", en: "1. When? (Date, time)", ar: "١. إمتى؟ (التاريخ، الساعة)" },
+                    { id: "b2", de: "2. Wohin?", en: "2. Where to?", ar: "٢. على فين؟" },
+                    { id: "b3", de: "3. Essen (ein Menü bestellen oder freie Auswahl?)", en: "3. Food (order a set menu or free choice?)", ar: "٣. الأكل (نطلب منيو جاهز ولا نختار براحتنا؟)" },
+                    { id: "b4", de: "4. Bezahlung (Bezahlt alles der Arbeitgeber/der Chef oder müssen die Mitarbeiter etwas selbst bezahlen?)", en: "4. Payment (Does the employer/boss pay everything or do the employees have to pay something themselves?)", ar: "٤. الدفع (المدير/الشركة هتدفع كله ولا الموظفين هيدفعوا حاجة من جيبهم؟)" },
+                    { id: "b5", de: "5. Wer wird eingeladen? (nur Kollegen oder auch andere Personen?)", en: "5. Who will be invited? (only colleagues or also other people?)", ar: "٥. مين هيتعزم؟ (زمايل الشغل بس ولا ناس تانية كمان؟)" },
+                    { id: "b6", de: "6. Wer schreibt die Einladung?", en: "6. Who writes the invitation?", ar: "٦. مين هيكتب الدعوة؟" }
+                ]
+            },
+            phrases: {
+                title: { de: "Etwas planen", en: "Planning something", ar: "التخطيط لحاجة" },
+                suggestions: {
+                    title: { de: "Vorschläge", en: "Suggestions", ar: "اقتراحات" },
+                    items: [
+                        { id: "p1", de: "Ich schlage vor, dass ...", en: "I suggest that ...", ar: "أنا بقترح إن ..." },
+                        { id: "p2", de: "Vielleicht könnten wir ...", en: "Maybe we could ...", ar: "ممكن مثلاً نعمل ..." },
+                        { id: "p3", de: "Was hältst du davon, wenn ...?", en: "What do you think about ...?", ar: "إيه رأيك لو ...؟" },
+                        { id: "p4", de: "Wir sollten ...", en: "We should ...", ar: "المفروض نعمل ..." }
+                    ]
+                },
+                reactions: {
+                    title: { de: "Reaktionen", en: "Reactions", ar: "ردود أفعال" },
+                    items: [
+                        { id: "p5", de: "Das ist eine/keine gute Idee!", en: "That is a/not a good idea!", ar: "دي فكرة حلوة/مش حلوة!" },
+                        { id: "p6", de: "Das machen wir (so).", en: "We will do it (like that).", ar: "هنعملها (كده)." },
+                        { id: "p7", de: "Das finde ich prima/nicht so gut/etwas unpraktisch.", en: "I find that great/not so good/a bit impractical.", ar: "أنا شايف ده ممتاز/مش أوي/مش عملي شوية." },
+                        { id: "p8", de: "Ich denke, es ist besser, wenn ...", en: "I think it is better if ...", ar: "أنا شايف إن الأحسن لو ..." }
+                    ]
+                },
+                conclusion: {
+                    title: { de: "Abschluss der Planung", en: "Conclusion of planning", ar: "نهاية التخطيط" },
+                    items: [
+                        { id: "p9", de: "Haben wir über alles gesprochen?", en: "Have we talked about everything?", ar: "اتكلمنا في كل حاجة؟" },
+                        { id: "p10", de: "Ich fasse noch einmal alles zusammen: ...", en: "I will summarize everything once more: ...", ar: "هلخص كل حاجة تاني: ..." },
+                        { id: "p11", de: "Gibt es noch offene Fragen?", en: "Are there any open questions?", ar: "في أي أسئلة لسه؟" }
+                    ]
+                }
+            },
+            section15: {
+                title: { de: "15 Schriftliche Entschuldigung", en: "15 Written apology", ar: "١٥ اعتذار مكتوب" },
+                description: { de: "Ihre Abteilung geht heute Abend zum Weihnachtsessen in ein Restaurant. Sie können aber nicht mitkommen. Schreiben Sie eine kurze E-Mail an Ihren Chef (etwa 40 Wörter). Entschuldigen Sie sich und berichten Sie, warum Sie nicht mitkommen können. Achten Sie dabei auch auf die Anrede und den Gruß am Schluss.", en: "Your department is going to a Christmas dinner in a restaurant tonight. However, you cannot come. Write a short email to your boss (about 40 words). Apologize and report why you cannot come. Pay attention to the salutation and the greeting at the end.", ar: "قسمك رايح يتعشى في مطعم النهاردة بالليل عشان الكريسماس. بس أنت مش هتقدر تروح. اكتب إيميل قصير لمديرك (حوالي ٤٠ كلمة). اعتذر وقول ليه مش هتقدر تيجي. خلي بالك من التحية في الأول والختام في الآخر." },
+                redemittel: {
+                    title: { de: "Redemittel: Anrede- und Grußformeln bei E-Mails (halbformell)", en: "Useful phrases: Salutations and greetings in emails (semi-formal)", ar: "عبارات مفيدة: صيغ التحية والختام في الإيميلات (نص رسمي)" },
+                    anrede: [
+                        { id: "r1", de: "Liebe Frau (Müller),", en: "Dear Mrs. (Müller),", ar: "عزيزتي أستاذة (مولر)،" },
+                        { id: "r2", de: "Lieber Herr (Müller),", en: "Dear Mr. (Müller),", ar: "عزيزي أستاذ (مولر)،" }
+                    ],
+                    gruss: [
+                        { id: "r3", de: "Mit besten Grüßen", en: "With best regards", ar: "مع أطيب التحيات" },
+                        { id: "r4", de: "Viele Grüße", en: "Many greetings", ar: "تحياتي" }
+                    ]
+                }
+            }
+        };
+
+        const phrasesPool = [
+            { text: "Ich schlage vor, dass ...", type: "suggestion", id: "ex_p1" },
+            { text: "Das ist eine gute Idee!", type: "reaction", id: "ex_p2" },
+            { text: "Haben wir über alles gesprochen?", type: "conclusion", id: "ex_p3" },
+            { text: "Vielleicht könnten wir ...", type: "suggestion", id: "ex_p4" },
+            { text: "Das finde ich prima.", type: "reaction", id: "ex_p5" },
+            { text: "Ich fasse noch einmal alles zusammen:", type: "conclusion", id: "ex_p6" }
+        ];
+
+        let activePortalTab = 'guide'; 
+        let draggedItemInfo = null;
+        let dndCategories = {
+            suggestion: [],
+            reaction: [],
+            conclusion: [],
+            unassigned: [...phrasesPool].sort(() => Math.random() - 0.5)
+        };
+        let emailState = { salutation: '', reason: '', closing: '', submitted: false };
+        let freeWritingText = '';
+
+        function initLucideIcons() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function renderPortalApp() {
+            const root = document.getElementById('app-root');
+            root.innerHTML = `
+                <!-- Header -->
+                <header class="bg-indigo-900 text-white p-6 shadow-md rounded-t-lg">
+                    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-4">
+                        <div class="bg-indigo-100 text-indigo-900 p-3 rounded-full">
+                            <i data-lucide="award" class="w-10 h-10"></i>
+                        </div>
+                        <div class="text-center md:text-left">
+                            <h1 class="text-3xl font-bold tracking-tight">Prof. Dr.'s E-Learning Portal</h1>
+                            <p class="text-indigo-200 mt-1">Advanced Linguistic Mastery: ${courseData.header.de}</p>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Navigation Tabs -->
+                <div class="max-w-5xl mx-auto mt-8 px-4">
+                    <div class="flex space-x-2 border-b border-slate-300">
+                        <button onclick="switchPortalTab('guide')" class="flex items-center gap-2 px-6 py-3 rounded-t-lg font-semibold transition-colors ${activePortalTab === 'guide' ? 'bg-white text-indigo-700 border-t border-l border-r border-slate-300 -mb-px' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}">
+                            <i data-lucide="book-open" class="w-5 h-5"></i>
+                            Interactive Study Guide
+                        </button>
+                        <button onclick="switchPortalTab('exercise')" class="flex items-center gap-2 px-6 py-3 rounded-t-lg font-semibold transition-colors ${activePortalTab === 'exercise' ? 'bg-white text-indigo-700 border-t border-l border-r border-slate-300 -mb-px' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}">
+                            <i data-lucide="pen-tool" class="w-5 h-5"></i>
+                            Applied Exercise
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <main class="max-w-5xl mx-auto p-4 bg-white shadow-sm rounded-b-lg border-x border-b border-slate-300 min-h-[600px] mb-12" id="main-content">
+                    ${activePortalTab === 'guide' ? renderGuideTab() : renderExerciseTab()}
+                </main>
+            `;
+            initLucideIcons();
+            if(activePortalTab === 'exercise') {
+                updateFreeWritingFeedback();
+            }
+        }
+
+        function switchPortalTab(tab) {
+            activePortalTab = tab;
+            renderPortalApp();
+        }
+
+        function renderTranslationRow(item) {
+            const safeDe = item.de.replace(/'/g, "\\'");
+            return `
+                <div class="group flex flex-col sm:flex-row gap-4 p-4 hover:bg-indigo-50/50 rounded-lg border border-transparent hover:border-indigo-100 transition-all items-start sm:items-center">
+                    <div class="flex-1 space-y-1 w-full">
+                        <p class="font-bold text-lg text-slate-800 flex items-center gap-2">${item.de}</p>
+                        <p class="text-sm text-slate-600 font-medium">🇬🇧 ${item.en}</p>
+                        <p class="text-sm text-indigo-700 font-bold" dir="rtl">🇪🇬 ${item.ar}</p>
+                        <!-- Feedback Container -->
+                        <div id="feedback-${item.id}" class="hidden text-xs mt-2 p-2 rounded flex items-center gap-2"></div>
+                    </div>
+                    
+                    <div class="flex gap-2 shrink-0">
+                        <button onclick="speakText('${safeDe}', 'de-DE')" class="p-2 bg-slate-200 hover:bg-indigo-200 hover:text-indigo-800 rounded-full transition-colors flex items-center justify-center" title="Play German Audio">
+                            <i data-lucide="volume-2" class="w-5 h-5"></i>
+                        </button>
+                        <button id="mic-btn-${item.id}" onclick="startPortalListening('${item.id}', '${safeDe}')" class="p-2 bg-slate-200 hover:bg-emerald-200 hover:text-emerald-800 rounded-full transition-colors flex items-center justify-center" title="Practice Pronunciation">
+                            <i data-lucide="mic" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderGuideTab() {
+            return `
+                <div class="space-y-8 p-4">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg shadow-sm">
+                        <h2 class="text-xl font-bold text-blue-900 mb-2">Professor's Note</h2>
+                        <p class="text-blue-800">
+                            Welcome to Chapter 2: Food and Eating Habits. Click the speaker icon <i data-lucide="volume-2" class="inline w-4 h-4"></i> to hear the native German pronunciation. 
+                            Use the microphone icon <i data-lucide="mic" class="inline w-4 h-4"></i> to test your own speaking skills. The system will evaluate your speech!
+                        </p>
+                    </div>
+
+                    <!-- SECTION 14 -->
+                    <section>
+                        <h2 class="text-2xl font-black text-slate-800 border-b-2 border-slate-200 pb-2 mb-4">${courseData.section14.title.de}</h2>
+                        <p class="text-slate-600 mb-2 italic">${courseData.section14.intro.en}</p>
+                        <p class="text-indigo-700 mb-6 font-medium text-right" dir="rtl">${courseData.section14.intro.ar}</p>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                                <div class="bg-yellow-100 p-4 border-b border-yellow-200">
+                                    <h3 class="font-bold text-yellow-800">Aufgabe A</h3>
+                                    <p class="text-sm mt-2 text-slate-700">${courseData.taskA.description.de}</p>
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="font-bold text-lg mb-4 text-indigo-900">${courseData.taskA.listTitle.de}</h4>
+                                    <div class="divide-y divide-slate-100">
+                                        ${courseData.taskA.items.map(renderTranslationRow).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                                <div class="bg-yellow-100 p-4 border-b border-yellow-200">
+                                    <h3 class="font-bold text-yellow-800">Aufgabe B</h3>
+                                    <p class="text-sm mt-2 text-slate-700">${courseData.taskB.description.de}</p>
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="font-bold text-lg mb-4 text-indigo-900">${courseData.taskB.listTitle.de}</h4>
+                                    <div class="divide-y divide-slate-100">
+                                        ${courseData.taskB.items.map(renderTranslationRow).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- PHRASES TABLE -->
+                    <section>
+                        <h2 class="text-2xl font-black text-slate-800 border-b-2 border-slate-200 pb-2 mb-4 mt-12">${courseData.phrases.title.de}</h2>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50">
+                                <h3 class="font-bold text-lg mb-4 text-center bg-slate-200 py-2 rounded text-slate-800">${courseData.phrases.suggestions.title.de}</h3>
+                                <div class="divide-y divide-slate-200">${courseData.phrases.suggestions.items.map(renderTranslationRow).join('')}</div>
+                            </div>
+                            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50">
+                                <h3 class="font-bold text-lg mb-4 text-center bg-slate-200 py-2 rounded text-slate-800">${courseData.phrases.reactions.title.de}</h3>
+                                <div class="divide-y divide-slate-200">${courseData.phrases.reactions.items.map(renderTranslationRow).join('')}</div>
+                            </div>
+                            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50">
+                                <h3 class="font-bold text-lg mb-4 text-center bg-slate-200 py-2 rounded text-slate-800">${courseData.phrases.conclusion.title.de}</h3>
+                                <div class="divide-y divide-slate-200">${courseData.phrases.conclusion.items.map(renderTranslationRow).join('')}</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 15 -->
+                    <section class="mt-12">
+                        <h2 class="text-2xl font-black text-slate-800 border-b-2 border-slate-200 pb-2 mb-4">${courseData.section15.title.de}</h2>
+                        <p class="text-slate-600 mb-2 italic">${courseData.section15.description.en}</p>
+                        <p class="text-indigo-700 mb-6 font-medium text-right" dir="rtl">${courseData.section15.description.ar}</p>
+
+                        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-6">
+                            <h3 class="font-bold text-indigo-900 mb-4 flex items-center gap-2">
+                                <i data-lucide="book-open" class="w-5 h-5"></i>
+                                ${courseData.section15.redemittel.title.de}
+                            </h3>
+                            <div class="grid md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 class="font-semibold text-slate-700 border-b border-indigo-200 pb-1 mb-3">Anrede (Salutation)</h4>
+                                    <div class="divide-y divide-indigo-100">${courseData.section15.redemittel.anrede.map(renderTranslationRow).join('')}</div>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-slate-700 border-b border-indigo-200 pb-1 mb-3">Gruß (Greeting)</h4>
+                                    <div class="divide-y divide-indigo-100">${courseData.section15.redemittel.gruss.map(renderTranslationRow).join('')}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        function speakText(text, lang) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                const voices = window.speechSynthesis.getVoices();
+                const preferredVoice = voices.find(v => v.lang.startsWith(lang));
+                if (preferredVoice) utterance.voice = preferredVoice;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("TTS not supported in your browser.");
+            }
+        }
+
+        function startPortalListening(id, targetText) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Speech recognition is not supported in this browser. Please use Chrome or Edge.");
+                return;
+            }
+
+            const feedbackDiv = document.getElementById(`feedback-${id}`);
+            const micBtn = document.getElementById(`mic-btn-${id}`);
+            
+            feedbackDiv.className = "text-xs mt-2 p-2 rounded flex items-center gap-2 bg-blue-100 text-blue-700";
+            feedbackDiv.innerHTML = `<span class="animate-pulse">Listening... Speak now.</span>`;
+            feedbackDiv.classList.remove('hidden');
+            
+            micBtn.classList.add('bg-red-500', 'text-white', 'animate-pulse');
+            micBtn.classList.remove('bg-slate-200', 'hover:bg-emerald-200', 'hover:text-emerald-800');
+
+            if (portalRecognition) {
+                try { portalRecognition.stop(); } catch(e) {}
+            }
+
+            portalRecognition = new SpeechRecognition();
+            portalRecognition.lang = 'de-DE';
+            portalRecognition.interimResults = false;
+            portalRecognition.maxAlternatives = 1;
+
+            portalRecognition.onresult = (event) => {
+                const speechResult = event.results[0][0].transcript;
+                const isMatch = speechResult.toLowerCase().replace(/[.,?!]/g, '').includes(
+                    targetText.toLowerCase().substring(0, 10).replace(/[.,?!]/g, '')
+                );
+
+                if (isMatch) {
+                    feedbackDiv.className = "text-xs mt-2 p-2 rounded flex items-center gap-2 bg-green-100 text-green-700";
+                    feedbackDiv.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i> Excellent pronunciation!`;
+                } else {
+                    feedbackDiv.className = "text-xs mt-2 p-2 rounded flex items-center gap-2 bg-red-100 text-red-700";
+                    feedbackDiv.innerHTML = `<i data-lucide="x-circle" class="w-4 h-4"></i> Heard: "${speechResult}". Try again.`;
+                }
+                initLucideIcons();
+            };
+
+            portalRecognition.onerror = (event) => {
+                feedbackDiv.className = "text-xs mt-2 p-2 rounded flex items-center gap-2 bg-red-100 text-red-700";
+                feedbackDiv.innerHTML = `<i data-lucide="x-circle" class="w-4 h-4"></i> Error: ${event.error}`;
+                initLucideIcons();
+            };
+
+            portalRecognition.onend = () => {
+                micBtn.classList.remove('bg-red-500', 'text-white', 'animate-pulse');
+                micBtn.classList.add('bg-slate-200', 'hover:bg-emerald-200', 'hover:text-emerald-800');
+                if(feedbackDiv.innerHTML.includes('Listening')) {
+                     feedbackDiv.className = "text-xs mt-2 p-2 rounded flex items-center gap-2 bg-red-100 text-red-700";
+                     feedbackDiv.innerHTML = `<i data-lucide="x-circle" class="w-4 h-4"></i> Failed to hear clearly.`;
+                     initLucideIcons();
+                }
+            };
+
+            portalRecognition.start();
+        }
+
+        function renderExerciseTab() {
+            return `
+                <div class="p-4 space-y-12">
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg shadow-sm">
+                        <h2 class="text-xl font-bold text-emerald-900 mb-2">Professor's Challenge Area</h2>
+                        <p class="text-emerald-800">Knowledge is solidified through application. Complete the tasks below to prove your mastery of planning and writing apologies in German.</p>
+                    </div>
+
+                    <!-- EXERCISE 1 -->
+                    <section id="exercise-1-container">
+                        ${renderDragAndDrop()}
+                    </section>
+
+                    <hr class="border-slate-200" />
+
+                    <!-- EXERCISE 2 -->
+                    <section id="exercise-2-container">
+                        ${renderEmailBuilder()}
+                    </section>
+
+                    <hr class="border-slate-200" />
+
+                    <!-- EXERCISE 3 -->
+                    <section id="exercise-3-container">
+                        ${renderFreeWriting()}
+                    </section>
+                </div>
+            `;
+        }
+
+        function renderDragAndDrop() {
+            return `
+                <h3 class="text-2xl font-bold text-slate-800 mb-4">Task 1: Organize the Phrases</h3>
+                <p class="text-slate-600 mb-6">Drag and drop the phrases into their correct conversational category.</p>
+
+                <div class="bg-slate-100 p-4 rounded-lg min-h-[60px] flex flex-wrap gap-2 mb-6" 
+                     ondragover="event.preventDefault()" 
+                     ondrop="handleDrop(event, 'unassigned')">
+                    ${dndCategories.unassigned.length === 0 ? '<span class="text-slate-400 italic">All phrases assigned...</span>' : ''}
+                    ${dndCategories.unassigned.map(item => `
+                        <div draggable="true" ondragstart="handleDragStart(event, '${item.id}', 'unassigned')" class="bg-white border border-slate-300 px-3 py-2 rounded shadow-sm cursor-grab active:cursor-grabbing hover:border-indigo-400 font-medium">
+                            ${item.text}
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-4">
+                    ${['suggestion', 'reaction', 'conclusion'].map(cat => `
+                        <div ondragover="event.preventDefault()" ondrop="handleDrop(event, '${cat}')" class="border-2 border-dashed border-slate-300 rounded-xl p-4 bg-slate-50 min-h-[200px]">
+                            <h4 class="font-bold text-center text-slate-700 uppercase tracking-wider mb-4 border-b pb-2">
+                                ${cat === 'suggestion' ? 'Vorschläge' : cat === 'reaction' ? 'Reaktionen' : 'Abschluss'}
+                            </h4>
+                            <div class="space-y-2">
+                                ${dndCategories[cat].map(item => `
+                                    <div draggable="true" ondragstart="handleDragStart(event, '${item.id}', '${cat}')" class="bg-indigo-50 border border-indigo-200 px-3 py-2 rounded shadow-sm cursor-grab text-sm">
+                                        ${item.text}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="checkCategorization()" class="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+                    Check Answers
+                </button>
+            `;
+        }
+
+        function handleDragStart(e, itemId, source) {
+            e.dataTransfer.setData('text/plain', JSON.stringify({id: itemId, source: source}));
+        }
+
+        function handleDrop(e, targetCategory) {
+            e.preventDefault();
+            const dataStr = e.dataTransfer.getData('text/plain');
+            if(!dataStr) return;
+            
+            const { id, source } = JSON.parse(dataStr);
+            if(source === targetCategory) return;
+
+            const itemIndex = dndCategories[source].findIndex(i => i.id === id);
+            if(itemIndex > -1) {
+                const item = dndCategories[source][itemIndex];
+                dndCategories[source].splice(itemIndex, 1);
+                dndCategories[targetCategory].push(item);
+                
+                document.getElementById('exercise-1-container').innerHTML = renderDragAndDrop();
+            }
+        }
+
+        function checkCategorization() {
+            let allCorrect = true;
+            ['suggestion', 'reaction', 'conclusion'].forEach(cat => {
+                dndCategories[cat].forEach(item => {
+                    if (item.type !== cat) allCorrect = false;
+                });
+            });
+            
+            if (dndCategories.unassigned.length > 0) {
+                alert("Professor says: Please categorize all phrases first!");
+            } else if (allCorrect) {
+                alert("Professor says: Excellent work! Sehr gut!");
+            } else {
+                alert("Professor says: Not quite right. Review the translations and try again!");
+            }
+        }
+
+        function renderEmailBuilder() {
+            const isSub = emailState.submitted;
+            const isCorrect = emailState.salutation === 'correct' && emailState.reason === 'correct' && emailState.closing === 'correct';
+
+            return `
+                <h3 class="text-2xl font-bold text-slate-800 mb-4">Task 2: Draft the Apology Email</h3>
+                <p class="text-slate-600 mb-6">Select the appropriate semi-formal phrases to construct an email to your boss, Mr. Müller, explaining why you can't attend the Christmas party.</p>
+
+                <div class="max-w-2xl mx-auto bg-white border border-slate-200 rounded-xl shadow-md overflow-hidden">
+                    <div class="bg-slate-100 p-3 border-b border-slate-200 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                        <span class="ml-4 text-sm font-medium text-slate-500">New Message</span>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <div>
+                            <select onchange="updateEmailState('salutation', this.value)" ${isSub ? 'disabled' : ''} class="w-full md:w-1/2 p-2 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                                <option value="" ${emailState.salutation===''?'selected':''}>[Select Salutation]</option>
+                                <option value="wrong" ${emailState.salutation==='wrong'?'selected':''}>Hallo Chef,</option>
+                                <option value="correct" ${emailState.salutation==='correct'?'selected':''}>Lieber Herr Müller,</option>
+                                <option value="wrong2" ${emailState.salutation==='wrong2'?'selected':''}>Liebe Frau Müller,</option>
+                            </select>
+                        </div>
+                        <p class="text-slate-800">ich kann heute Abend leider nicht zur Weihnachtsfeier im Restaurant kommen.</p>
+                        <div>
+                            <select onchange="updateEmailState('reason', this.value)" ${isSub ? 'disabled' : ''} class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                                <option value="" ${emailState.reason===''?'selected':''}>[Select Reason]</option>
+                                <option value="correct" ${emailState.reason==='correct'?'selected':''}>Ich bin leider krank geworden und liege im Bett.</option>
+                                <option value="wrong" ${emailState.reason==='wrong'?'selected':''}>Ich habe keine Lust auf die Kollegen.</option>
+                                <option value="wrong2" ${emailState.reason==='wrong2'?'selected':''}>Das Essen im Restaurant ist zu teuer.</option>
+                            </select>
+                        </div>
+                        <p class="text-slate-800">Ich wünsche Ihnen und dem ganzen Team einen schönen Abend!</p>
+                        <div>
+                            <select onchange="updateEmailState('closing', this.value)" ${isSub ? 'disabled' : ''} class="w-full md:w-1/2 p-2 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                                <option value="" ${emailState.closing===''?'selected':''}>[Select Closing]</option>
+                                <option value="wrong" ${emailState.closing==='wrong'?'selected':''}>Tschüss,</option>
+                                <option value="correct" ${emailState.closing==='correct'?'selected':''}>Mit besten Grüßen,</option>
+                                <option value="wrong2" ${emailState.closing==='wrong2'?'selected':''}>Dein Mitarbeiter,</option>
+                            </select>
+                        </div>
+
+                        ${isSub ? `
+                            <div class="p-4 rounded-lg mt-4 ${isCorrect ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-red-100 text-red-800 border border-red-300'}">
+                                ${isCorrect 
+                                    ? `<div class="flex items-center gap-2"><i data-lucide="check-circle" class="w-5 h-5"></i> <strong>Wunderbar!</strong> A perfect, professional apology email.</div>`
+                                    : `<div class="flex items-center gap-2"><i data-lucide="x-circle" class="w-5 h-5"></i> <strong>Achtung!</strong> Some choices were too informal or inappropriate for a boss. Try again.</div>`
+                                }
+                            </div>
+                        ` : ''}
+
+                        ${!isSub ? `
+                            <button onclick="submitEmail()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+                                Send Email (Submit)
+                            </button>
+                        ` : `
+                            <button onclick="resetEmail()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2 px-6 rounded-lg transition-colors">
+                                Reset & Try Again
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateEmailState(field, value) {
+            emailState[field] = value;
+        }
+
+        function submitEmail() {
+            if(emailState.salutation && emailState.reason && emailState.closing) {
+                emailState.submitted = true;
+                document.getElementById('exercise-2-container').innerHTML = renderEmailBuilder();
+                initLucideIcons();
+            } else {
+                alert("Professor says: Please fill in all the parts of the email.");
+            }
+        }
+
+        function resetEmail() {
+            emailState = { salutation: '', reason: '', closing: '', submitted: false };
+            document.getElementById('exercise-2-container').innerHTML = renderEmailBuilder();
+            initLucideIcons();
+        }
+
+        function renderFreeWriting() {
+            return `
+                <h3 class="text-2xl font-bold text-slate-800 mb-4">Task 3: Freies Schreiben (Free Writing)</h3>
+                <p class="text-slate-600 mb-6">Now, write the email entirely yourself. Remember the requirements from the textbook: Apologize, give a reason, use about 40 words, and include proper salutations/greetings.</p>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2">
+                        <div class="bg-white border border-slate-300 rounded-xl shadow-sm overflow-hidden focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
+                            <div class="bg-slate-100 p-3 border-b border-slate-200 flex items-center gap-2">
+                                <span class="text-sm font-medium text-slate-600">To: Chef (Mr. Müller)</span>
+                            </div>
+                            <textarea
+                                id="free-text-area"
+                                oninput="handleFreeTextChange(this.value)"
+                                placeholder="Lieber Herr Müller,&#10;&#10;ich schreibe Ihnen, weil..."
+                                class="w-full h-64 p-4 outline-none resize-none text-slate-800"
+                                spellcheck="false"
+                            >${freeWritingText}</textarea>
+                            <div class="bg-slate-50 p-2 border-t border-slate-200 text-right text-sm text-slate-500">
+                                Word count: <span id="word-count-display">0</span> / ~40
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Feedback Panel -->
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5 space-y-4" id="live-feedback-panel">
+                        <!-- Content injected via updateFreeWritingFeedback() -->
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleFreeTextChange(val) {
+            freeWritingText = val;
+            updateFreeWritingFeedback();
+        }
+
+        function updateFreeWritingFeedback() {
+            const panel = document.getElementById('live-feedback-panel');
+            const wordCountDisplay = document.getElementById('word-count-display');
+            if(!panel || !wordCountDisplay) return;
+
+            const text = freeWritingText;
+            const wordCount = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+            
+            const hasSalutation = /liebe frau|lieber herr|sehr geehrte/i.test(text);
+            const hasApology = /entschuldigung|leider nicht|kann nicht|tut mir leid|verzeihen/i.test(text);
+            const hasClosing = /grüße|mit besten grüßen|viele grüße/i.test(text);
+            const isOptimalLength = wordCount >= 30 && wordCount <= 50;
+
+            wordCountDisplay.textContent = wordCount;
+            wordCountDisplay.className = isOptimalLength ? 'text-green-600 font-bold' : (wordCount > 0 ? 'text-yellow-600' : '');
+
+            const checkIcon = `<i data-lucide="check-circle" class="text-green-500 shrink-0 w-5 h-5"></i>`;
+            const emptyCircle = `<div class="w-5 h-5 rounded-full border-2 border-slate-300 shrink-0"></div>`;
+            const isAllValid = isOptimalLength && hasSalutation && hasApology && hasClosing;
+
+            panel.innerHTML = `
+                <h4 class="font-bold text-indigo-900 flex items-center gap-2">
+                    <i data-lucide="award" class="w-5 h-5"></i> Live Feedback
+                </h4>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-2">
+                        ${isOptimalLength ? checkIcon : emptyCircle}
+                        <span class="text-sm ${isOptimalLength ? 'text-green-800' : 'text-slate-600'}">Word count (~40 words. Current: ${wordCount})</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        ${hasSalutation ? checkIcon : emptyCircle}
+                        <span class="text-sm ${hasSalutation ? 'text-green-800' : 'text-slate-600'}">Appropriate Salutation (e.g., Lieber Herr Müller)</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        ${hasApology ? checkIcon : emptyCircle}
+                        <span class="text-sm ${hasApology ? 'text-green-800' : 'text-slate-600'}">States apology/inability to attend (leider nicht, etc.)</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        ${hasClosing ? checkIcon : emptyCircle}
+                        <span class="text-sm ${hasClosing ? 'text-green-800' : 'text-slate-600'}">Appropriate Closing (e.g., Viele Grüße)</span>
+                    </li>
+                </ul>
+                <div class="mt-6 p-3 rounded text-sm ${isAllValid ? 'bg-green-100 text-green-800' : 'bg-slate-200 text-slate-600'}">
+                    ${isAllValid ? "Excellent! Your email meets all the textbook criteria. Ready to send!" : "Keep writing! The Professor is checking your draft in real-time."}
+                </div>
+            `;
+            initLucideIcons();
+        }
+
+    </script>
+</body>
+</html>
