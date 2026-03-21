@@ -813,7 +813,7 @@
         // Robust check for the API Key from config.js
         const getApiKey = () => {
             if (typeof GEMINI_API_KEY !== 'undefined' && GEMINI_API_KEY) return GEMINI_API_KEY;
-            return ""; 
+            return "";
         };
 
         const evaluateAnswer = async (question, userAnswer) => {
@@ -824,7 +824,7 @@
             }
 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${key}`;
-            
+
             const systemPrompt = `أنت مدرس لغة ألمانية محترف وصديق للمتعلم. قيم إجابة الطالب وقم بالرد عليه لاستكمال المحادثة.
 رد بتنسيق JSON فقط وبالهيكل التالي:
 {
@@ -848,13 +848,13 @@
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: userPrompt }] }],
                         systemInstruction: { parts: [{ text: systemPrompt }] },
-                        generationConfig: { 
+                        generationConfig: {
                             responseMimeType: "application/json",
                             temperature: 0.8
                         }
                     })
                 });
-                
+
                 if (!response.ok) {
                     const errData = await response.json();
                     throw new Error(errData.error?.message || "Unknown API Error");
@@ -1010,23 +1010,23 @@
                             // --- Continue Conversation ---
                             if (aiResult.ai_response_de) {
                                 const nextBotMsgId = Date.now() + 2;
-                                setChatHistory(prev => [...prev, { 
-                                    role: 'bot', 
-                                    text: aiResult.ai_response_de, 
-                                    en: "", 
-                                    ar: aiResult.ai_response_ar || "", 
-                                    id: nextBotMsgId 
+                                setChatHistory(prev => [...prev, {
+                                    role: 'bot',
+                                    text: aiResult.ai_response_de,
+                                    en: "",
+                                    ar: aiResult.ai_response_ar || "",
+                                    id: nextBotMsgId
                                 }]);
-                                
+
                                 if (aiResult.suggestions) {
                                     setSuggestions(aiResult.suggestions);
                                 }
-                                
+
                                 setLastQuestion(aiResult.ai_response_de);
                                 setMicStatus('speaking_bot');
                                 await speak(aiResult.ai_response_de);
                                 setMicStatus('idle');
-                                
+
                                 // Auto-start listening for the user's next response to keep it "hands-free"
                                 if (window.isPlayingTemp) {
                                     startListeningProcess(aiResult.ai_response_de);
@@ -1168,9 +1168,9 @@
                                         </div>
                                         <span className="text-xs font-bold text-gray-500">{micText}</span>
                                     </div>
-                                    
+
                                     {mode === 'interactive' && statusText === 'متصل' && (
-                                        <button 
+                                        <button
                                             onClick={() => startListeningProcess(lastQuestion)}
                                             className="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1 rounded-lg text-xs font-bold hover:bg-amber-200 transition-colors flex items-center gap-1"
                                         >
@@ -1756,8 +1756,8 @@
 
                         {activeCategory === 'vertiefung' && (
                             <div className="animate-fade-in pb-10">
-                                <iframe 
-                                    src="vertiefung.html" 
+                                <iframe
+                                    src="vertiefung.html"
                                     style={{ width: '100%', height: '800px', border: 'none', borderRadius: '1.5rem', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                     title="Vertiefung"
                                 />

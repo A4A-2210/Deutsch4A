@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,31 +10,39 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+        }
     </style>
 </head>
+
 <body class="bg-slate-100 text-slate-900 pb-12 min-h-screen">
 
     <!-- Header -->
     <header class="bg-indigo-600 text-white py-12 px-4 shadow-md mb-8">
         <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-3xl sm:text-4xl font-extrabold mb-3 tracking-tight">الفصل الأول – مفردات ونصوص (ألماني - إنجليزي - مصري)</h1>
+            <h1 class="text-3xl sm:text-4xl font-extrabold mb-3 tracking-tight">الفصل الأول – مفردات ونصوص (ألماني -
+                إنجليزي - مصري)</h1>
             <p class="text-indigo-100 text-lg max-w-2xl mx-auto">
-                درب نفسك على السمع والنطق. دوس على السماعة <i class="fa-solid fa-volume-high mx-1"></i> عشان تسمع الجملة أو استخدم المايك <i class="fa-solid fa-microphone mx-1"></i> عشان تختبر نطقك.
+                درب نفسك على السمع والنطق. دوس على السماعة <i class="fa-solid fa-volume-high mx-1"></i> عشان تسمع
+                الجملة، أو استخدم المايك <i class="fa-solid fa-microphone mx-1"></i> عشان تختبر نطقك.
             </p>
         </div>
     </header>
 
     <!-- Main Content -->
     <main class="max-w-4xl mx-auto px-4">
-        
+
         <!-- System Message / Compatibility Warning -->
-        <div id="system-message" class="hidden flex items-start p-4 mb-6 border rounded-lg shadow-sm bg-blue-50 text-blue-800 border-blue-200">
+        <div id="system-message"
+            class="hidden flex items-start p-4 mb-6 border rounded-lg shadow-sm bg-blue-50 text-blue-800 border-blue-200">
             <i class="fa-solid fa-circle-exclamation text-blue-500 w-5 h-5 ml-3 mt-0.5 flex-shrink-0"></i>
             <div class="flex-1">
-                <p class="text-sm font-medium">متصفحك مش بيدعم خاصية تسجيل الصوت (المايك). عشان تاخد أحسن تجربة ياريت تستخدم جوجل كروم أو مايكروسوفت إيدج.</p>
+                <p class="text-sm font-medium">متصفحك مش بيدعم خاصية تسجيل الصوت (المايك). عشان تاخد أحسن تجربة، ياريت
+                    تستخدم جوجل كروم أو مايكروسوفت إيدج.</p>
             </div>
-            <button onclick="document.getElementById('system-message').style.display='none'" class="mr-3 text-slate-400 hover:text-slate-600 transition-colors">
+            <button onclick="document.getElementById('system-message').style.display='none'"
+                class="mr-3 text-slate-400 hover:text-slate-600 transition-colors">
                 <i class="fa-solid fa-circle-xmark w-5 h-5"></i>
             </button>
         </div>
@@ -48,10 +57,10 @@
         // البيانات كاملة 100% بدون أي اختصار أو حذف مع الترجمة المصرية
         const lessonData = [
             {
-                title: "Part 1: Vocabulary / Wortschatz (الكلمات)",
+                title: "1. المفردات (Vocabulary / Wortschatz)",
                 subsections: [
                     {
-                        title: "1.1 Alltag – Everyday Life / Daily Routine (الحياة اليومية)",
+                        title: "1.1 الحياة اليومية (Everyday Life / Daily Routine)",
                         items: [
                             { de: "um (7.00 Uhr) aufstehen", en: "get up at (7:00 AM)", ar: "أصحى الساعة (7:00 الصبح)" },
                             { de: "mit dem Bus ins Büro/zur Uni/nach Hause fahren", en: "go to the office/to university/home by bus", ar: "أروح المكتب/الجامعة/البيت بالأتوبيس" },
@@ -66,7 +75,7 @@
                         ]
                     },
                     {
-                        title: "1.2 Alltag / Im Büro / An der Uni – Everyday Life / At the Office / At the University (في المكتب / في الجامعة)",
+                        title: "1.2 في المكتب / في الجامعة (Everyday Life / At the Office / At the University)",
                         items: [
                             { de: "als (Redakteur) bei (einem Verlag) arbeiten", en: "work as an (editor) at (a publishing house)", ar: "أشتغل (محرر) في (دار نشر)" },
                             { de: "E-Mails checken/schreiben/beantworten", en: "check/write/answer e-mails", ar: "أشوف/أكتب/أرد على الإيميلات" },
@@ -83,10 +92,10 @@
                         ]
                     },
                     {
-                        title: "1.3 Freude und Ärger im Alltag – Joy and Annoyance in Everyday Life (الفرح والزعل في الحياة اليومية)",
+                        title: "1.3 الفرح والزعل في الحياة اليومية (Freude und Ärger im Alltag)",
                         items: [
-                            { de: "mit dem Alltag (sehr) zufrieden sein", en: "be (very) satisfied with everyday life", ar: "أكون راضي (جدا) عن حياتي اليومية" },
-                            { de: "den Alltag abwechslungsreich finden/nicht immer das Gleiche machen", en: "find everyday life varied/not always do the same thing", ar: "ألاقي حياتي اليومية متنوعة/مابعملش نفس الحاجة دايما" },
+                            { de: "mit dem Alltag (sehr) zufrieden sein", en: "be (very) satisfied with everyday life", ar: "أكون راضي (جداً) عن حياتي اليومية" },
+                            { de: "den Alltag abwechslungsreich finden/nicht immer das Gleiche machen", en: "find everyday life varied/not always do the same thing", ar: "ألاقي حياتي اليومية متنوعة/مابعملش نفس الحاجة دايماً" },
                             { de: "sein Leben selbst bestimmen können", en: "be able to determine one's own life (self-determination)", ar: "أقدر أحدد شكل حياتي بنفسي" },
                             { de: "sich über den Verkehr/die Arbeit im Haushalt ärgern", en: "get annoyed about traffic/housework", ar: "أتضايق من الزحمة/شغل البيت" },
                             { de: "Mich nervت es/Ich mag es nicht, wenn (ich auf etwas warten muss).", en: "It annoys me/I don't like it when (I have to wait for something).", ar: "بيعصبني/مابحبش لما (أضطر أستنى حاجة)." },
@@ -98,16 +107,16 @@
                         ]
                     },
                     {
-                        title: "1.4 Umfrage-/Studienergebnisse – Survey/Study Results (نتائج الدراسات والاستطلاعات)",
+                        title: "1.4 نتائج الدراسات والاستطلاعات (Umfrage-/Studienergebnisse)",
                         items: [
-                            { de: "Einer Umfrage/Studie zufolge ...", en: "According to a survey/study ...", ar: "بناء على استطلاع/دراسة ..." },
-                            { de: "Laut einer Umfrage/Studie ...", en: "According to a survey/study ...", ar: "طبقا لاستطلاع/دراسة ..." },
+                            { de: "Einer Umfrage/Studie zufolge ...", en: "According to a survey/study ...", ar: "بناءً على استطلاع/دراسة ..." },
+                            { de: "Laut einer Umfrage/Studie ...", en: "According to a survey/study ...", ar: "طبقاً لاستطلاع/دراسة ..." },
                             { de: "Das sind die Ergebnisse einer Umfrage.", en: "These are the results of a survey.", ar: "دي نتايج استطلاع رأي." },
                             { de: "Eine Umfrage zum Thema ergab, dass ...", en: "A survey on the topic revealed that ...", ar: "استطلاع رأي عن الموضوع وضح إن ..." }
                         ]
                     },
                     {
-                        title: "1.5 Krimis – Crime Thrillers / Detective Stories (الروايات البوليسية / الجريمة)",
+                        title: "1.5 الروايات البوليسية / الجريمة (Krimis)",
                         items: [
                             { de: "am liebsten Krimis sehen/lesen", en: "prefer watching/reading crime thrillers", ar: "أكتر حاجة بحبها أتفرج/أقرا قصص بوليسية (جريمة)" },
                             { de: "Mord und Totschlag", en: "murder and manslaughter", ar: "قتل وضرب" },
@@ -116,11 +125,11 @@
                             { de: "Spitzenreiter (bei der Verbrecherjagd) sein", en: "be the frontrunner (in hunting criminals)", ar: "نكون في الصدارة (في مطاردة المجرمين)" },
                             { de: "Verbrechen aufklären", en: "solve crimes", ar: "نحل الجرايم" },
                             { de: "Täter verhaften", en: "arrest perpetrators", ar: "نقبض على الجناة" },
-                            { de: "die Bösen besiegen", en: "defeat the bad guys", ar: "نهزم الأشرار" }
+                            { de: "die Böسن besiegen", en: "defeat the bad guys", ar: "نهزم الأشرار" }
                         ]
                     },
                     {
-                        title: "1.6 Freizeitaktivitäten – Leisure Activities (أنشطة وقت الفراغ)",
+                        title: "1.6 أنشطة وقت الفراغ (Freizeitaktivitäten)",
                         items: [
                             { de: "zum Alltag gehören", en: "be part of everyday life", ar: "جزء من الروتين اليومي" },
                             { de: "(knapp vier Stunden) Freizeit haben/über (vier Stunden) freie Zeit verfügen", en: "have (just under four hours) free time/have (four hours) of free time available", ar: "عندي (حوالي أربع ساعات) وقت فراغ" },
@@ -132,7 +141,7 @@
                         ]
                     },
                     {
-                        title: "1.7 Veränderungen – Changes (التغييرات)",
+                        title: "1.7 التغييرات (Veränderungen)",
                         items: [
                             { de: "(sehr stark) zunehmen/abnehmen", en: "increase/decrease (very strongly)", ar: "يزيد/يقل (بشكل كبير)" },
                             { de: "der (große) Gewinner/Verlierer sein", en: "be the (big) winner/loser", ar: "يكون الفايز/الخسران (الأكبر)" },
@@ -143,7 +152,7 @@
                         ]
                     },
                     {
-                        title: "1.8 Eine Biografie – A Biography (سيرة ذاتية)",
+                        title: "1.8 سيرة ذاتية (Eine Biografie)",
                         items: [
                             { de: "geboren werden", en: "be born", ar: "يتولد" },
                             { de: "einen Ort verlassen", en: "leave a place", ar: "يسيب مكان" },
@@ -157,12 +166,12 @@
                 ]
             },
             {
-                title: "Part 2: Grammar – Prepositions / Präpositionen (حروف الجر)",
+                title: "2. القواعد - حروف الجر (Grammar - Prepositions / Präpositionen)",
                 subsections: [
                     {
-                        title: "2.1 Akkusativ-Präpositionen: an + Akkusativ (denken / sich erinnern)",
+                        title: "2.1 حروف جر تأخذ حالة النصب (an + Akkusativ: denken / sich erinnern)",
                         items: [
-                            { de: "Ich denke oft an meinen letzten Urlaub.", en: "I often think about my last vacation.", ar: "دايما بفتكر إجازتي اللي فاتت." },
+                            { de: "Ich denke oft an meinen letzten Urlaub.", en: "I often think about my last vacation.", ar: "دايماً بفتكر إجازتي اللي فاتت." },
                             { de: "Bitte denk an den Termin morgen früh!", en: "Please remember the appointment tomorrow morning!", ar: "والنبي ماتنساش (افتكر) ميعاد بكرة الصبح!" },
                             { de: "Er kann sich nicht an deinen Namen erinnern.", en: "He cannot remember your name.", ar: "هو مش قادر يفتكر اسمك." },
                             { de: "Wir erinnern uns gern an die Schulzeit.", en: "We like to remember our school days.", ar: "بنحب نفتكر أيام المدرسة." },
@@ -170,39 +179,39 @@
                         ]
                     },
                     {
-                        title: "2.1 Akkusativ-Präpositionen: auf + Akkusativ (warten / sich freuen)",
+                        title: "2.1 حروف جر تأخذ حالة النصب (auf + Akkusativ: warten / sich freuen)",
                         items: [
                             { de: "Ich warte schon seit einer Stunde auf den Bus.", en: "I have been waiting for the bus for an hour.", ar: "أنا مستني الأتوبيس بقالي ساعة." },
                             { de: "Wir warten auf eine Antwort von der Firma.", en: "We are waiting for an answer from the company.", ar: "إحنا مستنيين رد من الشركة." },
-                            { de: "Die Kinder freuen sich auf die Ferien.", en: "The children are looking forward to the holidays.", ar: "الولاد مستنيين الإجازة بفارغ الصبر." },
+                            { de: "Die الكبار freuen sich auf die Ferien.", en: "The children are looking forward to the holidays.", ar: "الولاد مستنيين الإجازة بفارغ الصبر." },
                             { de: "Er freut sich auf das Fußballspiel am Wochenende.", en: "He is looking forward to the soccer match this weekend.", ar: "هو متحمس لماتش الكورة في الويك إند." },
-                            { de: "Worauf wartest du noch?", en: "What are you still waiting for?", ar: "إنت لسه مستني إيه" }
+                            { de: "Worauf wartest du noch?", en: "What are you still waiting for?", ar: "إنت لسه مستني إيه؟" }
                         ]
                     },
                     {
-                        title: "2.1 Akkusativ-Präpositionen: für + Akkusativ (sich interessieren / sich bedanken)",
+                        title: "2.1 حروف جر تأخذ حالة النصب (für + Akkusativ: sich interessieren / sich bedanken)",
                         items: [
-                            { de: "Ich interessiere mich sehr für Geschichte.", en: "I am very interested in history.", ar: "أنا مهتم جدا بالتاريخ." },
+                            { de: "Ich interessiere mich sehr für Geschichte.", en: "I am very interested in history.", ar: "أنا مهتم جداً بالتاريخ." },
                             { de: "Er interessiert sich nicht für Sport.", en: "He is not interested in sports.", ar: "هو مش مهتم بالرياضة." },
                             { de: "Wir bedanken uns für das schöne Geschenk.", en: "We thank you for the beautiful gift.", ar: "إحنا بنشكركم على الهدية الحلوة دي." },
                             { de: "Sie hat sich für die Einladung bedankt.", en: "She thanked (them) for the invitation.", ar: "هي شكرتهم على العزومة." },
-                            { de: "Interessierst du dich für moderne Kunst?", en: "Are you interested in modern art?", ar: "إنت مهتم بالفن الحديث" }
+                            { de: "Interessierst du dich für moderne Kunst?", en: "Are you interested in modern art?", ar: "إنت مهتم بالفن الحديث؟" }
                         ]
                     },
                     {
-                        title: "2.1 Akkusativ-Präpositionen: über + Akkusativ (sich ärgern / sich freuen / reden / sprechen / verfügen)",
+                        title: "2.1 حروف جر تأخذ حالة النصب (über + Akkusativ: sich ärgern / sich freuen / reden / sprechen / verfügen)",
                         items: [
                             { de: "Er ärgert sich über den Stau auf der Autobahn.", en: "He is annoyed about the traffic jam on the highway.", ar: "هو متضايق من الزحمة على الطريق السريع." },
-                            { de: "Wir have uns sehr über deinen Besuch gefreut.", en: "We were very happy about your visit.", ar: "إحنا فرحنا جدا بزيارتك." },
-                            { de: "Sie sprechen oft über Politik.", en: "They often talk about politics.", ar: "هما دايما بيتكلموا في السياسة." },
+                            { de: "Wir have uns sehr über deinen Besuch gefreut.", en: "We were very happy about your visit.", ar: "إحنا فرحنا جداً بزيارتك." },
+                            { de: "Sie sprechen oft über Politik.", en: "They often talk about politics.", ar: "هما دايماً بيتكلموا في السياسة." },
                             { de: "Die beiden reden über das Wetter.", en: "The two are talking about the weather.", ar: "هما الاتنين بيتكلموا عن الجو." },
                             { de: "Das Hotel verfügt über einen großen Swimmingpool.", en: "The hotel features (has available) a large swimming pool.", ar: "الفندق فيه حمام سباحة كبير." }
                         ]
                     },
                     {
-                        title: "2.1 Akkusativ-Präpositionen: um + Akkusativ (bitten / steigen / sinken)",
+                        title: "2.1 حروف جر تأخذ حالة النصب (um + Akkusativ: bitten / steigen / sinken)",
                         items: [
-                            { de: "Darf ich dich um einen Gefallen bitten?", en: "May I ask you for a favor?", ar: "ممكن أطلب منك خدمة" },
+                            { de: "Darf ich dich um einen Gefallen bitten?", en: "May I ask you for a favor?", ar: "ممكن أطلب منك خدمة؟" },
                             { de: "Er bat sie um Hilfe bei der Aufgabe.", en: "He asked her for help with the task.", ar: "هو طلب منها مساعدة في الواجب/المهمة." },
                             { de: "Die Preise sind um drei Prozent gestiegen.", en: "Prices have risen by three percent.", ar: "الأسعار زادت بنسبة 3٪." },
                             { de: "Die Temperatur ist um fünf Grad gesunken.", en: "The temperature has dropped by five degrees.", ar: "درجة الحرارة نزلت 5 درجات." },
@@ -210,37 +219,37 @@
                         ]
                     },
                     {
-                        title: "2.2 Dativ-Präpositionen: aus + Dativ (bestehen)",
+                        title: "2.2 حروف جر تأخذ حالة الجر (aus + Dativ: bestehen)",
                         items: [
                             { de: "Der Tisch besteht aus massivem Holz.", en: "The table is made of solid wood.", ar: "الترابيزة دي معمولة من خشب طبيعي (متين)." },
                             { de: "Die Prüfung besteht aus einem mündlichen und einem schriftlichen Teil.", en: "The exam consists of an oral and a written part.", ar: "الامتحان بيتكون من جزء شفوي وجزء تحريري." },
                             { de: "Unsere Gruppe besteht aus fünf Personen.", en: "Our group consists of five people.", ar: "مجموعتنا بتتكون من خمس أشخاص." },
                             { de: "Das Kleid besteht aus reiner Seide.", en: "The dress is made of pure silk.", ar: "الفستان معمول من حرير خالص." },
-                            { de: "Woraus besteht dieses Getränk?", en: "What is this drink made of?", ar: "المشروب ده متكون من إيه" }
+                            { de: "Woraus besteht dieses Getränk?", en: "What is this drink made of?", ar: "المشروب ده متكون من إيه؟" }
                         ]
                     },
                     {
-                        title: "2.2 Dativ-Präpositionen: bei + Dativ (sich bedanken)",
+                        title: "2.2 حروف جر تأخذ حالة الجر (bei + Dativ: sich bedanken)",
                         items: [
                             { de: "Ich bedanke mich bei dir für die Hilfe.", en: "I thank you for the help.", ar: "أنا بشكرك على المساعدة." },
                             { de: "Er hat sich bei seinem Chef bedankt.", en: "He thanked his boss.", ar: "هو شكر مديره." },
                             { de: "Wir müssen uns bei unseren Nachbarn bedanken.", en: "We have to thank our neighbors.", ar: "لازم نشكر جيرانا." },
-                            { de: "Hast du dich bei ihr schon bedankt?", en: "Have you thanked her yet?", ar: "إنت شكرتها ولا لسه" },
+                            { de: "Hast du dich bei ihr schon bedankt?", en: "Have you thanked her yet?", ar: "إنت شكرتها ولا لسه؟" },
                             { de: "Der Schüler bedankt sich bei der Lehrerin.", en: "The student thanks the teacher.", ar: "التلميذ بيشكر المدرسة." }
                         ]
                     },
                     {
-                        title: "2.2 Dativ-Präpositionen: mit + Dativ (sprechen / reden / telefonieren / sich beschäftigen)",
+                        title: "2.2 حروف جر تأخذ حالة الجر (mit + Dativ: sprechen / reden / telefonieren / sich beschäftigen)",
                         items: [
-                            { de: "Kann ich kurz mit dir sprechen?", en: "Can I speak with you briefly?", ar: "ممكن أتكلم معاك ثانية" },
+                            { de: "Kann ich kurz mit dir sprechen?", en: "Can I speak with you briefly?", ar: "ممكن أتكلم معاك ثانية؟" },
                             { de: "Er telefoniert gerade mit einem Kunden.", en: "He is currently on the phone with a customer.", ar: "هو بيكلم عميل في التليفون دلوقتي." },
                             { de: "Sie redet gerne mit ihrer besten Freundin.", en: "She likes talking to her best friend.", ar: "هي بتحب ترغي مع أعز صاحبة ليها." },
-                            { de: "Wir beschäftigen uns intensiv mit diesem Thema.", en: "We are dealing intensively with this topic.", ar: "إحنا مهتمين وبندرس الموضوع ده بتركيز." },
+                            { de: "Wir beschäftigen uns intensiv mit diesem Thema.", en: "We are dealing intensivly with this topic.", ar: "إحنا مهتمين وبندرس الموضوع ده بتركيز." },
                             { de: "In meiner Freizeit beschäftige ich mich viel mit Musik.", en: "In my free time, I occupy myself a lot with music.", ar: "في وقت فراغي بشغل نفسي كتير بالمزيكا." }
                         ]
                     },
                     {
-                        title: "2.2 Dativ-Präpositionen: nach + Dativ (fragen)",
+                        title: "2.2 حروف جر تأخذ حالة الجر (nach + Dativ: fragen)",
                         items: [
                             { de: "Ein Tourist fragt nach dem Weg zum Bahnhof.", en: "A tourist asks for the way to the train station.", ar: "سائح بيسأل على طريق المحطة." },
                             { de: "Ich habe nach dem Preis gefragt.", en: "I asked about the price.", ar: "أنا سألت على السعر." },
@@ -250,21 +259,21 @@
                         ]
                     },
                     {
-                        title: "2.2 Dativ-Präpositionen: von + Dativ (träumen / handeln)",
+                        title: "2.2 حروف جر تأخذ حالة الجر (von + Dativ: träumen / handeln)",
                         items: [
                             { de: "Ich träume von einem Haus am Meer.", en: "I dream of a house by the sea.", ar: "أنا بحلم ببيت على البحر." },
                             { de: "Er träumt von einer Weltreise.", en: "He dreams of a trip around the world.", ar: "هو بيحلم بلفة حوالين العالم." },
                             { de: "Das Buch handelt von einer schwierigen Freundschaft.", en: "The book is about a difficult friendship.", ar: "الكتاب بيتكلم عن صداقة صعبة." },
                             { de: "Der Film handelt von dem Zweiten Weltkrieg.", en: "The movie is about the Second World War.", ar: "الفيلم بيتكلم عن الحرب العالمية التانية." },
-                            { de: "Wovon hast du heute Nacht geträumt?", en: "What did you dream about last night?", ar: "إنت حلمت بإيه امبارح بالليل" }
+                            { de: "Wovon hast du heute Nacht geträumt?", en: "What did you dream about last night?", ar: "إنت حلمت بإيه امبارح بالليل؟" }
                         ]
                     },
                     {
-                        title: "2.2 Dativ-Präpositionen: zu + Dativ (gehören / zählen / gratulieren)",
+                        title: "2.2 حروف جر تأخذ حالة الجر (zu + Dativ: gehören / zählen / gratulieren)",
                         items: [
                             { de: "Dieser Schlüssel gehört zu meinem Auto.", en: "This key belongs to my car.", ar: "المفتاح ده بتاع عربيتي." },
                             { de: "Spanien zählt zu den beliebtesten Urlaubsländern.", en: "Spain counts among the most popular vacation countries.", ar: "إسبانيا بتتعد من أكتر البلاد المحبوبة في الإجازات." },
-                            { de: "Ich gratuliere dir herzlich zum Geburtstag.", en: "I congratulate you warmly on your birthday.", ar: "كل سنة وإنت طيب (بهنيك بعيد ميلادك من قلبي)." },
+                            { de: "Ich gratulieren dir herzlich zum Geburtstag.", en: "I congratulate you warmly on your birthday.", ar: "كل سنة وإنت طيب (بهنيك بعيد ميلادك من قلبي)." },
                             { de: "Er zählt zu meinen besten Freunden.", en: "He counts as one of my best friends.", ar: "هو بيعتبر من أعز أصحابي." },
                             { de: "Wir gratulieren euch zur Hochzeit.", en: "We congratulate you on your wedding.", ar: "ألف مبروك على الجواز." }
                         ]
@@ -272,10 +281,10 @@
                 ]
             },
             {
-                title: "Part 3: Reading Texts / Lesetexte (نصوص القراءة)",
+                title: "3. نصوص القراءة (Reading Texts / Lesetexte)",
                 subsections: [
                     {
-                        title: "3.1 Markus’ Report – Markus' Bericht (تقرير ماركوس)",
+                        title: "3.1 تقرير ماركوس (Markus’ Report – Markus' Bericht)",
                         items: [
                             { de: "Ich heiße Markus und ich bin mit meinem Leben im Allgemeinen zufrieden.", en: "My name is Markus and I am generally satisfied with my life.", ar: "اسمي ماركوس وأنا راضي عن حياتي بشكل عام." },
                             { de: "Montags bis freitags stehe ich um 7.00 Uhr auf, gegen 8.00 Uhr fahre ich mit dem Auto ins Büro.", en: "Mondays to Fridays I get up at 7:00 a.m., around 8:00 a.m. I drive to the office by car.", ar: "من الاتنين للجمعة بصحى الساعة 7 الصبح، وحوالي الساعة 8 بروح المكتب بالعربية." },
@@ -285,7 +294,7 @@
                             { de: "Der Verlag befindet sich in einem Hochhaus in Frankfurt, in der 20. und 21. Etage.", en: "The publishing house is located in a high-rise building in Frankfurt, on the 20th and 21st floors.", ar: "دار النشر موجودة في ناطحة سحاب في فرانكفورت، في الدور العشرين والواحد وعشرين." },
                             { de: "Im Gebäude muss ich meistens ein paar Minuten auf den Fahrstuhl warten.", en: "In the building, I usually have to wait a few minutes for the elevator.", ar: "في المبنى بضطر غالباً أستنى الأسانسير كام دقيقة." },
                             { de: "Meine Arbeitszeit beginnt um 9.00 Uhr.", en: "My working time begins at 9:00 a.m.", ar: "وقت شغلي بيبدأ الساعة 9 الصبح." },
-                            { de: "Zuerست beantworte ich meine E-Mails, danach lese ich Dokumente und Manuskripte.", en: "First I answer my emails, after that I read documents and manuscripts.", ar: "أول حاجة برد على إيميلاتي، وبعدين بقرا الورق والمخطوطات." },
+                            { de: "Zuerst beantworte ich meine E-Mails, danach lese ich Dokumente und Manuskripte.", en: "First I answer my emails, after that I read documents and manuscripts.", ar: "أول حاجة برد على إيميلاتي، وبعدين بقرا الورق والمخطوطات." },
                             { de: "Jeden Mittwoch um 9.00 Uhr haben wir eine Besprechung.", en: "Every Wednesday at 9:00 a.m. we have a meeting.", ar: "كل يوم أربع الساعة 9 الصبح عندنا اجتماع." },
                             { de: "In der Sitzung reden wir über Projekte, lösen kleinere Probleme oder sammeln Ideen.", en: "In the meeting we talk about projects, solve minor problems or collect ideas.", ar: "في الاجتماع بنتكلم عن المشاريع، بنحل المشاكل الصغيرة أو بنجمع أفكار." },
                             { de: "Der Kampf auf dem Buchmarkt ist hart.", en: "The battle in the book market is tough.", ar: "المنافسة في سوق الكتب شرسة جداً." },
@@ -299,7 +308,7 @@
                         ]
                     },
                     {
-                        title: "3.2 Information about Leni – Informationen über Leni (معلومات عن ليني)",
+                        title: "3.2 معلومات عن ليني (Information about Leni – Informationen über Leni)",
                         items: [
                             { de: "Leni ist Studentin an der Universität Greifswald.", en: "Leni is a student at the University of Greifswald.", ar: "ليني طالبة في جامعة جرايفسفالد." },
                             { de: "An der Universität besucht sie Vorlesungen und Seminare.", en: "At the university she attends lectures and seminars.", ar: "في الجامعة بتحضر محاضرات وسكاشن." },
@@ -317,31 +326,31 @@
                 ]
             },
             {
-                title: "Part 4: Articles & Discussions / Artikel & Diskussionen (مقالات ونقاشات)",
+                title: "4. مقالات ونقاشات (Articles & Discussions / Artikel & Diskussionen)",
                 subsections: [
                     {
-                        title: "4.1 Alltagszufriedenheit in Deutschland (الرضا عن الحياة اليومية في ألمانيا)",
+                        title: "4.1 الرضا عن الحياة اليومية في ألمانيا (Alltagszufriedenheit in Deutschland)",
                         items: [
                             { de: "Eine Umfrage zur Alltagszufriedenheit in Deutschland ergab, dass 76 Prozent der Deutschen mit ihrem Alltag zufrieden sind.", en: "A survey on everyday life satisfaction in Germany showed that 76 percent of Germans are satisfied with their everyday life.", ar: "استطلاع رأي عن الرضا في الحياة اليومية في ألمانيا وضح إن 76٪ من الألمان راضيين عن حياتهم اليومية." },
                             { de: "Besonders wichtig fanden die Befragten, dass der Alltag abwechslungsreich ist.", en: "The respondents found it particularly important that everyday life is varied.", ar: "الناس اللي شاركوا في الاستطلاع شافوا إن الأهم هو إن الروتين اليومي يكون فيه تنوع." },
-                            { de: "Außerdem spielt das Gefühl, sein Leben selbst bestimmen zu können, eine wichtige Rolle.", en: "In addition, the feeling of being able to determine one's own life plays an important role.", ar: "كمان إحساس إن الواحد يقدر يحدد شكل حياته بنفسه بيلعب دور مهم." },
+                            { de: "Außerdem spielt das Gefühl, sein Leben selbst bestimmen zu können, eine wichtige Rolle.", en: "In addition, the feeling of being able to determine one's own life plays an important role.", ar: "كمان إحساس إن الواحد يقدر يحدد شكل حياته بنفسي بيلعب دور مهم." },
                             { de: "Einen großen Einfluss auf die Zufriedenheit haben auch eine sinnvolle Tätigkeit und die Anerkennung von anderen Menschen.", en: "A meaningful occupation and the recognition of other people also have a great influence on satisfaction.", ar: "كمان الشغل اللي ليه معنى وتقدير الناس ليه تأثير كبير على الرضا." },
                             { de: "Überraschenderweise liegen materielle Aspekte wie die finanzielle Situation der Umfrageteilnehmer nicht auf den vorderen Plätzen, sie kamen nur auf Platz neun.", en: "Surprisingly, material aspects like the financial situation of the survey participants do not lie in the top spots; they only came in ninth place.", ar: "الغريب إن الجوانب المادية زي الحالة المالية للمشاركين ماجاتش في المراكز الأولى، دي جات في المركز التاسع بس." },
                             { de: "Zu den Dingen, die die Deutschen im Alltag nerven, gehören ungeliebte Tätigkeiten im Haushalt, Verspätungen bei öffentlichen Verkehrsmitteln und Staus.", en: "Among the things that annoy Germans in everyday life are disliked household chores, delays in public transportation, and traffic jams.", ar: "من الحاجات اللي بتعصب الألمان في حياتهم اليومية: شغل البيت اللي مابيحبوش يعملوه، تأخير المواصلات العامة، والزحمة." }
                         ]
                     },
                     {
-                        title: "4.2 Ärgern und Freude – Annoyance and Joy (الزعل والفرح)",
+                        title: "4.2 الزعل والفرح (Ärgern und Freude – Annoyance and Joy)",
                         items: [
                             { de: "Hallo zusammen! Worüber ärgert ihr euch im Alltag am meisten?", en: "Hello everyone! What do you get annoyed about the most in everyday life?", ar: "أهلاً يا جماعة! إيه أكتر حاجة بتعصبكم في يومكم؟" },
                             { de: "Ich ärgere mich am meisten über Staus und andere Autofahrer.", en: "I mostly get annoyed about traffic jams and other drivers.", ar: "أكتر حاجة بتضايقني الزحمة والسواقين التانيين." },
                             { de: "Mich nervت es wirklich, wenn ich im Stau stehen muss.", en: "It really annoys me when I have to stand in a traffic jam.", ar: "بجد بتعصب جداً لما بضطر أقف في الزحمة." },
-                            { de: "Das verstehe ich gut. Ich ärgere mich oft über Hausarbeiten wie Bügeln und Staubsaugen.", en: "I understand that well. I often get annoyed about housework like ironing and vacuuming.", ar: "فاهمك جداً. أنا غالباً بتضايق من شغل البيت زي الكوي والكنس بالمكنسة." },
+                            { de: "Das verstehe ich gut. Ich ärgere mich oft über Hausarbeiten wie Bügeln und Staubsaugen.", en: "I often get annoyed about housework like ironing and vacuuming.", ar: "فاهمك جداً. أنا غالباً بتضايق من شغل البيت زي الكوي والكنس بالمكنسة." },
                             { de: "Ich mag es auch nicht, wenn es zu viel Bürokratie im Alltag gibt.", en: "I also don't like it when there is too much bureaucracy in everyday life.", ar: "وأنا كمان مابحبش لما بيكون فيه روتين (بيروقراطية) كتير في الحياة اليومية." },
                             { de: "Mich nervت Werbung im Internet extrem.", en: "Internet ads annoy me extremely.", ar: "الإعلانات اللي على النت بتعصبني لأقصى درجة." },
                             { de: "Außerdem ärgere ich mich, wenn ich lange an der Supermarktkasse warten muss.", en: "Besides, I get annoyed when I have to wait a long time at the supermarket checkout.", ar: "كمان بتضايق لما بضطر أستنى كتير على الكاشير في السوبر ماركت." },
                             { de: "Ja, das ewige Warten ist furchtbar. Schlechter Service beim Einkaufen oder in Restaurants ärgert mich auch manchmal.", en: "Yes, the endless waiting is terrible. Bad service when shopping or in restaurants also annoys me sometimes.", ar: "أيوه، الانتظار اللي مابيخلصش ده فظيع. الخدمة السيئة وقت الشرا أو في المطاعم بتضايقني أنا كمان ساعات." },
-                            { de: "Aber lasst uns über schöne Dinge sprechen. Worüber freut ihr euch im Alltag?", en: "But let's talk about nice things. What makes you happy in everyday life?", ar: "بس خلونا نتكلم عن الحاجات الحلوة. إيه اللي بيفرحكم في يومكم؟" },
+                            { de: "Aber lasست uns über schöne Dinge sprechen. Worüber freut ihr euch im Alltag?", en: "But let's talk about nice things. What makes you happy in everyday life?", ar: "بس خلونا نتكلم عن الحاجات الحلوة. إيه اللي بيفرحكم في يومكم؟" },
                             { de: "Für mich ist es sehr wichtig, dass ich Zeit für mich selbst habe.", en: "For me it is very important that I have time for myself.", ar: "بالنسبة لي مهم جداً إن يكون عندي وقت لنفسي." },
                             { de: "Und ich freue mich sehr über kleine Komplimente.", en: "And I am very happy about small compliments.", ar: "وأنا بفرح جداً بالمجاملات البسيطة." },
                             { de: "Ich freue mich, wenn die öffentlichen Verkehrsmittel pünktlich sind und die Straßen leer sind.", en: "I am happy when public transport is punctual and the streets are empty.", ar: "بفرح لما المواصلات العامة تيجي في ميعادها وتكون الشوارع فاضية." },
@@ -354,7 +363,7 @@
                         ]
                     },
                     {
-                        title: "4.3 Freizeit-Interview – Leisure Interview (مقابلة عن وقت الفراغ)",
+                        title: "4.3 مقابلة عن وقت الفراغ (Freizeit-Interview – Leisure Interview)",
                         items: [
                             { de: "Was machst du in deiner Freizeit am liebsten?", en: "What do you like doing most in your free time?", ar: "بتحب تعمل إيه أكتر حاجة في وقت فراغك؟" },
                             { de: "Am liebsten lese ich ein gutes Buch oder gehe in der Natur spazieren.", en: "I like reading a good book or taking a walk in nature the most.", ar: "أكتر حاجة بحبها إني أقرا كتاب حلو أو أتمشى في الطبيعة." },
@@ -373,69 +382,151 @@
                     }
                 ]
             },
+            {
+                title: "5. إحصائيات وقت الفراغ (Leisure Statistics / Freizeitstatistik)",
+                subsections: [
+                    {
+                        title: "5.1 أنشطة وقت الفراغ المشهورة في ألمانيا (Beliebte Freizeitaktivitäten in Deutschland)",
+                        items: [
+                            { de: "Die Freizeitgestaltung gehört genauso zum Alltag wie Ausbildung und Beruf.", en: "Organizing free time is just as much a part of everyday life as education and work.", ar: "تنظيم وقت الفراغ جزء من الحياة اليومية زيه زي التعليم والشغل بالظبط." },
+                            { de: "Laut Statistik verfügen die Deutschen am Tag über drei Stunden und 49 Minuten freie Zeit.", en: "According to statistics, Germans have three hours and 49 minutes of free time per day.", ar: "طبقاً للإحصائيات، الألمان عندهم 3 ساعات و49 دقيقة وقت فراغ في اليوم." },
+                            { de: "Im Fünf-Jahres-Vergleich sind das ca. 15 Minuten weniger als vor fünf Jahren.", en: "In a five-year comparison, that is about 15 minutes less than five years ago.", ar: "في مقارنة لآخر خمس سنين، ده بيعتبر أقل بـ 15 دقيقة تقريباً من خمس سنين فاتت." },
+                            { de: "Die meisten Freizeitaktivitäten werden von den Medien bestimmt.", en: "Most leisure activities are determined by the media.", ar: "الميديا (وسائل الإعلام) بتحدد معظم أنشطة وقت الفراغ." },
+                            { de: "Dabei liegt das Fernsehen als 'Lagerfeuer im Wohnzimmer' immer noch auf Platz eins: 97 Prozent der Deutschen sehen regelmäßig fern.", en: "Here, television as the 'campfire in the living room' is still in first place: 97 percent of Germans watch television regularly.", ar: "التلفزيون باعتباره 'نار الدفاية في الصالة' لسه في المركز الأول: 97٪ من الألمان بيتفرجوا على التلفزيون بانتظام." },
+                            { de: "Sehr stark zugenommen haben die Nutzung des Internets und der Gebrauch von Smartphones als mobile Alleskönner.", en: "The use of the internet and the use of smartphones as mobile all-rounders have increased very strongly.", ar: "استخدام النت والموبايلات كأجهزة بتعمل كل حاجة زاد بشكل كبير جداً." },
+                            { de: "Die großen Verlierer unter den Freizeitaktivitäten sind persönliche Treffen und gemeinsame Aktivitäten mit Freunden.", en: "The big losers among leisure activities are personal meetings and joint activities with friends.", ar: "الخسران الأكبر بين أنشطة وقت الفراغ هي المقابلات الشخصية والأنشطة المشتركة مع الصحاب." },
+                            { de: "Ebenfalls im Trend liegen Sport und Besuche von Rock- und Popkonzerten oder von Volksfesten.", en: "Also trending are sports and visits to rock and pop concerts or public festivals.", ar: "كمان من الحاجات التريند دلوقتي الرياضة وحضور حفلات الروك والبوب أو المهرجانات الشعبية." },
+                            { de: "Kulturveranstaltungen wie Theater-, Ballett- und Opernaufführungen haben mit einem Minus von 32 Prozent deutlich an Attraktivität verloren.", en: "Cultural events such as theater, ballet, and opera performances have clearly lost their attractiveness with a decrease of 32 percent.", ar: "الفعاليات الثقافية زي عروض المسرح والباليه والأوبرا فقدت جاذبيتها بشكل واضح بنسبة تراجع 32٪." },
+                            { de: "Rund die Hälfte der Befragten möchte einfach mal nichts tun und faulenzen.", en: "Around half of those surveyed would just like to do nothing and laze around.", ar: "حوالي نص اللي شاركوا في الاستطلاع عايزين ببساطة ميعملوش حاجة ويأنتخوا." }
+                        ]
+                    },
+                    {
+                        title: "5.2 ملخص الإحصائيات (Statistik-Zusammenfassung – Statistics Summary)",
+                        items: [
+                            { de: "Laut der Statistik haben die Deutschen täglich etwa 3 Stunden und 49 Minuten Freizeit.", en: "According to the statistics, Germans have about 3 hours and 49 minutes of free time daily.", ar: "طبقاً للإحصائيات، الألمان عندهم حوالي 3 ساعات و49 دقيقة وقت فراغ كل يوم." },
+                            { de: "Die beliebteste Freizeitbeschäftigung: Das Fernsehen ist nach wie vor die Nummer eins; 97 Prozent der Deutschen sehen regelmäßig fern.", en: "The most popular leisure activity: Television is still number one; 97 percent of Germans regularly watch TV.", ar: "أكتر نشاط مفضل في وقت الفراغ: التلفزيون لسه رقم واحد؛ 97٪ من الألمان بيتفرجوا على التلفزيون بانتظام." },
+                            { de: "Die Gewinner: Zu den Gewinnern zählen eindeutig das Internet und die Smartphones.", en: "The winners: The clear winners are the internet and smartphones.", ar: "الفايزين: من الواضح إن النت والموبايلات هما الفايزين الأكبر." },
+                            { de: "Ebenfalls im Trend liegen Sport (besonders im Fitnessstudio) sowie der Besuch von Konzerten und Volksfesten.", en: "Also trending are sports (especially in the gym) as well as attending concerts and public festivals.", ar: "كمان من الحاجات التريند الرياضة (خصوصاً في الجيم) وحضور الحفلات والمهرجانات الشعبية." },
+                            { de: "Auch die Kommunikation über soziale Medien hat stark zugenommen.", en: "Communication via social media has also increased significantly.", ar: "كمان التواصل على السوشيال ميديا زاد جداً." },
+                            { de: "Die Verlierer: Die großen Verlierer sind persönliche Treffen und gemeinsame Aktivitäten mit Freunden, deren Anteil stark zurückgegangen ist.", en: "The losers: The big losers are personal meetings and joint activities with friends, whose share has decreased significantly.", ar: "الخسرانين: الخسران الأكبر هو المقابلات الشخصية والأنشطة المشتركة مع الصحاب، اللي نسبتها قلت أوي." },
+                            { de: "Auch Kulturveranstaltungen wie Oper oder Theater haben deutlich an Attraktivität verloren.", en: "Cultural events like opera or theater have also clearly lost their attractiveness.", ar: "كمان الففعاليات الثقافية زي الأوبرا والمسرح فقدت جاذبيتها بشكل واضح." },
+                            { de: "Keine Veränderungen: Keine Veränderungen gibt es beim Wunsch nach Ruhe.", en: "No changes: There are no changes in the desire for peace and quiet.", ar: "مفيش تغييرات: مفيش تغيير في الرغبة في الهدوء." },
+                            { de: "Rund die Hälfte der Befragten möchte nach wie vor einfach mal nichts tun und faulenzen.", en: "Around half of the respondents still just want to do nothing and laze around.", ar: "حوالي نص اللي اتسألوا لسه عايزين ببساطة ميعملوش حاجة ويأنتخوا." }
+                        ]
+                    },
+                    {
+                        title: "5.3 وصف وتقرير (Beschreibung & Bericht – Description & Report)",
+                        items: [
+                            { de: "Aus der Statistik geht hervor, dass sich das Freizeitverhalten in den letzten fünf Jahren stark verändert hat.", en: "The statistics show that leisure behavior has changed significantly over the last five years.", ar: "الإحصائية بتوضح إن تصرفات الناس في وقت الفراغ اتغيرت جداً في آخر خمس سنين." },
+                            { de: "Man kann deutlich sehen, dass die Nutzung des Internets mit einem Plus von 56 % der absolute Spitzenreiter ist.", en: "One can clearly see that the use of the internet is the absolute frontrunner with an increase of 56 %.", ar: "نقدر نشوف بوضوح إن استخدام النت هو المتصدر بلا منازع بزيادة 56٪." },
+                            { de: "Auch Musik horen (+31 %) und Sport treiben (+16 %) zählen zu den Gewinnern und werden häufiger gemacht als früher.", en: "Listening to music (+31 %) and doing sports (+16 %) are also among the winners and are done more frequently than before.", ar: "كمان سمع المزيكا (+31٪) ولعب الرياضة (+16٪) من الفايزين وبيتعملوا أكتر من زمان." },
+                            { de: "Auf der anderen Seite lässt sich erkennen, dass der Besuch von Kulturveranstaltungen mit einem Minus von 32 % am stärksten abgenommen hat.", en: "On the other hand, it can be seen that attending cultural events has decreased the most with a minus of 32 %.", ar: "على الناحية التانية، واضح إن حضور الفعاليات الثقافية قل بأكبر نسبة بتراجع 32٪." },
+                            { de: "Ebenfalls an Attraktivität verloren haben gemeinsame Unternehmungen mit Freunden (-28 %) und das Lesen von Büchern (-10 %).", en: "Joint activities with friends (-28 %) and reading books (-10 %) have also lost their attractiveness.", ar: "كمان اللي فقد جاذبيته هي الخروجات مع الصحاب (-28٪) وقراية الكتب (-10٪)." }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "6. تحدي البحث عن الكلمات (Word Search) - (Wortsuche - Challenge)",
+                subsections: [
+                    {
+                        title: "6.1 كلمات متنوعة من الفصل (Diverse Vocabulary)",
+                        items: [
+                            { de: "der Spitzenreiter", en: "the frontrunner / leader", ar: "المتصدر / اللي في المركز الأول" },
+                            { de: "der Gewinner", en: "the winner", ar: "الفائز" },
+                            { de: "der Verlierer", en: "the loser", ar: "الخاسر" },
+                            { de: "die Umfrage", en: "the survey", ar: "استطلاع رأي" },
+                            { de: "die Studie", en: "the study", ar: "دراسة" },
+                            { de: "das Ergebnis", en: "the result", ar: "النتيجة" },
+                            { de: "die Freizeitaktivität", en: "the leisure activity", ar: "نشاط وقت الفراغ" },
+                            { de: "der Krimi", en: "the crime thriller / detective story", ar: "الرواية البوليسية / قصة جريمة" },
+                            { de: "der Stau", en: "the traffic jam", ar: "الزحمة المرورية" },
+                            { de: "der Fahrstuhl", en: "the elevator", ar: "الأسانسير / المصعد" }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "7. مشاركة في منتدى (Forumsbeitrag / Forum Post)",
+                subsections: [
+                    {
+                        title: "7.1 نموذج لمشاركة مكتوبة (Sample Forum Post)",
+                        items: [
+                            { de: "Betreff: Mein Alltag und meine Freizeit", en: "Subject: My everyday life and my free time", ar: "الموضوع: حياتي اليومية ووقت فراغي" },
+                            { de: "Ich habe den Artikel über die Freizeitstatistik gelesen.", en: "I read the article about the leisure statistics.", ar: "أنا قريت المقال عن إحصائيات وقت الفراغ." },
+                            { de: "Die Ergebnisse haben mich nicht überrascht.", en: "The results did not surprise me.", ar: "النتايج مافاجئتنيش." },
+                            { de: "In meinem Heimatland Ägypten ist das Internet auch sehr wichtig.", en: "In my home country Egypt, the internet is also very important.", ar: "في بلدي مصر، النت برضه مهم جداً." },
+                            { de: "Die meisten Menschen nutzen das Smartphone in ihrer Freizeit.", en: "Most people use the smartphone in their free time.", ar: "معظم الناس بيستخدموا الموبايل في وقت فراغهم." },
+                            { de: "Ich persönlich treffe mich aber auch gerne mit Freunden.", en: "Personally, however, I also like meeting with friends.", ar: "أنا شخصياً بحب برضه أتقابل مع أصحابي." },
+                            { de: "Wir gehen oft zusammen spazieren oder kochen gemeinsam.", en: "We often go for a walk together or cook together.", ar: "غالباً بنتمشى مع بعض أو بنطبخ سوا." },
+                            { de: "Was denkt ihr über dieses Thema?", en: "What do you think about this topic?", ar: "إيه رأيكم في الموضوع ده؟" },
+                            { de: "Viele Grüße, [Dein Name]", en: "Best regards, [Your Name]", ar: "تحياتي، [اسمك]" }
+                        ]
+                    }
+                ]
+            }
         ];
-
         // --- SCRIPT LOGIC ---
         function createLessonUI() {
             const container = document.getElementById('lesson-container');
             lessonData.forEach((lesson, lessonIdx) => {
                 const lessonDiv = document.createElement('div');
                 lessonDiv.className = 'bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-all hover:shadow-md';
-                
+
                 let subsectionsHtml = '';
                 lesson.subsections.forEach((sub, subIdx) => {
                     let itemsHtml = '';
                     sub.items.forEach((item, itemIdx) => {
-                        const itemId = item---;
-                        itemsHtml += 
+                        const itemId = `item-${lessonIdx}-${subIdx}-${itemIdx}`;
+                        itemsHtml += `
                             <div class="group p-4 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all">
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div class="flex-1 space-y-1">
                                         <div class="flex items-center gap-2">
-                                            <button onclick="speak('')" class="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors shadow-sm" title="استمع للنطق">
+                                            <button onclick="speak('${item.de.replace(/'/g, "\\'")}')" class="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors shadow-sm" title="استمع للنطق">
                                                 <i class="fa-solid fa-volume-high text-xs"></i>
                                             </button>
-                                            <p class="font-bold text-lg text-slate-800 tracking-tight" dir="ltr"></p>
+                                            <p class="font-bold text-lg text-slate-800 tracking-tight" dir="ltr">${item.de}</p>
                                         </div>
-                                        <p class="text-slate-500 text-sm font-medium mr-10" dir="ltr"></p>
-                                        <p class="text-indigo-600 font-bold mr-10"></p>
+                                        <p class="text-slate-500 text-sm font-medium mr-10" dir="ltr">${item.en}</p>
+                                        <p class="text-indigo-600 font-bold mr-10">${item.ar}</p>
                                     </div>
                                     <div class="flex items-center gap-3 self-end sm:self-center">
-                                        <div id="status-" class="hidden flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold"></div>
-                                        <button id="mic-" onclick="toggleMic('', '')" class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-all shadow-sm border border-slate-200" title="اختبر نطقك">
+                                        <div id="status-${itemId}" class="hidden flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold"></div>
+                                        <button id="mic-${itemId}" onclick="toggleMic('${itemId}', '${item.de.replace(/'/g, "\\'")}')" class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-all shadow-sm border border-slate-200" title="اختبر نطقك">
                                             <i class="fa-solid fa-microphone"></i>
                                         </button>
                                     </div>
                                 </div>
-                                <div id="transcript-" class="hidden mt-3 p-3 bg-white/50 rounded-lg border border-dashed border-slate-200 text-sm text-slate-600 font-medium"></div>
+                                <div id="transcript-${itemId}" class="hidden mt-3 p-3 bg-white/50 rounded-lg border border-dashed border-slate-200 text-sm text-slate-600 font-medium"></div>
                             </div>
-                        ;
+                        `;
                     });
 
-                    subsectionsHtml += 
-                        <div class="p-6 ">
+                    subsectionsHtml += `
+                        <div class="p-6 ${subIdx > 0 ? 'border-t border-slate-100' : ''}">
                             <h3 class="text-xl font-extrabold text-slate-800 mb-6 flex items-center gap-2">
                                 <span class="w-2 h-8 bg-indigo-500 rounded-full"></span>
-                                
+                                ${sub.title}
                             </h3>
-                            <div class="grid gap-4"></div>
+                            <div class="grid gap-4">${itemsHtml}</div>
                         </div>
-                    ;
+                    `;
                 });
 
-                lessonDiv.innerHTML = 
+                lessonDiv.innerHTML = `
                     <div class="bg-indigo-50 px-6 py-4 border-b border-indigo-100">
-                        <h2 class="text-2xl font-black text-indigo-900"></h2>
+                        <h2 class="text-2xl font-black text-indigo-900">${lesson.title}</h2>
                     </div>
-                    
-                ;
+                    ${subsectionsHtml}
+                `;
                 container.appendChild(lessonDiv);
             });
         }
 
         // --- SPEECH & AUDIO ---
         const speechConfig = { lang: 'de-DE', rate: 0.9, pitch: 1.0 };
-        
+
         function speak(text) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
@@ -456,14 +547,16 @@
             recognition.continuous = false;
 
             recognition.onstart = () => {
-                const micBtn = document.getElementById(mic-);
-                micBtn.classList.add('bg-rose-600', 'text-white', 'animate-pulse');
-                micBtn.querySelector('i').className = 'fa-solid fa-circle';
+                const micBtn = document.getElementById(`mic-${activeId}`);
+                if (micBtn) {
+                    micBtn.classList.add('bg-rose-600', 'text-white', 'animate-pulse');
+                    micBtn.querySelector('i').className = 'fa-solid fa-circle';
+                }
             };
 
             recognition.onend = () => {
-                const micBtn = document.getElementById(mic-);
-                if(micBtn) {
+                const micBtn = document.getElementById(`mic-${activeId}`);
+                if (micBtn) {
                     micBtn.classList.remove('bg-rose-600', 'text-white', 'animate-pulse');
                     micBtn.querySelector('i').className = 'fa-solid fa-microphone';
                 }
@@ -472,14 +565,14 @@
 
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                const targetText = document.getElementById(mic-).getAttribute('data-target');
+                const targetText = document.getElementById(`mic-${activeId}`).getAttribute('data-target');
                 showResult(activeId, transcript, targetText);
             };
 
             recognition.onerror = (event) => {
                 console.error('Speech recognition error:', event.error);
-                if(activeId) {
-                    const status = document.getElementById(status-);
+                if (activeId) {
+                    const status = document.getElementById(`status-${activeId}`);
                     status.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> خطأ في التسجيل';
                     status.className = 'flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700';
                     status.classList.remove('hidden');
@@ -494,27 +587,27 @@
             if (activeId === id) {
                 recognition.stop();
             } else {
-                if(activeId) recognition.stop();
+                if (activeId) recognition.stop();
                 activeId = id;
-                const micBtn = document.getElementById(mic-);
+                const micBtn = document.getElementById(`mic-${id}`);
                 micBtn.setAttribute('data-target', target);
-                
+
                 // Reset UI
-                document.getElementById(status-).classList.add('hidden');
-                document.getElementById(	ranscript-).classList.add('hidden');
-                
+                document.getElementById(`status-${id}`).classList.add('hidden');
+                document.getElementById(`transcript-${id}`).classList.add('hidden');
+
                 recognition.start();
             }
         }
 
         function showResult(id, heard, target) {
-            const status = document.getElementById(status-);
-            const transcriptBox = document.getElementById(	ranscript-);
-            
+            const status = document.getElementById(`status-${id}`);
+            const transcriptBox = document.getElementById(`transcript-${id}`);
+
             // تنظيف النصوص للمقارنة
             const clean = (t) => t.toLowerCase().replace(/[.,!?;:]/g, '').trim();
             const isCorrect = clean(heard) === clean(target);
-            
+
             status.classList.remove('hidden');
             if (isCorrect) {
                 status.innerHTML = '<i class="fa-solid fa-circle-check"></i> نطق صح';
@@ -523,8 +616,8 @@
                 status.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> حاول تاني';
                 status.className = 'flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700';
             }
-            
-            transcriptBox.innerHTML = <span class="opacity-60">سمعت:</span> <span dir="ltr">""</span>;
+
+            transcriptBox.innerHTML = `<span class="opacity-60">سمعت:</span> <span dir="ltr">"${heard}"</span>`;
             transcriptBox.classList.remove('hidden');
         }
 
@@ -532,4 +625,5 @@
         document.addEventListener('DOMContentLoaded', createLessonUI);
     </script>
 </body>
+
 </html>
