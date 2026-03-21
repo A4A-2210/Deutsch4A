@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German B1 Masterclass - Kapitel 4: Lernen & Lebenslauf</title>
+    
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #0f172a; }
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .flashcard-inner { position: relative; width: 100%; height: 100%; transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+        .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+        .pulse-animation { animation: pulse 1.2s infinite; }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+
+        // ================= KAPITEL 4 DATA STRUCTURES =================
+
+        const prepVerbsData = [
+            { level: "B1", german: "sich ärgern über", case: "Akkusativ", english: "to be annoyed about", arabic: "يتعصب / يتضايق من", examples: [{ ger: "Ich ärgere mich über die viele Bürokratie.", en: "I am annoyed about the extensive bureaucracy.", ar: "أنا متضايق من البيروقراطية الكتير." }, { ger: "Worüber ärgerst du dich?", en: "What are you annoyed about?", ar: "إنت متعصب من إيه؟" }, { ger: "Er ärgert sich über seine schlechte Note.", en: "He is annoyed about his bad grade.", ar: "هو متضايق من درجته الوحشة." }] },
+            { level: "B1", german: "sich freuen auf", case: "Akkusativ", english: "to look forward to (future)", arabic: "يتطلع لـ / مستني بشوق", examples: [{ ger: "Wir freuen uns auf den neuen Kurs.", en: "We are looking forward to the new course.", ar: "إحنا مستنيين الكورس الجديد بشوق." }, { ger: "Worauf freust du dich am meisten?", en: "What are you looking forward to the most?", ar: "أكتر حاجة مستنيها إيه؟" }, { ger: "Ich freue mich auf das Wochenende.", en: "I am looking forward to the weekend.", ar: "أنا مستني الويك إند بشوق." }] },
+            { level: "B1", german: "sich freuen über", case: "Akkusativ", english: "to be happy about (past/present)", arabic: "مبسوط بـ / يفرح بـ", examples: [{ ger: "Ich freue mich über das gute Ergebnis.", en: "I am happy about the good result.", ar: "أنا مبسوط بالنتيجة الكويسة." }, { ger: "Sie hat sich über die Ermäßigung gefreut.", en: "She was happy about the discount.", ar: "هي فرحت بالخصم." }, { ger: "Worüber freut er sich?", en: "What is he happy about?", ar: "هو فرحان بإيه؟" }] },
+            { level: "B1", german: "sich beschäftigen mit", case: "Dativ", english: "to deal with / occupy oneself with", arabic: "يتعامل مع / ينشغل بـ", examples: [{ ger: "Das Gehirn beschäftigt sich mit vielen Daten.", en: "The brain deals with a lot of data.", ar: "المخ بيتعامل مع بيانات كتير." }, { ger: "Womit hast du dich gestern beschäftigt?", en: "What did you occupy yourself with yesterday?", ar: "انشغلت بإيه امبارح؟" }, { ger: "Wir beschäftigen uns intensiv mit dem Thema.", en: "We deal intensively with the topic.", ar: "إحنا بنتعمق في التعامل مع الموضوع ده." }] },
+            { level: "B1", german: "sich auswirken auf", case: "Akkusativ", english: "to have an effect/impact on", arabic: "يأثر على", examples: [{ ger: "Der Geldmangel wirkt sich auf die Ausstattung aus.", en: "The lack of money has an impact on the equipment.", ar: "نقص الفلوس بيأثر على التجهيزات." }, { ger: "Stress wirkt sich negativ auf das Gehirn aus.", en: "Stress has a negative effect on the brain.", ar: "الضغط بيأثر سلبياً على المخ." }, { ger: "Worauf wirkt sich das aus?", en: "What does that have an effect on?", ar: "ده بيأثر على إيه؟" }] },
+            { level: "A2", german: "teilnehmen an", case: "Dativ", english: "to participate in", arabic: "يشارك في", examples: [{ ger: "Ich habe an zwei Kursen teilgenommen.", en: "I have participated in two courses.", ar: "أنا شاركت في كورسين." }, { ger: "Sie nimmt an der Besprechung teil.", en: "She participates in the meeting.", ar: "هي بتشارك في الاجتماع." }, { ger: "Woran möchtest du teilnehmen?", en: "What would you like to participate in?", ar: "عايز تشارك في إيه؟" }] },
+            { level: "B1", german: "führen zu", case: "Dativ", english: "to lead to", arabic: "يؤدي إلى", examples: [{ ger: "Universitäten führen zu einem akademischen Abschluss.", en: "Universities lead to an academic degree.", ar: "الجامعات بتؤدي للحصول على شهادة أكاديمية." }, { ger: "Das führt zu einem großen Problem.", en: "That leads to a big problem.", ar: "ده بيؤدي لمشكلة كبيرة." }, { ger: "Wozu führt diese Entscheidung?", en: "What does this decision lead to?", ar: "القرار ده هيؤدي لإيه؟" }] },
+            { level: "B1", german: "sich einschreiben für", case: "Akkusativ", english: "to enroll / register for", arabic: "يسجل في (كورس/جامعة)", examples: [{ ger: "Ich habe mich für einen Kurs an der VHS eingeschrieben.", en: "I enrolled for a course at the VHS.", ar: "أنا سجلت في كورس في مدرسة الشعب." }, { ger: "Sie schreibt sich für die Prüfung ein.", en: "She is registering for the exam.", ar: "هي بتسجل للامتحان." }, { ger: "Wofür hast du dich eingeschrieben?", en: "What did you enroll for?", ar: "إنت سجلت في إيه؟" }] }
+        ];
+
+        const wendungenData = [
+            // Kausalangaben (The "Why" Trap)
+            { level: "A2", category: "Kausal (Position End)", german: "weil", english: "because (Verb at the end)", arabic: "عشان (الفعل في الآخر)", examples: [{ ger: "Ich lerne, weil ich die Prüfung bestehen will.", en: "I study because I want to pass the exam.", ar: "أنا بذاكر عشان عايز أنجح في الامتحان." }, { ger: "Bekomme ich eine Ermäßigung, weil ich Student bin?", en: "Do I get a discount because I am a student?", ar: "هاخد خصم عشان أنا طالب؟" }, { ger: "Das Gehirn löscht Daten, weil es Platz braucht.", en: "The brain deletes data because it needs space.", ar: "المخ بيمسح بيانات عشان محتاج مساحة." }] },
+            { level: "B1", category: "Kausal (Position 0)", german: "denn", english: "because (Normal sentence order)", arabic: "لأن (ترتيب الجملة طبيعي)", examples: [{ ger: "Ich lerne, denn ich will die Prüfung bestehen.", en: "I study, for I want to pass the exam.", ar: "أنا بذاكر، لأني عايز أنجح في الامتحان." }, { ger: "Marie bekommt gute Noten, denn sie lernt jeden Tag.", en: "Marie gets good grades because she studies every day.", ar: "ماري بتجيب درجات كويسة، لأنها بتذاكر كل يوم." }, { ger: "Es ist wichtig, denn es betrifft unsere Zukunft.", en: "It is important, for it concerns our future.", ar: "ده مهم، لأنه بيخص مستقبلنا." }] },
+            { level: "B1", category: "Kausal (Position 1)", german: "deshalb / deswegen / darum", english: "therefore (Verb immediately follows)", arabic: "عشان كده / لذلك (الفعل بييجي وراها)", examples: [{ ger: "Ich will bestehen, deshalb lerne ich viel.", en: "I want to pass, therefore I study a lot.", ar: "عايز أنجح، عشان كده بذاكر كتير." }, { ger: "Die Schule hat wenig Geld, deshalb ist sie schlecht ausgestattet.", en: "The school has little money, therefore it is poorly equipped.", ar: "المدرسة معاها فلوس قليلة، عشان كده تجهيزاتها وحشة." }, { ger: "Er war krank, deswegen konnte er nicht kommen.", en: "He was sick, therefore he couldn't come.", ar: "هو كان عيان، عشان كده مقدرش ييجي." }] },
+            
+            // Finalangaben (The "What For" Trap)
+            { level: "B1", category: "Final (Gleiches Subjekt)", german: "um ... zu", english: "in order to (Subjectless)", arabic: "عشان / لكي (بدون فاعل)", examples: [{ ger: "Ich lerne, um die Prüfung zu bestehen.", en: "I study in order to pass the exam.", ar: "أنا بذاكر عشان أنجح في الامتحان." }, { ger: "Um mit Kunden zu kommunizieren, brauche ich Italienisch.", en: "In order to communicate with customers, I need Italian.", ar: "عشان أتواصل مع العملاء محتاج إيطالي." }, { ger: "Paul bildet sich weiter, um Karriere zu machen.", en: "Paul further educates himself in order to make a career.", ar: "بول بيطور نفسه عشان يعمل كارير." }] },
+            { level: "B1", category: "Final (Zwei Subjekte)", german: "damit", english: "so that (Verb at the end)", arabic: "حتى / علشان (فاعل مختلف أو نفسه)", examples: [{ ger: "Ich lerne, damit meine Mutter glücklich ist.", en: "I study so that my mother is happy.", ar: "أنا بذاكر عشان أمي تكون مبسوطة." }, { ger: "Ich erkläre das, damit Sie es verstehen.", en: "I explain this so that you understand it.", ar: "أنا بشرح ده عشان حضرتك تفهمه." }, { ger: "Er arbeitet viel, damit seine Familie gut lebt.", en: "He works a lot so his family lives well.", ar: "هو بيشتغل كتير عشان عيلته تعيش كويس." }] },
+            
+            // Alternativ / Negativ
+            { level: "B1", category: "Negativ", german: "ohne ... zu", english: "without doing", arabic: "من غير ما (بدون فاعل)", examples: [{ ger: "Er ging, ohne ein Wort zu sagen.", en: "He left without saying a word.", ar: "مشي من غير ما يقول ولا كلمة." }, { ger: "Sie kauft ein, ohne auf den Preis zu achten.", en: "She shops without paying attention to the price.", ar: "بتشتري من غير ما تبص ع السعر." }, { ger: "Frau Müller hat den ganzen Tag gearbeitet, ohne eine Pause zu machen.", en: "Mrs. Müller worked all day without taking a break.", ar: "مدام مولر اشتغلت طول اليوم من غير ما تاخد بريك." }] },
+            { level: "B1", category: "Alternativ", german: "anstatt ... zu", english: "instead of doing", arabic: "بدل ما (بدون فاعل)", examples: [{ ger: "Anstatt selbst zu kochen, bestellt er Pizza.", en: "Instead of cooking himself, he orders pizza.", ar: "بدل ما يطبخ بنفسه بيطلب بيتزا." }, { ger: "Beate war im Fastfood-Restaurant, anstatt selbst zu kochen.", en: "Beate was in the fast-food restaurant instead of cooking herself.", ar: "بياته كانت في مطعم فاست فود بدل ما تطبخ بنفسها." }, { ger: "Anstatt zu lernen, spielt er am Computer.", en: "Instead of studying, he plays on the computer.", ar: "بدل ما يذاكر بيلعب ع الكمبيوتر." }] },
+
+            // E-Mails & Bitten
+            { level: "B1", category: "Bitten (Konjunktiv II)", german: "Könnten / Würden Sie...", english: "Could / Would you...?", arabic: "ممكن حضرتك...؟ (طلب مهذب)", examples: [{ ger: "Könnten Sie mich bitte über alternative Kurse informieren?", en: "Could you please inform me about alternative courses?", ar: "ممكن حضرتك تبلغني بالكورسات البديلة المتاحة؟" }, { ger: "Würden Sie mir bitte das Formular schicken?", en: "Would you please send me the form?", ar: "ممكن تبعتلي الاستمارة لو سمحت؟" }, { ger: "Könnten Sie mir eine Ermäßigung geben?", en: "Could you give me a discount?", ar: "ممكن حضرتك تعملي خصم؟" }] },
+            { level: "B1", category: "E-Mails", german: "Haben Sie so etwas im Angebot?", english: "Do you have something like this to offer?", arabic: "عندكم حاجة زي كده متاحة؟", examples: [{ ger: "Ich suche einen berufssprachlichen Kurs. Haben Sie so etwas im Angebot?", en: "I am looking for a professional language course. Do you have something like this on offer?", ar: "بدور على كورس لغة مهني. عندكم حاجة زي كده؟" }, { ger: "Wir haben leider keinen Abendkurs im Angebot.", en: "Unfortunately, we don't have an evening course on offer.", ar: "للأسف معندناش كورس مسائي متاح." }, { ger: "Was haben Sie aktuell im Angebot?", en: "What do you currently have on offer?", ar: "إيه المتاح عندكم حالياً؟" }] },
+            
+            // Empfehlungen (Recommendations)
+            { level: "B1", category: "Empfehlungen", german: "Es ist ratsam / effektiv...", english: "It is advisable / effective...", arabic: "من المنصوح بيه / من الفعال إن...", examples: [{ ger: "Es ist ratsam, aktive Übungen zu machen.", en: "It is advisable to do active exercises.", ar: "من المنصوح بيه إنك تعمل تدريبات عملية (أكتيڤ)." }, { ger: "Es ist effektiv, vor dem Einschlafen zu lernen.", en: "It is effective to study before falling asleep.", ar: "من الفعال إنك تذاكر قبل ما تنام." }, { ger: "Nach Meinung von Experten ist es sinnvoll...", en: "According to experts, it makes sense...", ar: "رأي الخبراء بيقول إنه من المنطقي إن..." }] }
+        ];
+
+        const collocationsData = [
+            { level: "B1", category: "Corporate Collocations", german: "Lernerfolge erzielen", english: "to achieve learning successes", arabic: "يصل لنتائج تعلم / يحقق نجاح", examples: [{ ger: "Wie können wir bestmögliche Lernerfolge erzielen?", en: "How can we achieve the best possible learning successes?", ar: "إزاي نقدر نحقق أحسن نتايج/نجاحات في التعلم؟" }, { ger: "Gute Resultate erzielten die Volkshochschulen.", en: "The adult education centers achieved good results.", ar: "مدارس الشعب حققت نتايج كويسة." }, { ger: "Ohne harte Arbeit kann man keine Erfolge erzielen.", en: "Without hard work, one cannot achieve successes.", ar: "من غير شغل وتعب محدش بيحقق نجاح." }] },
+            { level: "B1", category: "Corporate Collocations", german: "ein Angebot unterbreiten", english: "to submit an offer", arabic: "يقدم عرض (رسمي)", examples: [{ ger: "Die Gemeinde will der Bevölkerung ein Bildungsangebot unterbreiten.", en: "The municipality wants to submit an educational offer to the population.", ar: "المجلس المحلي عايز يقدم عرض تعليمي للناس." }, { ger: "Wir haben dem Kunden ein gutes Angebot unterbreitet.", en: "We submitted a good offer to the customer.", ar: "إحنا قدمنا عرض كويس للعميل." }, { ger: "Können Sie uns ein schriftliches Angebot unterbreiten?", en: "Can you submit a written offer to us?", ar: "ممكن تقدمولنا عرض مكتوب؟" }] },
+            { level: "B1", category: "Idiom", german: "in Vergessenheit geraten", english: "to fall into oblivion / be forgotten", arabic: "يُنسى / يتنسي تماماً", examples: [{ ger: "Gelernte Fakten aus der Schulzeit sind in Vergessenheit geraten.", en: "Learned facts from school time have fallen into oblivion.", ar: "الحاجات اللي اتعلمناها في المدرسة اتنست تماماً." }, { ger: "Der alte Brauch ist leider in Vergessenheit geraten.", en: "The old custom has unfortunately been forgotten.", ar: "العادة القديمة دي اتنست للأسف." }, { ger: "Wir dürfen dieses Thema nicht in Vergessenheit geraten lassen.", en: "We must not let this topic be forgotten.", ar: "مينفعش نسيب الموضوع ده يتنسي." }] },
+            { level: "B1", category: "Idiom", german: "Kontakt haben zu", english: "to have contact with", arabic: "عنده تواصل مع / بيتعامل مع", examples: [{ ger: "Ich habe regelmäßigen Kontakt zu italienischen Kunden.", en: "I have regular contact with Italian customers.", ar: "أنا بتعامل بانتظام مع عملاء طلاينة." }, { ger: "Zu wem haben Sie Kontakt?", en: "Who do you have contact with?", ar: "إنت بتتواصل مع مين؟" }, { ger: "Wir haben den Kontakt zu ihm verloren.", en: "We lost contact with him.", ar: "إحنا فقدنا التواصل معاه." }] },
+            { level: "A2", category: "Idiom", german: "Karriere machen", english: "to make a career", arabic: "يعمل كارير / يترقى", examples: [{ ger: "Paul bildet sich weiter, um Karriere zu machen.", en: "Paul educates himself further to make a career.", ar: "بول بيطور من نفسه عشان يعمل كارير." }, { ger: "Sie hat in der Firma schnell Karriere gemacht.", en: "She made a career quickly in the company.", ar: "هي اترقت وعملت كارير بسرعة في الشركة." }, { ger: "Nicht jeder will Karriere machen.", en: "Not everyone wants to make a career.", ar: "مش كل الناس بتبقى عايزة تعمل كارير." }] },
+            { level: "B1", category: "Idiom", german: "auf der Suche sein nach", english: "to be looking for / in search of", arabic: "بيبحث عن / بيدور على", examples: [{ ger: "Der Protagonist ist auf der Suche nach etwas, das ihm schmeckt.", en: "The protagonist is looking for something that tastes good to him.", ar: "البطل كان بيدور على حاجة تعجبه في الأكل." }, { ger: "Ich bin auf der Suche nach einem neuen Job.", en: "I am looking for a new job.", ar: "أنا بدور على شغل جديد." }, { ger: "Wir sind auf der Suche nach einer Lösung.", en: "We are looking for a solution.", ar: "إحنا بندور على حل." }] }
+        ];
+
+        // PATTERN: Lebenslauf & Nomenstil (CV Building)
+        const lebenslaufData = [
+            { level: "B1", category: "Lebenslauf (CV)", german: "Leitung und Koordination (von Projekten)", english: "Leadership and coordination (of projects)", arabic: "إدارة وتنسيق (المشاريع)", examples: [{ ger: "Leitung und Koordination verschiedener IT-Projekte.", en: "Leadership and coordination of various IT projects.", ar: "إدارة وتنسيق مشاريع IT مختلفة." }, { ger: "Ich war für die Leitung zuständig.", en: "I was responsible for the leadership.", ar: "أنا كنت مسئول عن الإدارة." }, { ger: "Die Koordination des Teams war meine Aufgabe.", en: "The coordination of the team was my task.", ar: "تنسيق الفريق كان مهمتي." }] },
+            { level: "B1", category: "Lebenslauf (CV)", german: "Mitarbeit bei der Erstellung / Kalkulation", english: "Collaboration on the creation / calculation", arabic: "المشاركة في إعداد / حساب", examples: [{ ger: "Mitarbeit bei der Kalkulation und Erstellung von Angeboten.", en: "Collaboration on the calculation and creation of offers.", ar: "المشاركة في حساب وتجهيز العروض المالية." }, { ger: "Die Erstellung von Dokumenten ist wichtig.", en: "The creation of documents is important.", ar: "إعداد المستندات شيء مهم." }, { ger: "Vielen Dank für Ihre Mitarbeit.", en: "Thank you very much for your collaboration.", ar: "شكراً جداً على مشاركتك/مجهودك." }] },
+            { level: "B1", category: "Lebenslauf (CV)", german: "Überwachung und Abnahme", english: "Monitoring and acceptance/inspection", arabic: "مراقبة واستلام (المشاريع)", examples: [{ ger: "Überwachung und Abnahme von Bauprojekten.", en: "Monitoring and inspection of construction projects.", ar: "الإشراف على مشاريع البناء واستلامها." }, { ger: "Die Überwachung der Qualität ist essenziell.", en: "The monitoring of quality is essential.", ar: "مراقبة الجودة شيء أساسي." }, { ger: "Die Abnahme erfolgt morgen.", en: "The inspection takes place tomorrow.", ar: "الاستلام هيحصل بكرة." }] },
+            { level: "B1", category: "Lebenslauf (CV)", german: "die Abschlussarbeit", english: "Final thesis", arabic: "مشروع التخرج", examples: [{ ger: "Thema der Abschlussarbeit: Grüne Gebäude.", en: "Topic of the final thesis: Green Buildings.", ar: "موضوع مشروع التخرج: المباني الخضراء." }, { ger: "Ich schreibe gerade meine Abschlussarbeit.", en: "I am currently writing my final thesis.", ar: "أنا بكتب مشروع تخرجي دلوقتي." }, { ger: "Die Note der Abschlussarbeit war sehr gut.", en: "The grade of the final thesis was very good.", ar: "درجة مشروع التخرج كانت ممتازة." }] },
+            { level: "B1", category: "Lebenslauf (CV)", german: "Qualitätssicherung", english: "Quality assurance", arabic: "ضمان الجودة", examples: [{ ger: "Weiterbildung: Qualitätssicherung bei Stadtbauprojekten.", en: "Further training: Quality assurance in urban construction projects.", ar: "تدريب: ضمان الجودة في مشاريع البناء في المدينة." }, { ger: "Er arbeitet in der Qualitätssicherung.", en: "He works in quality assurance.", ar: "هو شغال في قسم ضمان الجودة." }, { ger: "Die Qualitätssicherung hat den Fehler gefunden.", en: "Quality assurance found the error.", ar: "قسم الجودة لقى الغلطة." }] },
+            { level: "B1", category: "Lebenslauf (CV)", german: "verhandlungssicher", english: "fluent / negotiation-proof", arabic: "متقن للغة / بيعرف يتفاوض بيها", examples: [{ ger: "Fremdsprachen: Englisch (verhandlungssicher).", en: "Foreign languages: English (fluent/negotiation level).", ar: "اللغات: الإنجليزي: متقن (مستوى التفاوض)." }, { ger: "Ich spreche verhandlungssicher Spanisch.", en: "I speak Spanish fluently.", ar: "أنا بتكلم إسباني بطلاقة/احترافية." }, { ger: "Verhandlungssicheres Deutsch wird erwartet.", en: "Fluent German is expected.", ar: "مطلوب ألماني بمستوى متقدم/طلاقة." }] },
+            { level: "B1", category: "Lebenslauf (CV)", german: "EDV-Kenntnisse", english: "IT skills / computer skills", arabic: "مهارات الكمبيوتر (IT)", examples: [{ ger: "Sehr gute EDV-Kenntnisse in MS Office.", en: "Very good IT skills in MS Office.", ar: "مهارات كمبيوتر ممتازة في برامج الأوفيس." }, { ger: "Welche EDV-Kenntnisse haben Sie?", en: "What IT skills do you have?", ar: "إيه مهارات الكمبيوتر اللي عندك؟" }, { ger: "EDV-Kenntnisse sind für diesen Job Pflicht.", en: "IT skills are mandatory for this job.", ar: "مهارات الـ IT إجبارية للشغلانة دي." }] }
+        ];
+
+        const vocabData = [
+            // Gefühle & Lernen
+            { level: "B1", category: "Lernen & Gefühle", german: "die Neugierde", english: "Curiosity", arabic: "الفضول / حب الاستطلاع", examples: [{ ger: "Kinder haben eine natürliche Neugierde.", en: "Children have a natural curiosity.", ar: "الأطفال عندهم فضول طبيعي." }, { ger: "Neugierde ist wichtig beim Lernen.", en: "Curiosity is important when learning.", ar: "الفضول مهم وقت التعلم." }, { ger: "Aus Neugierde hat er das Buch gelesen.", en: "Out of curiosity, he read the book.", ar: "قرا الكتاب بدافع الفضول." }] },
+            { level: "A2", category: "Lernen & Gefühle", german: "die Freude", english: "Joy / pleasure", arabic: "الفرحة / المتعة", examples: [{ ger: "Lernen soll Freude machen.", en: "Learning should be a joy.", ar: "التعليم المفروض يجيب الفرحة." }, { ger: "Mit Freude ging sie zur Schule.", en: "She went to school with joy.", ar: "راحت المدرسة وهي مبسوطة." }, { ger: "Das Lernen bereitet ihm große Freude.", en: "Learning gives him great pleasure.", ar: "التعليم بيسبب له متعة كبيرة." }] },
+            { level: "B1", category: "Lernen & Gefühle", german: "die Anstrengung", english: "Effort / exertion", arabic: "المجهود / التعب", examples: [{ ger: "Ohne Anstrengung gibt es keinen Erfolg.", en: "Without effort there is no success.", ar: "من غير مجهود مفيش نجاح." }, { ger: "Das war eine große Anstrengung für ihn.", en: "That was a great effort for him.", ar: "ده كان مجهود كبير عليه." }, { ger: "Die körperliche Anstrengung war enorm.", en: "The physical exertion was enormous.", ar: "المجهود البدني كان ضخم." }] },
+            { level: "A2", category: "Lernen & Gefühle", german: "die Langeweile", english: "Boredom", arabic: "الملل", examples: [{ ger: "Aus Langeweile fing er an zu zeichnen.", en: "Out of boredom he started to draw.", ar: "من كتر الملل بدأ يرسم." }, { ger: "In der Schule hatte ich oft Langeweile.", en: "In school I often experienced boredom.", ar: "في المدرسة كنت غالباً بحس بملل." }, { ger: "Der Kurs war die reine Langeweile.", en: "The course was pure boredom.", ar: "الكورس كان ملل صافي." }] },
+            { level: "B1", category: "Lernen & Gefühle", german: "die Motivation", english: "Motivation", arabic: "الدافع / التحفيز", examples: [{ ger: "Er hat keine Motivation zu lernen.", en: "He has no motivation to learn.", ar: "معندوش دافع للمذاكرة." }, { ger: "Motivation ist der Schlüssel zum Erfolg.", en: "Motivation is the key to success.", ar: "التحفيز هو مفتاح النجاح." }, { ger: "Der Lehrer lobt die Motivation der Schüler.", en: "The teacher praises the students' motivation.", ar: "المدرس بيمدح في حافز الطلبة." }] },
+
+            // Wissenschaft & Gehirn
+            { level: "B1", category: "Wissenschaft", german: "das Gehirn", english: "Brain", arabic: "المخ / الدماغ", examples: [{ ger: "Das Gehirn löscht nicht benötigte Formeln.", en: "The brain deletes unneeded formulas.", ar: "المخ بيمسح المعادلات اللي مش محتاجها." }, { ger: "Unser Gehirn arbeitet auch nachts.", en: "Our brain also works at night.", ar: "مخنا بيشتغل حتى بالليل." }, { ger: "Das Gehirn ist ein faszinierendes Organ.", en: "The brain is a fascinating organ.", ar: "المخ عضو مذهل." }] },
+            { level: "B1", category: "Wissenschaft", german: "das Kurzzeitgedächtnis", english: "Short-term memory", arabic: "الذاكرة قصيرة المدى", examples: [{ ger: "Informationen kommen zuerst ins Kurzzeitgedächtnis.", en: "Information goes first into the short-term memory.", ar: "المعلومات بتروح الأول للذاكرة قصيرة المدى." }, { ger: "Das Kurzzeitgedächtnis filtert die Datenflut.", en: "The short-term memory filters the flood of data.", ar: "الذاكرة قصيرة المدى بتفلتر سيل البيانات." }, { ger: "Es speichert Daten nur für kurze Zeit.", en: "It stores data only for a short time.", ar: "بتخزن الداتا لوقت قصير بس." }] },
+            { level: "B1", category: "Wissenschaft", german: "das Langzeitgedächtnis", english: "Long-term memory", arabic: "الذاكرة طويلة المدى", examples: [{ ger: "Das Langzeitgedächtnis überschreibt alte Daten.", en: "The long-term memory overwrites old data.", ar: "الذاكرة طويلة المدى بتمسح البيانات القديمة وتكتب فوقها." }, { ger: "Wichtige Fakten gelangen ins Langzeitgedächtnis.", en: "Important facts reach the long-term memory.", ar: "المعلومات المهمة بتوصل للذاكرة طويلة المدى." }, { ger: "Wie trainiert man das Langzeitgedächtnis?", en: "How do you train the long-term memory?", ar: "إزاي تدرب الذاكرة طويلة المدى؟" }] },
+            { level: "B1", category: "Wissenschaft", german: "die Speicherkapazität", english: "Storage capacity", arabic: "سعة التخزين", examples: [{ ger: "Das Gehirn hat nur eine begrenzte Speicherkapazität.", en: "The brain has only a limited storage capacity.", ar: "المخ سعة تخزينه محدودة." }, { ger: "Die Speicherkapazität der Festplatte ist voll.", en: "The storage capacity of the hard drive is full.", ar: "مساحة التخزين في الهارد مليانة." }, { ger: "Wie groß ist die Speicherkapazität?", en: "How large is the storage capacity?", ar: "سعة التخزين قد إيه؟" }] },
+            { level: "B1", category: "Wissenschaft", german: "die Festplatte", english: "Hard drive", arabic: "الهارد ديسك / القرص الصلب", examples: [{ ger: "Das Gehirn funktioniert wie eine Festplatte.", en: "The brain works like a hard drive.", ar: "المخ بيشتغل زي الهارد ديسك." }, { ger: "Meine Festplatte ist kaputt.", en: "My hard drive is broken.", ar: "الهارد بتاعي باظ." }, { ger: "Wir müssen die Daten auf der Festplatte speichern.", en: "We have to save the data on the hard drive.", ar: "لازم نخزن الداتا ع الهارد." }] },
+            { level: "B1", category: "Wissenschaft", german: "die Datenflut", english: "Flood of data", arabic: "سيل البيانات / المعلومات", examples: [{ ger: "Das Gehirn muss sich vor der Datenflut schützen.", en: "The brain must protect itself from the flood of data.", ar: "المخ لازم يحمي نفسه من سيل البيانات." }, { ger: "Im Internet gibt es eine große Datenflut.", en: "There is a huge flood of data on the internet.", ar: "فيه سيل بيانات ضخم على النت." }, { ger: "Die Datenflut überfordert viele Menschen.", en: "The flood of data overwhelms many people.", ar: "سيل المعلومات بيشتت ناس كتير." }] },
+            
+            // Bildung & VHS
+            { level: "B1", category: "Bildung", german: "die Lehrveranstaltung", english: "Course / lecture (at university)", arabic: "محاضرة جامعية / مقرر", examples: [{ ger: "Ich fand Lehrveranstaltungen an der Uni oft zu theoretisch.", en: "I often found university lectures too theoretical.", ar: "كنت بشوف المحاضرات في الجامعة نظرية بزيادة." }, { ger: "Die Lehrveranstaltung beginnt um 10 Uhr.", en: "The lecture begins at 10 am.", ar: "المحاضرة هتبدأ الساعة 10." }, { ger: "Welche Lehrveranstaltungen besuchst du?", en: "Which lectures are you attending?", ar: "إيه المقررات اللي بتحضرها؟" }] },
+            { level: "B1", category: "Bildung", german: "das Fach", english: "Academic subject", arabic: "مادة دراسية", examples: [{ ger: "Chemie war mein bestes Fach in der Schulzeit.", en: "Chemistry was my best subject during school days.", ar: "الكيمياء كانت أحسن مادة عندي أيام المدرسة." }, { ger: "In manchen Fächern hatte ich gute Noten.", en: "In some subjects I had good grades.", ar: "في بعض المواد كنت بجيب درجات كويسة." }, { ger: "Mathematik ist ein schweres Fach.", en: "Mathematics is a difficult subject.", ar: "الرياضيات مادة صعبة." }] },
+            { level: "B1", category: "Bildung", german: "der Wortschatz", english: "Vocabulary", arabic: "حصيلة الكلمات (Vocab)", examples: [{ ger: "Wie kann man neuen Wortschatz am besten lernen?", en: "How can one best learn new vocabulary?", ar: "إيه أحسن طريقة لتعلم كلمات جديدة؟" }, { ger: "Sein englischer Wortschatz ist sehr groß.", en: "His English vocabulary is very large.", ar: "حصيلة كلماته في الإنجليزي كبيرة جداً." }, { ger: "Man muss den Wortschatz regelmäßig wiederholen.", en: "One must repeat vocabulary regularly.", ar: "الواحد لازم يراجع الكلمات بانتظام." }] },
+            { level: "B1", category: "Bildung", german: "das Erlernen", english: "Learning / acquisition", arabic: "تعلم (كاسم)", examples: [{ ger: "Beim Erlernen einer Fremdsprache braucht man Geduld.", en: "When learning a foreign language, you need patience.", ar: "عند تعلم لغة أجنبية الواحد بيحتاج صبر." }, { ger: "Das Erlernen von Regeln ist wichtig.", en: "The learning of rules is important.", ar: "تعلم القواعد شيء مهم." }, { ger: "Es geht um das Erlernen neuer Fähigkeiten.", en: "It's about the acquisition of new skills.", ar: "الموضوع متعلق بتعلم مهارات جديدة." }] },
+            { level: "B1", category: "Bildung", german: "die Erwachsenenbildung", english: "Adult education", arabic: "تعليم الكبار", examples: [{ ger: "Die VHS ist eine Einrichtung der Erwachsenenbildung.", en: "The VHS is an institution of adult education.", ar: "مدرسة الشعب هي مؤسسة لتعليم الكبار." }, { ger: "Erwachsenenbildung wird immer wichtiger.", en: "Adult education is becoming increasingly important.", ar: "تعليم الكبار بيبقى أهم مع الوقت." }, { ger: "Er arbeitet in der Erwachsenenbildung.", en: "He works in adult education.", ar: "هو شغال في مجال تعليم الكبار." }] },
+            { level: "B1", category: "Bildung", german: "die Volkshochschule (VHS)", english: "Adult education center", arabic: "مدرسة الشعب (لتعليم الكبار)", examples: [{ ger: "Ich mache einen Sprachkurs an der Volkshochschule.", en: "I am taking a language course at the adult education center.", ar: "أنا باخد كورس لغة في مدرسة الشعب." }, { ger: "Die Volkshochschule bietet viele Kurse an.", en: "The VHS offers many courses.", ar: "مدرسة الشعب بتقدم كورسات كتير." }, { ger: "Die Volkshochschulen sind bekannte Einrichtungen.", en: "The adult education centers are well-known institutions.", ar: "مدارس الشعب دي مؤسسات معروفة." }] },
+            { level: "B1", category: "Bildung", german: "die mittlere Reife", english: "Secondary school certificate", arabic: "الشهادة الإعدادية/المتوسطة", examples: [{ ger: "Man kann die mittlere Reife an der VHS nachholen.", en: "You can catch up on the secondary school certificate at the VHS.", ar: "ممكن تعوض/تكمل شهادتك المتوسطة في مدرسة الشعب." }, { ger: "Sie hat die mittlere Reife mit guten Noten bestanden.", en: "She passed the secondary school certificate with good grades.", ar: "هي نجحت في الشهادة المتوسطة بدرجات كويسة." }, { ger: "Für diese Ausbildung braucht man die mittlere Reife.", en: "For this training you need the secondary school certificate.", ar: "عشان التدريب ده محتاج الشهادة المتوسطة." }] },
+            { level: "B1", category: "Bildung", german: "das Abitur", english: "High school diploma (A-levels)", arabic: "الثانوية العامة", examples: [{ ger: "Er möchte sein Abitur an der VHS nachholen.", en: "He wants to catch up on his high school diploma at the VHS.", ar: "هو عايز يكمل/يعوض ثانوية عامة في مدرسة الشعب." }, { ger: "Nach dem Abitur studiere ich Medizin.", en: "After the high school diploma, I will study medicine.", ar: "بعد الثانوية العامة هدرس طب." }, { ger: "Das Abitur ist ein wichtiger akademischer Abschluss.", en: "The high school diploma is an important academic degree.", ar: "الثانوية العامة دي شهادة أكاديمية مهمة." }] },
+            
+            // Lerntypen & Strategien
+            { level: "B1", category: "Lerntypen", german: "der auditive Lerner", english: "Auditory learner", arabic: "المتعلم السمعي", examples: [{ ger: "Auditive Lerner sollten viel hören.", en: "Auditory learners should listen a lot.", ar: "المتعلمين السمعيين المفروض يسمعوا كتير." }, { ger: "Sie merken sich Wörter, wenn sie laut wiederholen.", en: "They memorize words when they repeat out loud.", ar: "بيحفظوا الكلمات لما يعيدوها بصوت عالي." }, { ger: "Ein auditiver Lerner lernt gut mit Hörbüchern.", en: "An auditory learner learns well with audiobooks.", ar: "المتعلم السمعي بيذاكر كويس بالكتب الصوتية." }] },
+            { level: "B1", category: "Lerntypen", german: "der haptisch-motorische Lerner", english: "Kinesthetic learner", arabic: "المتعلم الحركي/اللمسي", examples: [{ ger: "Haptisch-motorische Lerner müssen schreiben.", en: "Kinesthetic learners must write.", ar: "المتعلمين الحركيين لازم يكتبوا بإيدهم." }, { ger: "Die Handbewegung hilft ihnen beim Einprägen.", en: "The hand movement helps them memorize.", ar: "حركة الإيد بتساعدهم على الحفظ." }, { ger: "Beim Lernen stehen sie auf und bewegen sich.", en: "While learning, they stand up and move.", ar: "وهما بيذاكروا بيقوموا ويتحركوا." }] },
+            { level: "B1", category: "Lerntypen", german: "der imitative Lerner", english: "Imitative learner", arabic: "المتعلم بالتقليد", examples: [{ ger: "Imitative Lerner lernen durch Kommunikation.", en: "Imitative learners learn through communication.", ar: "المتعلم بالتقليد بيذاكر من خلال التواصل." }, { ger: "Sie lernen effektiv von Muttersprachlern.", en: "They learn effectively from native speakers.", ar: "بيتعلموا بفعالية من أصحاب اللغة الأصليين." }, { ger: "Ihre Aussprache ist meistens sehr gut.", en: "Their pronunciation is mostly very good.", ar: "نطقهم غالباً بيبقى كويس جداً." }] },
+            { level: "B1", category: "Lerntypen", german: "der visuelle Lerner", english: "Visual learner", arabic: "المتعلم البصري", examples: [{ ger: "Visuelle Lerner brauchen Bilder und Diagramme.", en: "Visual learners need pictures and diagrams.", ar: "المتعلمين البصريين محتاجين صور ورسومات." }, { ger: "Informationen müssen visualisiert werden.", en: "Information must be visualized.", ar: "المعلومات لازم تتعرض بشكل مرئي." }, { ger: "Sie heben neue Wörter farbig hervor.", en: "They highlight new words in color.", ar: "بيظللوا الكلمات الجديدة بالألوان." }] },
+            { level: "B1", category: "Lerntypen", german: "der kognitive Lerner", english: "Cognitive learner", arabic: "المتعلم الإدراكي/التحليلي", examples: [{ ger: "Kognitive Lerner wollen die Struktur verstehen.", en: "Cognitive learners want to understand the structure.", ar: "المتعلمين التحليليين عايزين يفهموا تركيبة الجملة." }, { ger: "Sie merken sich schnell Grammatikregeln.", en: "They quickly memorize grammar rules.", ar: "بيحفظوا قواعد الجرامر بسرعة." }, { ger: "Sie brauchen Lehrbücher mit einer klaren Struktur.", en: "They need textbooks with a clear structure.", ar: "محتاجين كتب دراسية بنظام واضح." }] },
+
+            // Institutionen & Verwaltung
+            { level: "B1", category: "Institutionen", german: "die Einrichtung", english: "Institution / facility", arabic: "مؤسسة / منشأة", examples: [{ ger: "Die Volkshochschulen sind bekannte Einrichtungen.", en: "The adult education centers are well-known institutions.", ar: "مدارس الشعب دي مؤسسات معروفة." }, { ger: "Die Einrichtung des Zimmers ist modern.", en: "The furnishing of the room is modern. (Also means furniture).", ar: "فرش/تجهيز الأوضة مودرن." }, { ger: "Das ist eine soziale Einrichtung.", en: "This is a social institution.", ar: "دي مؤسسة اجتماعية." }] },
+            { level: "B1", category: "Institutionen", german: "der Auftrag", english: "Mission / mandate", arabic: "تكليف / مهمة رسمية", examples: [{ ger: "Ihr Auftrag ist es, ein Bildungsangebot zu unterbreiten.", en: "Their mandate is to submit an educational offer.", ar: "مهمتهم هي تقديم عروض تعليمية للناس." }, { ger: "Ich handele im Auftrag meines Chefs.", en: "I am acting on behalf of my boss.", ar: "أنا بتصرف بتكليف من مديري." }, { ger: "Wir haben einen neuen Auftrag bekommen.", en: "We received a new order/mission.", ar: "إحنا جالنا تكليف/أوردر جديد." }] },
+            { level: "B1", category: "Institutionen", german: "die Gemeinde", english: "Municipality / local community", arabic: "المجلس المحلي / البلدية", examples: [{ ger: "Die VHS wird von den Gemeinden finanziell unterstützt.", en: "The VHS is financially supported by the municipalities.", ar: "المجالس المحلية بتدعم مدارس الشعب مادياً." }, { ger: "Die Gemeinde plant einen neuen Park.", en: "The municipality is planning a new park.", ar: "المجلس المحلي بيخطط لعمل حديقة جديدة." }, { ger: "Er arbeitet in der Verwaltung der Gemeinde.", en: "He works in the administration of the municipality.", ar: "هو شغال في إدارة البلدية." }] },
+            { level: "B1", category: "Institutionen", german: "die Bevölkerung", english: "Population", arabic: "الشعب / السكان", examples: [{ ger: "Die Kurse sind ein Angebot für die gesamte Bevölkerung.", en: "The courses are an offer for the entire population.", ar: "الكورسات دي عرض لكل فئات الشعب." }, { ger: "Die Bevölkerung der Stadt wächst.", en: "The population of the city is growing.", ar: "تعداد سكان المدينة بيكبر." }, { ger: "Die Mehrheit der Bevölkerung ist dafür.", en: "The majority of the population is in favor of it.", ar: "أغلبية الشعب موافق على ده." }] },
+            { level: "B1", category: "Institutionen", german: "der Geldmangel", english: "Lack of money", arabic: "نقص الفلوس / العجز المادي", examples: [{ ger: "Der Geldmangel wirkt sich auf die Ausstattung aus.", en: "The lack of money affects the equipment.", ar: "نقص الفلوس بيأثر على التجهيزات." }, { ger: "Wegen Geldmangel wurde das Projekt gestoppt.", en: "Due to lack of money, the project was stopped.", ar: "بسبب العجز المادي المشروع وقف." }, { ger: "Die Schule leidet unter chronischem Geldmangel.", en: "The school suffers from chronic lack of money.", ar: "المدرسة بتعاني من نقص فلوس مزمن." }] },
+            { level: "B1", category: "Institutionen", german: "die Ausstattung", english: "Equipment / furnishing", arabic: "التجهيزات / المعدات", examples: [{ ger: "Die Ausstattung der Klassenräume ist nicht gut.", en: "The equipment in the classrooms is not good.", ar: "تجهيزات الفصول مش كويسة." }, { ger: "Das Auto hat eine tolle Ausstattung.", en: "The car has great equipment/features.", ar: "العربية تجهيزاتها تحفة." }, { ger: "Wir brauchen Geld für eine bessere Ausstattung.", en: "We need money for better equipment.", ar: "محتاجين فلوس عشان نجيب معدات أحسن." }] },
+            { level: "B1", category: "Kurs", german: "die Ermäßigung", english: "Discount / reduction", arabic: "خصم / تخفيض", examples: [{ ger: "Bekomme ich eine Ermäßigung, da ich Student bin?", en: "Do I get a discount since I am a student?", ar: "هل هاخد خصم عشان أنا طالب؟" }, { ger: "Es gibt 10 Prozent Ermäßigung auf alle Kurse.", en: "There is a 10 percent discount on all courses.", ar: "فيه خصم 10% على كل الكورسات." }, { ger: "Rentner erhalten eine Ermäßigung an der Kasse.", en: "Pensioners receive a discount at the ticket office.", ar: "أصحاب المعاشات بياخدوا تخفيض ع الخزنة." }] },
+
+            // Adjektive
+            { level: "B1", category: "Adjektive", german: "fortgeschritten", english: "Advanced", arabic: "متقدم (مستوى)", examples: [{ ger: "Ich suche einen Kurs für fortgeschrittene Lerner.", en: "I am looking for a course for advanced learners.", ar: "أنا بدور على كورس للمستوى المتقدم." }, { ger: "Mein Englisch ist sehr fortgeschritten.", en: "My English is very advanced.", ar: "الإنجليزي بتاعي متقدم جداً." }, { ger: "Das Buch ist für Fortgeschrittene.", en: "The book is for advanced students.", ar: "الكتاب ده للمستويات المتقدمة." }] },
+            { level: "B1", category: "Adjektive", german: "theoretisch", english: "Theoretical", arabic: "نظري", examples: [{ ger: "Die Lehrveranstaltungen waren oft zu theoretisch.", en: "The lectures were often too theoretical.", ar: "المحاضرات كانت غالباً نظرية بزيادة." }, { ger: "Theoretisch ist das möglich, aber praktisch schwer.", en: "Theoretically that is possible, but practically difficult.", ar: "نظرياً ده ممكن، بس عملياً صعب." }, { ger: "Er hat viel theoretisches Wissen.", en: "He has a lot of theoretical knowledge.", ar: "هو عنده علم نظري كتير." }] },
+            { level: "A2", category: "Adjektive", german: "fleißig / faul", english: "Diligent / lazy", arabic: "مجتهد / كسول", examples: [{ ger: "Ich war als Schüler immer fleißig.", en: "I was always diligent as a student.", ar: "أنا كنت دايماً مجتهد وأنا طالب." }, { ger: "Manchmal war ich auch ein bisschen faul.", en: "Sometimes I was also a bit lazy.", ar: "ساعات كنت ببقى كسلان شوية." }, { ger: "Er ist sehr faul und lernt nie.", en: "He is very lazy and never studies.", ar: "هو كسلان جداً وعمره ما بيذاكر." }] },
+            { level: "B1", category: "Adjektive", german: "effektiv", english: "Effective", arabic: "فعال", examples: [{ ger: "Aktives Lernen ist effektiver als passives.", en: "Active learning is more effective than passive.", ar: "التعلم الإيجابي فعال أكتر من السلبي." }, { ger: "Das ist eine sehr effektive Methode.", en: "That is a very effective method.", ar: "دي طريقة فعالة جداً." }, { ger: "Wir müssen effektiver zusammenarbeiten.", en: "We must work together more effectively.", ar: "لازم نتعاون مع بعض بفعالية أكتر." }] },
+            { level: "B1", category: "Adjektive", german: "langfristig", english: "Long-term", arabic: "طويل الأمد", examples: [{ ger: "Wiederholen sorgt für eine langfristige Speicherung.", en: "Repeating ensures long-term storage.", ar: "المراجعة بتضمن تخزين طويل الأمد (في المخ)." }, { ger: "Das ist keine langfristige Lösung.", en: "That is not a long-term solution.", ar: "ده مش حل طويل الأمد." }, { ger: "Wir planen langfristig.", en: "We are planning long-term.", ar: "إحنا بنخطط لقدام/للمدى الطويل." }] },
+            { level: "B1", category: "Adjektive", german: "passiv / aktiv", english: "Passive / active", arabic: "سلبي / إيجابي (فعّال)", examples: [{ ger: "Passives Lernen ist nicht so gut wie aktives Lernen.", en: "Passive learning is not as good as active learning.", ar: "التعلم السلبي مش كويس زي الإيجابي." }, { ger: "Er nimmt nur passiv am Gespräch teil.", en: "He only participates passively in the conversation.", ar: "هو بيشارك في الحوار بشكل سلبي (بيسمع بس)." }, { ger: "Man muss aktiv üben.", en: "One must practice actively.", ar: "الواحد لازم يتدرب بشكل فعّال/إيجابي." }] },
+            { level: "B1", category: "Adjektive", german: "vielfältig", english: "Diverse / varied", arabic: "متنوع / متعدد", examples: [{ ger: "Das Kursangebot der VHS ist sehr vielfältig.", en: "The course offer of the VHS is very diverse.", ar: "عروض الكورسات في مدرسة الشعب متنوعة جداً." }, { ger: "Unsere Aufgaben sind vielfältig.", en: "Our tasks are varied.", ar: "مهامنا متنوعة." }, { ger: "Die deutsche Kultur ist sehr vielfältig.", en: "German culture is very diverse.", ar: "الثقافة الألمانية متنوعة جداً." }] }
+        ];
+
+        const conjugationData = [
+            // Verbs Page 92 - Regelmäßig
+            { level: "B1", infinitive: "achten", praesens: "achtet", praeteritum: "achtete", perfekt: "hat geachtet", arabic: "ينتبه لـ / يراعي", examples: [{ ger: "Die Schule achtet auf Wirtschaftlichkeit.", en: "The school pays attention to cost-effectiveness.", ar: "المدرسة بتراعي الجانب الاقتصادي/التوفير." }, { ger: "Achten Sie auf die Endungen der Wörter.", en: "Pay attention to the endings of the words.", ar: "خد بالك من نهايات الكلمات." }, { ger: "Sie achtet sehr auf ihre Gesundheit.", en: "She takes great care of her health.", ar: "هي بتهتم جداً بصحتها." }] },
+            { level: "B1", infinitive: "anwenden", praesens: "wendet an", praeteritum: "wendete an", perfekt: "hat angewendet", arabic: "يطبق (النظرية عملياً)", examples: [{ ger: "Sie wendet das Gelernte sofort an.", en: "She applies what she has learned immediately.", ar: "هي بتطبق اللي اتعلمته فوراً." }, { ger: "Ich finde es gut, wenn ich Wissen anwenden kann.", en: "I find it good when I can apply knowledge.", ar: "بحب لما أقدر أطبق العلم عملياً." }, { ger: "Diese Regel kann man hier nicht anwenden.", en: "This rule cannot be applied here.", ar: "القاعدة دي مينفعش تتطبق هنا." }] },
+            { level: "B1", infinitive: "bewerten", praesens: "bewertet", praeteritum: "bewertete", perfekt: "hat bewertet", arabic: "يُقيّم", examples: [{ ger: "Wir bewerten eine Information als wichtig.", en: "We evaluate information as important.", ar: "إحنا بنقيّم المعلومة دي إنها مهمة." }, { ger: "Der Lehrer bewertet die Prüfung.", en: "The teacher grades/evaluates the exam.", ar: "المدرس بيقيّم الامتحان." }, { ger: "Wie bewerten Sie die Situation?", en: "How do you evaluate the situation?", ar: "إنت بتُقيّم الموقف إزاي؟" }] },
+            { level: "B1", infinitive: "sich schützen vor", praesens: "schützt sich", praeteritum: "schützte sich", perfekt: "hat sich geschützt", arabic: "يحمي نفسه من", examples: [{ ger: "Das Gehirn schützt sich vor einer Datenflut.", en: "The brain protects itself from a flood of data.", ar: "المخ بيحمي نفسه من سيل البيانات." }, { ger: "Wir müssen uns vor der Kälte schützen.", en: "We must protect ourselves from the cold.", ar: "لازم نحمي نفسنا من البرد." }, { ger: "Wie kann man sich davor schützen?", en: "How can one protect oneself from that?", ar: "إزاي الواحد يقدر يحمي نفسه من ده؟" }] },
+            { level: "B1", infinitive: "sorgen für", praesens: "sorgt", praeteritum: "sorgte", perfekt: "hat gesorgt", arabic: "يتكفل بـ / يضمن / يتسبب في", examples: [{ ger: "Ständiges Wiederholen sorgt für eine langfristige Speicherung.", en: "Constant repetition ensures long-term storage.", ar: "التكرار المستمر بيضمن تخزين طويل الأمد للمعلومة." }, { ger: "Die Eltern sorgen für ihre Kinder.", en: "Parents care for their children.", ar: "الأهالي بيتكفلوا بولادهم." }, { ger: "Das schlechte Wetter sorgte für Probleme.", en: "The bad weather caused problems.", ar: "الجو الوحش اتسبب في مشاكل." }] },
+            { level: "B1", infinitive: "unterbreiten", praesens: "unterbreitet", praeteritum: "unterbreitete", perfekt: "hat unterbreitet", arabic: "يقدم (عرض رسمي)", examples: [{ ger: "Die Schule unterbreitet ein umfassendes Bildungsangebot.", en: "The school submits a comprehensive educational offer.", ar: "المدرسة بتقدم عرض تعليمي شامل." }, { ger: "Wir haben ihm ein Angebot unterbreitet.", en: "We submitted an offer to him.", ar: "إحنا قدمنا له عرض." }, { ger: "Ich möchte Ihnen einen Vorschlag unterbreiten.", en: "I would like to submit a proposal to you.", ar: "عايز أقدم لحضرتك اقتراح." }] },
+            
+            // Verbs Page 92 - Unregelmäßig
+            { level: "B1", infinitive: "aufnehmen", praesens: "nimmt auf", praeteritum: "nahm auf", perfekt: "hat aufgenommen", arabic: "يمتص / يستوعب / يسجل", examples: [{ ger: "Das Kurzzeitgedächtnis nimmt nur einige Informationen auf.", en: "The short-term memory only absorbs some information.", ar: "الذاكرة قصيرة المدى بتستوعب بعض المعلومات بس." }, { ger: "Er nahm die Nachricht mit Freude auf.", en: "He received the news with joy.", ar: "هو استقبل الخبر بفرحة." }, { ger: "Wir müssen das Lied aufnehmen.", en: "We have to record the song.", ar: "لازم نسجل الأغنية." }] },
+            { level: "B1", infinitive: "auftreten", praesens: "tritt auf", praeteritum: "trat auf", perfekt: "ist aufgetreten", arabic: "يظهر / ينشأ", examples: [{ ger: "Lerntypen treten meist in Mischformen auf.", en: "Learning types usually appear in mixed forms.", ar: "أنواع التعلم غالباً بتظهر كأشكال مختلطة." }, { ger: "Der Sänger tritt heute Abend auf.", en: "The singer is performing tonight.", ar: "المغني هيظهر/هيغني النهاردة بالليل." }, { ger: "Das Problem ist plötzlich aufgetreten.", en: "The problem appeared suddenly.", ar: "المشكلة ظهرت فجأة." }] },
+            { level: "B1", infinitive: "bestehen", praesens: "besteht", praeteritum: "bestand", perfekt: "hat bestanden", arabic: "ينجح في (امتحان)", examples: [{ ger: "Marie besteht die Prüfung.", en: "Marie passes the exam.", ar: "ماري بتنجح في الامتحان." }, { ger: "Er hat den Führerschein beim ersten Mal bestanden.", en: "He passed the driving test the first time.", ar: "هو نجح في رخصة السواقة من أول مرة." }, { ger: "Ich hoffe, ich bestehe den Test.", en: "I hope I pass the test.", ar: "أتمنى أنجح في الاختبار." }] },
+            { level: "B1", infinitive: "sich einschreiben", praesens: "schreibt sich ein", praeteritum: "schrieb sich ein", perfekt: "hat sich eingeschrieben", arabic: "يسجل اسمه (في كورس)", examples: [{ ger: "Anita schreibt sich für einen Griechischkurs ein.", en: "Anita enrolls for a Greek course.", ar: "أنيتا بتسجل اسمها في كورس يوناني." }, { ger: "Ich habe mich an der Uni eingeschrieben.", en: "I enrolled at the university.", ar: "أنا سجلت اسمي في الجامعة." }, { ger: "Bis wann muss man sich einschreiben?", en: "By when do you have to enroll?", ar: "المفروض الواحد يسجل اسمه لحد إمتى؟" }] },
+            { level: "A2", infinitive: "empfehlen", praesens: "empfiehlt", praeteritum: "empfahl", perfekt: "hat empfohlen", arabic: "ينصح بـ / يرشح", examples: [{ ger: "Ich empfehle Ihnen einen Sprachkurs.", en: "I recommend a language course to you.", ar: "أنا بنصحك تاخد كورس لغة." }, { ger: "Welchen Kurs können Sie mir empfehlen?", en: "Which course can you recommend to me?", ar: "ممكن ترشحلي كورس إيه؟" }, { ger: "Der Text empfiehlt, vor dem Einschlafen zu lernen.", en: "The text recommends studying before falling asleep.", ar: "النص بينصح بالمذاكرة قبل النوم." }] },
+            { level: "B1", infinitive: "ergeben", praesens: "ergibt", praeteritum: "ergab", perfekt: "hat ergeben", arabic: "يُسفر عن / ينتج عنه", examples: [{ ger: "Die Untersuchung ergibt, dass aktives Lernen sehr effektiv ist.", en: "The investigation shows that active learning is very effective.", ar: "التحقيق بيسفر عن إن التعلم الإيجابي فعال جداً." }, { ger: "Studien haben das Gleiche ergeben.", en: "Studies have yielded the same thing.", ar: "الدراسات أسفرت عن نفس النتيجة." }, { ger: "Was hat der Test ergeben?", en: "What did the test reveal?", ar: "الاختبار أسفر عن إيه؟" }] },
+            { level: "B1", infinitive: "erkennen", praesens: "erkennt", praeteritum: "erkannte", perfekt: "hat erkannt", arabic: "يدرك / يتعرف على", examples: [{ ger: "Die Teilnehmer erkennen, wie sie am besten lernen.", en: "The participants recognize how they learn best.", ar: "المشتركين بيدركوا إيه أحسن طريقة بيتعلموا بيها." }, { ger: "Ich habe ihn sofort erkannt.", en: "I recognized him immediately.", ar: "أنا عرفته فوراً." }, { ger: "Das Genus kann man oft an der Endung erkennen.", en: "One can often recognize the gender by the ending.", ar: "الواحد يقدر يتعرف على نوع الكلمة من نهايتها." }] },
+            { level: "B1", infinitive: "hervorheben", praesens: "hebt hervor", praeteritum: "hob hervor", perfekt: "hat hervorgehoben", arabic: "يُبرز / يظلل", examples: [{ ger: "Er hebt wichtige Wörter farblich hervor.", en: "He highlights important words in color.", ar: "هو بيظلل الكلمات المهمة بالألوان." }, { ger: "Die Autorin hob dieses Problem besonders hervor.", en: "The author particularly emphasized this problem.", ar: "الكاتبة أبرزت المشكلة دي بالذات." }, { ger: "Du solltest diesen Satz hervorheben.", en: "You should highlight this sentence.", ar: "المفروض تبرز/تظلل الجملة دي." }] },
+            { level: "A2", infinitive: "verbinden", praesens: "verbindet", praeteritum: "verband", perfekt: "hat verbunden", arabic: "يربط بين", examples: [{ ger: "Er verbindet neue Wörter mit Bildern.", en: "He connects new words with pictures.", ar: "هو بيربط الكلمات الجديدة بصور." }, { ger: "Was verbinden Sie mit dem Thema Lernen?", en: "What do you associate with the topic of learning?", ar: "إيه اللي بيربط في دماغك بموضوع التعليم؟" }, { ger: "Die Brücke verbindet die zwei Städte.", en: "The bridge connects the two cities.", ar: "الكوبري بيربط بين المدينتين." }] },
+            { level: "A1", infinitive: "vergessen", praesens: "vergisst", praeteritum: "vergaß", perfekt: "hat vergessen", arabic: "ينسى", examples: [{ ger: "Michael vergisst die Vokabeln schnell.", en: "Michael forgets the vocabulary quickly.", ar: "مايكل بينسى الكلمات بسرعة." }, { ger: "Ich habe vergessen, dich anzurufen.", en: "I forgot to call you.", ar: "أنا نسيت أكلمك." }, { ger: "Vergiss nicht, das Gelernte zu wiederholen!", en: "Don't forget to repeat what you've learned!", ar: "متنساش تراجع اللي اتعلمته!" }] },
+            { level: "B1", infinitive: "verschwinden", praesens: "verschwindet", praeteritum: "verschwand", perfekt: "ist verschwunden", arabic: "يختفي", examples: [{ ger: "Die Wörter verschwinden aus dem Gedächtnis.", en: "The words disappear from memory.", ar: "الكلمات بتختفي من الذاكرة." }, { ger: "Der Zug verschwand im Nebel.", en: "The train disappeared in the fog.", ar: "القطر اختفى في الضباب." }, { ger: "Mein Schlüssel ist verschwunden.", en: "My key has disappeared.", ar: "مفتاحي اختفى." }] },
+            { level: "A1", infinitive: "verstehen", praesens: "versteht", praeteritum: "verstand", perfekt: "hat verstanden", arabic: "يفهم", examples: [{ ger: "Er versteht ein bisschen Spanisch.", en: "He understands a little Spanish.", ar: "هو بيفهم إسباني شوية." }, { ger: "Ich habe den Text nicht verstanden.", en: "I didn't understand the text.", ar: "أنا مفهمتش النص." }, { ger: "Kognitive Lerner wollen die Struktur verstehen.", en: "Cognitive learners want to understand the structure.", ar: "المتعلمين التحليليين عايزين يفهموا التركيبة." }] },
+            { level: "A1", infinitive: "wissen", praesens: "weiß", praeteritum: "wusste", perfekt: "hat gewusst", arabic: "يعرف", examples: [{ ger: "Jan weiß nichts davon.", en: "Jan knows nothing about it.", ar: "يان ميعرفش حاجة عن ده." }, { ger: "Wissen Sie noch, was Sie gelernt haben?", en: "Do you still know what you learned?", ar: "إنت لسه فاكر/عارف إنت اتعلمت إيه؟" }, { ger: "Ich wusste nicht, dass du kommst.", en: "I didn't know you were coming.", ar: "مكنتش أعرف إنك جاي." }] },
+
+            // Other Text Verbs
+            { level: "B1", infinitive: "löschen", praesens: "löscht", praeteritum: "löschte", perfekt: "hat gelöscht", arabic: "يمسح / يحذف", examples: [{ ger: "Das Gehirn hat die Formeln wieder gelöscht.", en: "The brain has deleted the formulas again.", ar: "المخ مسح المعادلات تاني." }, { ger: "Bitte löschen Sie diese Datei nicht.", en: "Please do not delete this file.", ar: "لو سمحت متمسحش الملف ده." }, { ger: "Er löschte alle alten E-Mails.", en: "He deleted all old emails.", ar: "هو مسح كل الإيميلات القديمة." }] },
+            { level: "B1", infinitive: "überschreiben", praesens: "überschreibt", praeteritum: "überschrieb", perfekt: "hat überschrieben", arabic: "يكتب فوق / يمسح داتا قديمة", examples: [{ ger: "Das Langzeitgedächtnis überschreibt nicht mehr gebrauchte Daten.", en: "The long-term memory overwrites no longer used data.", ar: "الذاكرة طويلة المدى بتمسح الداتا القديمة وتكتب فوقها داتا جديدة." }, { ger: "Ich habe die Datei versehentlich überschrieben.", en: "I accidentally overwrote the file.", ar: "أنا مسحت الملف بالغلط وكتبت فوقه." }, { ger: "Der alte Text wird mit dem neuen überschrieben.", en: "The old text is overwritten with the new one.", ar: "النص القديم بيتكتب فوقه بالجديد." }] },
+            { level: "B1", infinitive: "nachholen", praesens: "holt nach", praeteritum: "holte nach", perfekt: "hat nachgeholt", arabic: "يتدارك / يعوض (اللي فاته)", examples: [{ ger: "Interessierte können den Schulabschluss nachholen.", en: "Interested parties can catch up on their school leaving certificate.", ar: "المهتمين ممكن يكملوا/يعوضوا شهادة المدرسة." }, { ger: "Ich muss viel Schlaf nachholen.", en: "I have to catch up on a lot of sleep.", ar: "لازم أعوض نوم كتير ناقصني." }, { ger: "Wir können das Treffen nächste Woche nachholen.", en: "We can make up for the meeting next week.", ar: "ممكن نعوض المقابلة الأسبوع الجاي." }] },
+            { level: "B1", infinitive: "unterstützen", praesens: "unterstützt", praeteritum: "unterstützte", perfekt: "hat unterstützt", arabic: "يدعم / يساند", examples: [{ ger: "Ihr Auftrag wird von den Gemeinden finanziell unterstützt.", en: "Their mission is financially supported by the municipalities.", ar: "مهمتهم مدعومة مادياً من المجالس المحلية." }, { ger: "Meine Familie hat mich immer unterstützt.", en: "My family has always supported me.", ar: "عيلتي دايماً كانت بتساندني." }, { ger: "Wir müssen dieses Projekt unterstützen.", en: "We must support this project.", ar: "لازم ندعم المشروع ده." }] },
+            { level: "B1", infinitive: "auswirken", praesens: "wirkt aus", praeteritum: "wirkte aus", perfekt: "hat ausgewirkt", arabic: "يأثر / يترك أثر", examples: [{ ger: "Der Geldmangel wirkt sich auf die Ausstattung aus.", en: "The lack of money has an effect on the equipment.", ar: "نقص الفلوس بيأثر على التجهيزات." }, { ger: "Die Krise hat sich negativ ausgewirkt.", en: "The crisis has had a negative effect.", ar: "الأزمة سابت أثر سلبي." }, { ger: "Das wird sich auf die Zukunft auswirken.", en: "That will have an impact on the future.", ar: "ده هيأثر على المستقبل." }] },
+            { level: "B1", infinitive: "kommunizieren", praesens: "kommuniziert", praeteritum: "kommunizierte", perfekt: "hat kommuniziert", arabic: "يتواصل / يتكلم مع", examples: [{ ger: "Um mit den Kunden besser kommunizieren zu können...", en: "In order to be able to communicate better with customers...", ar: "عشان أقدر أتواصل مع العملاء بشكل أحسن..." }, { ger: "Wir kommunizieren meistens per E-Mail.", en: "We mostly communicate via email.", ar: "إحنا غالباً بنتواصل بالإيميل." }, { ger: "Sie hat klar kommuniziert, was sie will.", en: "She communicated clearly what she wants.", ar: "هي وضحت كلامها عن اللي عايزاه بوضوح." }] }
+        ];
+
+        // NEW 6TH PATTERN: Grammar Traps (Da/Wo, Genus, Formal Definitions)
+        const grammarTrapsData = [
+            { level: "B1", category: "Formal Definition", german: "Es handelt sich um...", english: "It concerns / It is a matter of", arabic: "الأمر يتعلق بـ / عبارة عن", examples: [{ ger: "Es handelt sich bei der VHS nicht um eine Universität.", en: "The VHS is not a university.", ar: "مدرسة الشعب مش عبارة عن جامعة." }, { ger: "Worum handelt es sich bei diesem Problem?", en: "What is this problem about?", ar: "المشكلة دي عبارة عن إيه؟" }, { ger: "Es handelt sich um einen schweren Fehler.", en: "It is a serious mistake.", ar: "الأمر يتعلق بغلطة كبيرة." }] },
+            { level: "B1", category: "Zeitangaben (Präsens)", german: "seit (+ Dativ)", english: "for / since (ongoing action)", arabic: "منذ / بقالي (حدث مستمر - يستخدم مع المضارع)", examples: [{ ger: "Ich lerne seit drei Jahren Italienisch.", en: "I have been learning Italian for three years.", ar: "أنا بتعلم إيطالي بقالي تلات سنين (ولسه بتعلم)." }, { ger: "Er lebt seit einem Monat in Berlin.", en: "He has been living in Berlin for a month.", ar: "هو عايش في برلين بقاله شهر." }, { ger: "Seit wann arbeitest du hier?", en: "Since when have you been working here?", ar: "إنت شغال هنا بقالك قد إيه؟" }] },
+            { level: "B1", category: "Genus-Hack: DIE", german: "Feminin: -heit, -keit, -ung", english: "Feminine noun endings", arabic: "نهايات الأسماء المؤنثة (Die)", examples: [{ ger: "Die Sicherheit, die Möglichkeit, die Ausbildung.", en: "Security, possibility, education.", ar: "الأمان، الإمكانية، التعليم." }, { ger: "Auch -schaft, -ion, -tät, -ur sind feminin.", en: "Also -schaft, -ion, -tät, -ur are feminine.", ar: "كمان النهايات دي مؤنثة دايماً." }, { ger: "Die Natur, die Universität, die Information.", en: "Nature, university, information.", ar: "الطبيعة، الجامعة، المعلومة." }] },
+            { level: "B1", category: "Genus-Hack: DER", german: "Maskulin: -ant, -ent, -ismus", english: "Masculine noun endings", arabic: "نهايات الأسماء المذكرة (Der)", examples: [{ ger: "Der Praktikant, der Student, der Kapitalismus.", en: "The intern, the student, capitalism.", ar: "المتدرب، الطالب، الرأسمالية." }, { ger: "Auch -ist und -or sind meist maskulin.", en: "Also -ist and -or are mostly masculine.", ar: "كمان النهايات دي مذكرة." }, { ger: "Der Journalist, der Motor.", en: "The journalist, the engine.", ar: "الصحفي، الموتور." }] },
+            { level: "B1", category: "Genus-Hack: DAS", german: "Neutral: -chen, -ment, Infinitiv", english: "Neuter noun endings", arabic: "نهايات الأسماء المحايدة (Das)", examples: [{ ger: "Das Mädchen, das Dokument, das Erlernen.", en: "The girl, the document, the learning.", ar: "البنت، المستند، التعلم (تحويل الفعل لاسم)." }, { ger: "Auch -lein und -um sind neutral.", en: "Also -lein and -um are neutral.", ar: "كمان النهايات دي محايدة." }, { ger: "Das Datum, das Fräulein.", en: "The date, the young lady.", ar: "التاريخ، الآنسة." }] }
+        ];
+
+        // ================= EXAM DATA STRUCTURE (CHEAT SHEET) =================
+        const getVocab = (term) => vocabData.find(v => v.german === term) || {};
+        const getConj = (term) => conjugationData.find(c => c.infinitive === term) || {};
+        const getWendung = (term) => wendungenData.find(w => w.german === term) || {};
+        const getColloc = (term) => collocationsData.find(c => c.german === term) || {};
+        const getTrap = (term) => grammarTrapsData.find(t => t.german === term) || {};
+        const getLebenslauf = (term) => lebenslaufData.find(l => l.german === term) || {};
+
+        const examSections = [
+            {
+                id: 'T1',
+                title: '🧠 T1: Rätsel: Lernen',
+                desc: 'حل فوازير الكلمات عن طريق استنتاج الاسم من المعنى.',
+                items: [
+                    { q: 'GE... (Dort werden Informationen gespeichert.)', cardData: getVocab('das Gedächtnis') , type: 'vocab' },
+                    { q: 'FO... (So etwas gibt es in der Chemie.)', cardData: { ...getVocab('die Formel'), german: "die Formel", english: "Formula", arabic: "معادلة", examples: [{ger: "Die Formel ist schwer zu lernen.", en: "The formula is hard to learn.", ar: "المعادلة صعب تتحفظ."}]} , type: 'vocab' },
+                    { q: 'EIN... (Man sollte direkt davor lernen.)', cardData: { ...getVocab('das Einschlafen'), german: "das Einschlafen", english: "Falling asleep", arabic: "الاستغراق في النوم", examples: [{ger: "Lernen vor dem Einschlafen ist effektiv.", en: "Learning before falling asleep is effective.", ar: "المذاكرة قبل النوم فعالة."}]} , type: 'vocab' },
+                    { q: 'ER... (Gedanke an etwas Vergangenes)', cardData: { ...getVocab('die Erinnerung'), german: "die Erinnerung", english: "Memory / recollection", arabic: "ذكرى", examples: [{ger: "Ich habe eine gute Erinnerung daran.", en: "I have a good memory of it.", ar: "عندي ذكرى كويسة لده."}]} , type: 'vocab' },
+                    { q: 'AUF... (Das braucht man, wenn man lernen will.)', cardData: { ...getTrap('-heit, -keit, -ung'), german: "die Aufmerksamkeit", english: "Attention", arabic: "التركيز/الانتباه", examples: [{ger: "Aufmerksamkeit ist sehr wichtig.", en: "Attention is very important.", ar: "التركيز مهم جداً."}]} , type: 'trap' },
+                    { q: 'LER... (Das hat man, wenn man fleißig lernt.)', cardData: { ...getVocab('der Lernerfolg'), german: "der Lernerfolg", english: "Learning success", arabic: "نجاح التعلم", examples: [{ger: "Bestmögliche Lernerfolge erzielen.", en: "Achieve best possible learning successes.", ar: "يحقق أحسن نتايج تعلم."}]} , type: 'vocab' }
+                ]
+            },
+            {
+                id: 'T2',
+                title: '📧 T2: Bitte um Informationen',
+                desc: 'إكمال الإيميل الرسمي الخاص بطلب معلومات عن كورس باستخدام الروابط والمصطلحات الصحيحة.',
+                items: [
+                    { q: 'ich lerne __________ drei Jahren Italienisch...', cardData: { ...getVocab('seit'), german: "seit (+ Dativ)", english: "for / since (ongoing)", arabic: "منذ / بقالي (لحدث مستمر)", examples: [{ger: "Ich lerne seit drei Jahren Italienisch.", en: "I have been learning Italian for three years.", ar: "أنا بتعلم إيطالي بقالي تلات سنين."}]} , type: 'vocab' },
+                    { q: '...und suche einen Kurs für __________ Lerner.', cardData: getVocab('fortgeschritten') , type: 'vocab' },
+                    { q: '...und habe regelmäßigen __________ zu italienischen Kunden.', cardData: getColloc('Kontakt haben zu') , type: 'collocation' },
+                    { q: '__________ mit den Kunden besser kommunizieren zu können...', cardData: getWendung('um ... zu') , type: 'wendung' },
+                    { q: 'Haben Sie so etwas __________ Angebot?', cardData: getWendung('Haben Sie so etwas im Angebot?') , type: 'wendung' },
+                    { q: '__________ Sie mich bitte außerdem über alternative Kurse informieren?', cardData: getWendung('Könnten / Würden Sie...') , type: 'wendung' },
+                    { q: 'Bekomme ich eine __________, weil ich schon...', cardData: getVocab('die Ermäßigung') , type: 'vocab' },
+                    { q: '...an zwei Kursen __________ habe?', cardData: { ...getConj('teilnehmen'), infinitive: "teilnehmen", praesens: "nimmt teil", praeteritum: "nahm teil", perfekt: "hat teilgenommen", arabic: "يشارك", examples: [{ger: "Ich habe an zwei Kursen teilgenommen.", en: "I participated in two courses.", ar: "أنا شاركت في كورسين."}]} , type: 'conjugation' }
+                ]
+            },
+            {
+                id: 'T3',
+                title: '🔗 T3: Satzverbindungen',
+                desc: 'ربط الجمل باستخدام (um...zu, deshalb, denn) ومكان الفعل في الجملة.',
+                items: [
+                    { q: 'Paul sich weiterbilden | Karriere machen (um...zu)', cardData: getWendung('um ... zu') , type: 'wendung' },
+                    { q: 'die Schule wenig Geld haben | die Unterrichtsräume schlecht ausgestattet sein (deshalb)', cardData: getWendung('deshalb / deswegen / darum') , type: 'wendung' },
+                    { q: 'Marie gute Noten bekommen | sie jeden Tag zwei Stunden lernen (denn)', cardData: getWendung('denn') , type: 'wendung' }
+                ]
+            }
+        ];
+        
+        function getPrep(term) {
+             return prepVerbsData.find(p => p.german === term) || {};
+        }
+
+        // ================= HELPER COMPONENT (LEVEL BADGE) =================
+        const LevelBadge = ({ level }) => {
+            if (!level) return null;
+            const colors = {
+                'A1': 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                'A2': 'bg-blue-100 text-blue-800 border-blue-300',
+                'B1': 'bg-rose-100 text-rose-800 border-rose-300',
+                'B2': 'bg-purple-100 text-purple-800 border-purple-300'
+            };
+            const colorClass = colors[level] || 'bg-slate-100 text-slate-800 border-slate-300';
+            return (
+                <span className={`absolute top-6 right-6 text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm border ${colorClass}`}>
+                    {level}
+                </span>
+            );
+        };
+
+        // ================= ICONS =================
+        const VolumeIcon = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>;
+        const MicIcon = ({ size = 20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>;
+        const FlipIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>;
+
+        // ================= COMPONENTS =================
+        const BaseFlashcard = ({ frontContent, backHeaderContent, examples, targetGerman, cardColor = "bg-white", backColor = "bg-slate-800" }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+            const [listeningId, setListeningId] = useState(null);
+            const [feedback, setFeedback] = useState(null);
+
+            const handleTTS = (e, text) => {
+                e.stopPropagation();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'de-DE';
+                window.speechSynthesis.speak(utterance);
+            };
+
+            const cleanString = (str) => {
+                return str.toLowerCase().replace(/[\(\)\.\,\/\-\+\!\?]/g, '').trim();
+            };
+
+            const handleSTT = (e, targetText, id) => {
+                e.stopPropagation();
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                
+                if (!SpeechRecognition) {
+                    alert("المتصفح بتاعك مش بيدعم التعرف على الصوت، جرب تستخدم Google Chrome.");
+                    return;
+                }
+
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onstart = () => { setListeningId(id); setFeedback(null); };
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    const cleanTranscript = cleanString(transcript);
+                    const cleanTarget = cleanString(targetText);
+                    if (cleanTarget.includes(cleanTranscript) || cleanTranscript.includes(cleanTarget)) {
+                        setFeedback({ id, type: 'success', msg: `عاش! نطقت صح: "${transcript}"` });
+                    } else {
+                        setFeedback({ id, type: 'error', msg: `حاول تاني، انت قولت: "${transcript}"` });
+                    }
+                };
+                recognition.onerror = (event) => { setFeedback({ id, type: 'error', msg: `مشكلة في المايك: ${event.error}` }); setListeningId(null); };
+                recognition.onend = () => { setListeningId(null); };
+                recognition.start();
+            };
+
+            return (
+                <div className="w-full h-[34rem] cursor-pointer perspective-1000" onClick={() => setIsFlipped(!isFlipped)}>
+                    <div className={`flashcard-inner relative w-full h-full text-center rounded-3xl shadow-lg transition-transform duration-700 ${isFlipped ? 'rotate-y-180' : ''}`}>
+                        
+                        <div className={`absolute w-full h-full border-2 border-slate-700/20 rounded-3xl flex flex-col justify-center items-center p-6 backface-hidden shadow-xl ${cardColor}`}>
+                            {frontContent}
+                            <div className="absolute bottom-6 right-6 flex space-x-3">
+                                <button onClick={(e) => handleTTS(e, targetGerman)} className="p-3 bg-slate-900/10 text-slate-800 rounded-full hover:bg-slate-900/20 shadow-sm transition-transform hover:scale-105" title="اسمع النطق"><VolumeIcon size={24} /></button>
+                                <button onClick={(e) => handleSTT(e, targetGerman, 'main')} className={`p-3 rounded-full shadow-md transition-transform hover:scale-105 text-white ${listeningId === 'main' ? 'bg-red-500 pulse-animation' : 'bg-blue-600 hover:bg-blue-700'}`} title="درب نطقك"><MicIcon size={24} /></button>
+                            </div>
+                            <div className="absolute bottom-6 left-6 text-slate-500 flex items-center space-x-1 font-bold bg-black/5 px-4 py-2 rounded-full">
+                                <FlipIcon /> <span className="text-sm">Tap to Flip</span>
+                            </div>
+                            {feedback?.id === 'main' && !isFlipped && (
+                                <div className={`absolute bottom-20 left-1/2 transform -translate-x-1/2 text-sm px-4 py-2 rounded-full shadow-lg font-bold w-max ${feedback.type === 'success' ? 'bg-green-100 text-green-800 border-2 border-green-500' : 'bg-red-100 text-red-800 border-2 border-red-500'}`}>{feedback.msg}</div>
+                            )}
+                        </div>
+
+                        <div className={`absolute w-full h-full text-white rounded-3xl flex flex-col items-center p-6 backface-hidden rotate-y-180 ${backColor} shadow-2xl`}>
+                            <div className="w-full flex-shrink-0 mb-4 border-b border-white/20 pb-4">
+                                {backHeaderContent}
+                            </div>
+                            <div className="w-full flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-3" onClick={(e) => e.stopPropagation()}>
+                                <h4 className="text-xs uppercase tracking-widest text-slate-400 font-black mb-2 text-left bg-black/20 px-3 py-1 rounded inline-block">In-Context Examples:</h4>
+                                {examples && examples.map((ex, idx) => {
+                                    const exId = `ex-${idx}`;
+                                    const isListeningEx = listeningId === exId;
+                                    const exFeedback = feedback?.id === exId ? feedback : null;
+                                    
+                                    return (
+                                        <div key={idx} className="bg-slate-800/80 p-5 rounded-2xl border border-slate-600/50 flex flex-col gap-2 hover:bg-slate-700 transition-colors shadow-inner">
+                                            <p className="text-lg font-black text-white text-left leading-snug">{ex.ger}</p>
+                                            <p className="text-sm font-semibold text-emerald-300 text-left leading-snug">{ex.en}</p>
+                                            <p className="text-base text-blue-200 text-right font-bold mt-1" dir="rtl">{ex.ar}</p>
+                                            <div className="flex justify-between items-center mt-2 border-t border-slate-600/30 pt-3">
+                                                <div className="flex-1">
+                                                    {exFeedback && (
+                                                        <span className={`text-xs px-3 py-1.5 rounded-full font-bold shadow-sm ${exFeedback.type === 'success' ? 'bg-green-500 text-green-50' : 'bg-red-500 text-red-50'}`}>
+                                                            {exFeedback.msg}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="flex space-x-2">
+                                                    <button onClick={(e) => handleTTS(e, ex.ger)} className="p-2 bg-slate-600 text-white rounded-full hover:bg-slate-500 transition-colors shadow-sm" title="اسمع الجملة"><VolumeIcon size={16} /></button>
+                                                    <button onClick={(e) => handleSTT(e, ex.ger, exId)} className={`p-2 rounded-full transition-colors text-white shadow-sm ${isListeningEx ? 'bg-red-500 pulse-animation' : 'bg-blue-500 hover:bg-blue-400'}`} title="جرب تنطقها"><MicIcon size={16} /></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const VocabCard = ({ data }) => {
+            return <BaseFlashcard 
+                frontContent={<><LevelBadge level={data.level} /><span className="absolute top-6 left-6 text-sm font-black text-slate-500 uppercase tracking-wide bg-slate-200/50 px-4 py-1.5 rounded-full shadow-sm">{data.category}</span><h3 className="text-4xl font-black text-slate-800 mb-2 mt-4 drop-shadow-sm px-4">{data.german}</h3></>} 
+                backHeaderContent={<><p className="text-xl font-bold mb-2 text-center text-blue-200">{data.english}</p><p className="text-3xl font-black text-center text-white leading-tight drop-shadow-md" dir="rtl">{data.arabic}</p></>} 
+                examples={data.examples} targetGerman={data.german} backColor="bg-slate-900" cardColor="bg-slate-50" 
+            />;
+        };
+
+        const PrepCard = ({ data }) => {
+            const isAkk = data.case === "Akkusativ";
+            return <BaseFlashcard 
+                frontContent={<><LevelBadge level={data.level} /><h3 className="text-4xl font-black text-slate-800 tracking-tight drop-shadow-sm px-4">{data.german}</h3><p className="text-sm text-slate-500 mt-4 font-black uppercase tracking-widest bg-slate-200/50 px-5 py-2 rounded-full shadow-inner">Verb + Präposition</p></>} 
+                backHeaderContent={<><h4 className={`text-2xl font-black uppercase tracking-widest mb-2 pb-2 border-b-2 border-white/10 ${isAkk ? 'text-rose-400' : (data.case === 'Reflexiv' ? 'text-fuchsia-400' : 'text-cyan-400')}`}>+ {data.case}</h4><p className="text-lg font-bold text-center text-slate-300">{data.english}</p><p className="text-2xl font-black text-center text-white mt-1 drop-shadow-md" dir="rtl">{data.arabic}</p></>} 
+                examples={data.examples} targetGerman={data.german} backColor="bg-slate-950" cardColor="bg-slate-100" 
+            />;
+        };
+
+        const ConjugationCard = ({ data }) => {
+            return <BaseFlashcard 
+                frontContent={<><LevelBadge level={data.level} /><span className="absolute top-6 left-6 text-sm font-black text-emerald-800 uppercase tracking-wide bg-emerald-200/50 px-4 py-1.5 rounded-full shadow-sm border border-emerald-300">Infinitive</span><h3 className="text-5xl font-black text-emerald-950 mb-4 drop-shadow-sm">{data.infinitive}</h3><p className="text-2xl text-emerald-800 font-black mt-2 drop-shadow-sm" dir="rtl">{data.arabic}</p></>} 
+                backHeaderContent={<div className="w-full space-y-2 text-left px-2"><div className="flex justify-between items-center bg-emerald-900/60 p-3 rounded-xl shadow-inner border border-emerald-500/20"><span className="text-emerald-300 text-xs uppercase font-black tracking-wider">Präsens:</span><span className="font-bold text-lg text-white">{data.praesens}</span></div><div className="flex justify-between items-center bg-emerald-900/60 p-3 rounded-xl shadow-inner border border-emerald-500/20"><span className="text-emerald-300 text-xs uppercase font-black tracking-wider">Präteritum:</span><span className="font-bold text-lg text-white">{data.praeteritum}</span></div><div className="flex justify-between items-center bg-emerald-900/60 p-3 rounded-xl shadow-inner border border-emerald-500/20"><span className="text-emerald-300 text-xs uppercase font-black tracking-wider">Perfekt:</span><span className="font-bold text-lg text-emerald-200">{data.perfekt}</span></div></div>} 
+                examples={data.examples} targetGerman={data.infinitive} cardColor="bg-emerald-50" backColor="bg-emerald-950" 
+            />;
+        };
+
+        const WendungCard = ({ data }) => {
+            return <BaseFlashcard 
+                frontContent={<><LevelBadge level={data.level} /><span className="absolute top-6 left-6 text-sm font-black text-purple-800 uppercase tracking-wide bg-purple-200/50 px-4 py-1.5 rounded-full shadow-sm border border-purple-300">{data.category}</span><h3 className="text-3xl font-black text-slate-900 mb-2 mt-8 leading-snug drop-shadow-sm px-4">{data.german}</h3></>} 
+                backHeaderContent={<><p className="text-xl font-bold mb-2 text-center text-purple-200">{data.english}</p><p className="text-3xl font-black text-center text-white leading-tight drop-shadow-md" dir="rtl">{data.arabic}</p></>} 
+                examples={data.examples} targetGerman={data.german} cardColor="bg-purple-50" backColor="bg-slate-950" 
+            />;
+        };
+
+        const CollocationCard = ({ data }) => {
+            return <BaseFlashcard 
+                frontContent={<><LevelBadge level={data.level} /><span className="absolute top-6 left-6 text-sm font-black text-amber-800 uppercase tracking-wide bg-amber-200/50 px-4 py-1.5 rounded-full shadow-sm border border-amber-300">Nomen + Verb</span><h3 className="text-3xl font-black text-amber-950 mb-2 mt-8 leading-snug drop-shadow-sm px-4">{data.german}</h3></>} 
+                backHeaderContent={<><p className="text-xl font-bold mb-2 text-center text-amber-200">{data.english}</p><p className="text-3xl font-black text-center text-white leading-tight drop-shadow-md" dir="rtl">{data.arabic}</p></>} 
+                examples={data.examples} targetGerman={data.german} cardColor="bg-amber-50" backColor="bg-slate-950" 
+            />;
+        };
+
+        const LebenslaufCard = ({ data }) => {
+            return <BaseFlashcard 
+                frontContent={<><LevelBadge level={data.level} /><span className="absolute top-6 left-6 text-sm font-black text-teal-800 uppercase tracking-wide bg-teal-200/50 px-4 py-1.5 rounded-full shadow-sm border border-teal-400">Nomenstil</span><h3 className="text-3xl font-black text-teal-950 mb-2 mt-8 leading-snug drop-shadow-sm px-4">{data.german}</h3><p className="text-md text-teal-700 font-bold mt-2 uppercase tracking-widest">{data.category}</p></>} 
+                backHeaderContent={<><p className="text-xl font-bold mb-2 text-center text-teal-200">{data.english}</p><p className="text-3xl font-black text-center text-white leading-tight drop-shadow-md" dir="rtl">{data.arabic}</p></>} 
+                examples={data.examples} targetGerman={data.german} cardColor="bg-teal-50" backColor="bg-slate-900" 
+            />;
+        };
+
+        // NEW 8TH PATTERN COMPONENT: TrapCard (Fuchsia Theme for Genus/Hacks)
+        const TrapCard = ({ data }) => {
+            return <BaseFlashcard 
+                frontContent={<><LevelBadge level={data.level} /><span className="absolute top-6 left-6 text-sm font-black text-fuchsia-800 uppercase tracking-wide bg-fuchsia-200/50 px-4 py-1.5 rounded-full shadow-sm border border-fuchsia-300">Genus-Hacks</span><h3 className="text-3xl font-black text-fuchsia-950 mb-2 mt-8 leading-snug drop-shadow-sm px-4">{data.german}</h3><p className="text-md text-fuchsia-700 font-bold mt-2 uppercase tracking-widest">{data.category}</p></>} 
+                backHeaderContent={<><p className="text-xl font-bold mb-2 text-center text-fuchsia-200">{data.english}</p><p className="text-3xl font-black text-center text-white leading-tight drop-shadow-md" dir="rtl">{data.arabic}</p></>} 
+                examples={data.examples} targetGerman={data.german} cardColor="bg-fuchsia-50" backColor="bg-slate-950" 
+            />;
+        };
+
+        // ================= MAIN APP =================
+        const App = () => {
+            const [activeCategory, setActiveCategory] = useState('lebenslauf');
+
+            const categories = [
+                { id: 'lebenslauf', name: 'Lebenslauf & Nomenstil', desc: 'لغة السيرة الذاتية وتحويل الأفعال لأسماء', count: lebenslaufData.length },
+                { id: 'vocab', name: 'Vokabeln & Bildung', desc: 'مفردات التعليم والمؤسسات والمخ', count: vocabData.length },
+                { id: 'collocations', name: 'Corporate Collocations', desc: 'متلازمات البزنس والتعبيرات', count: collocationsData.length },
+                { id: 'prepVerbs', name: 'Verben & Fälle', desc: 'أفعال حروف الجر التجريدية', count: prepVerbsData.length },
+                { id: 'wendungen', name: 'Satzverbindungen', desc: 'روابط الجمل (weil, um..zu, deshalb)', count: wendungenData.length },
+                { id: 'conjugation', name: 'Zeitformen & Verben', desc: 'الأفعال الشاذة وتصريفاتها', count: conjugationData.length },
+                { id: 'grammarTraps', name: 'Genus-Hacks', desc: 'شفرات معرفة الـ Der/Die/Das', count: grammarTrapsData.length },
+                { id: 'exam', name: 'Abschlusstest Guide', desc: 'دليل عملي لحل امتحان الوحدة الرابعة', count: examSections.length }
+            ];
+
+            return (
+                <div className="min-h-screen flex flex-col items-center p-4 sm:p-8">
+                    <header className="w-full max-w-7xl mb-12 text-center bg-slate-900 p-8 sm:p-14 rounded-[3rem] shadow-2xl border border-slate-700 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-400 via-indigo-500 to-fuchsia-500"></div>
+                        <div className="inline-block bg-teal-500/20 text-teal-300 px-5 py-1.5 rounded-full text-sm font-black uppercase tracking-widest mb-6 border border-teal-500/30">The Advanced Academic Edition (Zero Truncation)</div>
+                        <h1 className="text-4xl sm:text-6xl font-black text-white mb-6 tracking-tight drop-shadow-lg">German B1 <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-fuchsia-400">Masterclass</span></h1>
+                        <p className="text-2xl text-slate-300 font-bold mb-4" dir="rtl">Kapitel 4: Lernen & Lebenslauf</p>
+                        <p className="text-lg text-slate-400 font-medium max-w-4xl mx-auto mb-10 leading-relaxed" dir="rtl">
+                            تم مسح الوحدة السابقة والتركيز على لغة <span className="text-teal-400 font-black">السيرة الذاتية (CV)</span> والتعليم. تم اكتشاف نمط جديد: <span className="text-fuchsia-400 font-black">Genus-Hacks</span> لشفرات تحديد الـ Der/Die/Das!
+                        </p>
+                        
+                        <div className="flex flex-wrap justify-center gap-4 mt-6" dir="rtl">
+                            {categories.map(cat => (
+                                <button key={cat.id} onClick={() => setActiveCategory(cat.id)} className={`flex flex-col items-center p-5 rounded-3xl border-2 transition-all duration-300 ${activeCategory === cat.id ? 'bg-gradient-to-b from-indigo-600 to-indigo-800 border-indigo-400 shadow-[0_0_30px_rgba(99,102,241,0.5)] transform scale-105' : 'bg-slate-800/50 border-slate-700 hover:border-slate-500 hover:bg-slate-800'}`} style={{ width: '240px' }}>
+                                    <span className={`text-xl font-black mb-2 tracking-tight text-center ${activeCategory === cat.id ? 'text-white' : 'text-slate-300'}`}>{cat.name}</span>
+                                    <span className={`text-xs text-center leading-snug font-medium ${activeCategory === cat.id ? 'text-indigo-200' : 'text-slate-500'}`}>{cat.desc}</span>
+                                    <span className={`mt-auto pt-4 px-4 py-1.5 rounded-full text-xs font-black tracking-widest uppercase ${activeCategory === cat.id ? 'bg-black/30 text-white shadow-inner border border-white/10' : 'bg-slate-900 text-slate-400'}`}>{cat.count} كروت</span>
+                                </button>
+                            ))}
+                        </div>
+                    </header>
+
+                    <div className="w-full max-w-7xl">
+                        {activeCategory === 'lebenslauf' && (
+                            <div className="animate-fade-in grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 pb-16">
+                                {lebenslaufData.map((data, index) => <LebenslaufCard key={`leb-${index}`} data={data} />)}
+                            </div>
+                        )}
+                        {activeCategory === 'prepVerbs' && (
+                            <div className="animate-fade-in grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 pb-16">
+                                {prepVerbsData.map((data, index) => <PrepCard key={`prep-${index}`} data={data} />)}
+                            </div>
+                        )}
+                        {activeCategory === 'wendungen' && (
+                            <div className="animate-fade-in grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 pb-16">
+                                {wendungenData.map((data, index) => <WendungCard key={`wen-${index}`} data={data} />)}
+                            </div>
+                        )}
+                        {activeCategory === 'vocab' && (
+                            <div className="animate-fade-in grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 pb-16">
+                                {vocabData.map((data, index) => <VocabCard key={`voc-${index}`} data={data} />)}
+                            </div>
+                        )}
+                        {activeCategory === 'conjugation' && (
+                            <div className="animate-fade-in grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 pb-16">
+                                {conjugationData.map((data, index) => <ConjugationCard key={`conj-${index}`} data={data} />)}
+                            </div>
+                        )}
+                        {activeCategory === 'collocations' && (
+                            <div className="animate-fade-in grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 pb-16">
+                                {collocationsData.map((data, index) => <CollocationCard key={`col-${index}`} data={data} />)}
+                            </div>
+                        )}
+                        {activeCategory === 'grammarTraps' && (
+                            <div className="animate-fade-in grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 pb-16">
+                                {grammarTrapsData.map((data, index) => <TrapCard key={`trap-${index}`} data={data} />)}
+                            </div>
+                        )}
+                        {/* EXAM GUIDE RENDER */}
+                        {activeCategory === 'exam' && (
+                            <div className="animate-fade-in space-y-12 pb-16">
+                                {examSections.map((section, sIdx) => (
+                                    <div key={`sec-${sIdx}`} className="bg-slate-800 rounded-[2.5rem] p-8 sm:p-12 border-2 border-indigo-500/30 shadow-2xl">
+                                        <h3 className="text-3xl sm:text-4xl text-white font-black mb-4 border-b-2 border-slate-700 pb-6" dir="rtl">{section.title}</h3>
+                                        <p className="text-indigo-300 text-xl font-medium mb-10" dir="rtl">{section.desc}</p>
+                                        
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
+                                            {section.items.map((item, iIdx) => {
+                                                let CardComponent = null;
+                                                if (item.type === 'vocab') CardComponent = VocabCard;
+                                                else if (item.type === 'conjugation') CardComponent = ConjugationCard;
+                                                else if (item.type === 'wendung') CardComponent = WendungCard;
+                                                else if (item.type === 'collocation') CardComponent = CollocationCard;
+                                                else if (item.type === 'trap') CardComponent = TrapCard;
+                                                else if (item.type === 'prepVerb') CardComponent = PrepCard;
+
+                                                return (
+                                                    <div key={`item-${iIdx}`} className="bg-slate-900 rounded-[2.5rem] p-4 flex flex-col items-center shadow-inner border border-slate-700/50">
+                                                        <div className="w-full bg-indigo-900/60 text-indigo-100 p-6 rounded-3xl mb-6 font-mono text-center border border-indigo-500/50 font-bold text-lg shadow-lg">
+                                                            {item.q}
+                                                        </div>
+                                                        <div className="w-full transform scale-95 origin-top">
+                                                            {CardComponent && item.cardData && Object.keys(item.cardData).length > 0 ? (
+                                                                <CardComponent data={item.cardData} />
+                                                            ) : (
+                                                                <div className="text-red-400 p-4 text-center font-bold">Card Data Not Found ({item.type})</div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
