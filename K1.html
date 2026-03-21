@@ -1646,7 +1646,8 @@
                 { id: 'vocab', name: 'Alle Vokabeln (1-15)', desc: 'كل كلمات القطع وشرح الكتاب بالتفصيل', count: vocabData.length },
                 { id: 'conjugation', name: 'Zeitformen der Verben', desc: 'تصريفات الأفعال في كل الأزمنة', count: conjugationData.length },
                 { id: 'conversation', name: 'Interview: Freizeit', desc: 'تدريب المحادثة التفاعلي', count: rolePlaysData.length },
-                { id: 'schreiben', name: 'Schreiben: A2', desc: 'مساعد الكتابة والنطق للمستوى A2', count: 2 }
+                { id: 'schreiben', name: 'Schreiben: A2', desc: 'مساعد الكتابة والنطق للمستوى A2', count: 2 },
+                { id: 'vertiefung', name: 'Vertiefung', desc: 'الفصل الأول – مفردات ونصوص', count: 1 }
             ];
 
             return (
@@ -1750,6 +1751,16 @@
                         {activeCategory === 'schreiben' && (
                             <div className="animate-fade-in pb-10">
                                 <SchreibenHelferTab />
+                            </div>
+                        )}
+
+                        {activeCategory === 'vertiefung' && (
+                            <div className="animate-fade-in pb-10">
+                                <iframe 
+                                    src="vertiefung.html" 
+                                    style={{ width: '100%', height: '800px', border: 'none', borderRadius: '1.5rem', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    title="Vertiefung"
+                                />
                             </div>
                         )}
 
