@@ -118,111 +118,419 @@
             );
         };
 
-        // --- COMPREHENSIVE LEARNING DATA (FULLY SEPARATED) ---
+        // --- COMPREHENSIVE LEARNING DATA (3 EXAMPLES PER ITEM) ---
         const LEARNING_DATA = {
             words: {
                 vhs_studium: [
-                    { id: 'w1', ger: "die Volkshochschule (VHS)", eng: "Adult education center", ar: "مركز تعليم الكبار", s: [{ g: "<strong>Volkshochschulen</strong> sind bekannte Einrichtungen.", e: "Adult education centers are well-known institutions.", a: "مراكز تعليم الكبار دي مؤسسات معروفة." }] },
-                    { id: 'w2', ger: "die Vorlesung", eng: "Lecture", ar: "المحاضرة (الجامعية)", s: [{ g: "Ich besuche die <strong>Vorlesung</strong>.", e: "I attend the lecture.", a: "بحضر المحاضرة." }] },
-                    { id: 'w3', ger: "das Seminar", eng: "Seminar", ar: "السيمينار / حلقة دراسية", s: [{ g: "Das <strong>Seminar</strong> ist sehr interessant.", e: "The seminar is very interesting.", a: "السيمينار شيق جداً." }] },
-                    { id: 'w4', ger: "die Lehrveranstaltung", eng: "Course / University class", ar: "المقرر الدراسي", s: [{ g: "Die <strong>Lehrveranstaltung</strong> fällt heute aus.", e: "The course is canceled today.", a: "المحاضرة ملغية النهاردة." }] },
-                    { id: 'w5', ger: "der Kommilitone", eng: "Fellow student (male)", ar: "زميل دراسة (جامعي)", s: [{ g: "Mein <strong>Kommilitone</strong> hilft mir beim Lernen.", e: "My fellow student helps me study.", a: "زميلي بيساعدني في المذاكرة." }] },
-                    { id: 'w6', ger: "die Kommilitonin", eng: "Fellow student (female)", ar: "زميلة دراسة (جامعية)", s: [{ g: "Meine <strong>Kommilitonin</strong> ist sehr klug.", e: "My fellow student is very smart.", a: "زميلتي ذكية جداً." }] },
-                    { id: 'w7', ger: "das Universitätsdiplom", eng: "University degree", ar: "الشهادة الجامعية", s: [{ g: "Für diesen Beruf braucht man ein <strong>Universitätsdiplom</strong>.", e: "For this profession, one needs a university degree.", a: "للشغلانة دي محتاج شهادة جامعة." }] },
-                    { id: 'w8', ger: "die Erwachsenenbildung", eng: "Adult education", ar: "تعليم الكبار", s: [{ g: "Die <strong>Erwachsenenbildung</strong> wird vom Staat unterstützt.", e: "Adult education is supported by the state.", a: "تعليم الكبار مدعوم من الدولة." }] },
-                    { id: 'w9', ger: "die Einrichtung", eng: "Institution / Facility", ar: "مؤسسة", s: [{ g: "Das ist eine staatliche <strong>Einrichtung</strong>.", e: "This is a state institution.", a: "دي مؤسسة حكومية." }] },
-                    { id: 'w10', ger: "die Ausstattung", eng: "Equipment / Facilities", ar: "التجهيزات", s: [{ g: "Die <strong>Ausstattung</strong> der Klassenräume ist wichtig.", e: "The equipment of the classrooms is important.", a: "تجهيزات الفصول مهمة." }] },
-                    { id: 'w11', ger: "die Freizeitgestaltung", eng: "Leisure activities", ar: "تنظيم أوقات الفراغ", s: [{ g: "Kurse helfen bei der <strong>Freizeitgestaltung</strong>.", e: "Courses help with leisure activities.", a: "الكورسات بتساعد في تنظيم وقت الفراغ." }] },
-                    { id: 'w12', ger: "der Schulabschluss", eng: "School leaving certificate", ar: "الشهادة المدرسية", s: [{ g: "Ein guter <strong>Schulabschluss</strong> ist wichtig.", e: "A good school leaving certificate is important.", a: "الشهادة المدرسية الكويسة مهمة." }] },
-                    { id: 'w13', ger: "die mittlere Reife", eng: "Intermediate certificate", ar: "الشهادة الإعدادية", s: [{ g: "Er hat die <strong>mittlere Reife</strong> nachgeholt.", e: "He caught up on his intermediate certificate.", a: "هو امتحن وخد الإعدادية متأخر." }] },
-                    { id: 'w14', ger: "die Erkenntnis", eng: "Finding / Knowledge", ar: "المعرفة / الاكتشاف", s: [{ g: "Diese wissenschaftliche <strong>Erkenntnis</strong> ist neu.", e: "This scientific finding is new.", a: "الاكتشاف العلمي ده جديد." }] },
-                    { id: 'w15', ger: "die Wirtschaftlichkeit", eng: "Profitability / Efficiency", ar: "الجدوى الاقتصادية", s: [{ g: "Wir müssen auf <strong>Wirtschaftlichkeit</strong> achten.", e: "We must pay attention to profitability.", a: "لازم نراعي الجدوى الاقتصادية." }] },
-                    { id: 'w16', ger: "der Geldmangel", eng: "Lack of money", ar: "نقص الأموال", s: [{ g: "Der <strong>Geldmangel</strong> ist ein großes Problem.", e: "The lack of money is a big problem.", a: "نقص الفلوس ده مشكلة كبيرة." }] },
-                    { id: 'w17', ger: "das Preis-Leistungs-Verhältnis", eng: "Value for money", ar: "نسبة السعر للجودة", s: [{ g: "Die VHS bietet ein gutes <strong>Preis-Leistungs-Verhältnis</strong>.", e: "The VHS offers a good price-performance ratio.", a: "المركز بيقدم نسبة كويسة بين السعر والجودة." }] },
-                    { id: 'w18', ger: "der Anbieter", eng: "Provider", ar: "مزود الخدمة", s: [{ g: "Es gibt viele kommerzielle <strong>Anbieter</strong>.", e: "There are many commercial providers.", a: "فيه مزودين خدمة تجاريين كتير." }] },
-                    { id: 'w19', ger: "die Konkurrenz", eng: "Competition", ar: "المنافسة", s: [{ g: "Die <strong>Konkurrenz</strong> auf dem Markt ist groß.", e: "The competition on the market is large.", a: "المنافسة في السوق كبيرة." }] },
-                    { id: 'w20', ger: "das Mobiliar", eng: "Furniture", ar: "الأثاث (العفش)", s: [{ g: "Die Klassenräume brauchen neues <strong>Mobiliar</strong>.", e: "The classrooms need new furniture.", a: "الفصول محتاجة أثاث جديد." }] }
+                    { id: 'w1', ger: "die Volkshochschule (VHS)", eng: "Adult education center", ar: "مركز تعليم الكبار", s: [
+                        { g: "<strong>Volkshochschulen</strong> sind bekannte Einrichtungen.", e: "Adult education centers are well-known institutions.", a: "مراكز تعليم الكبار دي مؤسسات معروفة." },
+                        { g: "Sie bieten Kurse für Personen ab 16 Jahren an.", e: "They offer courses for people 16 and older.", a: "بيقدموا كورسات للناس من سن ١٦ سنة." },
+                        { g: "Ich lerne Spanisch an der <strong>Volkshochschule</strong>.", e: "I learn Spanish at the adult education center.", a: "أنا بتعلم إسباني في مركز تعليم الكبار." }
+                    ]},
+                    { id: 'w2', ger: "die Vorlesung", eng: "Lecture", ar: "المحاضرة (الجامعية)", s: [
+                        { g: "Ich besuche die <strong>Vorlesung</strong> um 8 Uhr.", e: "I attend the lecture at 8 AM.", a: "أنا بحضر المحاضرة الساعة 8." },
+                        { g: "Die <strong>Vorlesung</strong> ist heute sehr voll.", e: "The lecture is very crowded today.", a: "المحاضرة زحمة جداً النهاردة." },
+                        { g: "Der Professor hält eine spannende <strong>Vorlesung</strong>.", e: "The professor gives an exciting lecture.", a: "الدكتور بيدي محاضرة شيقة." }
+                    ]},
+                    { id: 'w3', ger: "das Seminar", eng: "Seminar", ar: "السيمينار / حلقة دراسية", s: [
+                        { g: "Das <strong>Seminar</strong> ist sehr interessant.", e: "The seminar is very interesting.", a: "السيمينار شيق جداً." },
+                        { g: "Im <strong>Seminar</strong> diskutieren die Studenten viel.", e: "In the seminar, the students discuss a lot.", a: "في السيمينار الطلاب بيتناقشوا كتير." },
+                        { g: "Ich muss eine Arbeit für das <strong>Seminar</strong> schreiben.", e: "I have to write a paper for the seminar.", a: "لازم أكتب بحث للسيمينار." }
+                    ]},
+                    { id: 'w4', ger: "die Lehrveranstaltung", eng: "Course / University class", ar: "المقرر الدراسي", s: [
+                        { g: "Die <strong>Lehrveranstaltung</strong> fällt heute aus.", e: "The course is canceled today.", a: "المحاضرة ملغية النهاردة." },
+                        { g: "Welche <strong>Lehrveranstaltungen</strong> besuchst du?", e: "Which courses are you attending?", a: "إيه المقررات اللي بتحضرها؟" },
+                        { g: "Einige <strong>Lehrveranstaltungen</strong> sind zu theoretisch.", e: "Some courses are too theoretical.", a: "بعض المقررات نظرية بزيادة." }
+                    ]},
+                    { id: 'w5', ger: "der Kommilitone", eng: "Fellow student (male)", ar: "زميل دراسة (جامعي)", s: [
+                        { g: "Mein <strong>Kommilitone</strong> hilft mir beim Lernen.", e: "My fellow student helps me study.", a: "زميلي بيساعدني في المذاكرة." },
+                        { g: "Ich treffe mich mit meinem <strong>Kommilitonen</strong>.", e: "I am meeting with my fellow student.", a: "أنا هقابل زميلي في الجامعة." },
+                        { g: "Er ist ein neuer <strong>Kommilitone</strong> in meinem Kurs.", e: "He is a new fellow student in my course.", a: "هو زميل جديد معايا في الكورس." }
+                    ]},
+                    { id: 'w6', ger: "die Kommilitonin", eng: "Fellow student (female)", ar: "زميلة دراسة (جامعية)", s: [
+                        { g: "Meine <strong>Kommilitonin</strong> ist sehr klug.", e: "My fellow student is very smart.", a: "زميلتي ذكية جداً." },
+                        { g: "Ich habe eine nette <strong>Kommilitonin</strong> gefunden.", e: "I found a nice fellow student.", a: "لقيت زميلة دراسة لطيفة." },
+                        { g: "Die <strong>Kommilitonin</strong> hat mir ihre Notizen gegeben.", e: "The fellow student gave me her notes.", a: "زميلتي إدتني الملاحظات بتاعتها." }
+                    ]},
+                    { id: 'w7', ger: "das Universitätsdiplom", eng: "University degree", ar: "الشهادة الجامعية", s: [
+                        { g: "Für diesen Beruf braucht man ein <strong>Universitätsdiplom</strong>.", e: "For this profession, one needs a university degree.", a: "للشغلانة دي محتاج شهادة جامعة." },
+                        { g: "Sie hat ihr <strong>Universitätsdiplom</strong> erhalten.", e: "She received her university degree.", a: "هي استلمت شهادتها الجامعية." },
+                        { g: "Mit einem <strong>Universitätsdiplom</strong> verdient man oft mehr.", e: "With a university degree, you often earn more.", a: "بالشهادة الجامعية غالباً بتقبض أكتر." }
+                    ]},
+                    { id: 'w8', ger: "die Erwachsenenbildung", eng: "Adult education", ar: "تعليم الكبار", s: [
+                        { g: "Die <strong>Erwachsenenbildung</strong> wird vom Staat unterstützt.", e: "Adult education is supported by the state.", a: "تعليم الكبار مدعوم من الدولة." },
+                        { g: "Die VHS ist ein Zentrum der <strong>Erwachsenenbildung</strong>.", e: "The VHS is a center for adult education.", a: "مركز الـ VHS هو مركز لتعليم الكبار." },
+                        { g: "<strong>Erwachsenenbildung</strong> ist lebenslanges Lernen.", e: "Adult education is lifelong learning.", a: "تعليم الكبار هو تعليم مدى الحياة." }
+                    ]},
+                    { id: 'w9', ger: "die Einrichtung", eng: "Institution / Facility", ar: "مؤسسة", s: [
+                        { g: "Das ist eine staatliche <strong>Einrichtung</strong>.", e: "This is a state institution.", a: "دي مؤسسة حكومية." },
+                        { g: "Die <strong>Einrichtung</strong> bietet viele Kurse an.", e: "The institution offers many courses.", a: "المؤسسة بتقدم كورسات كتير." },
+                        { g: "Krankenhäuser sind wichtige <strong>Einrichtungen</strong>.", e: "Hospitals are important facilities.", a: "المستشفيات دي مؤسسات مهمة." }
+                    ]},
+                    { id: 'w10', ger: "die Ausstattung", eng: "Equipment / Facilities", ar: "التجهيزات", s: [
+                        { g: "Die <strong>Ausstattung</strong> der Klassenräume ist wichtig.", e: "The equipment of the classrooms is important.", a: "تجهيزات الفصول مهمة." },
+                        { g: "Die Schule hat eine moderne <strong>Ausstattung</strong>.", e: "The school has modern equipment.", a: "المدرسة فيها تجهيزات حديثة." },
+                        { g: "Der Geldmangel wirkt sich auf die <strong>Ausstattung</strong> aus.", e: "The lack of money affects the equipment.", a: "نقص الفلوس بيأثر على التجهيزات." }
+                    ]},
+                    { id: 'w11', ger: "die Freizeitgestaltung", eng: "Leisure activities", ar: "تنظيم أوقات الفراغ", s: [
+                        { g: "Kurse helfen bei der <strong>Freizeitgestaltung</strong>.", e: "Courses help with leisure activities.", a: "الكورسات بتساعد في تنظيم وقت الفراغ." },
+                        { g: "Eine gute <strong>Freizeitgestaltung</strong> ist gesund.", e: "Good leisure activities are healthy.", a: "تنظيم وقت الفراغ بشكل كويس مفيد للصحة." },
+                        { g: "Sport ist ein Teil meiner <strong>Freizeitgestaltung</strong>.", e: "Sport is part of my leisure activities.", a: "الرياضة جزء من استغلال وقت فراغي." }
+                    ]},
+                    { id: 'w12', ger: "der Schulabschluss", eng: "School leaving certificate", ar: "الشهادة المدرسية", s: [
+                        { g: "Ein guter <strong>Schulabschluss</strong> ist wichtig.", e: "A good school leaving certificate is important.", a: "الشهادة المدرسية الكويسة مهمة." },
+                        { g: "Er möchte seinen <strong>Schulabschluss</strong> nachholen.", e: "He wants to catch up on his school leaving certificate.", a: "عايز يعوض وياخد شهادته المدرسية متأخر." },
+                        { g: "Ohne <strong>Schulabschluss</strong> ist es schwer, Arbeit zu finden.", e: "Without a school leaving certificate, it's hard to find work.", a: "من غير شهادة مدرسة صعب تلاقي شغل." }
+                    ]},
+                    { id: 'w13', ger: "die mittlere Reife", eng: "Intermediate certificate", ar: "الشهادة الإعدادية", s: [
+                        { g: "Er hat die <strong>mittlere Reife</strong> nachgeholt.", e: "He caught up on his intermediate certificate.", a: "هو امتحن وخد الإعدادية متأخر." },
+                        { g: "Für diese Ausbildung braucht man die <strong>mittlere Reife</strong>.", e: "For this training, you need the intermediate certificate.", a: "للتدريب ده محتاج يكون معاك إعدادية." },
+                        { g: "Nach der <strong>mittleren Reife</strong> mache ich eine Ausbildung.", e: "After the intermediate certificate, I'll do vocational training.", a: "بعد الإعدادية هعمل تدريب مهني." }
+                    ]},
+                    { id: 'w14', ger: "die Erkenntnis", eng: "Finding / Knowledge", ar: "المعرفة / الاكتشاف", s: [
+                        { g: "Diese wissenschaftliche <strong>Erkenntnis</strong> ist neu.", e: "This scientific finding is new.", a: "الاكتشاف العلمي ده جديد." },
+                        { g: "Er ist zu einer wichtigen <strong>Erkenntnis</strong> gekommen.", e: "He has come to an important realization.", a: "هو وصل لمعرفة أو استنتاج مهم." },
+                        { g: "Das Seminar lieferte neue <strong>Erkenntnisse</strong>.", e: "The seminar provided new insights.", a: "السيمينار قدم اكتشافات ومعلومات جديدة." }
+                    ]},
+                    { id: 'w15', ger: "die Wirtschaftlichkeit", eng: "Profitability / Efficiency", ar: "الجدوى الاقتصادية", s: [
+                        { g: "Wir müssen auf <strong>Wirtschaftlichkeit</strong> achten.", e: "We must pay attention to profitability.", a: "لازم نراعي الجدوى الاقتصادية." },
+                        { g: "Die <strong>Wirtschaftlichkeit</strong> des Projekts wird geprüft.", e: "The profitability of the project is being tested.", a: "بيتم فحص الجدوى الاقتصادية للمشروع." },
+                        { g: "Wegen der <strong>Wirtschaftlichkeit</strong> sparen wir Strom.", e: "Because of economic efficiency, we save electricity.", a: "عشان التوفير الاقتصادي، إحنا بنوفر كهربا." }
+                    ]},
+                    { id: 'w16', ger: "der Geldmangel", eng: "Lack of money", ar: "نقص الأموال", s: [
+                        { g: "Der <strong>Geldmangel</strong> ist ein großes Problem.", e: "The lack of money is a big problem.", a: "نقص الفلوس ده مشكلة كبيرة." },
+                        { g: "Wegen <strong>Geldmangel</strong> wurde der Kurs abgesagt.", e: "Due to a lack of money, the course was canceled.", a: "بسبب نقص الفلوس الكورس اتلغى." },
+                        { g: "Die Schule leidet unter <strong>Geldmangel</strong>.", e: "The school suffers from a lack of money.", a: "المدرسة بتعاني من نقص ميزانية." }
+                    ]},
+                    { id: 'w17', ger: "das Preis-Leistungs-Verhältnis", eng: "Value for money", ar: "نسبة السعر للجودة", s: [
+                        { g: "Die VHS bietet ein gutes <strong>Preis-Leistungs-Verhältnis</strong>.", e: "The VHS offers a good price-performance ratio.", a: "المركز بيقدم نسبة كويسة بين السعر والجودة." },
+                        { g: "Das <strong>Preis-Leistungs-Verhältnis</strong> dieses Laptops ist super.", e: "The value for money of this laptop is great.", a: "سعر اللاب توب ده مقارنة بجودته ممتاز." },
+                        { g: "Ich achte beim Einkaufen auf das <strong>Preis-Leistungs-Verhältnis</strong>.", e: "I pay attention to the value for money when shopping.", a: "باخد بالي من السعر مقابل الجودة وأنا بشتري." }
+                    ]},
+                    { id: 'w18', ger: "der Anbieter", eng: "Provider", ar: "مزود الخدمة", s: [
+                        { g: "Es gibt viele kommerzielle <strong>Anbieter</strong>.", e: "There are many commercial providers.", a: "فيه مزودين خدمة تجاريين كتير." },
+                        { g: "Welcher <strong>Anbieter</strong> hat das beste Internet?", e: "Which provider has the best internet?", a: "مين الشركة (المزود) اللي عندها أحسن نت؟" },
+                        { g: "Der <strong>Anbieter</strong> hat die Preise erhöht.", e: "The provider has raised the prices.", a: "الشركة زودت الأسعار." }
+                    ]},
+                    { id: 'w19', ger: "die Konkurrenz", eng: "Competition", ar: "المنافسة", s: [
+                        { g: "Die <strong>Konkurrenz</strong> auf dem Markt ist groß.", e: "The competition on the market is large.", a: "المنافسة في السوق كبيرة." },
+                        { g: "Die VHS ist billiger als die <strong>Konkurrenz</strong>.", e: "The VHS is cheaper than the competition.", a: "الـ VHS أرخص من المنافسين." },
+                        { g: "Wir müssen die <strong>Konkurrenz</strong> beobachten.", e: "We have to watch the competition.", a: "لازم نراقب المنافسة." }
+                    ]},
+                    { id: 'w20', ger: "das Mobiliar", eng: "Furniture", ar: "الأثاث (العفش)", s: [
+                        { g: "Die Klassenräume brauchen neues <strong>Mobiliar</strong>.", e: "The classrooms need new furniture.", a: "الفصول محتاجة أثاث جديد." },
+                        { g: "Das <strong>Mobiliar</strong> in der Schule ist sehr alt.", e: "The furniture in the school is very old.", a: "العفش اللي في المدرسة قديم جداً." },
+                        { g: "Wir haben modernes <strong>Mobiliar</strong> für das Büro gekauft.", e: "We bought modern furniture for the office.", a: "اشترينا أثاث حديث للمكتب." }
+                    ]}
                 ],
                 beruf_lebenslauf: [
-                    { id: 'w21', ger: "der tabellarische Lebenslauf", eng: "Tabular CV", ar: "السيرة الذاتية الجدولية", s: [{ g: "Ein <strong>tabellarischer Lebenslauf</strong> ist übersichtlich.", e: "A tabular CV is clearly arranged.", a: "السي في الجدولي بيكون منظم." }] },
-                    { id: 'w22', ger: "die Anschrift", eng: "Address", ar: "العنوان", s: [{ g: "Tragen Sie Ihre aktuelle <strong>Anschrift</strong> ein.", e: "Enter your current address.", a: "اكتب عنوانك الحالي." }] },
-                    { id: 'w23', ger: "die Persönlichen Daten", eng: "Personal data", ar: "البيانات الشخصية", s: [{ g: "Prüfen Sie Ihre <strong>Persönlichen Daten</strong>.", e: "Check your personal data.", a: "راجع بياناتك الشخصية." }] },
-                    { id: 'w24', ger: "die EDV-Kenntnisse", eng: "IT skills", ar: "مهارات الكمبيوتر", s: [{ g: "Gute <strong>EDV-Kenntnisse</strong> sind heute unerlässlich.", e: "Good IT skills are essential today.", a: "مهارات الكمبيوتر ضرورية جداً النهاردة." }] },
-                    { id: 'w25', ger: "die Fremdsprachen", eng: "Foreign languages", ar: "اللغات الأجنبية", s: [{ g: "Er spricht drei <strong>Fremdsprachen</strong>.", e: "He speaks three foreign languages.", a: "هو بيتكلم ٣ لغات أجنبية." }] },
-                    { id: 'w26', ger: "die Berufliche Tätigkeit", eng: "Professional activity", ar: "النشاط المهني / الخبرة العملية", s: [{ g: "Unter <strong>Berufliche Tätigkeit</strong> liste ich meine Jobs auf.", e: "Under professional activity I list my jobs.", a: "تحت بند النشاط المهني بكتب الوظايف اللي اشتغلتها." }] },
-                    { id: 'w27', ger: "die Spezialisierung", eng: "Specialization", ar: "التخصص", s: [{ g: "Meine <strong>Spezialisierung</strong> ist Baumanagement.", e: "My specialization is construction management.", a: "تخصصي هو إدارة البناء." }] },
-                    { id: 'w28', ger: "die Abschlussarbeit", eng: "Thesis / Final paper", ar: "مشروع التخرج", s: [{ g: "Das Thema meiner <strong>Abschlussarbeit</strong> war spannend.", e: "The topic of my thesis was exciting.", a: "موضوع مشروع تخرجي كان شيق." }] },
-                    { id: 'w29', ger: "die Leitung", eng: "Leadership / Management", ar: "الإدارة / القيادة", s: [{ g: "Ich übernehme die <strong>Leitung</strong> des Teams.", e: "I take over the leadership of the team.", a: "أنا همسك إدارة الفريق." }] },
-                    { id: 'w30', ger: "die Koordination", eng: "Coordination", ar: "التنسيق", s: [{ g: "Die <strong>Koordination</strong> der Projekte ist wichtig.", e: "The coordination of the projects is important.", a: "تنسيق المشاريع ده شيء مهم." }] },
-                    { id: 'w31', ger: "die Überwachung", eng: "Monitoring / Supervision", ar: "المراقبة / الإشراف", s: [{ g: "Die <strong>Überwachung</strong> der Bauprojekte ist meine Aufgabe.", e: "The monitoring of the construction projects is my task.", a: "مراقبة مشاريع البناء دي مهمتي." }] },
-                    { id: 'w32', ger: "die Abnahme", eng: "Acceptance / Inspection", ar: "الاستلام / المعاينة", s: [{ g: "Morgen ist die <strong>Abnahme</strong> des Gebäudes.", e: "Tomorrow is the inspection of the building.", a: "بكرة استلام المبنى." }] },
-                    { id: 'w33', ger: "die Kundenbetreuung", eng: "Customer care", ar: "خدمة العملاء", s: [{ g: "Ich habe Erfahrung in der <strong>Kundenbetreuung</strong>.", e: "I have experience in customer care.", a: "عندي خبرة في خدمة العملاء." }] },
-                    { id: 'w34', ger: "die Beratung", eng: "Consultation / Advice", ar: "الاستشارة", s: [{ g: "Die <strong>Beratung</strong> der Kunden steht im Mittelpunkt.", e: "The consultation of customers is the main focus.", a: "تقديم الاستشارة للعملاء هو الأولوية." }] },
-                    { id: 'w35', ger: "die Qualitätssicherung", eng: "Quality assurance", ar: "ضمان الجودة", s: [{ g: "Er arbeitet in der <strong>Qualitätssicherung</strong>.", e: "He works in quality assurance.", a: "هو شغال في ضمان الجودة." }] },
-                    { id: 'w36', ger: "die Kalkulation", eng: "Calculation", ar: "حساب التكاليف", s: [{ g: "Die genaue <strong>Kalkulation</strong> ist entscheidend.", e: "The exact calculation is crucial.", a: "الحساب الدقيق ده شيء حاسم." }] },
-                    { id: 'w37', ger: "der Ausflug", eng: "Excursion / Trip", ar: "رحلة قصيرة", s: [{ g: "Wir machen am Wochenende einen <strong>Ausflug</strong>.", e: "We are taking an excursion on the weekend.", a: "هنعمل رحلة في الويك إند." }] },
-                    { id: 'w38', ger: "die Teambildung", eng: "Team building", ar: "بناء الفريق", s: [{ g: "Wir planen ein Event zur <strong>Teambildung</strong>.", e: "We are planning a team building event.", a: "بنخطط لفعالية عشان بناء الفريق." }] }
+                    { id: 'w21', ger: "der tabellarische Lebenslauf", eng: "Tabular CV", ar: "السيرة الذاتية الجدولية", s: [
+                        { g: "Ein <strong>tabellarischer Lebenslauf</strong> ist übersichtlich.", e: "A tabular CV is clearly arranged.", a: "السي في الجدولي بيكون منظم." },
+                        { g: "Firmen verlangen meist einen <strong>tabellarischen Lebenslauf</strong>.", e: "Companies usually require a tabular CV.", a: "الشركات غالباً بتطلب سيرة ذاتية جدولية." },
+                        { g: "Ich aktualisiere meinen <strong>tabellarischen Lebenslauf</strong>.", e: "I am updating my tabular CV.", a: "أنا بحدث السي في بتاعي." }
+                    ]},
+                    { id: 'w22', ger: "die Anschrift", eng: "Address", ar: "العنوان", s: [
+                        { g: "Tragen Sie Ihre aktuelle <strong>Anschrift</strong> ein.", e: "Enter your current address.", a: "اكتب عنوانك الحالي." },
+                        { g: "Unter dieser <strong>Anschrift</strong> bin ich erreichbar.", e: "I can be reached at this address.", a: "ممكن توصلولي على العنوان ده." },
+                        { g: "Die <strong>Anschrift</strong> der Firma steht auf der Webseite.", e: "The company's address is on the website.", a: "عنوان الشركة مكتوب على الموقع." }
+                    ]},
+                    { id: 'w23', ger: "die Persönlichen Daten", eng: "Personal data", ar: "البيانات الشخصية", s: [
+                        { g: "Prüfen Sie Ihre <strong>Persönlichen Daten</strong>.", e: "Check your personal data.", a: "راجع بياناتك الشخصية." },
+                        { g: "Ihre <strong>Persönlichen Daten</strong> sind bei uns sicher.", e: "Your personal data is safe with us.", a: "بياناتك الشخصية في أمان معانا." },
+                        { g: "Ich habe meine <strong>Persönlichen Daten</strong> im Formular ausgefüllt.", e: "I filled in my personal data in the form.", a: "أنا مليت بياناتي الشخصية في الاستمارة." }
+                    ]},
+                    { id: 'w24', ger: "die EDV-Kenntnisse", eng: "IT skills", ar: "مهارات الكمبيوتر", s: [
+                        { g: "Gute <strong>EDV-Kenntnisse</strong> sind heute unerlässlich.", e: "Good IT skills are essential today.", a: "مهارات الكمبيوتر ضرورية جداً النهاردة." },
+                        { g: "Im Lebenslauf stehen meine <strong>EDV-Kenntnisse</strong>.", e: "My IT skills are listed in the CV.", a: "مهاراتي في الكمبيوتر مكتوبة في السي في." },
+                        { g: "Sie hat hervorragende <strong>EDV-Kenntnisse</strong>.", e: "She has excellent IT skills.", a: "عندها مهارات كمبيوتر ممتازة." }
+                    ]},
+                    { id: 'w25', ger: "die Fremdsprachen", eng: "Foreign languages", ar: "اللغات الأجنبية", s: [
+                        { g: "Er spricht drei <strong>Fremdsprachen</strong>.", e: "He speaks three foreign languages.", a: "هو بيتكلم ٣ لغات أجنبية." },
+                        { g: "<strong>Fremdsprachen</strong> sind wichtig für den Beruf.", e: "Foreign languages are important for the profession.", a: "اللغات الأجنبية مهمة للشغل." },
+                        { g: "Ich lerne gerne neue <strong>Fremdsprachen</strong>.", e: "I like learning new foreign languages.", a: "بحب أتعلم لغات أجنبية جديدة." }
+                    ]},
+                    { id: 'w26', ger: "die Berufliche Tätigkeit", eng: "Professional activity", ar: "النشاط المهني / الخبرة العملية", s: [
+                        { g: "Unter <strong>Berufliche Tätigkeit</strong> liste ich meine Jobs auf.", e: "Under professional activity I list my jobs.", a: "تحت بند النشاط المهني بكتب الوظايف اللي اشتغلتها." },
+                        { g: "Beschreiben Sie Ihre aktuelle <strong>berufliche Tätigkeit</strong>.", e: "Describe your current professional activity.", a: "اوصف نشاطك المهني (شغلك) الحالي." },
+                        { g: "Meine <strong>berufliche Tätigkeit</strong> macht mir Spaß.", e: "I enjoy my professional activity.", a: "أنا مستمتع بشغلي المهني." }
+                    ]},
+                    { id: 'w27', ger: "die Spezialisierung", eng: "Specialization", ar: "التخصص", s: [
+                        { g: "Meine <strong>Spezialisierung</strong> ist Baumanagement.", e: "My specialization is construction management.", a: "تخصصي هو إدارة البناء." },
+                        { g: "Er macht eine <strong>Spezialisierung</strong> in IT-Sicherheit.", e: "He is doing a specialization in IT security.", a: "بيعمل تخصص في أمن المعلومات." },
+                        { g: "Für diesen Job braucht man eine hohe <strong>Spezialisierung</strong>.", e: "For this job you need a high level of specialization.", a: "للشغلانة دي محتاج تخصص دقيق." }
+                    ]},
+                    { id: 'w28', ger: "die Abschlussarbeit", eng: "Thesis / Final paper", ar: "مشروع التخرج", s: [
+                        { g: "Das Thema meiner <strong>Abschlussarbeit</strong> war spannend.", e: "The topic of my thesis was exciting.", a: "موضوع مشروع تخرجي كان شيق." },
+                        { g: "Er schreibt gerade seine <strong>Abschlussarbeit</strong>.", e: "He is currently writing his thesis.", a: "هو بيكتب مشروع تخرجه دلوقتي." },
+                        { g: "Ich habe meine <strong>Abschlussarbeit</strong> im Bereich Marketing geschrieben.", e: "I wrote my thesis in the field of marketing.", a: "كتبت بحث تخرجي في مجال التسويق." }
+                    ]},
+                    { id: 'w29', ger: "die Leitung", eng: "Leadership / Management", ar: "الإدارة / القيادة", s: [
+                        { g: "Ich übernehme die <strong>Leitung</strong> des Teams.", e: "I take over the leadership of the team.", a: "أنا همسك إدارة الفريق." },
+                        { g: "Die <strong>Leitung</strong> des Unternehmens hat gewechselt.", e: "The management of the company has changed.", a: "إدارة الشركة اتغيرت." },
+                        { g: "Er hat Erfahrung in der <strong>Leitung</strong> von Projekten.", e: "He has experience in project management.", a: "عنده خبرة في إدارة المشاريع." }
+                    ]},
+                    { id: 'w30', ger: "die Koordination", eng: "Coordination", ar: "التنسيق", s: [
+                        { g: "Die <strong>Koordination</strong> der Projekte ist wichtig.", e: "The coordination of the projects is important.", a: "تنسيق المشاريع ده شيء مهم." },
+                        { g: "Ich bin für die <strong>Koordination</strong> zuständig.", e: "I am responsible for the coordination.", a: "أنا المسئول عن التنسيق." },
+                        { g: "Gute <strong>Koordination</strong> spart viel Zeit.", e: "Good coordination saves a lot of time.", a: "التنسيق الكويس بيوفر وقت كتير." }
+                    ]},
+                    { id: 'w31', ger: "die Überwachung", eng: "Monitoring / Supervision", ar: "المراقبة / الإشراف", s: [
+                        { g: "Die <strong>Überwachung</strong> der Bauprojekte ist meine Aufgabe.", e: "The monitoring of the construction projects is my task.", a: "مراقبة مشاريع البناء دي مهمتي." },
+                        { g: "Eine ständige <strong>Überwachung</strong> ist notwendig.", e: "Constant monitoring is necessary.", a: "المراقبة المستمرة ضرورية." },
+                        { g: "Das System zur <strong>Überwachung</strong> funktioniert gut.", e: "The monitoring system works well.", a: "نظام المراقبة شغال كويس." }
+                    ]},
+                    { id: 'w32', ger: "die Abnahme", eng: "Acceptance / Inspection", ar: "الاستلام / المعاينة", s: [
+                        { g: "Morgen ist die <strong>Abnahme</strong> des Gebäudes.", e: "Tomorrow is the inspection of the building.", a: "بكرة استلام المبنى." },
+                        { g: "Die <strong>Abnahme</strong> der Ware war erfolgreich.", e: "The acceptance of the goods was successful.", a: "استلام ومعاينة البضاعة تمت بنجاح." },
+                        { g: "Ich bin bei der <strong>Abnahme</strong> dabei.", e: "I will be present at the inspection.", a: "هكون موجود وقت المعاينة والاستلام." }
+                    ]},
+                    { id: 'w33', ger: "die Kundenbetreuung", eng: "Customer care", ar: "خدمة العملاء", s: [
+                        { g: "Ich habe Erfahrung in der <strong>Kundenbetreuung</strong>.", e: "I have experience in customer care.", a: "عندي خبرة في خدمة العملاء." },
+                        { g: "Die <strong>Kundenbetreuung</strong> hat bei uns Priorität.", e: "Customer care is a priority for us.", a: "خدمة العملاء عندنا ليها الأولوية." },
+                        { g: "Sie arbeitet in der telefonischen <strong>Kundenbetreuung</strong>.", e: "She works in telephone customer service.", a: "هي شغالة في خدمة العملاء بالتليفون." }
+                    ]},
+                    { id: 'w34', ger: "die Beratung", eng: "Consultation / Advice", ar: "الاستشارة", s: [
+                        { g: "Die <strong>Beratung</strong> der Kunden steht im Mittelpunkt.", e: "The consultation of customers is the main focus.", a: "تقديم الاستشارة للعملاء هو الأولوية." },
+                        { g: "Er bietet eine kostenlose <strong>Beratung</strong> an.", e: "He offers free consultation.", a: "هو بيقدم استشارة مجانية." },
+                        { g: "Ich brauche rechtliche <strong>Beratung</strong>.", e: "I need legal advice.", a: "أنا محتاج استشارة قانونية." }
+                    ]},
+                    { id: 'w35', ger: "die Qualitätssicherung", eng: "Quality assurance", ar: "ضمان الجودة", s: [
+                        { g: "Er arbeitet in der <strong>Qualitätssicherung</strong>.", e: "He works in quality assurance.", a: "هو شغال في ضمان الجودة." },
+                        { g: "Die <strong>Qualitätssicherung</strong> prüft das Produkt.", e: "Quality assurance checks the product.", a: "قسم ضمان الجودة بيفحص المنتج." },
+                        { g: "Wir haben strenge Regeln in der <strong>Qualitätssicherung</strong>.", e: "We have strict rules in quality assurance.", a: "عندنا قواعد صارمة في ضمان الجودة." }
+                    ]},
+                    { id: 'w36', ger: "die Kalkulation", eng: "Calculation", ar: "حساب التكاليف", s: [
+                        { g: "Die genaue <strong>Kalkulation</strong> ist entscheidend.", e: "The exact calculation is crucial.", a: "الحساب الدقيق ده شيء حاسم." },
+                        { g: "Ich mache die <strong>Kalkulation</strong> für das Projekt.", e: "I am doing the calculation for the project.", a: "بعمل حسابات التكاليف للمشروع." },
+                        { g: "Die <strong>Kalkulation</strong> war leider falsch.", e: "The calculation was unfortunately wrong.", a: "للأسف الحسبة كانت غلط." }
+                    ]},
+                    { id: 'w37', ger: "der Ausflug", eng: "Excursion / Trip", ar: "رحلة قصيرة", s: [
+                        { g: "Wir machen am Wochenende einen <strong>Ausflug</strong>.", e: "We are taking an excursion on the weekend.", a: "هنعمل رحلة في الويك إند." },
+                        { g: "Der <strong>Ausflug</strong> ans Meer war sehr schön.", e: "The trip to the sea was very nice.", a: "الرحلة للبحر كانت حلوة جداً." },
+                        { g: "Die Firma organisiert einen jährlichen <strong>Ausflug</strong>.", e: "The company organizes an annual excursion.", a: "الشركة بتنظم رحلة سنوية." }
+                    ]},
+                    { id: 'w38', ger: "die Teambildung", eng: "Team building", ar: "بناء الفريق", s: [
+                        { g: "Wir planen ein Event zur <strong>Teambildung</strong>.", e: "We are planning a team building event.", a: "بنخطط لفعالية عشان بناء الفريق." },
+                        { g: "<strong>Teambildung</strong> ist wichtig für das Arbeitsklima.", e: "Team building is important for the working atmosphere.", a: "بناء الفريق مهم عشان بيئة الشغل." },
+                        { g: "Nach der <strong>Teambildung</strong> arbeiten wir besser zusammen.", e: "After team building, we work better together.", a: "بعد تدريبات الفريق بنشتغل سوا أحسن." }
+                    ]}
                 ],
                 gehirn_lernen: [
-                    { id: 'w39', ger: "das Gehirn", eng: "Brain", ar: "الدماغ / المخ", s: [{ g: "Das <strong>Gehirn</strong> speichert Informationen.", e: "The brain stores information.", a: "المخ بيخزن المعلومات." }] },
-                    { id: 'w40', ger: "das Gedächtnis", eng: "Memory", ar: "الذاكرة", s: [{ g: "Mein <strong>Gedächtnis</strong> ist sehr gut.", e: "My memory is very good.", a: "ذاكرتي قوية جداً." }] },
-                    { id: 'w41', ger: "das Kurzzeitgedächtnis", eng: "Short-term memory", ar: "الذاكرة قصيرة المدى", s: [{ g: "Infos kommen zuerst ins <strong>Kurzzeitgedächtnis</strong>.", e: "Info enters the short-term memory first.", a: "المعلومات بتدخل الذاكرة قصيرة المدى الأول." }] },
-                    { id: 'w42', ger: "das Langzeitgedächtnis", eng: "Long-term memory", ar: "الذاكرة طويلة المدى", s: [{ g: "Wichtiges gelangt ins <strong>Langzeitgedächtnis</strong>.", e: "Important things reach the long-term memory.", a: "الحاجات المهمة بتوصل للذاكرة طويلة المدى." }] },
-                    { id: 'w43', ger: "die Speicherkapazität", eng: "Storage capacity", ar: "سعة التخزين", s: [{ g: "Das Gehirn hat eine begrenzte <strong>Speicherkapazität</strong>.", e: "The brain has a limited storage capacity.", a: "المخ ليه سعة تخزين محدودة." }] },
-                    { id: 'w44', ger: "die Festplatte", eng: "Hard drive", ar: "القرص الصلب", s: [{ g: "Das funktioniert wie eine Computer-<strong>Festplatte</strong>.", e: "It works like a computer hard drive.", a: "بتشتغل زي الهارد ديسك." }] },
-                    { id: 'w45', ger: "die Datenflut", eng: "Flood of data", ar: "سيل البيانات / كثرة المعلومات", s: [{ g: "Das schützt vor einer <strong>Datenflut</strong>.", e: "This protects against a flood of data.", a: "ده بيحمي من سيل البيانات." }] },
-                    { id: 'w46', ger: "die Aufmerksamkeit", eng: "Attention", ar: "الانتباه", s: [{ g: "Lernen braucht volle <strong>Aufmerksamkeit</strong>.", e: "Learning needs full attention.", a: "التعلم محتاج انتباه كامل." }] },
-                    { id: 'w47', ger: "das Interesse", eng: "Interest", ar: "الاهتمام", s: [{ g: "Mit <strong>Interesse</strong> lernt man besser.", e: "With interest, one learns better.", a: "بالاهتمام الواحد بيتعلم أحسن." }] },
-                    { id: 'w48', ger: "die Wortverbindung", eng: "Word combination / Collocation", ar: "تركيبة كلمات", s: [{ g: "Lernen Sie Vokabeln als <strong>Wortverbindung</strong>.", e: "Learn vocabulary as a word combination.", a: "اتعلم الكلمات في تركيبة أو جملة." }] },
-                    { id: 'w49', ger: "das Ereignis", eng: "Event", ar: "الحدث / الموقف", s: [{ g: "Das war ein tolles <strong>Ereignis</strong>.", e: "That was a great event.", a: "ده كان حدث رائع." }] },
-                    { id: 'w50', ger: "der Schlaf", eng: "Sleep", ar: "النوم", s: [{ g: "Im <strong>Schlaf</strong> verarbeiten wir den Tag.", e: "In sleep we process the day.", a: "في النوم بنعالج أحداث اليوم." }] },
-                    { id: 'w51', ger: "der visuelle Lerner", eng: "Visual learner", ar: "المتعلم البصري", s: [{ g: "Ein <strong>visueller Lerner</strong> braucht Bilder.", e: "A visual learner needs pictures.", a: "المتعلم البصري محتاج صور." }] },
-                    { id: 'w52', ger: "der auditive Lerner", eng: "Auditory learner", ar: "المتعلم السمعي", s: [{ g: "Ein <strong>auditiver Lerner</strong> hört gerne zu.", e: "An auditory learner likes to listen.", a: "المتعلم السمعي بيحب يسمع." }] },
-                    { id: 'w53', ger: "der haptisch-motorische Lerner", eng: "Kinesthetic learner", ar: "المتعلم الحركي", s: [{ g: "Der <strong>haptisch-motorische Lerner</strong> bewegt sich gern.", e: "The kinesthetic learner likes to move.", a: "المتعلم الحركي بيحب يتحرك." }] },
-                    { id: 'w54', ger: "der imitative Lerner", eng: "Imitative learner", ar: "المتعلم بالمحاكاة / التقليد", s: [{ g: "Der <strong>imitative Lerner</strong> spricht viel nach.", e: "The imitative learner repeats a lot.", a: "المتعلم بالتقليد بيردد الكلام كتير." }] },
-                    { id: 'w55', ger: "der kognitive Lerner", eng: "Cognitive learner", ar: "المتعلم الإدراكي (بالفهم)", s: [{ g: "Der <strong>kognitive Lerner</strong> analysiert die Grammatik.", e: "The cognitive learner analyzes the grammar.", a: "المتعلم الإدراكي بيحلل القواعد." }] },
-                    { id: 'w56', ger: "die Praxis", eng: "Practice", ar: "الممارسة (العملي)", s: [{ g: "In der <strong>Praxis</strong> ist das oft anders.", e: "In practice, it is often different.", a: "في العملي الموضوع غالباً مختلف." }] },
-                    { id: 'w57', ger: "die Theorie", eng: "Theory", ar: "النظرية", s: [{ g: "Die <strong>Theorie</strong> allein reicht nicht.", e: "Theory alone is not enough.", a: "النظري لوحده مش كفاية." }] },
-                    { id: 'w58', ger: "der Lernerfolg", eng: "Learning success", ar: "النجاح الدراسي", s: [{ g: "Wiederholung bringt den besten <strong>Lernerfolg</strong>.", e: "Repetition brings the best learning success.", a: "التكرار بيجيب أحسن نتيجة دراسية." }] },
-                    { id: 'w59', ger: "das Lernmaterial", eng: "Learning material", ar: "المادة التعليمية", s: [{ g: "Das <strong>Lernmaterial</strong> muss gut strukturiert sein.", e: "The learning material must be well structured.", a: "المادة التعليمية لازم تكون متنظمة." }] }
+                    { id: 'w39', ger: "das Gehirn", eng: "Brain", ar: "الدماغ / المخ", s: [
+                        { g: "Das <strong>Gehirn</strong> speichert Informationen.", e: "The brain stores information.", a: "المخ بيخزن المعلومات." },
+                        { g: "Das menschliche <strong>Gehirn</strong> ist komplex.", e: "The human brain is complex.", a: "المخ البشري معقد جداً." },
+                        { g: "Im Schlaf arbeitet das <strong>Gehirn</strong> weiter.", e: "During sleep, the brain continues to work.", a: "وقت النوم المخ بيفضل شغال." }
+                    ]},
+                    { id: 'w40', ger: "das Gedächtnis", eng: "Memory", ar: "الذاكرة", s: [
+                        { g: "Mein <strong>Gedächtnis</strong> ist sehr gut.", e: "My memory is very good.", a: "ذاكرتي قوية جداً." },
+                        { g: "Das hilft, das <strong>Gedächtnis</strong> zu trainieren.", e: "This helps to train the memory.", a: "ده بيساعد في تمرين الذاكرة." },
+                        { g: "Ich habe ein schlechtes <strong>Gedächtnis</strong> für Namen.", e: "I have a bad memory for names.", a: "عندي ذاكرة ضعيفة في الأسامي." }
+                    ]},
+                    { id: 'w41', ger: "das Kurzzeitgedächtnis", eng: "Short-term memory", ar: "الذاكرة قصيرة المدى", s: [
+                        { g: "Infos kommen zuerst ins <strong>Kurzzeitgedächtnis</strong>.", e: "Info enters the short-term memory first.", a: "المعلومات بتدخل الذاكرة قصيرة المدى الأول." },
+                        { g: "Das <strong>Kurzzeitgedächtnis</strong> speichert nur kurz.", e: "The short-term memory stores only briefly.", a: "الذاكرة قصيرة المدى بتخزن لوقت قصير بس." },
+                        { g: "Vieles wird aus dem <strong>Kurzzeitgedächtnis</strong> gelöscht.", e: "Much is deleted from the short-term memory.", a: "حاجات كتير بتتمسح من الذاكرة دي." }
+                    ]},
+                    { id: 'w42', ger: "das Langzeitgedächtnis", eng: "Long-term memory", ar: "الذاكرة طويلة المدى", s: [
+                        { g: "Wichtiges gelangt ins <strong>Langzeitgedächtnis</strong>.", e: "Important things reach the long-term memory.", a: "الحاجات المهمة بتوصل للذاكرة طويلة المدى." },
+                        { g: "Wiederholung bringt Wörter ins <strong>Langzeitgedächtnis</strong>.", e: "Repetition brings words into long-term memory.", a: "التكرار بيدخل الكلمات في الذاكرة طويلة المدى." },
+                        { g: "Mein <strong>Langzeitgedächtnis</strong> funktioniert gut.", e: "My long-term memory works well.", a: "ذاكرتي طويلة المدى شغالة كويس." }
+                    ]},
+                    { id: 'w43', ger: "die Speicherkapazität", eng: "Storage capacity", ar: "سعة التخزين", s: [
+                        { g: "Das Gehirn hat eine begrenzte <strong>Speicherkapazität</strong>.", e: "The brain has a limited storage capacity.", a: "المخ ليه سعة تخزين محدودة." },
+                        { g: "Wie groß ist die <strong>Speicherkapazität</strong> dieser Festplatte?", e: "How big is the storage capacity of this hard drive?", a: "سعة الهارد ده قد إيه؟" },
+                        { g: "Die <strong>Speicherkapazität</strong> ist fast voll.", e: "The storage capacity is almost full.", a: "سعة التخزين قربت تتملي." }
+                    ]},
+                    { id: 'w44', ger: "die Festplatte", eng: "Hard drive", ar: "القرص الصلب", s: [
+                        { g: "Das funktioniert wie eine Computer-<strong>Festplatte</strong>.", e: "It works like a computer hard drive.", a: "بتشتغل زي الهارد ديسك." },
+                        { g: "Ich speichere die Fotos auf einer externen <strong>Festplatte</strong>.", e: "I save the photos on an external hard drive.", a: "بخزن الصور على هارد خارجي." },
+                        { g: "Meine <strong>Festplatte</strong> ist kaputt.", e: "My hard drive is broken.", a: "الهارد ديسك بتاعي باظ." }
+                    ]},
+                    { id: 'w45', ger: "die Datenflut", eng: "Flood of data", ar: "سيل البيانات / كثرة المعلومات", s: [
+                        { g: "Das Gehirn schützt uns vor der <strong>Datenflut</strong>.", e: "The brain protects us from the flood of data.", a: "المخ بيحمينا من سيل المعلومات." },
+                        { g: "Wir leben in einer Zeit der ständigen <strong>Datenflut</strong>.", e: "We live in a time of constant data floods.", a: "عايشين في وقت فيه زحمة داتا مستمرة." },
+                        { g: "Die <strong>Datenflut</strong> im Internet ist enorm.", e: "The flood of data on the internet is enormous.", a: "كمية البيانات على النت ضخمة جداً." }
+                    ]},
+                    { id: 'w46', ger: "die Aufmerksamkeit", eng: "Attention", ar: "الانتباه", s: [
+                        { g: "Lernen braucht volle <strong>Aufmerksamkeit</strong>.", e: "Learning needs full attention.", a: "التعلم محتاج انتباه كامل." },
+                        { g: "Vielen Dank für Ihre <strong>Aufmerksamkeit</strong>.", e: "Thank you for your attention.", a: "شكراً على انتباهكم." },
+                        { g: "Das Kind hat eine kurze <strong>Aufmerksamkeit</strong>.", e: "The child has a short attention span.", a: "الطفل انتباهه مدته قصيرة." }
+                    ]},
+                    { id: 'w47', ger: "das Interesse", eng: "Interest", ar: "الاهتمام", s: [
+                        { g: "Mit <strong>Interesse</strong> lernt man besser.", e: "With interest, one learns better.", a: "بالاهتمام الواحد بيتعلم أحسن." },
+                        { g: "Er hat großes <strong>Interesse</strong> an Geschichte.", e: "He has a great interest in history.", a: "عنده اهتمام كبير بالتاريخ." },
+                        { g: "Das weckt mein <strong>Interesse</strong>.", e: "That arouses my interest.", a: "ده بيثير اهتمامي." }
+                    ]},
+                    { id: 'w48', ger: "die Wortverbindung", eng: "Word combination / Collocation", ar: "تركيبة كلمات", s: [
+                        { g: "Lernen Sie Vokabeln als <strong>Wortverbindung</strong>.", e: "Learn vocabulary as a word combination.", a: "اتعلم الكلمات في تركيبة أو جملة." },
+                        { g: "Diese <strong>Wortverbindung</strong> benutzt man oft im Deutschen.", e: "This word combination is often used in German.", a: "التركيبة دي بتستخدم كتير في الألماني." },
+                        { g: "Es ist leichter, sich eine <strong>Wortverbindung</strong> zu merken.", e: "It is easier to remember a word combination.", a: "أسهل إنك تحفظ تركيبة كلمات على بعضها." }
+                    ]},
+                    { id: 'w49', ger: "das Ereignis", eng: "Event", ar: "الحدث / الموقف", s: [
+                        { g: "Das war ein tolles <strong>Ereignis</strong>.", e: "That was a great event.", a: "ده كان حدث رائع." },
+                        { g: "Das Gehirn verarbeitet die <strong>Ereignisse</strong> des Tages.", e: "The brain processes the events of the day.", a: "المخ بيعالج أحداث اليوم." },
+                        { g: "Die Olympischen Spiele sind ein großes sportliches <strong>Ereignis</strong>.", e: "The Olympic Games are a major sporting event.", a: "الأولمبياد حدث رياضي كبير." }
+                    ]},
+                    { id: 'w50', ger: "der Schlaf", eng: "Sleep", ar: "النوم", s: [
+                        { g: "Im <strong>Schlaf</strong> verarbeiten wir den Tag.", e: "In sleep we process the day.", a: "في النوم بنعالج أحداث اليوم." },
+                        { g: "Ausreichender <strong>Schlaf</strong> ist wichtig für das Lernen.", e: "Sufficient sleep is important for learning.", a: "النوم الكفاية مهم للمذاكرة." },
+                        { g: "Ich brauche mindestens acht Stunden <strong>Schlaf</strong>.", e: "I need at least eight hours of sleep.", a: "أنا محتاج 8 ساعات نوم على الأقل." }
+                    ]},
+                    { id: 'w51', ger: "der visuelle Lerner", eng: "Visual learner", ar: "المتعلم البصري", s: [
+                        { g: "Ein <strong>visueller Lerner</strong> braucht Bilder.", e: "A visual learner needs pictures.", a: "المتعلم البصري محتاج صور." },
+                        { g: "<strong>Visuelle Lerner</strong> arbeiten oft mit Farben.", e: "Visual learners often work with colors.", a: "المتعلم البصري غالباً بيذاكر بالألوان." },
+                        { g: "Bist du ein <strong>visueller Lerner</strong>?", e: "Are you a visual learner?", a: "هل إنت متعلم بصري؟" }
+                    ]},
+                    { id: 'w52', ger: "der auditive Lerner", eng: "Auditory learner", ar: "المتعلم السمعي", s: [
+                        { g: "Ein <strong>auditiver Lerner</strong> hört gerne zu.", e: "An auditory learner likes to listen.", a: "المتعلم السمعي بيحب يسمع." },
+                        { g: "Für <strong>auditive Lerner</strong> sind Hörbücher super.", e: "For auditory learners, audiobooks are great.", a: "الكتب الصوتية ممتازة للمتعلم السمعي." },
+                        { g: "Er ist ein typischer <strong>auditiver Lerner</strong>.", e: "He is a typical auditory learner.", a: "هو متعلم سمعي جداً." }
+                    ]},
+                    { id: 'w53', ger: "der haptisch-motorische Lerner", eng: "Kinesthetic learner", ar: "المتعلم الحركي", s: [
+                        { g: "Der <strong>haptisch-motorische Lerner</strong> bewegt sich gern.", e: "The kinesthetic learner likes to move.", a: "المتعلم الحركي بيحب يتحرك." },
+                        { g: "Ein <strong>haptisch-motorischer Lerner</strong> lernt durch Machen.", e: "A kinesthetic learner learns by doing.", a: "بيتعلم وهو بيعمل الحاجة بإيده." },
+                        { g: "Für ihn als <strong>haptisch-motorischer Lerner</strong> ist langes Sitzen schwer.", e: "For him as a kinesthetic learner, sitting for a long time is hard.", a: "بالنسبة له كمتعلم حركي القعدة كتير صعبة." }
+                    ]},
+                    { id: 'w54', ger: "der imitative Lerner", eng: "Imitative learner", ar: "المتعلم بالمحاكاة / التقليد", s: [
+                        { g: "Der <strong>imitative Lerner</strong> spricht viel nach.", e: "The imitative learner repeats a lot.", a: "المتعلم بالتقليد بيردد الكلام كتير." },
+                        { g: "<strong>Imitative Lerner</strong> lernen oft schnell Sprachen.", e: "Imitative learners often learn languages quickly.", a: "غالباً بيتعلموا اللغات بسرعة." },
+                        { g: "Sie ist ein <strong>imitativer Lerner</strong> und kopiert Akzente perfekt.", e: "She is an imitative learner and copies accents perfectly.", a: "هي بتتعلم بالمحاكاة وبتقلد اللهجات بيرفكت." }
+                    ]},
+                    { id: 'w55', ger: "der kognitive Lerner", eng: "Cognitive learner", ar: "المتعلم الإدراكي (بالفهم)", s: [
+                        { g: "Der <strong>kognitive Lerner</strong> analysiert die Grammatik.", e: "The cognitive learner analyzes the grammar.", a: "المتعلم الإدراكي بيحلل القواعد." },
+                        { g: "Ein <strong>kognitiver Lerner</strong> fragt immer nach dem Warum.", e: "A cognitive learner always asks why.", a: "دايماً بيسأل 'ليه'." },
+                        { g: "Für <strong>kognitive Lerner</strong> sind Regeln sehr wichtig.", e: "For cognitive learners, rules are very important.", a: "القواعد مهمة جداً للمتعلم ده." }
+                    ]},
+                    { id: 'w56', ger: "die Praxis", eng: "Practice", ar: "الممارسة (العملي)", s: [
+                        { g: "In der <strong>Praxis</strong> ist das oft anders.", e: "In practice, it is often different.", a: "في العملي الموضوع غالباً مختلف." },
+                        { g: "Wir brauchen mehr <strong>Praxis</strong> im Studium.", e: "We need more practice in our studies.", a: "محتاجين ممارسة أكتر في الدراسة." },
+                        { g: "Sie hat viel Erfahrung in der <strong>Praxis</strong>.", e: "She has a lot of experience in practice.", a: "هي عندها خبرة عملي كتير." }
+                    ]},
+                    { id: 'w57', ger: "die Theorie", eng: "Theory", ar: "النظرية", s: [
+                        { g: "Die <strong>Theorie</strong> allein reicht nicht.", e: "Theory alone is not enough.", a: "النظري لوحده مش كفاية." },
+                        { g: "In der <strong>Theorie</strong> klingt das sehr gut.", e: "In theory, that sounds very good.", a: "كلام نظري ده شكله حلو جداً." },
+                        { g: "Er kennt sich gut mit der <strong>Theorie</strong> aus.", e: "He knows the theory well.", a: "هو شاطر في النظري." }
+                    ]},
+                    { id: 'w58', ger: "der Lernerfolg", eng: "Learning success", ar: "النجاح الدراسي", s: [
+                        { g: "Wiederholung bringt den besten <strong>Lernerfolg</strong>.", e: "Repetition brings the best learning success.", a: "التكرار بيجيب أحسن نتيجة دراسية." },
+                        { g: "Motivation ist wichtig für den <strong>Lernerfolg</strong>.", e: "Motivation is important for learning success.", a: "التحفيز مهم عشان تنجح في التعلم." },
+                        { g: "Ihr <strong>Lernerfolg</strong> im Kurs war beeindruckend.", e: "Her learning success in the course was impressive.", a: "نجاحها وتطورها في الكورس كان مبهر." }
+                    ]},
+                    { id: 'w59', ger: "das Lernmaterial", eng: "Learning material", ar: "المادة التعليمية", s: [
+                        { g: "Das <strong>Lernmaterial</strong> muss gut strukturiert sein.", e: "The learning material must be well structured.", a: "المادة التعليمية لازم تكون متنظمة." },
+                        { g: "Wo finde ich das <strong>Lernmaterial</strong> für heute?", e: "Where can I find the learning material for today?", a: "ألاقي فين ورق المذاكرة بتاع النهاردة؟" },
+                        { g: "Unser Lehrer stellt uns tolles <strong>Lernmaterial</strong> zur Verfügung.", e: "Our teacher provides us with great learning material.", a: "المدرس بتاعنا بيوفرلنا ماتيريال ممتازة." }
+                    ]}
                 ]
             },
             verbs: [
-                { id: 'v1', ger: "aufnehmen", eng: "to absorb / record", ar: "يستوعب / يستقبل", s: [{ g: "Das Gehirn kann nicht alles <strong>aufnehmen</strong>.", e: "The brain cannot absorb everything.", a: "المخ مش بيقدر يستوعب كل حاجة." }] },
-                { id: 'v2', ger: "bewerten", eng: "to evaluate / assess", ar: "يُقيّم كـ", s: [{ g: "Wir <strong>bewerten</strong> den Kurs als sehr gut.", e: "We evaluate the course as very good.", a: "إحنا بنقيم الكورس إنه ممتاز." }] },
-                { id: 'v3', ger: "löschen", eng: "to delete", ar: "يمسح", s: [{ g: "Bitte <strong>löschen</strong> Sie die Datei.", e: "Please delete the file.", a: "لو سمحت امسح الملف." }] },
-                { id: 'v4', ger: "entfernen", eng: "to remove", ar: "يُزيل", s: [{ g: "Unwichtige Daten werden <strong>entfernt</strong>.", e: "Unimportant data is removed.", a: "الداتا اللي مش مهمة بتتشال." }] },
-                { id: 'v5', ger: "überschreiben", eng: "to overwrite", ar: "يستبدل بيانات / يكتب فوق", s: [{ g: "Alte Daten werden <strong>überschrieben</strong>.", e: "Old data is overwritten.", a: "الداتا القديمة بيتم استبدالها." }] },
-                { id: 'v6', ger: "sich einprägen", eng: "to memorize", ar: "يحفظ / يرسخ في ذهنه", s: [{ g: "Ich muss mir diese Vokabeln <strong>einprägen</strong>.", e: "I have to memorize these vocabulary words.", a: "لازم أحفظ الكلمات دي كويس." }] },
-                { id: 'v7', ger: "verarbeiten", eng: "to process", ar: "يعالج", s: [{ g: "Wir <strong>verarbeiten</strong> die Informationen.", e: "We process the information.", a: "إحنا بنعالج المعلومات." }] },
-                { id: 'v8', ger: "veranschaulichen", eng: "to illustrate / visualize", ar: "يوضح بصور / يشرح بصرياً", s: [{ g: "Bilder <strong>veranschaulichen</strong> den Text.", e: "Pictures illustrate the text.", a: "الصور بتوضح النص." }] },
-                { id: 'v9', ger: "hervorheben", eng: "to highlight", ar: "يُبرز (بلون)", s: [{ g: "Man sollte wichtige Wörter <strong>hervorheben</strong>.", e: "One should highlight important words.", a: "المفروض تبرز الكلمات المهمة." }] },
-                { id: 'v10', ger: "nachholen", eng: "to catch up on", ar: "يعوض (اللي فاته)", s: [{ g: "Er will sein Abitur <strong>nachholen</strong>.", e: "He wants to catch up on his high school diploma.", a: "عايز يعوض ثانوية عامة." }] },
-                { id: 'v11', ger: "unterbreiten", eng: "to submit / offer", ar: "يقدم (عرض)", s: [{ g: "Wir <strong>unterbreiten</strong> Ihnen ein Angebot.", e: "We submit an offer to you.", a: "بنقدم لحضرتك عرض." }] },
-                { id: 'v12', ger: "achten (auf)", eng: "to pay attention (to)", ar: "ينتبه لـ / يراعي", s: [{ g: "Sie müssen auf die Qualität <strong>achten</strong>.", e: "You must pay attention to the quality.", a: "لازم تراعي الجودة." }] },
-                { id: 'v13', ger: "anwenden", eng: "to apply", ar: "يُطبق (مهارة)", s: [{ g: "Wir <strong>wenden</strong> die Theorie in der Praxis <strong>an</strong>.", e: "We apply the theory in practice.", a: "إحنا بنطبق النظري في العملي." }] },
-                { id: 'v14', ger: "sich auswirken (auf)", eng: "to affect", ar: "يؤثر على", s: [{ g: "Stress <strong>wirkt sich</strong> negativ <strong>aus</strong>.", e: "Stress has a negative effect.", a: "الضغط بيأثر بشكل سلبي." }] },
-                { id: 'v15', ger: "sich schützen (vor)", eng: "to protect oneself (from)", ar: "يحمي نفسه", s: [{ g: "Man muss <strong>sich vor</strong> Kälte <strong>schützen</strong>.", e: "One must protect oneself from the cold.", a: "لازم تحمي نفسك من البرد." }] },
-                { id: 'v16', ger: "sorgen (für)", eng: "to ensure / provide for", ar: "يتكفل بـ / يضمن", s: [ { g: "Ich <strong>sorge für</strong> die Getränke.", e: "I will provide the drinks.", a: "أنا هتكفل بالمشروبات." }] },
-                { id: 'v17', ger: "erzielen", eng: "to achieve", ar: "يحقق (نتيجة)", s: [{ g: "Wir haben gute Resultate <strong>erzielt</strong>.", e: "We achieved good results.", a: "حققنا نتايج كويسة." }] },
-                { id: 'v18', ger: "kritisieren", eng: "to criticize", ar: "ينتقد", s: [{ g: "Die Kunden <strong>kritisieren</strong> den Service.", e: "The customers criticize the service.", a: "العملاء بينتقدوا الخدمة." }] }
+                { id: 'v1', ger: "aufnehmen", eng: "to absorb / record", ar: "يستوعب / يستقبل", s: [
+                    { g: "Das Gehirn kann nicht alles <strong>aufnehmen</strong>.", e: "The brain cannot absorb everything.", a: "المخ مش بيقدر يستوعب كل حاجة." },
+                    { g: "Wir <strong>nehmen</strong> Informationen über die Sinne <strong>auf</strong>.", e: "We absorb information through our senses.", a: "بندخل المعلومات عن طريق الحواس." },
+                    { g: "Der Schüler <strong>nimmt</strong> den Lernstoff schnell <strong>auf</strong>.", e: "The student absorbs the learning material quickly.", a: "الطالب بيستوعب المنهج بسرعة." }
+                ]},
+                { id: 'v2', ger: "bewerten", eng: "to evaluate / assess", ar: "يُقيّم كـ", s: [
+                    { g: "Wir <strong>bewerten</strong> den Kurs als sehr gut.", e: "We evaluate the course as very good.", a: "إحنا بنقيم الكورس إنه ممتاز." },
+                    { g: "Wie <strong>bewerten</strong> Sie die aktuelle Situation?", e: "How do you assess the current situation?", a: "بتقيّم الوضع الحالي إزاي؟" },
+                    { g: "Der Lehrer <strong>bewertet</strong> die Prüfung fair.", e: "The teacher grades the exam fairly.", a: "المدرس بيقيم الامتحان بعدل." }
+                ]},
+                { id: 'v3', ger: "löschen", eng: "to delete", ar: "يمسح", s: [
+                    { g: "Bitte <strong>löschen</strong> Sie die Datei.", e: "Please delete the file.", a: "لو سمحت امسح الملف." },
+                    { g: "Ich habe die E-Mail aus Versehen <strong>gelöscht</strong>.", e: "I deleted the email by mistake.", a: "مسحت الإيميل بالغلط." },
+                    { g: "Das Gehirn <strong>löscht</strong> unwichtige Daten.", e: "The brain deletes unimportant data.", a: "المخ بيمسح الداتا اللي مش مهمة." }
+                ]},
+                { id: 'v4', ger: "entfernen", eng: "to remove", ar: "يُزيل", s: [
+                    { g: "Unwichtige Daten werden <strong>entfernt</strong>.", e: "Unimportant data is removed.", a: "الداتا اللي مش مهمة بتتشال." },
+                    { g: "Können Sie diesen Fleck <strong>entfernen</strong>?", e: "Can you remove this stain?", a: "ممكن تشيل البقعة دي؟" },
+                    { g: "Er <strong>entfernt</strong> das alte Programm vom Computer.", e: "He removes the old program from the computer.", a: "بيمسح البرنامج القديم من الجهاز." }
+                ]},
+                { id: 'v5', ger: "überschreiben", eng: "to overwrite", ar: "يستبدل بيانات / يكتب فوق", s: [
+                    { g: "Alte Daten werden <strong>überschrieben</strong>.", e: "Old data is overwritten.", a: "الداتا القديمة بيتم استبدالها." },
+                    { g: "Hast du das Originaldokument <strong>überschrieben</strong>?", e: "Did you overwrite the original document?", a: "إنت كتبت فوق الملف الأصلي؟" },
+                    { g: "Das System <strong>überschreibt</strong> die Dateien automatisch.", e: "The system overwrites the files automatically.", a: "النظام بيبدل الملفات أوتوماتيك." }
+                ]},
+                { id: 'v6', ger: "sich einprägen", eng: "to memorize", ar: "يحفظ / يرسخ في ذهنه", s: [
+                    { g: "Ich muss mir diese Vokabeln <strong>einprägen</strong>.", e: "I have to memorize these vocabulary words.", a: "لازم أحفظ الكلمات دي كويس." },
+                    { g: "Er hat sich das Bild gut <strong>eingeprägt</strong>.", e: "He memorized the picture well.", a: "هو طبع الصورة في ذهنه." },
+                    { g: "Wie kann man sich Namen besser <strong>einprägen</strong>?", e: "How can one memorize names better?", a: "إزاي الواحد يقدر يحفظ الأسامي أحسن؟" }
+                ]},
+                { id: 'v7', ger: "verarbeiten", eng: "to process", ar: "يعالج", s: [
+                    { g: "Wir <strong>verarbeiten</strong> die Informationen.", e: "We process the information.", a: "إحنا بنعالج المعلومات." },
+                    { g: "Das Gehirn <strong>verarbeitet</strong> Ereignisse im Schlaf.", e: "The brain processes events during sleep.", a: "المخ بيعالج الأحداث وإحنا نايمين." },
+                    { g: "Der Computer <strong>verarbeitet</strong> die Daten schnell.", e: "The computer processes the data quickly.", a: "الكمبيوتر بيعالج البيانات بسرعة." }
+                ]},
+                { id: 'v8', ger: "veranschaulichen", eng: "to illustrate / visualize", ar: "يوضح بصور / يشرح بصرياً", s: [
+                    { g: "Bilder <strong>veranschaulichen</strong> den Text.", e: "Pictures illustrate the text.", a: "الصور بتوضح النص." },
+                    { g: "Können Sie das mit einem Beispiel <strong>veranschaulichen</strong>?", e: "Can you illustrate that with an example?", a: "ممكن توضح ده بمثال؟" },
+                    { g: "Eine Grafik hilft, das Problem zu <strong>veranschaulichen</strong>.", e: "A graph helps to visualize the problem.", a: "الرسم البياني بيساعد في توضيح المشكلة." }
+                ]},
+                { id: 'v9', ger: "hervorheben", eng: "to highlight", ar: "يُبرز (بلون)", s: [
+                    { g: "Man sollte wichtige Wörter farbig <strong>hervorheben</strong>.", e: "One should highlight important words in color.", a: "المفروض تظلل الكلمات المهمة بلون." },
+                    { g: "Der Redner <strong>hob</strong> diesen Punkt besonders <strong>hervor</strong>.", e: "The speaker highlighted this point especially.", a: "المتحدث أكد على النقطة دي بالذات." },
+                    { g: "Bitte <strong>heben</strong> Sie die Fehler im Text <strong>hervor</strong>.", e: "Please highlight the mistakes in the text.", a: "لو سمحت علم على الغلطات في النص." }
+                ]},
+                { id: 'v10', ger: "nachholen", eng: "to catch up on", ar: "يعوض (اللي فاته)", s: [
+                    { g: "Er will sein Abitur <strong>nachholen</strong>.", e: "He wants to catch up on his high school diploma.", a: "عايز يعوض ثانوية عامة." },
+                    { g: "Wir müssen die verpasste Stunde <strong>nachholen</strong>.", e: "We have to make up for the missed lesson.", a: "لازم نعوض الحصة اللي فاتتنا." },
+                    { g: "Kann ich den Test nächste Woche <strong>nachholen</strong>?", e: "Can I take the makeup test next week?", a: "ممكن أمتحن الميك أب الأسبوع الجاي؟" }
+                ]},
+                { id: 'v11', ger: "unterbreiten", eng: "to submit / offer", ar: "يقدم (عرض)", s: [
+                    { g: "Wir <strong>unterbreiten</strong> Ihnen ein attraktives Angebot.", e: "We submit an attractive offer to you.", a: "بنقدم لحضرتك عرض مغري." },
+                    { g: "Die Firma <strong>unterbreitete</strong> einen neuen Vorschlag.", e: "The company submitted a new proposal.", a: "الشركة قدمت اقتراح جديد." },
+                    { g: "Darf ich Ihnen eine Idee <strong>unterbreiten</strong>?", e: "May I submit an idea to you?", a: "ممكن أعرض على حضرتك فكرة؟" }
+                ]},
+                { id: 'v12', ger: "achten (auf)", eng: "to pay attention (to)", ar: "ينتبه لـ / يراعي", s: [
+                    { g: "Sie müssen auf die Qualität <strong>achten</strong>.", e: "You must pay attention to the quality.", a: "لازم تراعي الجودة." },
+                    { g: "Ich <strong>achte</strong> sehr auf meine Ernährung.", e: "I pay close attention to my diet.", a: "أنا باخد بالي جداً من أكلي." },
+                    { g: "<strong>Achten</strong> Sie bitte auf die Stufe!", e: "Please watch your step!", a: "خلي بالك من السلمة لو سمحت!" }
+                ]},
+                { id: 'v13', ger: "anwenden", eng: "to apply", ar: "يُطبق (مهارة)", s: [
+                    { g: "Wir <strong>wenden</strong> die Theorie in der Praxis <strong>an</strong>.", e: "We apply the theory in practice.", a: "إحنا بنطبق النظري في العملي." },
+                    { g: "Man kann diese Regel nicht überall <strong>anwenden</strong>.", e: "You cannot apply this rule everywhere.", a: "ماتقدرش تطبق القاعدة دي في كل حتة." },
+                    { g: "Er <strong>wendet</strong> neue Lernmethoden <strong>an</strong>.", e: "He applies new learning methods.", a: "هو بيطبق طرق مذاكرة جديدة." }
+                ]},
+                { id: 'v14', ger: "sich auswirken (auf)", eng: "to affect", ar: "يؤثر على", s: [
+                    { g: "Stress <strong>wirkt sich</strong> negativ auf die Gesundheit <strong>aus</strong>.", e: "Stress has a negative effect on health.", a: "الضغط بيأثر بشكل سلبي على الصحة." },
+                    { g: "Das Wetter <strong>wirkt sich</strong> auf meine Stimmung <strong>aus</strong>.", e: "The weather affects my mood.", a: "الجو بيأثر على مزاجي." },
+                    { g: "Geldmangel <strong>wirkt sich</strong> auf die Ausstattung <strong>aus</strong>.", e: "Lack of money affects the equipment.", a: "نقص الفلوس بينعكس على التجهيزات." }
+                ]},
+                { id: 'v15', ger: "sich schützen (vor)", eng: "to protect oneself (from)", ar: "يحمي نفسه", s: [
+                    { g: "Man muss <strong>sich vor</strong> der Kälte <strong>schützen</strong>.", e: "One must protect oneself from the cold.", a: "لازم تحمي نفسك من البرد." },
+                    { g: "Das Gehirn <strong>schützt sich vor</strong> einer Datenflut.", e: "The brain protects itself from a flood of data.", a: "المخ بيحمي نفسه من الداتا الكتير." },
+                    { g: "Wir <strong>schützen uns vor</strong> der Sonne.", e: "We protect ourselves from the sun.", a: "إحنا بنحمي نفسنا من الشمس." }
+                ]},
+                { id: 'v16', ger: "sorgen (für)", eng: "to ensure / provide for", ar: "يتكفل بـ / يضمن", s: [
+                    { g: "Ich <strong>sorge für</strong> die Getränke bei der Party.", e: "I will provide the drinks at the party.", a: "أنا هتكفل بالمشروبات في الحفلة." },
+                    { g: "Wiederholung <strong>sorgt für</strong> eine gute Speicherung.", e: "Repetition ensures good retention.", a: "التكرار بيضمن حفظ كويس." },
+                    { g: "Die Eltern <strong>sorgen für</strong> ihre Kinder.", e: "The parents care for their children.", a: "الأهل بيهتموا بولادهم." }
+                ]},
+                { id: 'v17', ger: "erzielen", eng: "to achieve", ar: "يحقق (نتيجة)", s: [
+                    { g: "Wir haben gute Resultate <strong>erzielt</strong>.", e: "We achieved good results.", a: "حققنا نتايج كويسة." },
+                    { g: "Wie kann man den besten Lernerfolg <strong>erzielen</strong>?", e: "How can one achieve the best learning success?", a: "إزاي نحقق أفضل نتيجة في التعلم؟" },
+                    { g: "Der Sportler hat einen neuen Rekord <strong>erzielt</strong>.", e: "The athlete achieved a new record.", a: "الرياضي حقق رقم قياسي جديد." }
+                ]},
+                { id: 'v18', ger: "kritisieren", eng: "to criticize", ar: "ينتقد", s: [
+                    { g: "Die Kunden <strong>kritisieren</strong> den schlechten Service.", e: "The customers criticize the bad service.", a: "العملاء بينتقدوا الخدمة السيئة." },
+                    { g: "Man darf nicht nur <strong>kritisieren</strong>, sondern muss auch loben.", e: "One shouldn't just criticize, but also praise.", a: "الواحد مايبقاش بينتقد بس، لازم يشكر كمان." },
+                    { g: "Der Lehrer <strong>kritisierte</strong> meine Hausaufgabe.", e: "The teacher criticized my homework.", a: "المدرس انتقد واجبي." }
+                ]}
             ],
             irregularVerbs: [
                 { id: 'iv1', ger: "bestehen", eng: "to pass (exam)", ar: "يجتاز (امتحان)", praesens: "Ich bestehe die Prüfung.", praeteritum: "ich bestand", perfekt: "ich habe bestanden" },
-                { id: 'iv2', ger: "ergeben", eng: "to yield / show", ar: "يُسفر عن / يُظهر", praesens: "Die Studie ergibt...", praeteritum: "sie ergab", perfekt: "sie hat ergeben" },
-                { id: 'iv3', ger: "verschwinden", eng: "to disappear", ar: "يختفي", praesens: "Die Daten verschwinden.", praeteritum: "sie verschwanden", perfekt: "sie sind verschwunden" },
-                { id: 'iv4', ger: "gelangen", eng: "to reach / arrive at", ar: "يصل إلى", praesens: "Sie gelangen ins Ziel.", praeteritum: "sie gelangten", perfekt: "sie sind gelangt" },
-                { id: 'iv5', ger: "zurückgreifen", eng: "to fall back on", ar: "يستعين بـ", praesens: "Wir greifen darauf zurück.", praeteritum: "wir griffen zurück", perfekt: "wir haben zurückgegriffen" },
+                { id: 'iv2', ger: "ergeben", eng: "to yield / show", ar: "يُسفر عن / يُظهر", praesens: "Die Studie ergibt neue Daten.", praeteritum: "sie ergab", perfekt: "sie hat ergeben" },
+                { id: 'iv3', ger: "verschwinden", eng: "to disappear", ar: "يختفي", praesens: "Die Daten verschwinden aus dem Kopf.", praeteritum: "sie verschwanden", perfekt: "sie sind verschwunden" },
+                { id: 'iv4', ger: "gelangen", eng: "to reach / arrive at", ar: "يصل إلى", praesens: "Informationen gelangen ins Gehirn.", praeteritum: "sie gelangten", perfekt: "sie sind gelangt" },
+                { id: 'iv5', ger: "zurückgreifen", eng: "to fall back on", ar: "يستعين بـ", praesens: "Wir greifen auf Erinnerungen zurück.", praeteritum: "wir griffen zurück", perfekt: "wir haben zurückgegriffen" },
                 { id: 'iv6', ger: "teilnehmen", eng: "to participate", ar: "يشارك في", praesens: "Er nimmt am Kurs teil.", praeteritum: "er nahm teil", perfekt: "er hat teilgenommen" },
-                { id: 'iv7', ger: "auftreten", eng: "to occur / appear", ar: "يحدث / يظهر", praesens: "Probleme treten auf.", praeteritum: "sie traten auf", perfekt: "sie sind aufgetreten" },
-                { id: 'iv8', ger: "sich einschreiben", eng: "to enroll", ar: "يسجل في كورس", praesens: "Er schreibt sich ein.", praeteritum: "er schrieb sich ein", perfekt: "er hat sich eingeschrieben" },
+                { id: 'iv7', ger: "auftreten", eng: "to occur / appear", ar: "يحدث / يظهر", praesens: "Probleme treten im Alltag auf.", praeteritum: "sie traten auf", perfekt: "sie sind aufgetreten" },
+                { id: 'iv8', ger: "sich einschreiben", eng: "to enroll", ar: "يسجل في كورس", praesens: "Er schreibt sich für das Seminar ein.", praeteritum: "er schrieb sich ein", perfekt: "er hat sich eingeschrieben" },
                 { id: 'iv9', ger: "empfehlen", eng: "to recommend", ar: "يوصي / يرشح", praesens: "Ich empfehle das Buch.", praeteritum: "ich empfahl", perfekt: "ich habe empfohlen" },
-                { id: 'iv10', ger: "erkennen", eng: "to recognize", ar: "يدرك / يتعرف", praesens: "Sie erkennen den Fehler.", praeteritum: "sie erkannten", perfekt: "sie haben erkannt" },
-                { id: 'iv11', ger: "verbinden", eng: "to connect", ar: "يربط بـ", praesens: "Er verbindet die Wörter.", praeteritum: "er verband", perfekt: "er hat verbunden" },
-                { id: 'iv12', ger: "vergessen", eng: "to forget", ar: "ينسى", praesens: "Ich vergesse den Termin.", praeteritum: "ich vergaß", perfekt: "ich habe vergessen" },
-                { id: 'iv13', ger: "verstehen", eng: "to understand", ar: "يفهم", praesens: "Wir verstehen das gut.", praeteritum: "wir verstanden", perfekt: "wir haben verstanden" },
-                { id: 'iv14', ger: "stattfinden", eng: "to take place", ar: "يُقام / يحدث", praesens: "Das Seminar findet statt.", praeteritum: "es fand statt", perfekt: "es hat stattgefunden" },
-                { id: 'iv15', ger: "wissen", eng: "to know", ar: "يعرف", praesens: "Er weiß die Antwort.", praeteritum: "er wusste", perfekt: "er hat gewusst" }
+                { id: 'iv10', ger: "erkennen", eng: "to recognize", ar: "يدرك / يتعرف", praesens: "Sie erkennen den Fehler sofort.", praeteritum: "sie erkannten", perfekt: "sie haben erkannt" },
+                { id: 'iv11', ger: "verbinden", eng: "to connect", ar: "يربط بـ", praesens: "Er verbindet Wörter mit Bildern.", praeteritum: "er verband", perfekt: "er hat verbunden" },
+                { id: 'iv12', ger: "vergessen", eng: "to forget", ar: "ينسى", praesens: "Ich vergesse oft Termine.", praeteritum: "ich vergaß", perfekt: "ich habe vergessen" },
+                { id: 'iv13', ger: "verstehen", eng: "to understand", ar: "يفهم", praesens: "Wir verstehen die Vorlesung gut.", praeteritum: "wir verstanden", perfekt: "wir haben verstanden" },
+                { id: 'iv14', ger: "stattfinden", eng: "to take place", ar: "يُقام / يحدث", praesens: "Das Treffen findet morgen statt.", praeteritum: "es fand statt", perfekt: "es hat stattgefunden" },
+                { id: 'iv15', ger: "wissen", eng: "to know", ar: "يعرف", praesens: "Er weiß die genaue Antwort nicht.", praeteritum: "er wusste", perfekt: "er hat gewusst" }
             ],
             expressions: [
                 { id: 'e1', type: "Lernen", ger: "an einem Kurs teilnehmen", eng: "to participate in a course", ar: "يشارك في كورس", context: "Ich nehme an einem Sprachkurs teil." },
@@ -305,27 +613,100 @@
                 { id: 'e78', type: "VHS", ger: "einen Auftrag erfüllen", eng: "to fulfill a mandate/mission", ar: "ينفذ تكليف / مهمة", context: "Die VHS erfüllen ihren Auftrag immer noch gut." }
             ],
             prepositions: [
-                { id: 'p1', ger: "achten (auf + Akk)", eng: "to pay attention to", ar: "ينتبه لـ / يراعي", s: [{ g: "Achten Sie <strong>auf</strong> die Fehler.", e: "Pay attention to the mistakes.", a: "خد بالك من الغلطات." }] },
-                { id: 'p2', ger: "sich auswirken (auf + Akk)", eng: "to affect / impact", ar: "يؤثر على / ينعكس على", s: [{ g: "Das wirkt sich <strong>auf</strong> die Note aus.", e: "This affects the grade.", a: "ده بيأثر على الدرجة." }] },
-                { id: 'p3', ger: "bewerten (als + Nom/Akk)", eng: "to evaluate as", ar: "يُقيّم كـ", s: [{ g: "Wir bewerten das <strong>als</strong> Erfolg.", e: "We evaluate that as a success.", a: "إحنا بنقيم ده كنجاح." }] },
-                { id: 'p4', ger: "sich schützen (vor + Dat)", eng: "to protect oneself from", ar: "يحمي نفسه من", s: [{ g: "Schützen Sie sich <strong>vor</strong> Lärm.", e: "Protect yourself from noise.", a: "احمي نفسك من الدوشة." }] },
-                { id: 'p5', ger: "sorgen (für + Akk)", eng: "to ensure / care for", ar: "يضمن / يتكفل بـ", s: [{ g: "Er sorgt <strong>für</strong> gute Stimmung.", e: "He ensures a good mood.", a: "هو بيضمن جو كويس." }] },
-                { id: 'p6', ger: "sich erinnern (an + Akk)", eng: "to remember", ar: "يتذكر", s: [{ g: "Ich erinnere mich <strong>an</strong> die Schulzeit.", e: "I remember my school days.", a: "أنا فاكر أيام المدرسة." }] },
-                { id: 'p7', ger: "löschen (aus + Dat)", eng: "to delete from", ar: "يُمسح من", s: [{ g: "Löschen Sie es <strong>aus</strong> dem Speicher.", e: "Delete it from the memory.", a: "امسحه من الذاكرة." }] },
-                { id: 'p8', ger: "entfernen (aus + Dat)", eng: "to remove from", ar: "يُزال من", s: [{ g: "Der Virus wurde <strong>aus</strong> dem System entfernt.", e: "The virus was removed from the system.", a: "الفيروس اتشال من النظام." }] },
-                { id: 'p9', ger: "verschwinden (aus + Dat)", eng: "to disappear from", ar: "يختفي من", s: [{ g: "Die Infos verschwinden <strong>aus</strong> dem Kopf.", e: "The infos disappear from the head.", a: "المعلومات بتختفي من الدماغ." }] },
-                { id: 'p10', ger: "gelangen (in + Akk)", eng: "to reach / enter", ar: "يصل إلى / يدخل", s: [{ g: "Das Blut gelangt <strong>ins</strong> Gehirn.", e: "The blood reaches the brain.", a: "الدم بيوصل للمخ." }] },
-                { id: 'p11', ger: "kommen (in + Akk)", eng: "to come into / enter", ar: "يدخل في", s: [{ g: "Die Daten kommen <strong>ins</strong> Archiv.", e: "The data goes into the archive.", a: "البيانات بتدخل الأرشيف." }] },
-                { id: 'p12', ger: "überschreiben (mit + Dat)", eng: "to overwrite with", ar: "يستبدل بـ", s: [{ g: "Er überschreibt die Datei <strong>mit</strong> einer neuen.", e: "He overwrites the file with a new one.", a: "هو بيكتب فوق الملف بملف جديد." }] },
-                { id: 'p13', ger: "wiederholen (in + Dat)", eng: "to repeat in", ar: "يراجع في (فترات)", s: [{ g: "Wir wiederholen das <strong>in</strong> regelmäßigen Abständen.", e: "We repeat that at regular intervals.", a: "إحنا بنراجع ده في فترات منتظمة." }] },
-                { id: 'p14', ger: "lernen (auf + Akk)", eng: "to learn in a way", ar: "يتعلم بطريقة (معينة)", s: [{ g: "Jeder lernt <strong>auf</strong> seine Weise.", e: "Everyone learns in their own way.", a: "كل واحد بيتعلم بطريقته." }] },
-                { id: 'p15', ger: "sich einschreiben (für + Akk)", eng: "to enroll for", ar: "يسجل نفسه في (كورس)", s: [{ g: "Ich schreibe mich <strong>für</strong> den Kurs ein.", e: "I am enrolling for the course.", a: "أنا بسجل نفسي في الكورس." }] },
-                { id: 'p16', ger: "zurückgreifen (auf + Akk)", eng: "to fall back on / resort to", ar: "يستعين بـ / يرجع لـ", s: [{ g: "Ich muss <strong>auf</strong> Notizen zurückgreifen.", e: "I have to fall back on notes.", a: "لازم أستعين بالملاحظات." }] },
-                { id: 'p17', ger: "teilnehmen (an + Dat)", eng: "to participate in", ar: "يشارك في", s: [{ g: "Wir nehmen <strong>an</strong> der Besprechung teil.", e: "We participate in the meeting.", a: "إحنا بنشارك في الاجتماع." }] },
-                { id: 'p18', ger: "verbinden (mit + Dat)", eng: "to connect with", ar: "يربط بـ", s: [{ g: "Verbinde das Wort <strong>mit</strong> einem Bild.", e: "Connect the word with a picture.", a: "اربط الكلمة بصورة." }] }
+                { id: 'p1', ger: "achten (auf + Akk)", eng: "to pay attention to", ar: "ينتبه لـ / يراعي", s: [
+                    { g: "Achten Sie <strong>auf</strong> die Fehler.", e: "Pay attention to the mistakes.", a: "خد بالك من الغلطات." },
+                    { g: "Die Schule achtet <strong>auf</strong> Wirtschaftlichkeit.", e: "The school pays attention to profitability.", a: "المدرسة بتراعي الجدوى الاقتصادية." },
+                    { g: "Wir müssen mehr <strong>auf</strong> die Qualität achten.", e: "We must pay more attention to quality.", a: "لازم نهتم أكتر بالجودة." }
+                ]},
+                { id: 'p2', ger: "sich auswirken (auf + Akk)", eng: "to affect / impact", ar: "يؤثر على / ينعكس على", s: [
+                    { g: "Das wirkt sich <strong>auf</strong> die Note aus.", e: "This affects the grade.", a: "ده بيأثر على الدرجة." },
+                    { g: "Der Geldmangel wirkt sich <strong>auf</strong> die Ausstattung aus.", e: "The lack of money affects the equipment.", a: "نقص الفلوس بينعكس على التجهيزات." },
+                    { g: "Stress wirkt sich negativ <strong>auf</strong> den Körper aus.", e: "Stress has a negative effect on the body.", a: "الضغط بيأثر سلبي على الجسم." }
+                ]},
+                { id: 'p3', ger: "bewerten (als + Nom/Akk)", eng: "to evaluate as", ar: "يُقيّم كـ", s: [
+                    { g: "Wir bewerten das <strong>als</strong> Erfolg.", e: "We evaluate that as a success.", a: "إحنا بنقيم ده كنجاح." },
+                    { g: "Die Daten werden <strong>als</strong> wichtig bewertet.", e: "The data is evaluated as important.", a: "البيانات بتتقيم إنها مهمة." },
+                    { g: "Er bewertet die Situation <strong>als</strong> kritisch.", e: "He evaluates the situation as critical.", a: "هو بيقيم الوضع كأنه حرج." }
+                ]},
+                { id: 'p4', ger: "sich schützen (vor + Dat)", eng: "to protect oneself from", ar: "يحمي نفسه من", s: [
+                    { g: "Schützen Sie sich <strong>vor</strong> Lärm.", e: "Protect yourself from noise.", a: "احمي نفسك من الدوشة." },
+                    { g: "Das Gehirn schützt sich <strong>vor</strong> einer Datenflut.", e: "The brain protects itself from a data flood.", a: "المخ بيحمي نفسه من سيل البيانات." },
+                    { g: "Wir müssen uns <strong>vor</strong> der Kälte schützen.", e: "We must protect ourselves from the cold.", a: "لازم نحمي نفسنا من البرد." }
+                ]},
+                { id: 'p5', ger: "sorgen (für + Akk)", eng: "to ensure / care for", ar: "يضمن / يتكفل بـ", s: [
+                    { g: "Er sorgt <strong>für</strong> gute Stimmung.", e: "He ensures a good mood.", a: "هو بيضمن جو كويس." },
+                    { g: "Wiederholen sorgt <strong>für</strong> eine langfristige Speicherung.", e: "Repeating ensures long-term storage.", a: "التكرار بيضمن تخزين طويل المدى." },
+                    { g: "Wer sorgt <strong>für</strong> das Essen?", e: "Who will provide the food?", a: "مين هيتكفل بالأكل؟" }
+                ]},
+                { id: 'p6', ger: "sich erinnern (an + Akk)", eng: "to remember", ar: "يتذكر", s: [
+                    { g: "Ich erinnere mich <strong>an</strong> die Schulzeit.", e: "I remember my school days.", a: "أنا فاكر أيام المدرسة." },
+                    { g: "Erinnern Sie sich <strong>an</strong> die Formeln?", e: "Do you remember the formulas?", a: "فاكر المعادلات؟" },
+                    { g: "Wir erinnern uns gerne <strong>an</strong> den Urlaub.", e: "We like to remember the vacation.", a: "بنحب نفتكر الإجازة." }
+                ]},
+                { id: 'p7', ger: "löschen (aus + Dat)", eng: "to delete from", ar: "يُمسح من", s: [
+                    { g: "Löschen Sie es <strong>aus</strong> dem Speicher.", e: "Delete it from the memory.", a: "امسحه من الذاكرة." },
+                    { g: "Die Datei wurde <strong>aus</strong> dem System gelöscht.", e: "The file was deleted from the system.", a: "الملف اتمسح من النظام." },
+                    { g: "Daten werden <strong>aus</strong> dem Gehirn gelöscht.", e: "Data is deleted from the brain.", a: "البيانات بتتمسح من المخ." }
+                ]},
+                { id: 'p8', ger: "entfernen (aus + Dat)", eng: "to remove from", ar: "يُزال من", s: [
+                    { g: "Der Virus wurde <strong>aus</strong> dem System entfernt.", e: "The virus was removed from the system.", a: "الفيروس اتشال من النظام." },
+                    { g: "Flecken kann man <strong>aus</strong> dem Stoff entfernen.", e: "Stains can be removed from the fabric.", a: "البقع ممكن تتشال من القماش." },
+                    { g: "Das Wort wurde <strong>aus</strong> dem Text entfernt.", e: "The word was removed from the text.", a: "الكلمة اتشالت من النص." }
+                ]},
+                { id: 'p9', ger: "verschwinden (aus + Dat)", eng: "to disappear from", ar: "يختفي من", s: [
+                    { g: "Die Infos verschwinden <strong>aus</strong> dem Kopf.", e: "The infos disappear from the head.", a: "المعلومات بتختفي من الدماغ." },
+                    { g: "Er ist plötzlich <strong>aus</strong> dem Zimmer verschwunden.", e: "He suddenly disappeared from the room.", a: "هو فجأة اختفى من الأوضة." },
+                    { g: "Das Problem verschwindet nicht <strong>aus</strong> der Welt.", e: "The problem won't disappear from the world.", a: "المشكلة مش هتختفي من الدنيا كده." }
+                ]},
+                { id: 'p10', ger: "gelangen (in + Akk)", eng: "to reach / enter", ar: "يصل إلى / يدخل", s: [
+                    { g: "Das Blut gelangt <strong>ins</strong> Gehirn.", e: "The blood reaches the brain.", a: "الدم بيوصل للمخ." },
+                    { g: "Informationen gelangen <strong>ins</strong> Langzeitgedächtnis.", e: "Information reaches the long-term memory.", a: "المعلومات بتوصل للذاكرة طويلة المدى." },
+                    { g: "Wie ist er <strong>in</strong> das Gebäude gelangt?", e: "How did he get into the building?", a: "هو دخل المبنى إزاي؟" }
+                ]},
+                { id: 'p11', ger: "kommen (in + Akk)", eng: "to come into / enter", ar: "يدخل في", s: [
+                    { g: "Die Daten kommen <strong>ins</strong> Archiv.", e: "The data goes into the archive.", a: "البيانات بتدخل الأرشيف." },
+                    { g: "Das Wort kommt <strong>in</strong> den Satz.", e: "The word goes into the sentence.", a: "الكلمة بتتحط في الجملة." },
+                    { g: "Wann kommen wir <strong>in</strong> die Stadt?", e: "When are we coming into the city?", a: "هنوصل المدينة إمتى؟" }
+                ]},
+                { id: 'p12', ger: "überschreiben (mit + Dat)", eng: "to overwrite with", ar: "يستبدل بـ", s: [
+                    { g: "Er überschreibt die Datei <strong>mit</strong> einer neuen.", e: "He overwrites the file with a new one.", a: "هو بيكتب فوق الملف بملف جديد." },
+                    { g: "Alte Daten werden <strong>mit</strong> neuen überschrieben.", e: "Old data is overwritten with new data.", a: "البيانات القديمة بتتبدل ببيانات جديدة." },
+                    { g: "Ich habe den Text <strong>mit</strong> meinen Notizen überschrieben.", e: "I overwrote the text with my notes.", a: "كتبت ملاحظاتي مكان النص." }
+                ]},
+                { id: 'p13', ger: "wiederholen (in + Dat)", eng: "to repeat in", ar: "يراجع في (فترات)", s: [
+                    { g: "Wir wiederholen das <strong>in</strong> regelmäßigen Abständen.", e: "We repeat that at regular intervals.", a: "إحنا بنراجع ده في فترات منتظمة." },
+                    { g: "Bitte wiederholen Sie das <strong>in</strong> eigenen Worten.", e: "Please repeat that in your own words.", a: "لو سمحت عيد ده بكلماتك إنت." },
+                    { g: "Die Übung wird <strong>in</strong> der nächsten Stunde wiederholt.", e: "The exercise will be repeated in the next lesson.", a: "التمرين هيتعاد في الحصة الجاية." }
+                ]},
+                { id: 'p14', ger: "lernen (auf + Akk)", eng: "to learn in a way", ar: "يتعلم بطريقة (معينة)", s: [
+                    { g: "Jeder lernt <strong>auf</strong> seine Weise.", e: "Everyone learns in their own way.", a: "كل واحد بيتعلم بطريقته." },
+                    { g: "Wir lernen <strong>auf</strong> spielerische Art.", e: "We learn in a playful way.", a: "بنتعلم بطريقة فيها لعب." },
+                    { g: "Man kann <strong>auf</strong> verschiedene Arten lernen.", e: "One can learn in different ways.", a: "ممكن تتعلم بطرق مختلفة." }
+                ]},
+                { id: 'p15', ger: "sich einschreiben (für + Akk)", eng: "to enroll for", ar: "يسجل نفسه في (كورس)", s: [
+                    { g: "Ich schreibe mich <strong>für</strong> den Kurs ein.", e: "I am enrolling for the course.", a: "أنا بسجل نفسي في الكورس." },
+                    { g: "Hast du dich schon <strong>für</strong> die Prüfung eingeschrieben?", e: "Have you enrolled for the exam yet?", a: "سجلت في الامتحان ولا لسة؟" },
+                    { g: "Wir möchten uns <strong>für</strong> das Seminar einschreiben.", e: "We would like to enroll for the seminar.", a: "حابين نسجل في السيمينار." }
+                ]},
+                { id: 'p16', ger: "zurückgreifen (auf + Akk)", eng: "to fall back on / resort to", ar: "يستعين بـ / يرجع لـ", s: [
+                    { g: "Ich muss <strong>auf</strong> meine Notizen zurückgreifen.", e: "I have to fall back on my notes.", a: "لازم أستعين بملاحظاتي." },
+                    { g: "Wir greifen <strong>auf</strong> bekannte Wörter zurück.", e: "We fall back on known words.", a: "بنرجع نستخدم الكلمات اللي عارفينها." },
+                    { g: "Die Firma greift <strong>auf</strong> Ersparnisse zurück.", e: "The company resorts to savings.", a: "الشركة بتلجأ لمدخراتها." }
+                ]},
+                { id: 'p17', ger: "teilnehmen (an + Dat)", eng: "to participate in", ar: "يشارك في", s: [
+                    { g: "Wir nehmen <strong>an</strong> der Besprechung teil.", e: "We participate in the meeting.", a: "إحنا بنشارك في الاجتماع." },
+                    { g: "Nimmst du <strong>am</strong> Wettbewerb teil?", e: "Are you participating in the competition?", a: "هتشارك في المسابقة؟" },
+                    { g: "Ich nehme gerne <strong>an</strong> Weiterbildungen teil.", e: "I like to participate in further education.", a: "بحب أشارك في التدريبات المهنية." }
+                ]},
+                { id: 'p18', ger: "verbinden (mit + Dat)", eng: "to connect with", ar: "يربط بـ", s: [
+                    { g: "Verbinde das Wort <strong>mit</strong> einem Bild.", e: "Connect the word with a picture.", a: "اربط الكلمة بصورة." },
+                    { g: "Ich verbinde diesen Ort <strong>mit</strong> guten Erinnerungen.", e: "I connect this place with good memories.", a: "أنا بربط المكان ده بذكريات حلوة." },
+                    { g: "Bitte verbinden Sie mich <strong>mit</strong> dem Chef.", e: "Please connect me with the boss.", a: "وصلني بالمدير لو سمحت." }
+                ]}
             ],
             grammar: [
                 {
+                    id: 'g1',
                     title: "Strukturen: Kausalangaben (التعبير عن السبب)",
                     desc: "لتوضيح السبب بنستخدم (weil, denn) أو (deshalb, deswegen, darum).",
                     structure: "weil (Verb am Ende) | denn (Verb Position 2) | deshalb/deswegen/darum (Verb nach dem Adverb)",
@@ -336,15 +717,18 @@
                     ]
                 },
                 {
+                    id: 'g2',
                     title: "Strukturen: Finalangaben (التعبير عن الهدف/النية)",
                     desc: "عشان نقول 'من أجل' أو 'علشان كذا'. بنستخدم (damit) أو (um...zu).",
                     structure: "damit + Subjekt ... Verb | um ... zu + Infinitiv",
                     examples: [
                         { g: "Wiederhole Wörter, <span class='text-purple-600 font-bold'>damit</span> man sie nicht <span class='text-purple-600 font-bold'>vergisst</span>.", a: "راجع الكلمات، عشان ماتنساهاش." },
-                        { g: "Man muss wiederholen, <span class='text-purple-600 font-bold'>um</span> nicht <span class='text-purple-600 font-bold'>zu vergessen</span>.", a: "الواحد لازم يراجع، من أجل ألا ينسى." }
+                        { g: "Man muss wiederholen, <span class='text-purple-600 font-bold'>um</span> nicht <span class='text-purple-600 font-bold'>zu vergessen</span>.", a: "الواحد لازم يراجع، من أجل ألا ينسى." },
+                        { g: "Wir lernen, <span class='text-purple-600 font-bold'>um</span> bessere Chancen <span class='text-purple-600 font-bold'>zu haben</span>.", a: "بنذاكر عشان يبقى عندنا فرص أحسن." }
                     ]
                 },
                 {
+                    id: 'g3',
                     title: "Strukturen: Genus der Nomen (تحديد أداة الاسم)",
                     desc: "عشان تعرف الكلمة (der, die, das)، بص على نهايتها.",
                     structure: "der (männlich) | die (weiblich) | das (neutral)",
@@ -355,222 +739,185 @@
                     ]
                 }
             ],
-            review: [
+            b2_words: [
+                { id: 'b2_w_1', ger: "die Voraussetzung", eng: "Prerequisite", ar: "الشرط المسبق / المتطلب", s: [
+                    { g: "Ein Abschluss ist die <strong>Voraussetzung</strong> für die Stelle.", e: "A degree is the prerequisite for the position.", a: "الشهادة شرط أساسي للوظيفة." },
+                    { g: "Was sind die <strong>Voraussetzungen</strong> für den Kurs?", e: "What are the prerequisites for the course?", a: "إيه هي شروط التقديم للكورس؟" },
+                    { g: "Unter dieser <strong>Voraussetzung</strong> stimme ich zu.", e: "Under this condition, I agree.", a: "بناءً على الشرط ده، أنا موافق." }
+                ]},
+                { id: 'b2_w_2', ger: "die Qualifikation", eng: "Qualification", ar: "المؤهل", s: [
+                    { g: "Er hat die nötige <strong>Qualifikation</strong>.", e: "He has the necessary qualification.", a: "هو عنده المؤهل المطلوب." },
+                    { g: "Ihre <strong>Qualifikationen</strong> sind sehr beeindruckend.", e: "Your qualifications are very impressive.", a: "مؤهلات حضرتك مبهرة جداً." },
+                    { g: "Wir prüfen Ihre <strong>Qualifikation</strong> für den Job.", e: "We will check your qualification for the job.", a: "هنفحص مؤهلاتك للوظيفة." }
+                ]},
+                { id: 'b2_w_3', ger: "das Engagement", eng: "Commitment / Involvement", ar: "الالتزام / التفاني", s: [
+                    { g: "Wir danken Ihnen für Ihr <strong>Engagement</strong>.", e: "We thank you for your commitment.", a: "بنشكرك على تفانيك والتزامك." },
+                    { g: "Sie zeigt viel <strong>Engagement</strong> im Projekt.", e: "She shows a lot of involvement in the project.", a: "هي بتبين التزام كبير في المشروع." },
+                    { g: "Ohne <strong>Engagement</strong> gibt es keinen Erfolg.", e: "Without commitment there is no success.", a: "من غير تفاني مفيش نجاح." }
+                ]},
+                { id: 'b2_w_4', ger: "die Eigeninitiative", eng: "Initiative", ar: "المبادرة الذاتية", s: [
+                    { g: "In diesem Job ist <strong>Eigeninitiative</strong> gefragt.", e: "Initiative is required in this job.", a: "الوظيفة دي محتاجة مبادرة وتصرف من نفسك." },
+                    { g: "Sie hat das Projekt aus <strong>Eigeninitiative</strong> gestartet.", e: "She started the project on her own initiative.", a: "بدأت المشروع بمبادرة شخصية منها." },
+                    { g: "Er zeigt leider wenig <strong>Eigeninitiative</strong>.", e: "Unfortunately, he shows little initiative.", a: "للأسف مش بيبادر يتصرف من نفسه." }
+                ]},
+                { id: 'b2_w_5', ger: "die Teamfähigkeit", eng: "Teamwork skills", ar: "القدرة على العمل في فريق", s: [
+                    { g: "<strong>Teamfähigkeit</strong> ist eine wichtige Eigenschaft.", e: "Teamwork skills are an important trait.", a: "الشغل في فريق دي ميزة مهمة جداً." },
+                    { g: "Wir testen die <strong>Teamfähigkeit</strong> der Bewerber.", e: "We test the teamwork skills of the applicants.", a: "بنختبر قدرة المتقدمين على العمل الجماعي." },
+                    { g: "Ihre <strong>Teamfähigkeit</strong> ist ausgezeichnet.", e: "Her teamwork skills are excellent.", a: "قدرتها على العمل في فريق ممتازة." }
+                ]},
+                { id: 'b2_w_6', ger: "das Durchsetzungsvermögen", eng: "Assertiveness", ar: "قوة الشخصية / إثبات الذات", s: [
+                    { g: "Als Manager braucht man <strong>Durchsetzungsvermögen</strong>.", e: "As a manager, you need assertiveness.", a: "كمدير إنت محتاج شخصية قوية تقدر تفرض رأيها." },
+                    { g: "Ihm fehlt manchmal das nötige <strong>Durchsetzungsvermögen</strong>.", e: "He sometimes lacks the necessary assertiveness.", a: "ساعات بتنقصه قوة الشخصية المطلوبة." },
+                    { g: "Sie hat ihr <strong>Durchsetzungsvermögen</strong> im Meeting gezeigt.", e: "She showed her assertiveness in the meeting.", a: "هي بينت قوة شخصيتها في الاجتماع." }
+                ]},
+                { id: 'b2_w_7', ger: "die Belastbarkeit", eng: "Resilience", ar: "القدرة على تحمل الضغط", s: [
+                    { g: "Hohe <strong>Belastbarkeit</strong> wird in diesem Beruf erwartet.", e: "High resilience is expected in this profession.", a: "مطلوب قدرة عالية على تحمل ضغط الشغل." },
+                    { g: "Der Test prüft die körperliche <strong>Belastbarkeit</strong>.", e: "The test checks physical resilience.", a: "الاختبار بيفحص قوة التحمل البدنية." },
+                    { g: "Ich bewundere ihre psychische <strong>Belastbarkeit</strong>.", e: "I admire her psychological resilience.", a: "أنا معجب بقدرتها النفسية على التحمل." }
+                ]},
+                { id: 'b2_w_8', ger: "die Empathie", eng: "Empathy", ar: "التعاطف / الإحساس بالآخرين", s: [
+                    { g: "<strong>Empathie</strong> hilft im Umgang mit Kunden.", e: "Empathy helps in dealing with customers.", a: "التعاطف بيساعد في التعامل مع الزباين." },
+                    { g: "Ein Arzt braucht viel <strong>Empathie</strong>.", e: "A doctor needs a lot of empathy.", a: "الدكتور محتاج تعاطف كبير." },
+                    { g: "Es fehlt ihm leider an <strong>Empathie</strong>.", e: "Unfortunately, he lacks empathy.", a: "للأسف بيفتقد للإحساس باللي قدامه." }
+                ]},
+                { id: 'b2_w_9', ger: "die Führungskompetenz", eng: "Leadership skill", ar: "مهارة القيادة", s: [
+                    { g: "Er hat seine <strong>Führungskompetenz</strong> bewiesen.", e: "He has proven his leadership skill.", a: "هو أثبت مهارته في القيادة." },
+                    { g: "Wir suchen jemanden mit <strong>Führungskompetenz</strong>.", e: "We are looking for someone with leadership skills.", a: "بندور على حد عنده مهارات قيادية." },
+                    { g: "Sie trainiert ihre <strong>Führungskompetenz</strong> in einem Seminar.", e: "She is training her leadership skills in a seminar.", a: "بتدرب على مهارات القيادة في سيمينار." }
+                ]},
+                { id: 'b2_w_10', ger: "die Fortbildung", eng: "Further training", ar: "دورة تدريبية متقدمة", s: [
+                    { g: "Ich nehme nächste Woche an einer <strong>Fortbildung</strong> teil.", e: "I am taking part in further training next week.", a: "أنا هشارك في دورة تدريبية الأسبوع الجاي." },
+                    { g: "Die <strong>Fortbildung</strong> wird von der Firma bezahlt.", e: "The further training is paid by the company.", a: "الشركة هي اللي هتدفع تمن التدريب." },
+                    { g: "Diese <strong>Fortbildung</strong> ist für alle Mitarbeiter Pflicht.", e: "This further training is mandatory for all employees.", a: "التدريب ده إجباري لكل الموظفين." }
+                ]},
+                { id: 'b2_w_11', ger: "der Aufstieg", eng: "Promotion / Rise", ar: "الترقية / الصعود المهني", s: [
+                    { g: "Ihr beruflicher <strong>Aufstieg</strong> war sehr schnell.", e: "Her professional rise was very fast.", a: "ترقيتها المهنية كانت سريعة جداً." },
+                    { g: "Er hofft auf einen baldigen <strong>Aufstieg</strong> in der Firma.", e: "He hopes for an early promotion in the company.", a: "هو بيتمنى ترقية قريبة في الشركة." },
+                    { g: "Der <strong>Aufstieg</strong> erfordert harte Arbeit.", e: "The rise requires hard work.", a: "الصعود المهني محتاج شغل بجد." }
+                ]},
+                { id: 'b2_w_12', ger: "die Niederlage", eng: "Defeat / Setback", ar: "الهزيمة / التراجع", s: [
+                    { g: "Man muss auch mit einer <strong>Niederlage</strong> umgehen können.", e: "One must also be able to deal with a defeat.", a: "الواحد لازم يعرف يتعامل مع الإخفاقات." },
+                    { g: "Die Mannschaft hat die <strong>Niederlage</strong> akzeptiert.", e: "The team accepted the defeat.", a: "الفريق تقبل الهزيمة." },
+                    { g: "Das Projekt war leider eine komplette <strong>Niederlage</strong>.", e: "The project was unfortunately a complete failure.", a: "للأسف المشروع كان فشل ذريع." }
+                ]},
+                { id: 'b2_w_13', ger: "die Bewältigung", eng: "Overcoming / Coping", ar: "التغلب على / التعامل مع", s: [
+                    { g: "Die <strong>Bewältigung</strong> der Krise ist unsere Hauptaufgabe.", e: "Overcoming the crisis is our main task.", a: "التغلب على الأزمة هي مهمتنا الأساسية." },
+                    { g: "Strategien zur <strong>Bewältigung</strong> von Stress sind wichtig.", e: "Strategies for coping with stress are important.", a: "استراتيجيات التعامل مع الضغط مهمة." },
+                    { g: "Er braucht Hilfe bei der <strong>Bewältigung</strong> seiner Probleme.", e: "He needs help coping with his problems.", a: "هو محتاج مساعدة في التعامل مع مشاكله." }
+                ]},
+                { id: 'b2_w_14', ger: "der Kompromiss", eng: "Compromise", ar: "حل وسط", s: [
+                    { g: "Wir müssen einen <strong>Kompromiss</strong> finden.", e: "We must find a compromise.", a: "لازم نوصل لحل وسط." },
+                    { g: "Sind Sie zu einem <strong>Kompromiss</strong> bereit?", e: "Are you ready for a compromise?", a: "هل حضرتك مستعد لحل وسط؟" },
+                    { g: "Der <strong>Kompromiss</strong> war für beide Seiten gut.", e: "The compromise was good for both sides.", a: "الحل الوسط كان مفيد للطرفين." }
+                ]},
+                { id: 'b2_w_15', ger: "die Verhandlung", eng: "Negotiation", ar: "التفاوض", s: [
+                    { g: "Die <strong>Verhandlung</strong> war sehr hart und lang.", e: "The negotiation was very tough and long.", a: "المفاوضات كانت صعبة وطويلة جداً." },
+                    { g: "Wir führen morgen eine wichtige <strong>Verhandlung</strong>.", e: "We are conducting an important negotiation tomorrow.", a: "عندنا بكرة مفاوضات مهمة." },
+                    { g: "Die <strong>Verhandlungen</strong> wurden abgebrochen.", e: "The negotiations were broken off.", a: "المفاوضات اتلغت/اتوقفت." }
+                ]},
+                { id: 'b2_w_16', ger: "die Vereinbarkeit", eng: "Compatibility", ar: "التوافق (بين الشغل والحياة)", s: [
+                    { g: "Die <strong>Vereinbarkeit</strong> von Familie und Beruf ist ein Thema.", e: "The compatibility of family and career is an issue.", a: "التوافق بين الشغل والعيلة ده موضوع مهم." },
+                    { g: "Wir fördern die <strong>Vereinbarkeit</strong> durch flexible Zeiten.", e: "We promote compatibility through flexible hours.", a: "بندعم التوافق من خلال مواعيد مرنة." },
+                    { g: "Die <strong>Vereinbarkeit</strong> ist für viele Mütter schwer.", e: "Compatibility is difficult for many mothers.", a: "الموازنة صعبة لأمهات كتير." }
+                ]},
+                { id: 'b2_w_17', ger: "die Leidenschaft", eng: "Passion", ar: "الشغف", s: [
+                    { g: "Er macht seine Arbeit mit großer <strong>Leidenschaft</strong>.", e: "He does his work with great passion.", a: "هو بيعمل شغله بشغف كبير." },
+                    { g: "Das Kochen ist ihre wahre <strong>Leidenschaft</strong>.", e: "Cooking is her true passion.", a: "الطبخ ده شغفها الحقيقي." },
+                    { g: "Ohne <strong>Leidenschaft</strong> wird man nicht erfolgreich.", e: "Without passion, you won't be successful.", a: "من غير شغف مش هتبقى ناجح." }
+                ]},
+                { id: 'b2_w_18', ger: "die Umsetzung", eng: "Implementation", ar: "التنفيذ", s: [
+                    { g: "Die <strong>Umsetzung</strong> des Plans dauert sehr lange.", e: "The implementation of the plan takes a very long time.", a: "تنفيذ الخطة بياخد وقت طويل جداً." },
+                    { g: "Wir beginnen morgen mit der <strong>Umsetzung</strong>.", e: "We will start with the implementation tomorrow.", a: "هنببدأ في التنفيذ بكرة." },
+                    { g: "Die <strong>Umsetzung</strong> war erfolgreich.", e: "The implementation was successful.", a: "التنفيذ تم بنجاح." }
+                ]},
+                { id: 'b2_w_19', ger: "der Ansatz", eng: "Approach", ar: "النهج / المدخل", s: [
+                    { g: "Das ist ein völlig neuer <strong>Ansatz</strong>.", e: "That is a completely new approach.", a: "ده نهج (أسلوب) جديد تماماً." },
+                    { g: "Wir brauchen einen anderen <strong>Ansatz</strong> zur Problemlösung.", e: "We need a different approach to problem solving.", a: "محتاجين أسلوب تاني لحل المشكلة." },
+                    { g: "Der <strong>Ansatz</strong> des Autors ist interessant.", e: "The author's approach is interesting.", a: "مدخل/نهج الكاتب شيق." }
+                ]},
+                { id: 'b2_w_20', ger: "die Vorgehensweise", eng: "Method / Procedure", ar: "طريقة العمل / الإجراء", s: [
+                    { g: "Ihre <strong>Vorgehensweise</strong> ist sehr logisch.", e: "Your method is very logical.", a: "طريقة شغلك منطقية جداً." },
+                    { g: "Die <strong>Vorgehensweise</strong> wird im Handbuch erklärt.", e: "The procedure is explained in the manual.", a: "الإجراءات مشروحة في الكتيب." },
+                    { g: "Welche <strong>Vorgehensweise</strong> schlagen Sie vor?", e: "Which procedure do you suggest?", a: "حضرتك بتقترح إيه الخطوات/الطريقة؟" }
+                ]},
+                { id: 'b2_w_21', ger: "die Priorität", eng: "Priority", ar: "الأولوية", s: [
+                    { g: "Dieses Projekt hat höchste <strong>Priorität</strong>.", e: "This project has the highest priority.", a: "المشروع ده ليه الأولوية القصوى." },
+                    { g: "Wir müssen unsere <strong>Prioritäten</strong> setzen.", e: "We have to set our priorities.", a: "لازم نحدد أولوياتنا." },
+                    { g: "Gesundheit sollte immer <strong>Priorität</strong> haben.", e: "Health should always have priority.", a: "الصحة دايماً المفروض تكون أولوية." }
+                ]},
+                { id: 'b2_w_22', ger: "die Verzögerung", eng: "Delay", ar: "التأخير", s: [
+                    { g: "Es gab eine kleine <strong>Verzögerung</strong> im Zeitplan.", e: "There was a slight delay in the schedule.", a: "حصل تأخير بسيط في الجدول." },
+                    { g: "Wir bitten die <strong>Verzögerung</strong> zu entschuldigen.", e: "We apologize for the delay.", a: "بنعتذر عن التأخير." },
+                    { g: "Die <strong>Verzögerung</strong> kostet uns viel Geld.", e: "The delay is costing us a lot of money.", a: "التأخير بيكلفنا فلوس كتير." }
+                ]},
+                { id: 'b2_w_23', ger: "die Maßnahme", eng: "Measure / Action", ar: "إجراء / تدبير", s: [
+                    { g: "Wir müssen sofort <strong>Maßnahmen</strong> ergreifen.", e: "We must take measures immediately.", a: "لازم ناخد إجراءات فوراً." },
+                    { g: "Die neuen <strong>Maßnahmen</strong> sind streng.", e: "The new measures are strict.", a: "الإجراءات الجديدة صارمة." },
+                    { g: "Diese <strong>Maßnahme</strong> soll die Sicherheit verbessern.", e: "This measure is intended to improve safety.", a: "الإجراء ده غرضه تحسين الأمان." }
+                ]},
+                { id: 'b2_w_24', ger: "die Auswirkung", eng: "Impact / Effect", ar: "التأثير", s: [
+                    { g: "Die <strong>Auswirkung</strong> auf die Umwelt ist enorm.", e: "The impact on the environment is enormous.", a: "التأثير على البيئة ضخم جداً." },
+                    { g: "Das Gesetz hat positive <strong>Auswirkungen</strong>.", e: "The law has positive effects.", a: "القانون ليه تأثيرات إيجابية." },
+                    { g: "Wir müssen die <strong>Auswirkungen</strong> prüfen.", e: "We have to check the effects.", a: "لازم نفحص التأثيرات والنتائج." }
+                ]},
+                { id: 'b2_w_25', ger: "die Anforderung", eng: "Requirement", ar: "المتطلب", s: [
+                    { g: "Die <strong>Anforderungen</strong> an die Bewerber sind hoch.", e: "The requirements for the applicants are high.", a: "المتطلبات للمتقدمين عالية جداً." },
+                    { g: "Er erfüllt nicht alle <strong>Anforderungen</strong>.", e: "He does not meet all the requirements.", a: "هو مش مستوفي كل المتطلبات." },
+                    { g: "Die <strong>Anforderung</strong> an Flexibilität steigt.", e: "The requirement for flexibility is increasing.", a: "متطلبات المرونة في الشغل بتزيد." }
+                ]},
+                { id: 'b2_w_26', ger: "die Flexibilität", eng: "Flexibility", ar: "المرونة", s: [
+                    { g: "Wir erwarten zeitliche <strong>Flexibilität</strong>.", e: "We expect time flexibility.", a: "إحنا متوقعين مرونة في مواعيد الشغل." },
+                    { g: "<strong>Flexibilität</strong> ist im modernen Beruf wichtig.", e: "Flexibility is important in modern jobs.", a: "المرونة مهمة في الوظايف الحديثة." },
+                    { g: "Sie zeigt große <strong>Flexibilität</strong> bei Problemen.", e: "She shows great flexibility with problems.", a: "هي بتبين مرونة كبيرة وقت المشاكل." }
+                ]}
+            ],
+            b2_expressions: [
+                { id: 'b2_e_1', type: "Meinung äußern", ger: "Meiner Auffassung nach...", eng: "In my view...", ar: "من وجهة نظري...", context: "للتعبير عن الرأي بقوة في الامتحانات." },
+                { id: 'b2_e_2', type: "Aspekte betonen", ger: "Ein wesentlicher Aspekt ist, dass...", eng: "An essential aspect is that...", ar: "جانب أساسي هو إن...", context: "للتأكيد على نقطة مهمة في العرض (Präsentation)." },
+                { id: 'b2_e_3', type: "Standpunkt", ger: "Ich stehe auf dem Standpunkt, dass...", eng: "I take the view that...", ar: "أنا متبني وجهة النظر اللي بتقول إن...", context: "طريقة راقية لقول (Ich denke)." },
+                { id: 'b2_e_4', type: "Pro & Kontra", ger: "Einerseits ..., andererseits ...", eng: "On the one hand..., on the other hand...", ar: "من ناحية... ومن ناحية تانية...", context: "لوزن المميزات والعيوب في النقاش." },
+                { id: 'b2_e_5', type: "Vorschläge", ger: "Aus diesem Grund würde ich vorschlagen, dass...", eng: "For this reason, I would suggest that...", ar: "للسبب ده أنا بقترح إن...", context: "لتقديم حلول في نهاية النقاش." },
+                { id: 'b2_e_6', type: "Widersprechen", ger: "Da muss ich Ihnen leider widersprechen.", eng: "I have to disagree with you there.", ar: "للأسف مضطر أختلف معاك في النقطة دي.", context: "للاعتراض بأدب شديد." },
+                { id: 'b2_e_7', type: "Teilweise Zustimmung", ger: "Das ist zwar im Prinzip richtig, aber...", eng: "That is correct in principle, but...", ar: "ده صح مبدئياً، لكن...", context: "لما توافق جزئياً بس عندك تحفظ." },
+                { id: 'b2_e_8', type: "Zweifel", ger: "Ich kann dem nur teilweise zustimmen.", eng: "I can only partly agree with that.", ar: "أقدر أوافق على ده جزئياً بس.", context: "للتعبير عن عدم الاقتناع الكامل." },
+                { id: 'b2_e_9', type: "Ergänzen", ger: "Wir sollten auch in Betracht ziehen, dass...", eng: "We should also consider that...", ar: "المفروض كمان ناخد في الاعتبار إن...", context: "لإضافة فكرة جديدة للنقاش." },
+                { id: 'b2_e_10', type: "Zusammenfassen", ger: "Zusammenfassend lässt sich sagen, dass...", eng: "In summary, it can be said that...", ar: "في النهاية نقدر نقول إن...", context: "لختام البرزنتيشن أو النقاش." },
+                { id: 'b2_e_11', type: "Beispiele", ger: "Ein gutes Beispiel dafür ist...", eng: "A good example of this is...", ar: "مثال كويس على ده هو...", context: "لضرب أمثلة توضيحية." },
+                { id: 'b2_e_12', type: "Sicherheit", ger: "Es steht außer Zweifel, dass...", eng: "It is beyond doubt that...", ar: "مما لا شك فيه إن...", context: "للتأكيد على حقيقة مؤكدة." },
+                { id: 'b2_e_13', type: "Skepsis", ger: "Mich überzeugt dieses Argument nicht ganz.", eng: "This argument doesn't fully convince me.", ar: "الحجة دي مش مقنعاني أوي.", context: "لرفض حجة الخصم بأدب." }
+            ],
+            b2_grammar: [
                 {
-                    catId: 'rev-lernen',
-                    title: '1. Lernen (Learning)',
-                    items: [
-                        { id: 'r_l_1', g: "an einem Kurs teilnehmen", e: "participate in a course", a: "يشارك في كورس" },
-                        { id: 'r_l_1b', g: "an einer Weiterbildung teilnehmen", e: "participate in further education", a: "يشارك في تدريب مهني" },
-                        { id: 'r_l_2', g: "einen Kurs besuchen", e: "attend a course", a: "يحضر كورس" },
-                        { id: 'r_l_2b', g: "einen Kurs machen", e: "take a course", a: "ياخد كورس" },
-                        { id: 'r_l_3', g: "sich für einen Kurs einschreiben", e: "enroll for a course", a: "يسجل اسمه في كورس" },
-                        { id: 'r_l_3b', g: "sich für eine Prüfung einschreiben", e: "register for an exam", a: "يسجل للامتحان" },
-                        { id: 'r_l_4', g: "die Vorlesung interessant finden", e: "find the lecture interesting", a: "يلاقي المحاضرة شيقة" },
-                        { id: 'r_l_4b', g: "das Seminar langweilig finden", e: "find the seminar boring", a: "يلاقي السيمينار ممل" },
-                        { id: 'r_l_4c', g: "den Sprachunterricht zu theoretisch finden", e: "find the language lesson too theoretical", a: "يلاقي حصة اللغة نظرية بزيادة" },
-                        { id: 'r_l_5', g: "eine Prüfung machen", e: "take an exam", a: "يعمل امتحان" },
-                        { id: 'r_l_5b', g: "eine Prüfung ablegen", e: "sit an exam", a: "يؤدي امتحان" },
-                        { id: 'r_l_5c', g: "eine Prüfung bestehen", e: "pass an exam", a: "ينجح في امتحان" },
-                        { id: 'r_l_6', g: "gute Noten haben", e: "have good grades", a: "عنده درجات كويسة" },
-                        { id: 'r_l_6b', g: "schlechte Noten bekommen", e: "get bad grades", a: "يجيب درجات وحشة" },
-                        { id: 'r_l_7', g: "etwas macht Spaß", e: "something is fun", a: "حاجة ممتعة / بتفرح" },
-                        { id: 'r_l_8', g: "nicht gern in die Schule gehen", e: "not like going to school", a: "مش بيحب يروح المدرسة" },
-                        { id: 'r_l_8b', g: "gern zur Uni gehen", e: "like going to university", a: "بيحب يروح الجامعة" },
-                        { id: 'r_l_9', g: "das Gelernte direkt anwenden", e: "apply what has been learned directly", a: "يطبق اللي اتعلمه بشكل مباشر" },
-                        { id: 'r_l_10', g: "etwas für den Beruf brauchen", e: "need something for the job", a: "محتاج حاجة عشان الشغل" },
-                        { id: 'r_l_11', g: "jemandem in einem Fach helfen", e: "help someone in a subject", a: "يساعد حد في مادة" }
+                    id: 'b2_g_1',
+                    title: "B2 Grammatik: Zweiteilige Konnektoren (الروابط المزدوجة)",
+                    desc: "روابط بتتكون من جزئين بنستخدمها عشان نربط بين فكرتين أو صفتين. بتدي أسلوب B2 راقي جداً في الكتابة والكلام.",
+                    structure: "sowohl ... als auch (إضافة) | weder ... noch (نفي) | nicht nur ... sondern auch (إضافة وتأكيد)",
+                    examples: [
+                        { g: "Er spricht <span class='text-purple-600 font-bold'>sowohl</span> Englisch <span class='text-purple-600 font-bold'>als auch</span> Deutsch.", a: "هو بيتكلم إنجليزي وألماني كمان. (sowohl... als auch بيجوا بدون كوما)" },
+                        { g: "Das ist <span class='text-purple-600 font-bold'>weder</span> praktisch <span class='text-purple-600 font-bold'>noch</span> günstig.", a: "ده لا هو عملي ولا هو رخيص. (لنفي الحاجتين سوا)" },
+                        { g: "Sie ist <span class='text-purple-600 font-bold'>nicht nur</span> intelligent, <span class='text-purple-600 font-bold'>sondern auch</span> sehr fleißig.", a: "هي مش بس ذكية، دي كمان مجتهدة جداً. (لازم كوما قبل sondern)" }
                     ]
                 },
                 {
-                    catId: 'rev-empfehlungen',
-                    title: '2. Empfehlungen geben (Giving recommendations)',
-                    items: [
-                        { id: 'r_e_1', g: "Man sollte Wörter mehrmals wiederholen.", e: "One should repeat words several times.", a: "الواحد المفروض يراجع الكلمات كذا مرة." },
-                        { id: 'r_e_2', g: "Der Text empfiehlt, vor dem Einschlafen zu lernen.", e: "The text recommends studying before falling asleep.", a: "النص بينصح بالمذاكرة قبل النوم." },
-                        { id: 'r_e_3', g: "Nach Meinung von Experten ist es sinnvoll, den eigenen Lerntyp zu erkennen.", e: "According to experts, it makes sense to recognize one's own learning type.", a: "حسب رأي الخبراء، من المنطقي إن الواحد يعرف نوع تعلمه." },
-                        { id: 'r_e_4', g: "Es ist ratsam, aktive Übungen zu machen.", e: "It is advisable to do active exercises.", a: "من المستحسن عمل تمارين أكتيڤ." },
-                        { id: 'r_e_4b', g: "Es ist effektiv, aktive Übungen zu machen.", e: "It is effective to do active exercises.", a: "من الفعال عمل تمارين أكتيڤ." }
+                    id: 'b2_g_2',
+                    title: "B2 Grammatik: Passiversatzformen (بدائل المبني للمجهول)",
+                    desc: "في مستوى B2 بنتعلم بدائل للمبني للمجهول بتدي نفس المعنى (يُمكن فعله) لكن بطريقة أسهل وأكثر احترافية.",
+                    structure: "sich lassen + Infinitiv | sein + zu + Infinitiv | Adjektive auf -bar/-lich",
+                    examples: [
+                        { g: "Das Problem <span class='text-purple-600 font-bold'>lässt sich</span> leicht <span class='text-purple-600 font-bold'>lösen</span>.", a: "المشكلة دي ممكن تتحل بسهولة. (بدل kann gelöst werden)" },
+                        { g: "Die Aufgabe <span class='text-purple-600 font-bold'>ist</span> kaum <span class='text-purple-600 font-bold'>zu schaffen</span>.", a: "المهمة دي صعب تتعمل. (بدل kann kaum geschafft werden)" },
+                        { g: "Dieser Text ist gut <span class='text-purple-600 font-bold'>lesbar</span>.", a: "النص ده قابل للقراءة (سهل يتقري). (استخدام صفة تنتهي بـ bar)" }
                     ]
                 },
                 {
-                    catId: 'rev-wiewirlernen',
-                    title: '3. Wie wir lernen (How we learn)',
-                    items: [
-                        { id: 'r_w_1', g: "das Lernmaterial hören", e: "hear the learning material", a: "يسمع المادة التعليمية" },
-                        { id: 'r_w_2', g: "absolute Stille brauchen", e: "need absolute silence", a: "محتاج هدوء تام" },
-                        { id: 'r_w_3', g: "etwas schreiben müssen", e: "have to write something", a: "مضطر يكتب حاجة (عشان يتعلمها)" },
-                        { id: 'r_w_4', g: "beim Einprägen helfen", e: "help with memorizing", a: "يساعد في الحفظ / التثبيت" },
-                        { id: 'r_w_5', g: "in der Fremdsprache kommunizieren", e: "communicate in the foreign language", a: "يتواصل باللغة الأجنبية" },
-                        { id: 'r_w_6', g: "neue Informationen veranschaulichen", e: "illustrate new information", a: "يوضح المعلومات الجديدة" },
-                        { id: 'r_w_6b', g: "neue Informationen visualisieren", e: "visualize new information", a: "يصور المعلومات بصرياً" },
-                        { id: 'r_w_7', g: "neue Wörter mit Bildern verbinden", e: "connect new words with pictures", a: "يربط الكلمات الجديدة بصور" },
-                        { id: 'r_w_8', g: "Bilder in den Lernprozess einbeziehen", e: "include pictures in the learning process", a: "يدخل الصور في عملية التعلم" },
-                        { id: 'r_w_9', g: "etwas farbig hervorheben", e: "highlight something in color", a: "يظلل حاجة بلون" },
-                        { id: 'r_w_10', g: "die Struktur einer Fremdsprache verstehen wollen", e: "want to understand the structure of a foreign language", a: "عايز يفهم تركيبة اللغة الأجنبية" }
-                    ]
-                },
-                {
-                    catId: 'rev-interesse',
-                    title: '4. Interesse zeigen (Showing interest)',
-                    items: [
-                        { id: 'r_i_1', g: "Mich interessiert der Kurs Zeichnen.", e: "I am interested in the drawing course.", a: "أنا مهتم بكورس الرسم." },
-                        { id: 'r_i_2', g: "Ich finde den Kurs Pasta! interessant.", e: "I find the course Pasta! interesting.", a: "أنا شايف كورس المكرونة شيق." },
-                        { id: 'r_i_3', g: "Ich möchte mehr über Kunst erfahren.", e: "I would like to learn more about art.", a: "عايز أعرف أكتر عن الفن." },
-                        { id: 'r_i_4', g: "Ich wollte schon immer tanzen lernen.", e: "I have always wanted to learn to dance.", a: "كان دايماً نفسي أتعلم الرقص." }
-                    ]
-                },
-                {
-                    catId: 'rev-lernprozess',
-                    title: '5. Lernprozess (Learning process)',
-                    items: [
-                        { id: 'r_p_1', g: "ein gutes Gedächtnis haben", e: "have a good memory", a: "عنده ذاكرة قوية" },
-                        { id: 'r_p_1b', g: "ein schlechtes Gedächtnis haben", e: "have a bad memory", a: "عنده ذاكرة ضعيفة" },
-                        { id: 'r_p_2', g: "sich Zahlen gut merken können", e: "be able to remember numbers well", a: "بيقدر يحفظ الأرقام كويس" },
-                        { id: 'r_p_3', g: "sich an chemische Formeln erinnern", e: "remember chemical formulas", a: "يفتكر المعادلات الكيميائية" },
-                        { id: 'r_p_4', g: "in Vergessenheit geraten", e: "fall into oblivion", a: "يُنسى تماماً" },
-                        { id: 'r_p_5', g: "Informationen mit Interesse aufnehmen", e: "absorb information with interest", a: "يستقبل المعلومات باهتمام" },
-                        { id: 'r_p_6', g: "etwas als wichtig bewerten", e: "rate something as important", a: "يُقيّم شيء على إنه مهم" },
-                        { id: 'r_p_7', g: "ins Kurzzeitgedächtnis gelangen", e: "reach the short-term memory", a: "يوصل للذاكرة قصيرة المدى" },
-                        { id: 'r_p_7b', g: "ins Langzeitgedächtnis gelangen", e: "reach the long-term memory", a: "يوصل للذاكرة طويلة المدى" },
-                        { id: 'r_p_8', g: "aus dem Gedächtnis gelöscht werden", e: "be deleted from memory", a: "يتمسح من الذاكرة" },
-                        { id: 'r_p_8b', g: "aus dem Gedächtnis entfernt werden", e: "be removed from memory", a: "يتشال من الذاكرة" },
-                        { id: 'r_p_9', g: "alte Daten mit neuen Daten überschreiben", e: "overwrite old data with new data", a: "يستبدل الداتا القديمة بداتا جديدة" },
-                        { id: 'r_p_10', g: "das Gehirn vor einer Datenflut schützen", e: "protect the brain from a flood of data", a: "يحمي المخ من سيل البيانات" },
-                        { id: 'r_p_11', g: "den bestmöglichen Lernerfolg erzielen", e: "achieve the best possible learning success", a: "يحقق أفضل نتيجة دراسية" },
-                        { id: 'r_p_12', g: "der Schlüssel zum erfolgreichen Lernen sein", e: "be the key to successful learning", a: "يكون مفتاح التعلم الناجح" },
-                        { id: 'r_p_13', g: "Gelerntes in regelmäßigen Abständen wiederholen", e: "repeat what has been learned at regular intervals", a: "يراجع اللي اتعلمه على فترات منتظمة" },
-                        { id: 'r_p_14', g: "Verbindungen im Gehirn aktivieren", e: "activate connections in the brain", a: "ينشط الروابط في المخ" },
-                        { id: 'r_p_15', g: "für eine langfristige Speicherung sorgen", e: "ensure long-term storage", a: "يضمن تخزين طويل المدى" },
-                        { id: 'r_p_16', g: "besonders effektiv sein", e: "be particularly effective", a: "يكون فعال جداً" },
-                        { id: 'r_p_16b', g: "als besonders effektiv gelten", e: "be considered particularly effective", a: "يُعتبر فعال جداً" },
-                        { id: 'r_p_17', g: "vor dem Einschlafen lernen", e: "study before falling asleep", a: "يذاكر قبل ما ينام" },
-                        { id: 'r_p_18', g: "Ereignisse im Schlaf verarbeiten", e: "process events during sleep", a: "يُعالج الأحداث في النوم" },
-                        { id: 'r_p_19', g: "sich Wörter beim Hören einprägen", e: "memorize words while listening", a: "يحفظ الكلمات وهو بيسمع" },
-                        { id: 'r_p_20', g: "lautes Lesen bevorzugen", e: "prefer reading aloud", a: "يفضل القراءة بصوت عالي" },
-                        { id: 'r_p_21', g: "aktive Lernformen benutzen", e: "use active forms of learning", a: "يستخدم طرق تعلم نشطة" },
-                        { id: 'r_p_22', g: "auf Wörter zurückgreifen, an die wir uns erinnern", e: "fall back on words that we remember", a: "نستعين بالكلمات اللي احنا فاكرينها" }
-                    ]
-                },
-                {
-                    catId: 'rev-vhs',
-                    title: '6. Volkshochschulen (Adult education centers)',
-                    items: [
-                        { id: 'r_v_1', g: "Kurse anbieten", e: "offer courses", a: "يقدم كورسات" },
-                        { id: 'r_v_1b', g: "Vorträge anbieten", e: "offer lectures", a: "يقدم محاضرات/ندوات" },
-                        { id: 'r_v_2', g: "wissenschaftliche Erkenntnisse in einfacher Sprache präsentieren", e: "present scientific findings in simple language", a: "يعرض الاكتشافات العلمية بلغة بسيطة" },
-                        { id: 'r_v_3', g: "ein vielfältiges Kursangebot haben", e: "have a diverse range of courses", a: "عنده عرض كورسات متنوع" },
-                        { id: 'r_v_3b', g: "ein Bildungsangebot für die Bevölkerung unterbreiten", e: "offer an educational program for the population", a: "بيقدم عرض تعليمي للشعب" },
-                        { id: 'r_v_4', g: "einen Schulabschluss nachholen können", e: "be able to catch up on a school leaving certificate", a: "يقدر يعوض شهادته المدرسية" },
-                        { id: 'r_v_5', g: "das Angebot nutzen", e: "use the offer", a: "يستفيد من العرض" },
-                        { id: 'r_v_6', g: "finanziell unterstützt werden", e: "be financially supported", a: "يتدعم مادياً" },
-                        { id: 'r_v_7', g: "auf Wirtschaftlichkeit achten", e: "pay attention to profitability", a: "يراعي الجدوى الاقتصادية" },
-                        { id: 'r_v_8', g: "Es steht zu wenig Geld zur Verfügung.", e: "There is too little money available.", a: "مفيش فلوس كفاية متاحة." },
-                        { id: 'r_v_9', g: "das Fehlen technischer Geräte kritisieren", e: "criticize the lack of technical equipment", a: "ينتقد نقص الأجهزة التقنية" },
-                        { id: 'r_v_10', g: "Der Geldmangel wirkt sich auf die Ausstattung aus.", e: "The lack of money affects the equipment.", a: "نقص الفلوس بيأثر على التجهيزات." },
-                        { id: 'r_v_11', g: "gute Resultate erzielen", e: "achieve good results", a: "يحقق نتايج كويسة" },
-                        { id: 'r_v_12', g: "ein gutes Preis-Leistungs-Verhältnis bieten", e: "offer a good price-performance ratio", a: "يقدم نسبة ممتازة بين السعر والجودة" },
-                        { id: 'r_v_13', g: "einen Auftrag erfüllen", e: "fulfill a mandate", a: "ينفذ تكليف / مهمة" }
-                    ]
-                },
-                {
-                    catId: 'rev-weil',
-                    title: '7. Sätze mit „weil“ (because) – Nebensatz',
-                    items: [
-                        { id: 'r_g_1', g: "Ich gehe früh ins Bett, weil ich sehr müde bin.", e: "I am going to bed early because I am very tired.", a: "أنا رايح أنام بدري لأني تعبان جداً." },
-                        { id: 'r_g_2', g: "Er kauft Äpfel, weil er einen Kuchen backen will.", e: "He is buying apples because he wants to bake a cake.", a: "هو بيشتري تفاح لأنه عايز يخبز كيكة." },
-                        { id: 'r_g_3', g: "Wir bleiben zu Hause, weil es draußen stark regnet.", e: "We are staying at home because it is raining heavily outside.", a: "إحنا قاعدين في البيت لأنها بتمطر جامد برة." },
-                        { id: 'r_g_4', g: "Sie lernt fleißig, weil sie die Prüfung bestehen möchte.", e: "She is studying hard because she wants to pass the exam.", a: "هي بتذاكر بجد عشان عايزة تنجح في الامتحان." },
-                        { id: 'r_g_5', g: "Das Kind weint, weil es sein Spielzeug verloren hat.", e: "The child is crying because it has lost its toy.", a: "الطفل بيعيط لأنه ضيع لعبته." },
-                        { id: 'r_g_6', g: "Ich esse nichts, weil ich keinen Hunger habe.", e: "I am not eating anything because I am not hungry.", a: "مش هاكل حاجة لأني مش جعان." },
-                        { id: 'r_g_7', g: "Wir nehmen den Bus, weil unser Auto kaputt ist.", e: "We are taking the bus because our car is broken.", a: "هناخد الأتوبيس لأن عربيتنا عطلانة." },
-                        { id: 'r_g_8', g: "Er ist glücklich, weil er im Lotto gewonnen hat.", e: "He is happy because he won the lottery.", a: "هو مبسوط لأنه كسب في اليانصيب." },
-                        { id: 'r_g_9', g: "Sie ruft ihre Mutter an, weil sie Hilfe braucht.", e: "She is calling her mother because she needs help.", a: "هي بتكلم مامتها لأنها محتاجة مساعدة." },
-                        { id: 'r_g_10', g: "Ich trinke Wasser, weil ich Durst habe.", e: "I am drinking water because I am thirsty.", a: "بشرب مية لأني عطشان." }
-                    ]
-                },
-                {
-                    catId: 'rev-denn',
-                    title: '8. Sätze mit „denn“ (for/because) – Hauptsatz',
-                    items: [
-                        { id: 'r_g_11', g: "Ich gehe früh ins Bett, denn ich bin sehr müde.", e: "I am going to bed early, for I am very tired.", a: "أنا رايح أنام بدري، لأني تعبان جداً." },
-                        { id: 'r_g_12', g: "Er kauft Äpfel, denn er will einen Kuchen backen.", e: "He is buying apples, for he wants to bake a cake.", a: "هو بيشتري تفاح، لأنه عايز يخبز كيكة." },
-                        { id: 'r_g_13', g: "Wir bleiben zu Hause, denn es regnet draußen stark.", e: "We are staying at home, for it is raining heavily outside.", a: "إحنا قاعدين في البيت، لأنها بتمطر جامد برة." },
-                        { id: 'r_g_14', g: "Sie lernt fleißig, denn sie möchte die Prüfung bestehen.", e: "She is studying hard, for she wants to pass the exam.", a: "هي بتذاكر بجد، لأنها عايزة تنجح في الامتحان." },
-                        { id: 'r_g_15', g: "Das Kind weint, denn es hat sein Spielzeug verloren.", e: "The child is crying, for it has lost its toy.", a: "الطفل بيعيط، لأنه ضيع لعبته." },
-                        { id: 'r_g_16', g: "Ich esse nichts, denn ich habe keinen Hunger.", e: "I am not eating anything, for I am not hungry.", a: "مش هاكل حاجة، لأني مش جعان." },
-                        { id: 'r_g_17', g: "Wir nehmen den Bus, denn unser Auto ist kaputt.", e: "We are taking the bus, for our car is broken.", a: "هناخد الأتوبيس، لأن عربيتنا عطلانة." },
-                        { id: 'r_g_18', g: "Er ist glücklich, denn er hat im Lotto gewonnen.", e: "He is happy, for he has won the lottery.", a: "هو مبسوط، لأنه كسب في اليانصيب." },
-                        { id: 'r_g_19', g: "Sie ruft ihre Mutter an, denn sie braucht Hilfe.", e: "She is calling her mother, for she needs help.", a: "هي بتكلم مامتها، لأنها محتاجة مساعدة." },
-                        { id: 'r_g_20', g: "Ich trinke Wasser, denn ich habe Durst.", e: "I am drinking water, for I am thirsty.", a: "بشرب مية، لأني عطشان." }
-                    ]
-                },
-                {
-                    catId: 'rev-deshalb',
-                    title: '9. Sätze mit „deshalb / deswegen / darum“ – Hauptsatz',
-                    items: [
-                        { id: 'r_g_21', g: "Ich bin sehr müde, deshalb gehe ich früh ins Bett.", e: "I am very tired, therefore I am going to bed early.", a: "أنا تعبان جداً، عشان كدة رايح أنام بدري." },
-                        { id: 'r_g_22', g: "Er will einen Kuchen backen, deswegen kauft er Äpfel.", e: "He wants to bake a cake, that’s why he is buying apples.", a: "هو عايز يخبز كيكة، عشان كدة بيشتري تفاح." },
-                        { id: 'r_g_23', g: "Es regnet draußen stark, darum bleiben wir zu Hause.", e: "It is raining heavily outside, therefore we are staying at home.", a: "بتمطر جامد برة، عشان كدة قاعدين في البيت." },
-                        { id: 'r_g_24', g: "Sie möchte die Prüfung bestehen, deshalb lernt sie fleißig.", e: "She wants to pass the exam, that’s why she is studying hard.", a: "هي عايزة تنجح في الامتحان، عشان كدة بتذاكر بجد." },
-                        { id: 'r_g_25', g: "Das Kind hat sein Spielzeug verloren, deswegen weint es.", e: "The child has lost its toy, therefore it is crying.", a: "الطفل ضيع لعبته، عشان كدة بيعيط." },
-                        { id: 'r_g_26', g: "Ich habe keinen Hunger, darum esse ich nichts.", e: "I am not hungry, that’s why I am not eating anything.", a: "أنا مش جعان، عشان كدة مش هاكل حاجة." },
-                        { id: 'r_g_27', g: "Unser Auto ist kaputt, deshalb nehmen wir den Bus.", e: "Our car is broken, therefore we are taking the bus.", a: "عربيتنا عطلانة، عشان كدة هناخد الأتوبيس." },
-                        { id: 'r_g_28', g: "Er hat im Lotto gewonnen, deswegen ist er glücklich.", e: "He won the lottery, that’s why he is happy.", a: "هو كسب في اليانصيب، عشان كدة مبسوط." },
-                        { id: 'r_g_29', g: "Sie braucht Hilfe, darum ruft sie ihre Mutter an.", e: "She needs help, therefore she is calling her mother.", a: "هي محتاجة مساعدة، عشان كدة بتكلم مامتها." },
-                        { id: 'r_g_30', g: "Ich habe Durst, deshalb trinke ich Wasser.", e: "I am thirsty, that’s why I am drinking water.", a: "أنا عطشان، عشان كدة بشرب مية." }
-                    ]
-                },
-                {
-                    catId: 'rev-damit',
-                    title: '10. Finalangaben mit „damit“ (so that) – Nebensatz',
-                    items: [
-                        { id: 'r_g_31', g: "Ich erkläre es dir zweimal, damit du alles verstehst.", e: "I explain it to you twice so that you understand everything.", a: "بشرحهولك مرتين عشان تفهم كل حاجة." },
-                        { id: 'r_g_32', g: "Die Eltern sparen Geld, damit ihre Kinder studieren können.", e: "The parents save money so that their children can study.", a: "الأهل بيحوشوا فلوس عشان ولادهم يقدروا يدرسوا." },
-                        { id: 'r_g_33', g: "Er spricht langsam, damit ihn die Schüler besser verstehen.", e: "He speaks slowly so that the students understand him better.", a: "بيتكلم ببطء عشان الطلاب يفهموه أحسن." },
-                        { id: 'r_g_34', g: "Ich gebe dir den Schlüssel, damit du die Tür öffnen kannst.", e: "I give you the key so that you can open the door.", a: "هديك المفتاح عشان تقدر تفتح الباب." },
-                        { id: 'r_g_35', g: "Wir machen das Licht an, damit man uns im Dunkeln sieht.", e: "We turn the light on so that people see us in the dark.", a: "بنولع النور عشان الناس تشوفنا في الضلمة." },
-                        { id: 'r_g_36', g: "Sie schickt die E-Mail sofort ab, damit der Chef sie rechtzeitig liest.", e: "She sends the email immediately so that the boss reads it in time.", a: "بتبعت الإيميل فوراً عشان المدير يلحق يقرأه." },
-                        { id: 'r_g_37', g: "Ich nehme ein Taxi, damit meine Freunde nicht auf mich warten müssen.", e: "I take a taxi so that my friends don't have to wait for me.", a: "هاخد تاكسي عشان صحابي مايضطروش يستنوني." },
-                        { id: 'r_g_38', g: "Er stellt den Wecker, damit seine Frau nicht verschläft.", e: "He sets the alarm so that his wife doesn't oversleep.", a: "بيظبط المنبه عشان مراته ماتنامش وتروح عليها نومة." },
-                        { id: 'r_g_39', g: "Wir heizen den Raum, damit die Gäste nicht frieren.", e: "We heat the room so that the guests don't freeze.", a: "بندفي الأوضة عشان الضيوف مايبردوش." },
-                        { id: 'r_g_40', g: "Du solltest leise sein, damit das Baby weiterschlafen kann.", e: "You should be quiet so that the baby can keep sleeping.", a: "المفروض توطي صوتك عشان البيبي يكمل نوم." },
-                        { id: 'r_g_41', g: "Ich schreibe dir eine Liste, damit du nichts vergisst.", e: "I am writing you a list so that you don't forget anything.", a: "بكتبلك لستة عشان ماتنساش حاجة." },
-                        { id: 'r_g_42', g: "Der Lehrer wiederholt die Regel, damit sie alle lernen.", e: "The teacher repeats the rule so that everyone learns it.", a: "المدرس بيعيد القاعدة عشان كلهم يتعلموها." },
-                        { id: 'r_g_43', g: "Sie kauft gesundes Essen, damit ihre Familie fit bleibt.", e: "She buys healthy food so that her family stays fit.", a: "بتشتري أكل صحي عشان عيلتها تفضل في صحة كويسة." },
-                        { id: 'r_g_44', g: "Ich leihe dir mein Buch, damit du für die Prüfung lernen kannst.", e: "I lend you my book so that you can study for the exam.", a: "بسلفك كتابي عشان تقدر تذاكر للامتحان." },
-                        { id: 'r_g_45', g: "Wir stellen den Wein kühl, damit er besser schmeckt.", e: "We put the wine in the fridge so that it tastes better.", a: "بنسقع النبيذ عشان طعمه يبقى أحسن." },
-                        { id: 'r_g_46', g: "Er arbeitet viel, damit seine Familie ein gutes Leben hat.", e: "He works a lot so that his family has a good life.", a: "بيشتغل كتير عشان عيلته تعيش حياة كويسة." },
-                        { id: 'r_g_47', g: "Ich mache das Fenster zu, damit es im Zimmer warm bleibt.", e: "I close the window so that it stays warm in the room.", a: "بقفل الشباك عشان الأوضة تفضل دافية." },
-                        { id: 'r_g_48', g: "Sie trägt eine Brille, damit sie die Tafel besser sieht.", e: "She wears glasses so that she sees the blackboard better.", a: "لابسة نضارة عشان تشوف السبورة أحسن." },
-                        { id: 'r_g_49', g: "Ich schalte das Radio aus, damit du dich konzentrieren kannst.", e: "I turn off the radio so that you can concentrate.", a: "بطفي الراديو عشان تقدر تركز." },
-                        { id: 'r_g_50', g: "Wir nutzen das Internet, damit wir Informationen schneller finden.", e: "We use the internet so that we find information faster.", a: "بنستخدم النت عشان نلاقي المعلومات أسرع." }
-                    ]
-                },
-                {
-                    catId: 'rev-umzu',
-                    title: '11. Infinitivkonstruktionen mit „um ... zu“ (in order to)',
-                    items: [
-                        { id: 'r_g_51', g: "Ich lerne Deutsch, um in Deutschland zu arbeiten.", e: "I learn German in order to work in Germany.", a: "بتعلم ألماني عشان أشتغل في ألمانيا." },
-                        { id: 'r_g_52', g: "Er geht in die Küche, um einen Kaffee zu kochen.", e: "He goes into the kitchen to make a coffee.", a: "دخل المطبخ عشان يعمل قهوة." },
-                        { id: 'r_g_53', g: "Wir sparen Geld, um ein neues Auto zu kaufen.", e: "We save money to buy a new car.", a: "بنحوش فلوس عشان نشتري عربية جديدة." },
-                        { id: 'r_g_54', g: "Sie treibt Sport, um gesund zu bleiben.", e: "She does sports to stay healthy.", a: "بتلعب رياضة عشان تفضل بصحتها." },
-                        { id: 'r_g_55', g: "Ich brauche ein Wörterbuch, um den Text zu übersetzen.", e: "I need a dictionary to translate the text.", a: "محتاج قاموس عشان أترجم النص." },
-                        { id: 'r_g_56', g: "Er fährt zum Bahnhof, um seine Freundin abzuholen.", e: "He drives to the station to pick up his girlfriend.", a: "راح المحطة عشان يجيب صاحبته." },
-                        { id: 'r_g_57', g: "Wir gehen früh ins Bett, um morgen fit zu sein.", e: "We go to bed early to be fit tomorrow.", a: "بندخل ننام بدري عشان نبقى فايقين بكرة." },
-                        { id: 'r_g_58', g: "Sie trägt einen Mantel, um nicht zu frieren.", e: "She wears a coat so as not to freeze.", a: "لابسة بالطو عشان ماتبردش." },
-                        { id: 'r_g_59', g: "Ich höre Musik, um mich zu entspannen.", e: "I listen to music to relax.", a: "بسمع مزيكا عشان أريلاكس (أسترخي)." },
-                        { id: 'r_g_60', g: "Er nutzt das Internet, um Hotels zu reservieren.", e: "He uses the internet to reserve hotels.", a: "بيستخدم النت عشان يحجز فنادق." },
-                        { id: 'r_g_61', g: "Wir machen eine Pause, um frische Luft zu schnappen.", e: "We take a break to get some fresh air.", a: "بناخد بريك عشان نشم شوية هوا نضاف." },
-                        { id: 'r_g_62', g: "Ich gehe in den Supermarkt, um Brot zu kaufen.", e: "I go to the supermarket to buy bread.", a: "رايح السوبر ماركت عشان أشتري عيش." },
-                        { id: 'r_g_63', g: "Sie lernt viel, um die Prüfung zu bestehen.", e: "She studies a lot to pass the exam.", a: "بتذاكر كتير عشان تنجح في الامتحان." },
-                        { id: 'r_g_64', g: "Er ruft an, um einen Termin zu vereinbaren.", e: "He calls to make an appointment.", a: "بيتصل عشان يحدد ميعاد." },
-                        { id: 'r_g_65', g: "Wir brauchen ein Auto, um zur Arbeit zu fahren.", e: "We need a car to drive to work.", a: "محتاجين عربية عشان نروح بيها الشغل." },
-                        { id: 'r_g_66', g: "Ich brauche Ruhe, um das Buch zu lesen.", e: "I need peace to read the book.", a: "محتاج هدوء عشان أقرأ الكتاب." },
-                        { id: 'r_g_67', g: "Sie nimmt ein Taxi, um pünktlich zu kommen.", e: "She takes a taxi to arrive on time.", a: "بتاخد تاكسي عشان توصل في ميعادها." },
-                        { id: 'r_g_68', g: "Er macht das Fenster auf, um den Raum zu lüften.", e: "He opens the window to air out the room.", a: "بيفتح الشباك عشان يهوي الأوضة." },
-                        { id: 'r_g_69', g: "Ich trinke Wasser, um meinen Durst zu löschen.", e: "I drink water to quench my thirst.", a: "بشرب مية عشان أروي عطشي." },
-                        { id: 'r_g_70', g: "Wir fliegen nach Japan, um die Kultur kennenzulernen.", e: "We fly to Japan to get to know the culture.", a: "هنسافر اليابان عشان نتعرف على ثقافتهم." }
+                    id: 'b2_g_3',
+                    title: "B2 Grammatik: N-Deklination (تصريف N للأسماء)",
+                    desc: "بعض الأسماء المذكرة (غالباً اللي بتنتهي بـ -e أو -ent/-ist) بتاخد حرف n أو en في كل الحالات (Akkusativ, Dativ, Genitiv) ما عدا حالة الفاعل Nominativ.",
+                    structure: "Nominativ: der Student -> Akkusativ/Dativ/Genitiv: den/dem/des Studenten",
+                    examples: [
+                        { g: "Ich spreche mit dem <span class='text-purple-600 font-bold'>Studenten</span>.", a: "أنا بتكلم مع الطالب. (Dativ ضفنا en)" },
+                        { g: "Wir fragen den <span class='text-purple-600 font-bold'>Experten</span>.", a: "إحنا بنسأل الخبير. (Akkusativ ضفنا en)" },
+                        { g: "Das ist die Meinung des <span class='text-purple-600 font-bold'>Herrn</span>.", a: "ده رأي السيد. (Genitiv ضفنا n وبس بدون s)" }
                     ]
                 }
             ]
@@ -816,8 +1163,9 @@
             const totalExp = LEARNING_DATA.expressions.length;
             const totalPrep = LEARNING_DATA.prepositions.length;
             const totalGrammar = LEARNING_DATA.grammar.length;
-            const totalReview = LEARNING_DATA.review.reduce((acc, cat) => acc + cat.items.length, 0);
-            const grandTotal = totalWords + totalVerbs + totalExp + totalPrep + totalGrammar + totalReview;
+            const totalReview = LEARNING_DATA.review ? LEARNING_DATA.review.reduce((acc, cat) => acc + cat.items.length, 0) : 0;
+            const totalB2 = LEARNING_DATA.b2_words.length + LEARNING_DATA.b2_expressions.length + LEARNING_DATA.b2_grammar.length;
+            const grandTotal = totalWords + totalVerbs + totalExp + totalPrep + totalGrammar + totalReview + totalB2;
 
             const tabConfig = {
                 words: { labelEn: 'Words', labelAr: 'الأسماء والكلمات', icon: 'book-open', color: 'blue' },
@@ -825,7 +1173,8 @@
                 expressions: { labelEn: 'Expressions', labelAr: 'تعبيرات', icon: 'message-circle', color: 'amber' },
                 prepositions: { labelEn: 'Prepositions', labelAr: 'حروف الجر', icon: 'link', color: 'rose' },
                 grammar: { labelEn: 'Grammar', labelAr: 'القواعد الشاملة', icon: 'pen-tool', color: 'purple' },
-                review: { labelEn: 'Review', labelAr: 'المراجعة الشاملة', icon: 'clipboard-check', color: 'teal' }
+                review: { labelEn: 'Review', labelAr: 'المراجعة الشاملة', icon: 'clipboard-check', color: 'teal' },
+                b2_expansion: { labelEn: 'B2 Expansion', labelAr: 'توسعة B2', icon: 'rocket', color: 'indigo' }
             };
 
             const activeColor = tabConfig[activeTab].color;
@@ -902,7 +1251,9 @@
                             {activeTab === 'verbs' && <ProgressBar total={totalVerbs} learned={Array.from(learnedItems).filter(id => id.startsWith('v') || id.startsWith('iv')).length} colorClass="text-emerald-500" />}
                             {activeTab === 'expressions' && <ProgressBar total={totalExp} learned={Array.from(learnedItems).filter(id => id.startsWith('e')).length} colorClass="text-amber-500" />}
                             {activeTab === 'prepositions' && <ProgressBar total={totalPrep} learned={Array.from(learnedItems).filter(id => id.startsWith('p')).length} colorClass="text-rose-500" />}
+                            {activeTab === 'grammar' && <ProgressBar total={totalGrammar} learned={Array.from(learnedItems).filter(id => id.startsWith('g')).length} colorClass="text-purple-500" />}
                             {activeTab === 'review' && <ProgressBar total={totalReview} learned={Array.from(learnedItems).filter(id => id.startsWith('r_')).length} colorClass="text-teal-500" />}
+                            {activeTab === 'b2_expansion' && <ProgressBar total={totalB2} learned={Array.from(learnedItems).filter(id => id.startsWith('b2_')).length} colorClass="text-indigo-500" />}
 
                             {/* TAB: WORDS */}
                             {activeTab === 'words' && (
@@ -1027,12 +1378,15 @@
 
                                     <div className="grid gap-8">
                                         {LEARNING_DATA.grammar.map((gram, idx) => (
-                                            <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                            <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow relative">
+                                                <button onClick={() => toggleLearned(gram.id)} className={`absolute top-6 left-6 p-2 rounded-full transition-colors z-10 ${learnedItems.has(gram.id) ? 'bg-purple-100 text-purple-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                                </button>
                                                 <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
                                                     <div className="bg-purple-100 p-3 rounded-2xl text-purple-600 shrink-0 mt-1">
                                                         <i data-lucide="braces" className="w-6 h-6"></i>
                                                     </div>
-                                                    <div>
+                                                    <div className="pr-10">
                                                         <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
                                                         <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
                                                     </div>
@@ -1062,7 +1416,7 @@
                                 </div>
                             )}
 
-                            {/* TAB: REVIEW (NEW) */}
+                            {/* TAB: REVIEW */}
                             {activeTab === 'review' && (
                                 <div dir="rtl" className="pb-10">
                                     <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
@@ -1090,7 +1444,7 @@
                                     </div>
 
                                     <div className="space-y-6">
-                                        {LEARNING_DATA.review.map((cat, cIdx) => (
+                                        {LEARNING_DATA.review && LEARNING_DATA.review.map((cat, cIdx) => (
                                             <div key={cIdx} className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300">
                                                 <button 
                                                     className={`w-full p-6 flex items-center justify-between text-right transition-colors ${expandedReview === cat.catId ? 'bg-teal-50' : 'hover:bg-slate-50'}`}
@@ -1129,6 +1483,119 @@
                                                 </div>
                                             </div>
                                         ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: B2 EXPANSION */}
+                            {activeTab === 'b2_expansion' && (
+                                <div dir="rtl" className="pb-10">
+                                    <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                        <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                            <div className={`absolute -inset-0.5 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                            <div className="relative">
+                                                <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="ابحث في توسعة B2..." 
+                                                    value={searchTerm}
+                                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                                    className="w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-indigo-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-gradient-to-br from-indigo-700 to-violet-900 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="rocket" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10 text-center">
+                                            <h2 className="text-4xl font-extrabold mb-4 ar-text">توسعة B2 (Wortschatz & Grammatik)</h2>
+                                            <p className="text-indigo-100 ar-text text-lg max-w-3xl mx-auto leading-relaxed">قسم مخصص للارتقاء بمستواك لـ B2. يحتوي على مفردات متقدمة للعمل والدراسة، تعبيرات هامة لامتحانات Goethe و Telc، وأهم القواعد النحوية المتقدمة.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-12">
+                                        <section>
+                                            <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><i data-lucide="briefcase" className="w-6 h-6"></i></span> مفردات B2 المتقدمة (Wortschatz)</h2>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                                {LEARNING_DATA.b2_words.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                    <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                                ))}
+                                            </div>
+                                        </section>
+                                        
+                                        <section>
+                                            <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><i data-lucide="message-square" className="w-6 h-6"></i></span> تعبيرات امتحانات B2 (Redemittel)</h2>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                {LEARNING_DATA.b2_expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                                    <div key={exp.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative group hover:shadow-xl hover:border-indigo-200 transition-all duration-300">
+                                                        <button onClick={() => toggleLearned(exp.id)} className={`absolute top-5 left-5 p-2 rounded-full transition-colors z-10 ${learnedItems.has(exp.id) ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                            <i data-lucide="check" className="w-5 h-5"></i>
+                                                        </button>
+                                                        <span className="inline-block bg-indigo-50 text-indigo-600 px-3 py-1 rounded-lg text-xs font-bold mb-4 ar-text border border-indigo-100">{exp.type}</span>
+                                                        <div className="flex items-start gap-3 mb-3" dir="ltr">
+                                                            <div className="flex flex-col gap-2 shrink-0">
+                                                                <button onClick={(e) => playAudio(exp.ger, e)} className="text-indigo-500 bg-indigo-50 p-2 rounded-xl hover:bg-indigo-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={exp.ger} /></div>
+                                                            </div>
+                                                            <div>
+                                                                <h3 className="text-xl font-extrabold text-slate-800 leading-tight mt-1">"{exp.ger}"</h3>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
+                                                            <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
+                                                            <p className="text-indigo-700 font-extrabold text-xl mb-4 ar-text">{exp.ar}</p>
+                                                            <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
+                                                                <i data-lucide="info" className="w-5 h-5 text-indigo-400 mt-0.5 shrink-0"></i>
+                                                                <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </section>
+                                        
+                                        <section>
+                                            <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><i data-lucide="pen-tool" className="w-6 h-6"></i></span> قواعد متقدمة (B2 Grammatik)</h2>
+                                            <div className="grid gap-8">
+                                                {LEARNING_DATA.b2_grammar.filter(g => g.title.toLowerCase().includes(searchTerm.toLowerCase()) || g.desc.includes(searchTerm)).map((gram, idx) => (
+                                                    <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-all duration-300 relative">
+                                                        <button onClick={() => toggleLearned(gram.id)} className={`absolute top-6 left-6 p-2 rounded-full transition-colors z-10 ${learnedItems.has(gram.id) ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                            <i data-lucide="check" className="w-5 h-5"></i>
+                                                        </button>
+                                                        <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                            <div className="bg-indigo-100 p-3 rounded-2xl text-indigo-600 shrink-0 mt-1">
+                                                                <i data-lucide="braces" className="w-6 h-6"></i>
+                                                            </div>
+                                                            <div className="pr-10">
+                                                                <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                                <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div className="p-8">
+                                                            <div className="bg-slate-900 text-indigo-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
+                                                                <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i> {gram.structure}
+                                                            </div>
+                                                            
+                                                            <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                            <ul className="space-y-4">
+                                                                {gram.examples.map((ex, i) => (
+                                                                    <li key={i} className="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100">
+                                                                        <div className="flex gap-4 items-center mb-3" dir="ltr">
+                                                                            <button onClick={(e) => playAudio(ex.g, e)} className="text-indigo-500 bg-white p-2 rounded-xl shadow-sm hover:bg-indigo-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                            <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                        </div>
+                                                                        <div className="text-indigo-700 font-bold ar-text border-t border-indigo-200/50 pt-3 mt-3">{ex.a}</div>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </section>
                                     </div>
                                 </div>
                             )}

@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch Lernen: B1+ Spektrum K12 (Krimi) & B2 Expansion</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f1f5f9; 
+            color: #1e293b;
+            overflow: hidden;
+        }
+        .ar-text { 
+            font-family: 'Cairo', sans-serif; 
+            line-height: 1.6;
+        }
+        /* Refined Card Flips */
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Glassmorphism subtle effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+        }
+
+        /* Custom Scrollbars for Cards */
+        .card-scroll::-webkit-scrollbar { width: 5px; }
+        .card-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .card-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 10px; }
+        .card-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.6); }
+        
+        .front-scroll::-webkit-scrollbar { width: 5px; }
+        .front-scroll::-webkit-scrollbar-track { background: transparent; }
+        .front-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .front-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- HELPERS FOR AUDIO & SPEECH ---
+        const playAudio = (text, e) => {
+            if (e) e.stopPropagation();
+            const cleanText = text.replace(/<[^>]+>/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'de-DE';
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const SpeechTester = ({ targetText }) => {
+            const [status, setStatus] = React.useState('idle'); 
+            const [heard, setHeard] = React.useState('');
+
+            const listen = (e) => {
+                if (e) e.stopPropagation();
+                if (!('webkitSpeechRecognition' in window)) {
+                    alert('المتصفح ده مش بيدعم تسجيل الصوت، جرب Google Chrome.');
+                    return;
+                }
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+                
+                recognition.onstart = () => setStatus('listening');
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    setHeard(speechResult);
+                    
+                    const clean = (str) => str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,!?]/g, '').trim();
+                    const targetClean = clean(targetText);
+                    const heardClean = clean(speechResult);
+                    
+                    if (heardClean.includes(targetClean) || targetClean.includes(heardClean) || heardClean === targetClean) {
+                        setStatus('success');
+                    } else {
+                        setStatus('fail');
+                    }
+                };
+                recognition.onerror = () => setStatus('fail');
+                recognition.onend = () => { if(status === 'listening') setStatus('idle'); };
+                recognition.start();
+            };
+
+            return (
+                <div className="inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={listen} title="جرب تنطقها" className={`p-2 rounded-full transition-all duration-300 shadow-sm ${status === 'listening' ? 'bg-red-500 text-white animate-pulse scale-110' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'}`}>
+                        <i data-lucide="mic" className="w-4 h-4"></i>
+                    </button>
+                    {status === 'success' && <span className="text-emerald-500 text-xs font-bold ar-text animate-bounce">✅ ممتاز!</span>}
+                    {status === 'fail' && <span className="text-red-500 text-xs ar-text font-bold" title={`سمعت: ${heard}`}>❌ جرب تاني</span>}
+                </div>
+            );
+        };
+
+        // --- COMPREHENSIVE LEARNING DATA (KAPITEL 12 + B2 EXPANSION) ---
+        const LEARNING_DATA = {
+            words: {
+                verbrechen: [
+                    { id: 'w1', ger: "die Kriminalität", eng: "Crime (concept)", ar: "الجريمة (كمفهوم عام)", s: [{ g: "Die <strong>Kriminalität</strong> in der Großstadt ist hoch.", e: "Crime in the big city is high.", a: "معدل الجريمة في المدينة الكبيرة عالي." }, { g: "Die Polizei bekämpft die organisierte <strong>Kriminalität</strong>.", e: "The police fight organized crime.", a: "الشرطة تكافح الجريمة المنظمة." }, { g: "Armut führt oft zu mehr <strong>Kriminalität</strong>.", e: "Poverty often leads to more crime.", a: "الفقر غالباً بيؤدي لزيادة الجريمة." }] },
+                    { id: 'w2', ger: "das Verbrechen", eng: "Crime (act)", ar: "الجريمة (الفعل نفسه)", s: [{ g: "Er hat ein schreckliches <strong>Verbrechen</strong> begangen.", e: "He committed a terrible crime.", a: "هو ارتكب جريمة بشعة." }, { g: "Das perfekte <strong>Verbrechen</strong> gibt es nicht.", e: "The perfect crime doesn't exist.", a: "الجريمة الكاملة مش موجودة." }, { g: "Die Aufklärung des <strong>Verbrechens</strong> dauerte Jahre.", e: "Solving the crime took years.", a: "حل الجريمة أخد سنين." }] },
+                    { id: 'w3', ger: "die Straftat", eng: "Criminal offense", ar: "الفعل الإجرامي / الجُنحة", s: [{ g: "Das ist eine schwere <strong>Straftat</strong>.", e: "That is a serious criminal offense.", a: "دي جناية / فعل إجرامي خطير." }, { g: "Wer eine <strong>Straftat</strong> begeht, wird bestraft.", e: "Whoever commits a crime will be punished.", a: "اللي بيرتكب جنحة بيتعاقب." }, { g: "Die Zahl der <strong>Straftaten</strong> ist gesunken.", e: "The number of crimes has dropped.", a: "عدد الجرائم قل." }] },
+                    { id: 'w4', ger: "der Täter", eng: "Perpetrator", ar: "الجاني", s: [{ g: "Die Polizei sucht den <strong>Täter</strong>.", e: "The police are looking for the perpetrator.", a: "الشرطة بتدور على الجاني." }, { g: "Der <strong>Täter</strong> wurde am Tatort festgenommen.", e: "The perpetrator was arrested at the scene.", a: "تم القبض على الجاني في مسرح الجريمة." }, { g: "Das Gesicht des <strong>Täters</strong> war verdeckt.", e: "The perpetrator's face was covered.", a: "وش الجاني كان متغطي." }] },
+                    { id: 'w5', ger: "das Opfer", eng: "Victim", ar: "الضحية", s: [{ g: "Das <strong>Opfer</strong> liegt im Krankenhaus.", e: "The victim is in the hospital.", a: "الضحية في المستشفى." }, { g: "Sie wurde <strong>Opfer</strong> eines Betrugs.", e: "She became the victim of a fraud.", a: "هي بقت ضحية عملية نصب." }, { g: "Die Polizei konnte das <strong>Opfer</strong> identifizieren.", e: "The police could identify the victim.", a: "الشرطة قدرت تتعرف على الضحية." }] },
+                    { id: 'w6', ger: "der Dieb", eng: "Thief", ar: "اللص", s: [{ g: "Der <strong>Dieb</strong> hat meine Tasche gestohlen.", e: "The thief stole my bag.", a: "الحرامي سرق شنطتي." }, { g: "Haltet den <strong>Dieb</strong>!", e: "Stop the thief!", a: "امسكوا الحرامي!" }, { g: "Ein unbekannter <strong>Dieb</strong> brach nachts ein.", e: "An unknown thief broke in at night.", a: "لص مجهول اقتحم المكان بالليل." }] },
+                    { id: 'w7', ger: "der Diebstahl", eng: "Theft", ar: "السرقة", s: [{ g: "Ich melde einen <strong>Diebstahl</strong>.", e: "I am reporting a theft.", a: "أنا ببلغ عن حالة سرقة." }, { g: "Er sitzt wegen <strong>Diebstahls</strong> im Gefängnis.", e: "He is in prison for theft.", a: "هو محبوس بسبب السرقة." }, { g: "Der <strong>Diebstahl</strong> wurde von einer Kamera gefilmt.", e: "The theft was filmed by a camera.", a: "السرقة اتصورت بكاميرا." }] },
+                    { id: 'w8', ger: "der Einbrecher", eng: "Burglar", ar: "المقتحم (لص المنازل)", s: [{ g: "Der <strong>Einbrecher</strong> kam durch das Fenster.", e: "The burglar came through the window.", a: "المقتحم دخل من الشباك." }, { g: "Die <strong>Einbrecher</strong> haben Schmuck gestohlen.", e: "The burglars stole jewelry.", a: "اللصوص سرقوا مجوهرات." }, { g: "Sie hat Angst vor <strong>Einbrechern</strong>.", e: "She is afraid of burglars.", a: "هي بتخاف من المقتحمين." }] },
+                    { id: 'w9', ger: "der Einbruch", eng: "Burglary", ar: "عملية السطو / الاقتحام", s: [{ g: "Nach dem <strong>Einbruch</strong> rief sie die Polizei.", e: "After the burglary, she called the police.", a: "بعد عملية السطو كلمت الشرطة." }, { g: "Die Alarmanlage verhinderte den <strong>Einbruch</strong>.", e: "The alarm system prevented the burglary.", a: "جهاز الإنذار منع الاقتحام." }, { g: "Es gab eine Serie von <strong>Einbrüchen</strong> in unserer Straße.", e: "There was a series of burglaries on our street.", a: "كان فيه سلسلة اقتحامات في شارعنا." }] },
+                    { id: 'w10', ger: "der Mord", eng: "Murder", ar: "جريمة القتل", s: [{ g: "Der Kommissar untersucht einen <strong>Mord</strong>.", e: "The inspector is investigating a murder.", a: "المفتش بيحقق في جريمة قتل." }, { g: "Es war ein kaltblütiger <strong>Mord</strong>.", e: "It was a cold-blooded murder.", a: "دي كانت جريمة قتل بدم بارد." }, { g: "Ihm wird versuchter <strong>Mord</strong> vorgeworfen.", e: "He is accused of attempted murder.", a: "هو متهم بالشروع في القتل." }] },
+                    { id: 'w11', ger: "der Mörder", eng: "Murderer", ar: "القاتل", s: [{ g: "Der <strong>Mörder</strong> ist noch auf der Flucht.", e: "The murderer is still on the run.", a: "القاتل لسة هربان." }, { g: "Das Gericht hat den <strong>Mörder</strong> verurteilt.", e: "The court sentenced the murderer.", a: "المحكمة حكمت على القاتل." }, { g: "Man sucht den <strong>Mörder</strong> mit einem Phantombild.", e: "They are looking for the murderer with a composite sketch.", a: "بيدوروا على القاتل بصورة تقريبية." }] },
+                    { id: 'w12', ger: "der Tote", eng: "Dead person", ar: "الميت", s: [{ g: "Man fand den <strong>Toten</strong> im Wald.", e: "The dead man was found in the forest.", a: "لقوا الميت في الغابة." }, { g: "Die Identität des <strong>Toten</strong> ist noch unklar.", e: "The identity of the dead person is still unclear.", a: "هوية الميت لسة مش واضحة." }, { g: "Neben dem <strong>Toten</strong> lag eine Waffe.", e: "Next to the dead person lay a weapon.", a: "جمب الميت كان فيه سلاح." }] },
+                    { id: 'w13', ger: "die Leiche", eng: "Corpse", ar: "الجثة", s: [{ g: "Die Polizei hat eine <strong>Leiche</strong> entdeckt.", e: "The police discovered a corpse.", a: "الشرطة اكتشفت جثة." }, { g: "Die Gerichtsmedizin untersucht die <strong>Leiche</strong>.", e: "Forensics is examining the corpse.", a: "الطب الشرعي بيفحص الجثة." }, { g: "Er hat eine <strong>Leiche</strong> im Keller. (Idiom)", e: "He has a skeleton in the closet.", a: "هو مخبي بلوة / سر أسود (تعبير مجازي)." }] },
+                    { id: 'w14', ger: "der Verdächtige", eng: "Suspect", ar: "المشتبه به", s: [{ g: "Der <strong>Verdächtige</strong> wird verhört.", e: "The suspect is being interrogated.", a: "المشتبه به بيتحقق معاه." }, { g: "Er ist der Haupt<strong>verdächtige</strong> im Mordfall.", e: "He is the main suspect in the murder case.", a: "هو المشتبه به الرئيسي في قضية القتل." }, { g: "Die Polizei musste den <strong>Verdächtigen</strong> freilassen.", e: "The police had to release the suspect.", a: "الشرطة اضطرت تطلق سراح المشتبه به." }] },
+                    { id: 'w15', ger: "die Gefahr", eng: "Danger", ar: "الخطر", s: [{ g: "Wir sind in großer <strong>Gefahr</strong>.", e: "We are in great danger.", a: "إحنا في خطر كبير." }, { g: "Er hat die <strong>Gefahr</strong> nicht rechtzeitig erkannt.", e: "He didn't recognize the danger in time.", a: "هو مأدركش الخطر في الوقت المناسب." }, { g: "Der Patient ist außer <strong>Gefahr</strong>.", e: "The patient is out of danger.", a: "المريض تجاوز مرحلة الخطر." }] }
+                ],
+                polizei: [
+                    { id: 'w16', ger: "die Polizei", eng: "Police", ar: "الشرطة", s: [{ g: "Rufen Sie sofort die <strong>Polizei</strong>!", e: "Call the police immediately!", a: "كلم الشرطة فوراً!" }, { g: "Die <strong>Polizei</strong> war in wenigen Minuten da.", e: "The police were there in a few minutes.", a: "الشرطة وصلت في دقايق معدودة." }, { g: "Er will bei der <strong>Polizei</strong> arbeiten.", e: "He wants to work for the police.", a: "هو عايز يشتغل في الشرطة." }] },
+                    { id: 'w17', ger: "der Polizist", eng: "Police officer", ar: "شرطي", s: [{ g: "Der <strong>Polizist</strong> stellt viele Fragen.", e: "The police officer asks many questions.", a: "الظابط بيسأل أسئلة كتير." }, { g: "Ein freundlicher <strong>Polizist</strong> hat mir geholfen.", e: "A friendly police officer helped me.", a: "ظابط ودود ساعدني." }, { g: "Der <strong>Polizist</strong> regelt den Verkehr.", e: "The police officer regulates the traffic.", a: "عسكري المرور بينظم الحركة." }] },
+                    { id: 'w18', ger: "der Kommissar", eng: "Inspector", ar: "المفتش", s: [{ g: "Der <strong>Kommissar</strong> löst den Fall.", e: "The inspector solves the case.", a: "المفتش بيحل القضية." }, { g: "Der <strong>Kommissar</strong> trifft am Tatort ein.", e: "The inspector arrives at the crime scene.", a: "المفتش بيوصل مسرح الجريمة." }, { g: "Er ist ein sehr erfahrener <strong>Kommissar</strong>.", e: "He is a very experienced inspector.", a: "هو مفتش خبير جداً." }] },
+                    { id: 'w19', ger: "der Detektiv", eng: "Detective", ar: "المحقق (السري)", s: [{ g: "Ein privater <strong>Detektiv</strong> beobachtet ihn.", e: "A private detective is observing him.", a: "محقق خاص بيراقبه." }, { g: "Sie hat einen <strong>Detektiv</strong> engagiert.", e: "She hired a detective.", a: "هي كلفت محقق سري." }, { g: "Sherlock Holmes ist ein berühmter <strong>Detektiv</strong>.", e: "Sherlock Holmes is a famous detective.", a: "شارلوك هولمز محقق مشهور." }] },
+                    { id: 'w20', ger: "der Tatort", eng: "Crime scene", ar: "مسرح الجريمة", s: [{ g: "Der <strong>Tatort</strong> ist abgesperrt.", e: "The crime scene is cordoned off.", a: "مسرح الجريمة متقفل." }, { g: "Die Spurensicherung ist am <strong>Tatort</strong>.", e: "Forensics is at the crime scene.", a: "الأدلة الجنائية في مسرح الجريمة." }, { g: "Der Täter kehrte an den <strong>Tatort</strong> zurück.", e: "The perpetrator returned to the crime scene.", a: "الجاني رجع لمسرح الجريمة." }] },
+                    { id: 'w21', ger: "die Spur", eng: "Trace / Track", ar: "الأثر (بصمات أو أدلة)", s: [{ g: "Die Polizei sucht nach einer neuen <strong>Spur</strong>.", e: "The police are looking for a new trace.", a: "الشرطة بتدور على أثر جديد." }, { g: "Sie folgten einer falschen <strong>Spur</strong>.", e: "They followed a false lead.", a: "هما مشيوا ورا خيط كداب (أثر غلط)." }, { g: "Es gibt keine <strong>Spuren</strong> von Gewalt.", e: "There are no traces of violence.", a: "مفيش أي آثار للعنف." }] },
+                    { id: 'w22', ger: "der Beweis", eng: "Proof / Evidence", ar: "الدليل", s: [{ g: "Haben Sie einen <strong>Beweis</strong> dafür?", e: "Do you have proof of that?", a: "عندك دليل على ده؟" }, { g: "Der <strong>Beweis</strong> wurde vernichtet.", e: "The evidence was destroyed.", a: "الدليل تم تدميره." }, { g: "Aus Mangel an <strong>Beweisen</strong> wurde er freigesprochen.", e: "He was acquitted due to lack of evidence.", a: "أخد براءة لعدم كفاية الأدلة." }] },
+                    { id: 'w23', ger: "das Alibi", eng: "Alibi", ar: "حجة الغياب", s: [{ g: "Der Verdächtige hat ein gutes <strong>Alibi</strong>.", e: "The suspect has a good alibi.", a: "المشتبه به عنده حجة غياب قوية." }, { g: "Die Polizei überprüft sein <strong>Alibi</strong>.", e: "The police are checking his alibi.", a: "الشرطة بتتحقق من حجة غيابه." }, { g: "Sein <strong>Alibi</strong> ist absolut wasserdicht.", e: "His alibi is absolutely watertight.", a: "حجة غيابه مخرش المية (قوية جداً)." }] },
+                    { id: 'w24', ger: "die Waffe", eng: "Weapon", ar: "السلاح", s: [{ g: "Man hat die <strong>Waffe</strong> noch nicht gefunden.", e: "The weapon has not been found yet.", a: "لسة مالقوش السلاح." }, { g: "Der Räuber zog eine <strong>Waffe</strong>.", e: "The robber drew a weapon.", a: "اللص سحب سلاح." }, { g: "Er besitzt diese <strong>Waffe</strong> illegal.", e: "He owns this weapon illegally.", a: "هو بيمتلك السلاح ده بشكل غير قانوني." }] },
+                    { id: 'w25', ger: "die Pistole", eng: "Gun / Pistol", ar: "المسدس", s: [{ g: "Er bedrohte sie mit einer <strong>Pistole</strong>.", e: "He threatened her with a gun.", a: "هو هددها بمسدس." }, { g: "Die <strong>Pistole</strong> war nicht geladen.", e: "The pistol was not loaded.", a: "المسدس مكانش متعمر." }, { g: "Er versteckte die <strong>Pistole</strong> unter der Jacke.", e: "He hid the gun under his jacket.", a: "هو خبى المسدس تحت الجاكت." }] },
+                    { id: 'w26', ger: "das Messer", eng: "Knife", ar: "السكين", s: [{ g: "Das <strong>Messer</strong> lag auf dem Boden.", e: "The knife was lying on the floor.", a: "السكينة كانت مرمية على الأرض." }, { g: "Vorsicht, das <strong>Messer</strong> ist sehr scharf!", e: "Careful, the knife is very sharp!", a: "حاسب، السكينة حامية جداً!" }, { g: "Er nutzte ein Küchen<strong>messer</strong> als Waffe.", e: "He used a kitchen knife as a weapon.", a: "استخدم سكينة مطبخ كسلاح." }] },
+                    { id: 'w27', ger: "das Blut", eng: "Blood", ar: "الدم", s: [{ g: "Überall am Tatort war <strong>Blut</strong>.", e: "There was blood everywhere at the crime scene.", a: "كان فيه دم في كل حتة في مسرح الجريمة." }, { g: "Er kann kein <strong>Blut</strong> sehen.", e: "He can't stand the sight of blood.", a: "هو مبيستحملش يشوف الدم." }, { g: "Das Labor analysiert die <strong>Blut</strong>gruppe.", e: "The lab analyzes the blood type.", a: "المعمل بيحلل فصيلة الدم." }] },
+                    { id: 'w28', ger: "die Untersuchung", eng: "Investigation", ar: "التحقيق / الفحص", s: [{ g: "Die <strong>Untersuchung</strong> läuft auf Hochtouren.", e: "The investigation is in full swing.", a: "التحقيق شغال على قدم وساق." }, { g: "Die medizinische <strong>Untersuchung</strong> war schnell vorbei.", e: "The medical examination was over quickly.", a: "الفحص الطبي خلص بسرعة." }, { g: "Der Kommissar leitet die <strong>Untersuchung</strong>.", e: "The inspector leads the investigation.", a: "المفتش بيدير التحقيق." }] },
+                    { id: 'w29', ger: "die Aufklärung", eng: "Resolution / Clearing up", ar: "كشف الملابسات (حل الجريمة)", s: [{ g: "Wir hoffen auf eine schnelle <strong>Aufklärung</strong>.", e: "We hope for a quick resolution.", a: "بنتمنى كشف ملابسات القضية بسرعة." }, { g: "Die <strong>Aufklärung</strong> des Verbrechens hat Priorität.", e: "Solving the crime is a priority.", a: "حل الجريمة ده أولوية." }, { g: "Die polizeiliche <strong>Aufklärungs</strong>quote ist gestiegen.", e: "The police clearance rate has risen.", a: "معدل كشف الجرائم للشرطة زاد." }] }
+                ],
+                gericht: [
+                    { id: 'w30', ger: "das Gericht", eng: "Court", ar: "المحكمة", s: [{ g: "Morgen muss er vor <strong>Gericht</strong> erscheinen.", e: "Tomorrow he must appear in court.", a: "بكرة لازم يمثل قدام المحكمة." }, { g: "Das <strong>Gericht</strong> vertagte die Verhandlung.", e: "The court adjourned the trial.", a: "المحكمة أجلت الجلسة." }, { g: "Wir treffen uns vor dem <strong>Gericht</strong>.", e: "We meet in front of the court.", a: "هنتقابل قدام المحكمة." }] },
+                    { id: 'w31', ger: "der Richter", eng: "Judge", ar: "القاضي", s: [{ g: "Der <strong>Richter</strong> spricht das Urteil.", e: "The judge pronounces the verdict.", a: "القاضي بينطق بالحكم." }, { g: "Der <strong>Richter</strong> stellte dem Zeugen Fragen.", e: "The judge asked the witness questions.", a: "القاضي سأل الشاهد أسئلة." }, { g: "Er ist als strenger <strong>Richter</strong> bekannt.", e: "He is known as a strict judge.", a: "هو معروف كقاضي صارم." }] },
+                    { id: 'w32', ger: "der Anwalt", eng: "Lawyer", ar: "المحامي", s: [{ g: "Ich brauche sofort einen <strong>Anwalt</strong>.", e: "I need a lawyer immediately.", a: "أنا محتاج محامي فوراً." }, { g: "Sein <strong>Anwalt</strong> riet ihm zu schweigen.", e: "His lawyer advised him to remain silent.", a: "محاميه نصحه بالصمت." }, { g: "Die <strong>Anwältin</strong> plädiert auf Freispruch.", e: "The lawyer pleads for acquittal.", a: "المحامية بتترافع بطلب البراءة." }] },
+                    { id: 'w33', ger: "der Zeuge", eng: "Witness", ar: "الشاهد", s: [{ g: "Der <strong>Zeuge</strong> hat alles gesehen.", e: "The witness saw everything.", a: "الشاهد شاف كل حاجة." }, { g: "Die Polizei sucht dringend <strong>Zeugen</strong>.", e: "The police are urgently looking for witnesses.", a: "الشرطة بتدور على شهود بشكل عاجل." }, { g: "Die <strong>Zeugin</strong> der Anklage war sehr nervös.", e: "The witness for the prosecution was very nervous.", a: "شاهدة الإثبات كانت متوترة جداً." }] },
+                    { id: 'w34', ger: "die Aussage", eng: "Testimony / Statement", ar: "الإفادة (الشهادة)", s: [{ g: "Ihre <strong>Aussage</strong> ist sehr wichtig.", e: "Your statement is very important.", a: "شهادتك أو إفادتك دي مهمة جداً." }, { g: "Der Verdächtige verweigerte die <strong>Aussage</strong>.", e: "The suspect refused to testify.", a: "المشتبه به رفض الإدلاء بأقواله." }, { g: "Er machte eine falsche <strong>Aussage</strong> bei der Polizei.", e: "He made a false statement to the police.", a: "هو أدلى بإفادة كاذبة للشرطة." }] },
+                    { id: 'w35', ger: "das Gesetz", eng: "Law", ar: "القانون", s: [{ g: "Man muss sich an das <strong>Gesetz</strong> halten.", e: "One must abide by the law.", a: "لازم الواحد يلتزم بالقانون." }, { g: "Das ist streng gegen das <strong>Gesetz</strong>.", e: "That is strictly against the law.", a: "ده ضد القانون تماماً." }, { g: "Das Parlament hat ein neues <strong>Gesetz</strong> beschlossen.", e: "The parliament passed a new law.", a: "البرلمان أقر قانون جديد." }] },
+                    { id: 'w36', ger: "die Strafe", eng: "Punishment / Penalty", ar: "العقوبة", s: [{ g: "Er hat eine harte <strong>Strafe</strong> bekommen.", e: "He received a harsh punishment.", a: "هو أخد عقوبة قاسية." }, { g: "Die <strong>Strafe</strong> muss gerecht sein.", e: "The punishment must be just.", a: "العقوبة لازم تكون عادلة." }, { g: "Falschparken kostet eine kleine <strong>Strafe</strong>.", e: "Illegal parking costs a small penalty.", a: "الركنة الغلط بتكلف غرامة (عقوبة) بسيطة." }] },
+                    { id: 'w37', ger: "die Gefängnisstrafe", eng: "Prison sentence", ar: "عقوبة السجن", s: [{ g: "Er wurde zu einer <strong>Gefängnisstrafe</strong> verurteilt.", e: "He was sentenced to a prison term.", a: "اتحكم عليه بعقوبة السجن." }, { g: "Ihm droht eine lange <strong>Gefängnisstrafe</strong>.", e: "He faces a long prison sentence.", a: "هو مهدد بعقوبة سجن طويلة." }, { g: "Sie hat ihre <strong>Gefängnisstrafe</strong> abgesessen.", e: "She served her prison sentence.", a: "هي قضت فترة عقوبتها في السجن." }] },
+                    { id: 'w38', ger: "das Gefängnis", eng: "Prison", ar: "السجن", s: [{ g: "Der Täter muss ins <strong>Gefängnis</strong>.", e: "The perpetrator must go to prison.", a: "الجاني لازم يدخل السجن." }, { g: "Der Ausbruch aus dem <strong>Gefängnis</strong> scheiterte.", e: "The escape from prison failed.", a: "الهروب من السجن فشل." }, { g: "Das Leben im <strong>Gefängnis</strong> ist hart.", e: "Life in prison is hard.", a: "الحياة في السجن صعبة." }] }
+                ],
+                medien: [
+                    { id: 'w39', ger: "der Krimi", eng: "Crime thriller / Crime novel", ar: "الرواية أو الفيلم البوليسي", s: [{ g: "Ich lese abends gern einen <strong>Krimi</strong>.", e: "I like reading a crime thriller in the evening.", a: "بحب أقرأ رواية بوليسية بالليل." }, { g: "Der Tatort ist ein bekannter deutscher <strong>Krimi</strong>.", e: "'Tatort' is a well-known German crime thriller.", a: "برنامج 'Tatort' ده فيلم بوليسي ألماني مشهور." }, { g: "Schwedische <strong>Krimis</strong> sind weltweit beliebt.", e: "Swedish crime novels are popular worldwide.", a: "الروايات البوليسية السويدية محبوبة عالمياً." }] },
+                    { id: 'w40', ger: "die Serie", eng: "Series", ar: "المسلسل", s: [{ g: "Diese <strong>Serie</strong> ist sehr beliebt.", e: "This series is very popular.", a: "المسلسل ده مشهور جداً." }, { g: "Ich schaue eine neue Netflix-<strong>Serie</strong>.", e: "I am watching a new Netflix series.", a: "بتفرج على مسلسل نتفليكس جديد." }, { g: "Wir haben die ganze <strong>Serie</strong> am Wochenende gesehen.", e: "We watched the whole series on the weekend.", a: "اتفرجنا على المسلسل كله في الويك إند." }] },
+                    { id: 'w41', ger: "die Folge", eng: "Episode", ar: "الحلقة", s: [{ g: "Hast du die letzte <strong>Folge</strong> gesehen?", e: "Did you see the last episode?", a: "شفت الحلقة الأخيرة؟" }, { g: "Die nächste <strong>Folge</strong> kommt am Montag.", e: "The next episode comes on Monday.", a: "الحلقة الجاية هتنزل يوم الإثنين." }, { g: "Ich habe zwei <strong>Folgen</strong> verpasst.", e: "I missed two episodes.", a: "فاتني حلقتين." }] },
+                    { id: 'w42', ger: "der Zuschauer", eng: "Viewer / Spectator", ar: "المشاهد", s: [{ g: "Millionen <strong>Zuschauer</strong> sahen den Film.", e: "Millions of viewers watched the film.", a: "ملايين المشاهدين اتفرجوا على الفيلم." }, { g: "Die Serie begeistert die <strong>Zuschauer</strong>.", e: "The series thrills the viewers.", a: "المسلسل بيبهر المشاهدين." }, { g: "Die <strong>Zuschauer</strong> konnten per SMS abstimmen.", e: "The viewers could vote via SMS.", a: "المشاهدين قدروا يصوتوا برسائل الـ SMS." }] },
+                    { id: 'w43', ger: "das Drehbuch", eng: "Screenplay / Script", ar: "السيناريو", s: [{ g: "Das <strong>Drehbuch</strong> für den Krimi ist toll.", e: "The script for the crime thriller is great.", a: "السيناريو بتاع الفيلم البوليسي رائع." }, { g: "Er schreibt das <strong>Drehbuch</strong> um.", e: "He is rewriting the script.", a: "هو بيعيد كتابة السيناريو." }, { g: "Der Film gewann einen Preis für das beste <strong>Drehbuch</strong>.", e: "The film won an award for best screenplay.", a: "الفيلم كسب جايزة أحسن سيناريو." }] },
+                    { id: 'w44', ger: "der Regisseur", eng: "Director", ar: "المخرج", s: [{ g: "Der <strong>Regisseur</strong> gibt die Anweisungen.", e: "The director gives the instructions.", a: "المخرج بيدي التعليمات." }, { g: "Tarantino ist ein berühmter <strong>Regisseur</strong>.", e: "Tarantino is a famous director.", a: "تارانتينو مخرج مشهور." }, { g: "Die Schauspielerin stritt mit dem <strong>Regisseur</strong>.", e: "The actress argued with the director.", a: "الممثلة اتخانقت مع المخرج." }] },
+                    { id: 'w45', ger: "die Spannung", eng: "Suspense / Tension", ar: "التشويق / التوتر", s: [{ g: "Die <strong>Spannung</strong> im Film steigt.", e: "The suspense in the film is rising.", a: "التشويق في الفيلم بيزيد." }, { g: "Der Autor baut die <strong>Spannung</strong> langsam auf.", e: "The author builds the suspense slowly.", a: "الكاتب بيبني التشويق ببطء." }, { g: "Die <strong>Spannung</strong> war fast unerträglich.", e: "The tension was almost unbearable.", a: "التوتر كان تقريباً لا يحتمل." }] },
+                    { id: 'w46', ger: "der Erfolg", eng: "Success", ar: "النجاح", s: [{ g: "Der Krimi war ein großer <strong>Erfolg</strong>.", e: "The crime thriller was a great success.", a: "الفيلم البوليسي حقق نجاح كبير." }, { g: "Wir feiern den <strong>Erfolg</strong> unseres Teams.", e: "We celebrate the success of our team.", a: "إحنا بنحتفل بنجاح فريقنا." }, { g: "Ohne Fleiß gibt es keinen <strong>Erfolg</strong>.", e: "Without diligence there is no success.", a: "من غير اجتهاد مفيش نجاح." }] }
+                ],
+                adjektive: [
+                    { id: 'a1', ger: "spannend", eng: "exciting / thrilling", ar: "مُشوق", s: [{ g: "Das Buch ist unglaublich <strong>spannend</strong>.", e: "The book is incredibly thrilling.", a: "الكتاب مشوق بشكل لا يصدق." }, { g: "Das war ein sehr <strong>spannendes</strong> Fußballspiel.", e: "That was a very exciting football game.", a: "ده كان ماتش كورة مشوق جداً." }, { g: "Die Geschichte bleibt bis zum Ende <strong>spannend</strong>.", e: "The story remains exciting until the end.", a: "القصة بتفضل مشوقة لحد النهاية." }] },
+                    { id: 'a2', ger: "langweilig", eng: "boring", ar: "ممل", s: [{ g: "Der Film war leider sehr <strong>langweilig</strong>.", e: "Unfortunately, the film was very boring.", a: "للأسف الفيلم كان ممل جداً." }, { g: "Mir ist heute furchtbar <strong>langweilig</strong>.", e: "I am terribly bored today.", a: "أنا حاسس بملل فظيع النهاردة." }, { g: "Der Vortrag war trocken und <strong>langweilig</strong>.", e: "The lecture was dry and boring.", a: "المحاضرة كانت جافة ومملة." }] },
+                    { id: 'a3', ger: "grausam", eng: "cruel / gruesome", ar: "قاسٍ / بشع", s: [{ g: "Es war eine <strong>grausame</strong> Tat.", e: "It was a gruesome act.", a: "دي كانت جريمة بشعة." }, { g: "Der Diktator war ein <strong>grausamer</strong> Herrscher.", e: "The dictator was a cruel ruler.", a: "الديكتاتور كان حاكم قاسي." }, { g: "Die Bilder aus dem Krieg sind <strong>grausam</strong>.", e: "The pictures from the war are gruesome.", a: "الصور اللي من الحرب بشعة." }] },
+                    { id: 'a4', ger: "blutig", eng: "bloody", ar: "دموي", s: [{ g: "Der Krimi war mir zu <strong>blutig</strong>.", e: "The crime thriller was too bloody for me.", a: "الفيلم كان دموي بزيادة بالنسبة لي." }, { g: "Er hatte eine <strong>blutige</strong> Nase nach dem Kampf.", e: "He had a bloody nose after the fight.", a: "مناخيره كانت بتجيب دم بعد الخناقة." }, { g: "Das Schwert war noch <strong>blutig</strong>.", e: "The sword was still bloody.", a: "السيف كان لسة عليه دم." }] },
+                    { id: 'a5', ger: "kriminell", eng: "criminal", ar: "إجرامي", s: [{ g: "Er hat eine <strong>kriminelle</strong> Vergangenheit.", e: "He has a criminal past.", a: "هو عنده ماضي إجرامي." }, { g: "Die Bande nutzte <strong>kriminelle</strong> Methoden.", e: "The gang used criminal methods.", a: "العصابة استخدمت طرق إجرامية." }, { g: "Es ist <strong>kriminell</strong>, wie viel das kostet! (umgangssprachlich)", e: "It's criminal how much that costs!", a: "حرام (إجرام) السعر ده كله! (تعبير دارج)." }] },
+                    { id: 'a6', ger: "gesetzlich", eng: "legal / statutory", ar: "قانوني", s: [{ g: "Das ist <strong>gesetzlich</strong> verboten.", e: "That is legally forbidden.", a: "ده ممنوع قانوناً." }, { g: "Ich habe einen <strong>gesetzlichen</strong> Anspruch darauf.", e: "I have a statutory claim to it.", a: "أنا ليا حق قانوني في ده." }, { g: "Die <strong>gesetzliche</strong> Krankenversicherung zahlt das.", e: "Statutory health insurance pays for that.", a: "التأمين الصحي الحكومي (القانوني) بيدفع ده." }] },
+                    { id: 'a7', ger: "schuldig", eng: "guilty", ar: "مُذنب", s: [{ g: "Das Gericht fand ihn <strong>schuldig</strong>.", e: "The court found him guilty.", a: "المحكمة لاقته مُذنب." }, { g: "Er fühlte sich <strong>schuldig</strong> am Unfall.", e: "He felt guilty for the accident.", a: "هو حاس بالذنب عشان الحادثة." }, { g: "Sie hat ein <strong>schuldiges</strong> Gewissen.", e: "She has a guilty conscience.", a: "هي عندها تأنيب ضمير." }] },
+                    { id: 'a8', ger: "unschuldig", eng: "innocent", ar: "بريء", s: [{ g: "Ich bin <strong>unschuldig</strong>!", e: "I am innocent!", a: "أنا بريء!" }, { g: "Das Baby schlief mit einem <strong>unschuldigen</strong> Gesicht.", e: "The baby slept with an innocent face.", a: "البيبي نام بوش بريء." }, { g: "Er saß zehn Jahre <strong>unschuldig</strong> im Gefängnis.", e: "He sat in prison innocent for ten years.", a: "هو قعد ١٠ سنين في السجن وهو بريء." }] },
+                    { id: 'a9', ger: "verdächtig", eng: "suspicious", ar: "مشبوه / مثير للريبة", s: [{ g: "Der Mann verhält sich sehr <strong>verdächtig</strong>.", e: "The man is behaving very suspiciously.", a: "الراجل ده بيتصرف بشكل مشبوه جداً." }, { g: "Das Paket sah <strong>verdächtig</strong> aus.", e: "The package looked suspicious.", a: "الطرد كان شكله مريب." }, { g: "Es war <strong>verdächtig</strong> still im Haus.", e: "It was suspiciously quiet in the house.", a: "البيت كان هادي بشكل يثير الشك." }] },
+                    { id: 'a10', ger: "geheim", eng: "secret", ar: "سري", s: [{ g: "Die Dokumente sind streng <strong>geheim</strong>.", e: "The documents are top secret.", a: "الوثائق دي سرية للغاية." }, { g: "Wir trafen uns an einem <strong>geheimen</strong> Ort.", e: "We met at a secret place.", a: "اتقابلنا في مكان سري." }, { g: "Das Rezept ist <strong>geheim</strong>.", e: "The recipe is secret.", a: "الوصفة دي سرية." }] },
+                    { id: 'a11', ger: "mysteriös", eng: "mysterious", ar: "غامض", s: [{ g: "Ein <strong>mysteriöser</strong> Anruf weckte ihn.", e: "A mysterious call woke him up.", a: "مكالمة غامضة صحته من النوم." }, { g: "Das Verschwinden des Flugzeugs bleibt <strong>mysteriös</strong>.", e: "The disappearance of the plane remains mysterious.", a: "اختفاء الطيارة لسة غامض." }, { g: "Eine <strong>mysteriöse</strong> Frau betrat den Raum.", e: "A mysterious woman entered the room.", a: "واحدة ست غامضة دخلت الأوضة." }] },
+                    { id: 'a12', ger: "lebenslänglich", eng: "lifelong (life sentence)", ar: "مدى الحياة (كحكم مؤبد)", s: [{ g: "Er bekam eine <strong>lebenslängliche</strong> Strafe.", e: "He received a life sentence.", a: "أخد حكم مؤبد (مدى الحياة)." }, { g: "Der Täter muss <strong>lebenslänglich</strong> ins Gefängnis.", e: "The perpetrator must go to prison for life.", a: "الجاني لازم يدخل السجن مدى الحياة." }, { g: "Ein Vertrag mit <strong>lebenslänglicher</strong> Garantie.", e: "A contract with a lifetime warranty.", a: "عقد بضمان مدى الحياة." }] },
+                    { id: 'a13', ger: "tatsächlich", eng: "actual / in fact", ar: "في الواقع / فعلياً", s: [{ g: "War er <strong>tatsächlich</strong> am Tatort?", e: "Was he actually at the crime scene?", a: "هل هو فعلاً كان في مسرح الجريمة؟" }, { g: "Das ist <strong>tatsächlich</strong> wahr!", e: "That is actually true!", a: "ده حقيقي فعلاً!" }, { g: "Sie hat es <strong>tatsächlich</strong> geschafft.", e: "She actually managed to do it.", a: "هي قدرت فعلاً تعملها." }] }
+                ]
+            },
+            verbs: [
+                { id: 'v1', ger: "ermitteln", eng: "to investigate", ar: "يُحقق / يبحث في الجريمة", s: [{ g: "Die Polizei <strong>ermittelt</strong> in alle Richtungen.", e: "The police are investigating in all directions.", a: "الشرطة بتحقق في كل الاتجاهات." }, { g: "Gegen ihn wird wegen Betrugs <strong>ermittelt</strong>.", e: "He is being investigated for fraud.", a: "بيتم التحقيق معاه بتهمة النصب." }, { g: "Die Beamten <strong>ermitteln</strong> den genauen Tathergang.", e: "The officers investigate the exact course of events.", a: "الضباط بيحققوا في تسلسل الأحداث بالظبط." }] },
+                { id: 'v2', ger: "verdächtigen", eng: "to suspect", ar: "يشتبه في", s: [{ g: "Wir <strong>verdächtigen</strong> ihn des Diebstahls.", e: "We suspect him of the theft.", a: "إحنا بنشتبه فيه في حادثة السرقة." }, { g: "Sie wird <strong>verdächtigt</strong>, Geld unterschlagen zu haben.", e: "She is suspected of having embezzled money.", a: "بيشتبهوا إنها اختلست فلوس." }, { g: "Man <strong>verdächtigte</strong> sofort den Nachbarn.", e: "They immediately suspected the neighbor.", a: "هما اشتبهوا في الجار على طول." }] },
+                { id: 'v3', ger: "befragen", eng: "to question / interview", ar: "يستجوب (الشهود)", s: [{ g: "Die Kommissarin <strong>befragt</strong> die Zeugen.", e: "The inspector is questioning the witnesses.", a: "المفتشة بتستجوب الشهود." }, { g: "Alle Nachbarn wurden von der Polizei <strong>befragt</strong>.", e: "All neighbors were questioned by the police.", a: "كل الجيران تم استجوابهم من الشرطة." }, { g: "Wir müssen den Experten dazu <strong>befragen</strong>.", e: "We have to ask the expert about this.", a: "لازم نسأل الخبير عن ده." }] },
+                { id: 'v4', ger: "verhören", eng: "to interrogate", ar: "يُحقق مع / يستنطق", s: [{ g: "Der Verdächtige wird stundenlang <strong>verhört</strong>.", e: "The suspect is interrogated for hours.", a: "المشتبه به بيتحقق معاه لساعات." }, { g: "Man darf niemanden mit Gewalt <strong>verhören</strong>.", e: "One must not interrogate anyone with force.", a: "ممنوع استجواب أي حد بالعنف." }, { g: "Sie <strong>verhörten</strong> ihn bis spät in die Nacht.", e: "They interrogated him late into the night.", a: "استجوبوه لحد وقت متأخر بالليل." }] },
+                { id: 'v5', ger: "tun (so als ob)", eng: "to pretend", ar: "يتصرف / يتظاهر وكأن", s: [{ g: "Er <strong>tut</strong> so, als ob er schläft.", e: "He pretends as if he is sleeping.", a: "هو بيتظاهر وكأنه نايم." }, { g: "Tu nicht so, als ob du nichts wüsstest!", e: "Don't pretend as if you knew nothing!", a: "ماتعملش نفسك كأنك متعرفش حاجة!" }, { g: "Sie <strong>tat</strong> so, als wäre nichts passiert.", e: "She acted as if nothing had happened.", a: "هي اتصرفت كأن مفيش حاجة حصلت." }] },
+                { id: 'v6', ger: "aussehen (als ob)", eng: "to look like / appear", ar: "يبدو وكأن", s: [{ g: "Es <strong>sieht</strong> so <strong>aus</strong>, als ob es regnet.", e: "It looks as if it's raining.", a: "شكلها كده هتمطر." }, { g: "Der Tatort <strong>sah</strong> aus, als hätte eine Bombe eingeschlagen.", e: "The crime scene looked as if a bomb had hit.", a: "مسرح الجريمة كان شكله كأن قنبلة انفجرت فيه." }, { g: "Er <strong>sieht</strong> aus, als ob er krank wäre.", e: "He looks as if he were sick.", a: "شكله وكأنه عيان." }] },
+                { id: 'v7', ger: "vermuten", eng: "to assume / suspect", ar: "يُخمن / يفترض", s: [{ g: "Ich <strong>vermute</strong>, dass er lügt.", e: "I suspect that he is lying.", a: "أنا بخمن إنه بيكدب." }, { g: "Die Polizei <strong>vermutet</strong> einen Racheakt.", e: "The police suspect an act of revenge.", a: "الشرطة بتفترض إن ده عمل انتقامي." }, { g: "Wie ich <strong>vermutet</strong> habe, war niemand zu Hause.", e: "As I suspected, no one was home.", a: "زي ما خمنت، مكانش فيه حد في البيت." }] },
+                { id: 'v8', ger: "töten", eng: "to kill", ar: "يقتل", s: [{ g: "Der Täter <strong>tötete</strong> sein Opfer.", e: "The perpetrator killed his victim.", a: "الجاني قتل ضحيته." }, { g: "Rauchen kann <strong>töten</strong>.", e: "Smoking can kill.", a: "التدخين ممكن يقتل." }, { g: "Ein Virus <strong>tötete</strong> viele Tiere.", e: "A virus killed many animals.", a: "فيروس قتل حيوانات كتير." }] },
+                { id: 'v9', ger: "ermorden", eng: "to murder", ar: "يغتال / يقتل", s: [{ g: "Er wurde brutal <strong>ermordet</strong>.", e: "He was brutally murdered.", a: "تم اغتياله بوحشية." }, { g: "Sie planten, den König zu <strong>ermorden</strong>.", e: "They planned to murder the king.", a: "هما خططوا لاغتيال الملك." }, { g: "Wer hat diesen unschuldigen Mann <strong>ermordet</strong>?", e: "Who murdered this innocent man?", a: "مين اللي قتل الراجل البريء ده؟" }] }
+            ],
+            irregularVerbs: [
+                { id: 'iv1', ger: "stehlen", eng: "to steal", ar: "يسرق", praesens: "Er stiehlt Geld.", praeteritum: "er stahl", perfekt: "er hat gestohlen", s: [{ g: "Der Dieb <strong>stiehlt</strong> eine Tasche.", e: "The thief steals a bag.", a: "الحرامي بيسرق شنطة." }, { g: "Jemand hat mein Auto <strong>gestohlen</strong>.", e: "Someone stole my car.", a: "حد سرق عربيتي." }, { g: "Er <strong>stahl</strong> Brot, weil er Hunger hatte.", e: "He stole bread because he was hungry.", a: "هو سرق عيش عشان كان جعان." }] },
+                { id: 'iv2', ger: "einbrechen", eng: "to break in / burglarize", ar: "يقتحم / يسطو", praesens: "Jemand bricht ins Haus ein.", praeteritum: "er brach ein", perfekt: "er ist eingebrochen", s: [{ g: "Jemand <strong>bricht</strong> in die Bank <strong>ein</strong>.", e: "Someone is breaking into the bank.", a: "حد بيقتحم البنك." }, { g: "Diebe sind gestern bei uns <strong>eingebrochen</strong>.", e: "Thieves broke into our place yesterday.", a: "حرامية اقتحموا بيتنا إمبارح." }, { g: "Er <strong>brach</strong> durch das Fenster <strong>ein</strong>.", e: "He broke in through the window.", a: "هو اقتحم من الشباك." }] },
+                { id: 'iv3', ger: "erschießen", eng: "to shoot dead", ar: "يُرديه قتيلاً بالرصاص", praesens: "Er erschießt den Mann.", praeteritum: "er erschoss", perfekt: "er hat erschossen", s: [{ g: "Der Polizist <strong>erschießt</strong> den Angreifer.", e: "The police officer shoots the attacker dead.", a: "الظابط بيردي المهاجم قتيلاً." }, { g: "Der Täter hat sein Opfer <strong>erschossen</strong>.", e: "The perpetrator shot his victim dead.", a: "الجاني ضرب ضحيته بالرصاص." }, { g: "Im Film wurde der Bösewicht <strong>erschossen</strong>.", e: "In the movie, the villain was shot dead.", a: "في الفيلم الشرير انضرب بالنار." }] },
+                { id: 'iv4', ger: "fliehen", eng: "to flee / escape", ar: "يهرب / يفر", praesens: "Der Täter flieht.", praeteritum: "er floh", perfekt: "er ist geflohen", s: [{ g: "Der Täter <strong>flieht</strong> vor der Polizei.", e: "The perpetrator flees from the police.", a: "الجاني بيهرب من الشرطة." }, { g: "Viele Menschen sind aus dem Land <strong>geflohen</strong>.", e: "Many people fled the country.", a: "ناس كتير هربوا من البلد." }, { g: "Als er mich sah, <strong>floh</strong> er sofort.", e: "When he saw me, he fled immediately.", a: "لما شافني هرب على طول." }] },
+                { id: 'iv5', ger: "begehen", eng: "to commit (a crime)", ar: "يرتكب (جريمة)", praesens: "Er begeht eine Straftat.", praeteritum: "er beging", perfekt: "er hat begangen", s: [{ g: "Er <strong>begeht</strong> einen großen Fehler.", e: "He is committing a big mistake.", a: "هو بيرتكب غلطة كبيرة." }, { g: "Wer hat dieses Verbrechen <strong>begangen</strong>?", e: "Who committed this crime?", a: "مين اللي ارتكب الجريمة دي؟" }, { g: "Die Bande <strong>beging</strong> zahlreiche Banküberfälle.", e: "The gang committed numerous bank robberies.", a: "العصابة ارتكبت عمليات سطو كتير على البنوك." }] },
+                { id: 'iv6', ger: "festnehmen", eng: "to arrest", ar: "يعتقل / يقبض على", praesens: "Die Polizei nimmt ihn fest.", praeteritum: "sie nahm fest", perfekt: "sie hat festgenommen", s: [{ g: "Die Polizei <strong>nimmt</strong> den Verdächtigen <strong>fest</strong>.", e: "The police arrest the suspect.", a: "الشرطة بتقبض على المشتبه به." }, { g: "Der Dieb wurde gestern <strong>festgenommen</strong>.", e: "The thief was arrested yesterday.", a: "تم القبض على الحرامي إمبارح." }, { g: "Wir müssen ihn sofort <strong>festnehmen</strong>.", e: "We must arrest him immediately.", a: "لازم نقبض عليه فوراً." }] },
+                { id: 'iv7', ger: "verhaften", eng: "to arrest", ar: "يعتقل", praesens: "Man verhaftet ihn.", praeteritum: "man verhaftete ihn", perfekt: "man hat ihn verhaftet", s: [{ g: "Man <strong>verhaftet</strong> ihn wegen Mordes.", e: "He is arrested for murder.", a: "بيتم القبض عليه بتهمة القتل." }, { g: "Die Kommissarin hat den Chef <strong>verhaftet</strong>.", e: "The inspector arrested the boss.", a: "المفتشة اعتقلت المدير." }, { g: "Nach dem Geständnis wurde er <strong>verhaftet</strong>.", e: "After the confession, he was arrested.", a: "بعد الاعتراف تم اعتقاله." }] },
+                { id: 'iv8', ger: "aufklären", eng: "to clear up / solve", ar: "يحل (جريمة)", praesens: "Sie klären den Mord auf.", praeteritum: "sie klärten auf", perfekt: "sie haben aufgeklärt", s: [{ g: "Der Detektiv <strong>klärt</strong> das Rätsel <strong>auf</strong>.", e: "The detective solves the puzzle.", a: "المحقق بيحل اللغز." }, { g: "Dieser Fall wurde nie <strong>aufgeklärt</strong>.", e: "This case was never solved.", a: "القضية دي ماتحلتش أبداً." }, { g: "Wir werden dieses Verbrechen <strong>aufklären</strong>.", e: "We will solve this crime.", a: "إحنا هنحل الجريمة دي." }] },
+                { id: 'iv9', ger: "beweisen", eng: "to prove", ar: "يُثبت / يُقدم دليلاً", praesens: "Er beweist seine Unschuld.", praeteritum: "er bewies", perfekt: "er hat bewiesen", s: [{ g: "Er <strong>beweist</strong> dem Richter seine Unschuld.", e: "He proves his innocence to the judge.", a: "هو بيثبت براءته للقاضي." }, { g: "Die Staatsanwältin hat die Schuld <strong>bewiesen</strong>.", e: "The prosecutor proved the guilt.", a: "المدعية العامة أثبتت التهمة (الذنب)." }, { g: "Das lässt sich schwer <strong>beweisen</strong>.", e: "That is hard to prove.", a: "ده صعب إثباته." }] },
+                { id: 'iv10', ger: "verurteilen", eng: "to sentence", ar: "يحكم على", praesens: "Der Richter verurteilt ihn.", praeteritum: "er verurteilte", perfekt: "er hat verurteilt", s: [{ g: "Das Gericht <strong>verurteilt</strong> ihn zu zehn Jahren.", e: "The court sentences him to ten years.", a: "المحكمة بتحكم عليه بـ ١٠ سنين." }, { g: "Sie wurde wegen Betrugs <strong>verurteilt</strong>.", e: "She was sentenced for fraud.", a: "اتحكم عليها بتهمة النصب." }, { g: "Der Täter ist rechtskräftig <strong>verurteilt</strong>.", e: "The perpetrator is legally sentenced.", a: "الجاني اتحكم عليه نهائياً." }] }
+            ],
+            expressions: [
+                { id: 'e1', type: "Nomen-Verb", ger: "eine Entscheidung treffen", eng: "to make a decision (entscheiden)", ar: "يتخذ قراراً", context: "Wir müssen heute eine Entscheidung treffen." },
+                { id: 'e2', type: "Nomen-Verb", ger: "einen Fehler machen", eng: "to make a mistake (sich irren / falsch handeln)", ar: "يرتكب خطأ", context: "Jeder kann mal einen Fehler machen." },
+                { id: 'e3', type: "Nomen-Verb", ger: "eine Frage stellen", eng: "to ask a question (fragen)", ar: "يطرح سؤالاً", context: "Darf ich Ihnen eine Frage stellen?" },
+                { id: 'e4', type: "Nomen-Verb", ger: "in Gefahr sein", eng: "to be in danger (gefährdet sein)", ar: "يكون في خطر", context: "Das Opfer war in großer Gefahr." },
+                { id: 'e5', type: "Nomen-Verb", ger: "in Gefahr bringen", eng: "to endanger (gefährden)", ar: "يُعرض للخطر", context: "Du bringst uns alle in Gefahr." },
+                { id: 'e6', type: "Nomen-Verb", ger: "die Ruhe bewahren", eng: "to keep calm (ruhig bleiben)", ar: "يحافظ على هدوئه", context: "Bei einem Überfall muss man die Ruhe bewahren." },
+                { id: 'e7', type: "Nomen-Verb", ger: "zu Ende bringen", eng: "to finish (beenden)", ar: "يُنهي / يصل لخط النهاية", context: "Wir müssen die Untersuchung zu Ende bringen." },
+                { id: 'e8', type: "Nomen-Verb", ger: "eine Straftat begehen", eng: "to commit a crime (etwas Kriminelles tun)", ar: "يرتكب جريمة", context: "Wer eine Straftat begeht, wird bestraft." },
+                { id: 'e9', type: "Nomen-Verb", ger: "Anzeige erstatten", eng: "to file a report (den Vorfall melden)", ar: "يُقدم بلاغاً للشرطة", context: "Nach dem Diebstahl muss man Anzeige erstatten." },
+                { id: 'e10', type: "Nomen-Verb", ger: "ein Gespräch führen", eng: "to have a conversation (sprechen)", ar: "يُجري محادثة", context: "Der Kommissar führt ein Gespräch mit dem Zeugen." },
+                { id: 'e11', type: "Nomen-Verb", ger: "einen Tipp geben", eng: "to give a tip (raten)", ar: "يُقدم نصيحة", context: "Können Sie mir einen Tipp geben?" },
+                { id: 'e12', type: "Überraschung", ger: "Wirklich? / Echt?", eng: "Really?", ar: "حقاً؟ / بجد؟", context: "للتعبير عن الدهشة من خبر." },
+                { id: 'e13', type: "Überraschung", ger: "Wahnsinn!", eng: "Crazy / Awesome!", ar: "جنون! (رائع أو لا يُصدق)", context: "لرد فعل قوي سواء إيجابي أو سلبي." },
+                { id: 'e14', type: "Überraschung", ger: "Das gibt’s doch nicht!", eng: "That can't be true!", ar: "هذا لا يعقل! / مستحيل!", context: "عند سماع شيء غير متوقع." },
+                { id: 'e15', type: "Überraschung", ger: "Das ist ja unglaublich!", eng: "That is unbelievable!", ar: "هذا لا يُصدق!", context: "للتعبير عن الصدمة." },
+                { id: 'e16', type: "Überraschung", ger: "Das hätte ich nicht gedacht!", eng: "I wouldn't have thought that!", ar: "لم أكن لأعتقد ذلك! (لم أتوقع هذا)", context: "عندما تخالف النتيجة توقعاتك." }
+            ],
+            prepositions: [
+                { id: 'p1', ger: "auf (+ Dat)", eng: "on the trail of", ar: "على أثر / يتعقب", s: [{ g: "Die Polizei ist dem Täter <strong>auf</strong> der Spur.", e: "The police are on the perpetrator's trail.", a: "الشرطة بتتعقب أثر الجاني." }, { g: "Der Detektiv blieb dem Verdächtigen <strong>auf</strong> der Spur.", e: "The detective stayed on the suspect's trail.", a: "المحقق فضل على أثر المشتبه به." }, { g: "Wir sind dem Fehler <strong>auf</strong> der Spur.", e: "We are on the trail of the mistake.", a: "إحنا بنتعقب الغلطة." }] },
+                { id: 'p2', ger: "zu (+ Dat)", eng: "sentenced to / bring to", ar: "يُحكم بـ / يصل لـ", s: [{ g: "Er wurde <strong>zu</strong> einer Gefängnisstrafe verurteilt.", e: "He was sentenced to prison.", a: "اتحكم عليه بالسجن." }, { g: "Das Gericht verurteilte ihn <strong>zu</strong> lebenslänglich.", e: "The court sentenced him to life.", a: "المحكمة حكمت عليه بالمؤبد." }, { g: "Wir müssen das Projekt <strong>zu</strong> Ende bringen.", e: "We must bring the project to an end.", a: "لازم نوصل المشروع للنهاية." }] },
+                { id: 'p3', ger: "in (+ Akk)", eng: "bring into danger", ar: "يُعرض لـ (الخطر)", s: [{ g: "Du bringst uns <strong>in</strong> Gefahr.", e: "You are putting us in danger.", a: "أنت بتعرضنا للخطر." }, { g: "Das Manöver brachte das Flugzeug <strong>in</strong> Gefahr.", e: "The maneuver put the plane in danger.", a: "المناورة دي عرضت الطيارة للخطر." }, { g: "Er hat sich selbst <strong>in</strong> Lebensgefahr gebracht.", e: "He put himself in mortal danger.", a: "هو عرض نفسه لخطر الموت." }] },
+                { id: 'p4', ger: "in (+ Dat)", eng: "to be in danger", ar: "يكون في (الخطر)", s: [{ g: "Wir sind <strong>in</strong> großer Gefahr.", e: "We are in great danger.", a: "إحنا في خطر كبير." }, { g: "Der Patient schwebt <strong>in</strong> Lebensgefahr.", e: "The patient's life is in danger.", a: "المريض حياته في خطر." }, { g: "Viele Tierarten sind <strong>in</strong> Gefahr.", e: "Many animal species are in danger.", a: "فصائل حيوانات كتير في خطر." }] },
+                { id: 'p5', ger: "vor (+ Dat)", eng: "afraid of / in front of", ar: "خائف من / أمام (المحكمة)", s: [{ g: "Er hat Angst <strong>vor</strong> dem Mörder.", e: "He is afraid of the murderer.", a: "هو خايف من القاتل." }, { g: "Kinder haben oft Angst <strong>vor</strong> der Dunkelheit.", e: "Children are often afraid of the dark.", a: "الأطفال غالباً بيخافوا من الضلمة." }, { g: "Sie zitterte <strong>vor</strong> Angst.", e: "She trembled with fear.", a: "كانت بترتعش من الخوف." }] },
+                { id: 'p6', ger: "vor (+ Dat)", eng: "stand in front of (court)", ar: "يقف أمام (المحكمة)", s: [{ g: "Morgen steht er <strong>vor</strong> Gericht.", e: "Tomorrow he stands before the court.", a: "بكرة هيقف قدام المحكمة." }, { g: "Wir parken <strong>vor</strong> dem Gefängnis.", e: "We are parking in front of the prison.", a: "إحنا راكنين قدام السجن." }, { g: "Der Anwalt sprach <strong>vor</strong> den Journalisten.", e: "The lawyer spoke in front of the journalists.", a: "المحامي اتكلم قدام الصحفيين." }] }
+            ],
+            grammar: [
+                {
+                    title: "الجمل المقارنة الخيالية (Irreale Vergleichssätze mit 'als ob')",
+                    desc: "تُستخدم عندما نصف شيئاً يتصرف بطريقة غير حقيقية أو متخيلة. نستخدم معها صيغة الخيال (Konjunktiv II). الأداة 'als ob' تُدخل جملة جانبية (الفعل المُصرف في النهاية).",
+                    structure: "Hauptsatz + als ob + Subjekt + ... + Konjunktiv II Verb am Ende.",
+                    examples: [
+                        { g: "Er tut so, <span class='text-purple-600 font-bold'>als ob</span> er der Chef <span class='text-purple-600 font-bold'>wäre</span>.", a: "هو بيتصرف كما لو إنه كان المدير. (في المضارع)" },
+                        { g: "Er sah aus, <span class='text-purple-600 font-bold'>als ob</span> er einen Geist gesehen <span class='text-purple-600 font-bold'>hätte</span>.", a: "كان شكله وكأنه شاف شبح. (في الماضي)" },
+                        { g: "Sie tut so, <span class='text-purple-600 font-bold'>als ob</span> sie nichts <span class='text-purple-600 font-bold'>wüsste</span>.", a: "هي بتعمل نفسها كأنها متعرفش حاجة." }
+                    ]
+                },
+                {
+                    title: "الجمل المقارنة الخيالية (Irreale Vergleichssätze mit 'als')",
+                    desc: "يمكن الاستغناء عن 'ob' واستخدام 'als' فقط. في هذه الحالة، يتصرف المقطع وكأنه جملة رئيسية ولكن مقلوبة، حيث يأتي الفعل المُصرف مباشرة بعد كلمة als في المركز الثاني.",
+                    structure: "Hauptsatz + als + Konjunktiv II Verb + Subjekt + ...",
+                    examples: [
+                        { g: "Er tut so, <span class='text-purple-600 font-bold'>als wäre</span> er der Chef.", a: "هو بيتصرف كأنه المدير. (في المضارع - نفس المعنى)" },
+                        { g: "Er sah aus, <span class='text-purple-600 font-bold'>als hätte</span> er einen Geist gesehen.", a: "كان شكله وكأنه شاف شبح. (في الماضي - نفس المعنى)" },
+                        { g: "Es sieht so aus, <span class='text-purple-600 font-bold'>als würde</span> es gleich regnen.", a: "شكلها كده كأنها هتمطر حالاً." }
+                    ]
+                }
+            ],
+            review: [
+                {
+                    catId: 'rev-nomen-verb',
+                    title: '1. Nomen-Verb-Verbindungen (ارتباطات الأسماء بالأفعال)',
+                    items: [
+                        { id: 'r_nv_1', g: "eine Entscheidung treffen", e: "make a decision", a: "يتخذ قراراً" },
+                        { id: 'r_nv_2', g: "einen Fehler machen", e: "make a mistake", a: "يرتكب خطأ" },
+                        { id: 'r_nv_3', g: "eine Frage stellen", e: "ask a question", a: "يطرح سؤالاً" },
+                        { id: 'r_nv_4', g: "in Gefahr sein", e: "be in danger", a: "يكون في خطر" },
+                        { id: 'r_nv_5', g: "in Gefahr bringen", e: "bring into danger", a: "يُعرض للخطر" },
+                        { id: 'r_nv_6', g: "die Ruhe bewahren", e: "keep calm", a: "يحافظ على هدوئه" },
+                        { id: 'r_nv_7', g: "zu Ende bringen", e: "bring to an end", a: "يُنهي / يصل للنهاية" },
+                        { id: 'r_nv_8', g: "eine Straftat begehen", e: "commit a crime", a: "يرتكب جريمة" },
+                        { id: 'r_nv_9', g: "Anzeige erstatten", e: "file a report", a: "يُقدم بلاغاً" },
+                        { id: 'r_nv_10', g: "ein Gespräch führen", e: "have a conversation", a: "يُجري محادثة" },
+                        { id: 'r_nv_11', g: "einen Tipp geben", e: "give a tip", a: "يُقدم نصيحة" }
+                    ]
+                },
+                {
+                    catId: 'rev-ueberraschung',
+                    title: '2. Überraschung ausdrücken (التعبير عن الدهشة)',
+                    items: [
+                        { id: 'r_u_1', g: "Wirklich?", e: "Really?", a: "حقاً؟" },
+                        { id: 'r_u_2', g: "Echt?", e: "For real?", a: "بجد؟" },
+                        { id: 'r_u_3', g: "Wahnsinn!", e: "Crazy/Awesome!", a: "جنون!" },
+                        { id: 'r_u_4', g: "Das gibt’s doch nicht!", e: "That can't be true!", a: "مستحيل / لا يعقل!" },
+                        { id: 'r_u_5', g: "Das ist ja unglaublich!", e: "That is unbelievable!", a: "هذا لا يُصدق!" },
+                        { id: 'r_u_6', g: "Das hätte ich nicht gedacht!", e: "I wouldn't have thought that!", a: "لم أتوقع هذا أبداً!" }
+                    ]
+                },
+                {
+                    catId: 'rev-als-ob',
+                    title: '3. Irreale Vergleichssätze mit "als ob" / "als" (الجمل الخيالية)',
+                    items: [
+                        { id: 'r_k_1', g: "Er tut so, als ob er der Chef wäre.", e: "He acts as if he were the boss.", a: "بيتصرف كما لو كان المدير." },
+                        { id: 'r_k_2', g: "Er tut so, als wäre er der Chef.", e: "He acts as if he were the boss.", a: "بيتصرف كأنه المدير." },
+                        { id: 'r_k_3', g: "Sie sah aus, als ob sie einen Geist gesehen hätte.", e: "She looked as if she had seen a ghost.", a: "كان شكلها كأنها شافت شبح." },
+                        { id: 'r_k_4', g: "Sie sah aus, als hätte sie einen Geist gesehen.", e: "She looked as if she had seen a ghost.", a: "كان شكلها كأنها شافت شبح." },
+                        { id: 'r_k_5', g: "Es sieht so aus, als ob es regnen würde.", e: "It looks as if it's going to rain.", a: "شكلها كده كأنها هتمطر." },
+                        { id: 'r_k_6', g: "Es sieht so aus, als würde es regnen.", e: "It looks as if it's going to rain.", a: "شكلها كده كأنها هتمطر." }
+                    ]
+                },
+                {
+                    catId: 'rev-krimi',
+                    title: '4. Polizei und Gericht (الشرطة والمحكمة)',
+                    items: [
+                        { id: 'r_p_1', g: "Die Polizei ist dem Täter auf der Spur.", e: "The police are on the perpetrator's trail.", a: "الشرطة بتتعقب أثر الجاني." },
+                        { id: 'r_p_2', g: "Der Detektiv ermittelt im Mordfall.", e: "The detective investigates the murder case.", a: "المحقق بيحقق في قضية القتل." },
+                        { id: 'r_p_3', g: "Man muss den Tatort absperren.", e: "The crime scene must be cordoned off.", a: "لازم يقفلوا مسرح الجريمة." },
+                        { id: 'r_p_4', g: "Haben Sie ein Alibi für gestern Abend?", e: "Do you have an alibi for last night?", a: "عندك حجة غياب لإمبارح بالليل؟" },
+                        { id: 'r_p_5', g: "Die Waffe wurde nicht gefunden.", e: "The weapon was not found.", a: "مالقوش السلاح." },
+                        { id: 'r_p_6', g: "Er wurde zu einer Gefängnisstrafe verurteilt.", e: "He was sentenced to a prison term.", a: "اتحكم عليه بالسجن." },
+                        { id: 'r_p_7', g: "Der Zeuge muss vor Gericht aussagen.", e: "The witness must testify in court.", a: "الشاهد لازم يدلي بشهادته قدام المحكمة." },
+                        { id: 'r_p_8', g: "Der Richter spricht das Urteil.", e: "The judge pronounces the verdict.", a: "القاضي بينطق بالحكم." }
+                    ]
+                }
+            ],
+            // ==========================================
+            // B2 EXPANSION (توسعة مستوى B2)
+            // ==========================================
+            b2: {
+                words: [
+                    { id: 'b2_w_1', ger: "die Erpressung", eng: "Blackmail / Extortion", ar: "الابتزاز", s: [{ g: "Er wurde wegen <strong>Erpressung</strong> verhaftet.", e: "He was arrested for blackmail.", a: "تم القبض عليه بتهمة الابتزاز." }, { g: "Die Mafia forderte Geld durch <strong>Erpressung</strong>.", e: "The mafia demanded money through extortion.", a: "المافيا طلبت فلوس عن طريق الابتزاز." }, { g: "Sie gab der <strong>Erpressung</strong> nicht nach.", e: "She did not give in to the blackmail.", a: "هي مستسلمتش للابتزاز." }] },
+                    { id: 'b2_w_2', ger: "der Betrug", eng: "Fraud / Deceit", ar: "الاحتيال / النصب", s: [{ g: "Der <strong>Betrug</strong> hat viele Menschen ruiniert.", e: "The fraud ruined many people.", a: "الاحتيال دمر ناس كتير." }, { g: "Steuer<strong>betrug</strong> wird streng bestraft.", e: "Tax fraud is strictly punished.", a: "التهرب الضريبي بيتعاقب بشدة." }, { g: "Man warf ihm millionenfachen <strong>Betrug</strong> vor.", e: "He was accused of millions in fraud.", a: "اتهموه بنصب بملايين." }] },
+                    { id: 'b2_w_3', ger: "die Bestechung", eng: "Bribery", ar: "الرشوة", s: [{ g: "<strong>Bestechung</strong> ist ein ernstes Vergehen.", e: "Bribery is a serious offense.", a: "الرشوة جنحة خطيرة." }, { g: "Der Politiker wurde wegen <strong>Bestechung</strong> verurteilt.", e: "The politician was convicted of bribery.", a: "السياسي اتحكم عليه بتهمة الرشوة." }, { g: "Der Beamte lehnte die <strong>Bestechung</strong> ab.", e: "The official refused the bribe.", a: "الموظف رفض الرشوة." }] },
+                    { id: 'b2_w_4', ger: "die Entführung", eng: "Kidnapping", ar: "الاختطاف", s: [{ g: "Die <strong>Entführung</strong> des Politikers schockierte alle.", e: "The kidnapping of the politician shocked everyone.", a: "اختطاف السياسي صدم الكل." }, { g: "Die Polizei konnte die <strong>Entführung</strong> klären.", e: "The police could solve the kidnapping.", a: "الشرطة قدرت تحل قضية الخطف." }, { g: "Das Opfer der <strong>Entführung</strong> ist wohlauf.", e: "The victim of the kidnapping is safe.", a: "ضحية الخطف بخير." }] },
+                    { id: 'b2_w_5', ger: "der Schmuggel", eng: "Smuggling", ar: "التهريب", s: [{ g: "Ihm wird illegaler <strong>Schmuggel</strong> vorgeworfen.", e: "He is accused of illegal smuggling.", a: "هو متهم بالتهريب غير الشرعي." }, { g: "Der Zoll verhinderte den Drogen<strong>schmuggel</strong>.", e: "Customs prevented drug smuggling.", a: "الجمارك منعت تهريب المخدرات." }, { g: "Waffen<strong>schmuggel</strong> ist ein großes Problem.", e: "Arms smuggling is a big problem.", a: "تهريب السلاح مشكلة كبيرة." }] },
+                    { id: 'b2_w_6', ger: "das Geständnis", eng: "Confession", ar: "الاعتراف", s: [{ g: "Der Täter hat ein umfassendes <strong>Geständnis</strong> abgelegt.", e: "The perpetrator made a full confession.", a: "الجاني قدم اعتراف كامل." }, { g: "Die Polizei zwang ihn zu einem <strong>Geständnis</strong>.", e: "The police forced him to confess.", a: "الشرطة أجبرته على الاعتراف." }, { g: "Sein <strong>Geständnis</strong> war der Wendepunkt im Prozess.", e: "His confession was the turning point in the trial.", a: "اعترافه كان نقطة التحول في المحاكمة." }] },
+                    { id: 'b2_w_7', ger: "die Bewährungsstrafe", eng: "Suspended sentence / Probation", ar: "حكم مع إيقاف التنفيذ", s: [{ g: "Er kam mit einer <strong>Bewährungsstrafe</strong> davon.", e: "He got off with a suspended sentence.", a: "نفد منها بحكم مع إيقاف التنفيذ." }, { g: "Das Gericht verhängte eine <strong>Bewährungsstrafe</strong> von zwei Jahren.", e: "The court imposed a two-year suspended sentence.", a: "المحكمة أصدرت حكم بسنتين مع إيقاف التنفيذ." }, { g: "Während der <strong>Bewährungsstrafe</strong> darf er nicht straffällig werden.", e: "During probation he must not offend.", a: "خلال فترة المراقبة ممنوع يرتكب أي جنحة." }] },
+                    { id: 'b2_w_8', ger: "die Anklage", eng: "Indictment / Charge", ar: "لائحة الاتهام", s: [{ g: "Die <strong>Anklage</strong> lautet auf Mord.", e: "The charge is murder.", a: "لائحة الاتهام بتهمة القتل." }, { g: "Die <strong>Anklage</strong> wurde vom Gericht fallengelassen.", e: "The charge was dropped by the court.", a: "لائحة الاتهام أسقطت من المحكمة." }, { g: "Der Richter las die <strong>Anklage</strong> vor.", e: "The judge read the indictment.", a: "القاضي قرأ لائحة الاتهام." }] },
+                    { id: 'b2_w_9', ger: "der Staatsanwalt", eng: "Public prosecutor", ar: "المدعي العام", s: [{ g: "Der <strong>Staatsanwalt</strong> fordert zehn Jahre Haft.", e: "The prosecutor demands ten years in prison.", a: "المدعي العام بيطالب بـ 10 سنين سجن." }, { g: "Die <strong>Staatsanwältin</strong> sammelt Beweise gegen den Täter.", e: "The prosecutor collects evidence against the perpetrator.", a: "المدعية العامة بتجمع أدلة ضد الجاني." }, { g: "Der <strong>Staatsanwalt</strong> hielt ein flammendes Plädoyer.", e: "The prosecutor gave a passionate closing argument.", a: "المدعي العام ألقى مرافعة حماسية." }] },
+                    { id: 'b2_w_10', ger: "der Verteidiger", eng: "Defense attorney", ar: "محامي الدفاع", s: [{ g: "Sein <strong>Verteidiger</strong> plädiert auf Freispruch.", e: "His defense attorney pleads for acquittal.", a: "محامي الدفاع بيطالب بالبراءة." }, { g: "Ein guter <strong>Verteidiger</strong> ist sehr teuer.", e: "A good defense lawyer is very expensive.", a: "محامي الدفاع الشاطر غالي جداً." }, { g: "Der <strong>Verteidiger</strong> befragte den Zeugen scharf.", e: "The defense attorney cross-examined the witness sharply.", a: "محامي الدفاع استجوب الشاهد بشدة." }] },
+                    { id: 'b2_w_11', ger: "der Freispruch", eng: "Acquittal", ar: "البراءة", s: [{ g: "Es gab nicht genug Beweise, also folgte ein <strong>Freispruch</strong>.", e: "There was not enough evidence, so an acquittal followed.", a: "مكانش فيه أدلة كفاية فبالتالي أخد براءة." }, { g: "Der <strong>Freispruch</strong> überraschte alle im Gerichtssaal.", e: "The acquittal surprised everyone in the courtroom.", a: "البراءة فاجأت كل اللي في قاعة المحكمة." }, { g: "Nach dem <strong>Freispruch</strong> durfte er nach Hause gehen.", e: "After the acquittal he was allowed to go home.", a: "بعد حكم البراءة اتسمحله يروح بيته." }] },
+                    { id: 'b2_w_12', ger: "die Revision", eng: "Appeal (legal)", ar: "الاستئناف / الطعن", s: [{ g: "Der Verurteilte geht in <strong>Revision</strong>.", e: "The convicted person is appealing.", a: "المُدان هيقدم طعن / استئناف." }, { g: "Das Urteil ist noch nicht rechtskräftig, da <strong>Revision</strong> eingelegt wurde.", e: "The verdict is not yet final, as an appeal was filed.", a: "الحكم لسة مش نهائي لأنه تم تقديم استئناف." }, { g: "Die <strong>Revision</strong> wurde vom Gericht abgelehnt.", e: "The appeal was rejected by the court.", a: "الاستئناف اترفض من المحكمة." }] },
+                    { id: 'b2_w_13', ger: "das Indiz", eng: "Circumstantial evidence", ar: "قرينة / دليل ظرفي", s: [{ g: "Ein <strong>Indiz</strong> ist noch kein Beweis.", e: "Circumstantial evidence is not yet proof.", a: "القرينة لوحدها مش دليل قاطع." }, { g: "Es gibt viele <strong>Indizien</strong>, die gegen ihn sprechen.", e: "There is much circumstantial evidence against him.", a: "فيه قرائن كتير ضده." }, { g: "Die Polizei sicherte ein wichtiges <strong>Indiz</strong> am Tatort.", e: "The police secured important circumstantial evidence at the crime scene.", a: "الشرطة أمنت قرينة مهمة في مسرح الجريمة." }] },
+                    { id: 'b2_w_14', ger: "die Verjährung", eng: "Statute of limitations", ar: "التقادم (سقوط الجريمة)", s: [{ g: "Mord unterliegt in Deutschland nicht der <strong>Verjährung</strong>.", e: "Murder is not subject to the statute of limitations in Germany.", a: "جريمة القتل مابتسقطش بالتقادم في ألمانيا." }, { g: "Die <strong>Verjährung</strong>sfrist für Betrug beträgt fünf Jahre.", e: "The statute of limitations for fraud is five years.", a: "فترة تقادم تهمة النصب ٥ سنين." }, { g: "Der Fall wurde wegen <strong>Verjährung</strong> geschlossen.", e: "The case was closed due to the statute of limitations.", a: "القضية اتقفلت بسبب التقادم." }] },
+                    { id: 'b2_w_15', ger: "der Komplize", eng: "Accomplice", ar: "الشريك في الجريمة", s: [{ g: "Er beging den Bankraub mit einem <strong>Komplizen</strong>.", e: "He committed the bank robbery with an accomplice.", a: "هو عمل السطو على البنك مع شريك." }, { g: "Der <strong>Komplize</strong> wartete im Fluchtauto.", e: "The accomplice waited in the getaway car.", a: "شريك الجريمة كان مستني في عربية الهروب." }, { g: "Sein <strong>Komplize</strong> hat ihn an die Polizei verraten.", e: "His accomplice betrayed him to the police.", a: "شريكه سلمه (بلغ عنه) للشرطة." }] },
+                    { id: 'b2_w_16', ger: "die Hintermänner", eng: "Masterminds / Backers", ar: "الرؤوس المدبرة", s: [{ g: "Die Polizei sucht noch nach den <strong>Hintermännern</strong>.", e: "The police are still looking for the masterminds.", a: "الشرطة لسة بتدور على الرؤوس المدبرة." }, { g: "Die <strong>Hintermänner</strong> des Kartells blieben im Verborgenen.", e: "The masterminds of the cartel remained hidden.", a: "الرؤوس المدبرة للعصابة فضلوا مستخبيين." }, { g: "Er weigert sich, die Namen der <strong>Hintermänner</strong> zu nennen.", e: "He refuses to name the masterminds.", a: "هو رافض يقول أسامي الرؤوس المدبرة." }] },
+                    { id: 'b2_w_17', ger: "die Spurensicherung", eng: "Forensics", ar: "الأدلة الجنائية", s: [{ g: "Die <strong>Spurensicherung</strong> untersucht den Tatort akribisch.", e: "Forensics is investigating the crime scene meticulously.", a: "الأدلة الجنائية بتفحص مسرح الجريمة بدقة شديدة." }, { g: "Experten der <strong>Spurensicherung</strong> fanden Haare des Täters.", e: "Forensics experts found the perpetrator's hair.", a: "خبراء الأدلة الجنائية لقوا شعر للجاني." }, { g: "Die Arbeit der <strong>Spurensicherung</strong> dauerte den ganzen Tag.", e: "The forensics work lasted all day.", a: "شغل الأدلة الجنائية أخد اليوم كله." }] },
+                    { id: 'b2_w_18', ger: "das Lösegeld", eng: "Ransom", ar: "الفدية", s: [{ g: "Die Entführer forderten eine Million Euro <strong>Lösegeld</strong>.", e: "The kidnappers demanded one million euros ransom.", a: "الخاطفين طلبوا مليون يورو فدية." }, { g: "Das <strong>Lösegeld</strong> wurde in einem Koffer übergeben.", e: "The ransom was handed over in a suitcase.", a: "الفدية اتسلمت في شنطة." }, { g: "Die Familie konnte das hohe <strong>Lösegeld</strong> nicht zahlen.", e: "The family couldn't pay the high ransom.", a: "العيلة مقدرتش تدفع الفدية الكبيرة." }] },
+                    { id: 'b2_w_19', ger: "der Haftbefehl", eng: "Arrest warrant", ar: "مذكرة توقيف", s: [{ g: "Der Richter hat einen <strong>Haftbefehl</strong> erlassen.", e: "The judge issued an arrest warrant.", a: "القاضي أصدر أمر اعتقال." }, { g: "Gegen ihn liegt ein internationaler <strong>Haftbefehl</strong> vor.", e: "There is an international arrest warrant against him.", a: "صادر ضده مذكرة توقيف دولية." }, { g: "Die Polizei kam mit einem <strong>Haftbefehl</strong> zu ihm nach Hause.", e: "The police came to his house with an arrest warrant.", a: "الشرطة راحتله البيت ومعاها أمر اعتقال." }] },
+                    { id: 'b2_w_20', ger: "skrupellos", eng: "Ruthless / Unscrupulous", ar: "عديم الضمير", s: [{ g: "Er ist ein <strong>skrupelloser</strong> Verbrecher.", e: "He is a ruthless criminal.", a: "هو مجرم عديم الضمير." }, { g: "Die Bande ging äußerst <strong>skrupellos</strong> vor.", e: "The gang acted extremely ruthlessly.", a: "العصابة اتصرفت بمنتهى انعدام الضمير." }, { g: "Ein <strong>skrupelloser</strong> Betrüger hat alte Menschen ausgeraubt.", e: "A ruthless fraudster robbed old people.", a: "نصاب معندوش ضمير سرق ناس عجوزة." }] },
+                    { id: 'b2_w_21', ger: "raffiniert", eng: "Cunning / Ingenious", ar: "داهية / ماكر", s: [{ g: "Der Plan der Diebe war äußerst <strong>raffiniert</strong>.", e: "The thieves' plan was extremely ingenious.", a: "خطة الحرامية كانت في منتهى الدهاء." }, { g: "Sie benutzte einen <strong>raffinierten</strong> Trick.", e: "She used a cunning trick.", a: "هي استخدمت خدعة ماكرة." }, { g: "Der Täter versteckte die Beute sehr <strong>raffiniert</strong>.", e: "The perpetrator hid the loot very cleverly.", a: "الجاني خبى الغنيمة بدهاء شديد." }] },
+                    { id: 'b2_w_22', ger: "eiskalt", eng: "Cold-blooded", ar: "بدم بارد", s: [{ g: "Er hat sein Opfer <strong>eiskalt</strong> angelogen.", e: "He lied to his victim in cold blood.", a: "كذب على ضحيته بدم بارد." }, { g: "Ein <strong>eiskalter</strong> Mörder zeigt keine Reue.", e: "A cold-blooded murderer shows no remorse.", a: "القاتل اللي بدم بارد مبيبينش أي ندم." }, { g: "Der Einbrecher ging <strong>eiskalt</strong> vor.", e: "The burglar acted cold-bloodedly.", a: "المقتحم اتصرف بدم بارد تماماً." }] },
+                    { id: 'b2_w_23', ger: "korrupt", eng: "Corrupt", ar: "فاسد / مرتشي", s: [{ g: "Manche Politiker sind leider <strong>korrupt</strong>.", e: "Some politicians are unfortunately corrupt.", a: "بعض السياسيين للأسف فاسدين (مرتشين)." }, { g: "Ein <strong>korrupter</strong> Polizist half der Mafia.", e: "A corrupt police officer helped the mafia.", a: "ظابط مرتشي ساعد المافيا." }, { g: "Das Justizsystem in diesem Land gilt als <strong>korrupt</strong>.", e: "The justice system in this country is considered corrupt.", a: "نظام العدالة في البلد دي بيُعتبر فاسد." }] },
+                    { id: 'b2_w_24', ger: "verwanzen", eng: "To bug (with listening devices)", ar: "يزرع أجهزة تنصت", s: [{ g: "Die Polizei ließ sein Büro <strong>verwanzen</strong>.", e: "The police had his office bugged.", a: "الشرطة زرعت أجهزة تنصت في مكتبه." }, { g: "Seine Wohnung war von Agenten <strong>verwanzt</strong> worden.", e: "His apartment had been bugged by agents.", a: "شقته اتزرع فيها أجهزة تنصت من العملاء." }, { g: "Man darf ohne Erlaubnis keine Räume <strong>verwanzen</strong>.", e: "One is not allowed to bug rooms without permission.", a: "ممنوع زرع أجهزة تنصت في الأماكن بدون إذن." }] },
+                    { id: 'b2_w_25', ger: "ausliefern", eng: "To extradite", ar: "يسلم (مجرماً)", s: [{ g: "Der Täter wurde an sein Heimatland <strong>ausgeliefert</strong>.", e: "The perpetrator was extradited to his home country.", a: "الجاني تم تسليمه لبلده الأم." }, { g: "Deutschland wird den Verdächtigen nicht <strong>ausliefern</strong>.", e: "Germany will not extradite the suspect.", a: "ألمانيا مش هتسلم المشتبه به." }, { g: "Das Land verlangt, dass die USA den Kriminellen <strong>ausliefern</strong>.", e: "The country demands that the USA extradite the criminal.", a: "البلد بتطالب أمريكا بتسليم المجرم." }] },
+                    { id: 'b2_w_26', ger: "plädieren (auf)", eng: "To plead (for)", ar: "يترافع مطالباً بـ", s: [{ g: "Der Anwalt <strong>plädierte auf</strong> unschuldig.", e: "The lawyer pleaded not guilty.", a: "المحامي ترافع مطالباً بالبراءة." }, { g: "Die Staatsanwaltschaft <strong>plädiert auf</strong> lebenslange Haft.", e: "The prosecution pleads for life imprisonment.", a: "النيابة بتترافع مطالبة بالسجن المؤبد." }, { g: "Ich <strong>plädiere auf</strong> mildernde Umstände.", e: "I plead for mitigating circumstances.", a: "أنا بترافع مطالباً بظروف مخففة." }] }
+                ],
+                expressions: [
+                    { id: 'b2_e_1', type: "Prüfung B2 (Diskussion)", ger: "Meines Erachtens ist die Strafe zu mild.", eng: "In my opinion, the punishment is too mild.", ar: "في رأيي / من وجهة نظري العقوبة خفيفة جداً.", context: "للتعبير عن الرأي الشخصي بطريقة رسمية وقوية." },
+                    { id: 'b2_e_2', type: "Prüfung B2 (Diskussion)", ger: "Es steht außer Zweifel, dass...", eng: "There is no doubt that...", ar: "مما لا شك فيه أن...", context: "لتأكيد حقيقة أو دليل في المناقشة." },
+                    { id: 'b2_e_3', type: "Prüfung B2 (Diskussion)", ger: "Ich vertrete die Auffassung, dass...", eng: "I take the view that...", ar: "أنا أتبنى وجهة النظر القائلة بأن...", context: "بديل ممتاز لـ Ich denke dass في الامتحانات." },
+                    { id: 'b2_e_4', type: "Prüfung B2 (Diskussion)", ger: "Man muss in Betracht ziehen, dass...", eng: "One must consider that...", ar: "يجب على المرء أن يأخذ بعين الاعتبار أن...", context: "لإضافة عامل جديد للنقاش (مثلاً عند تقييم دافع الجريمة)." },
+                    { id: 'b2_e_5', type: "Prüfung B2 (Diskussion)", ger: "Ein wesentlicher Aspekt ist...", eng: "An essential aspect is...", ar: "أحد الجوانب الجوهرية هو...", context: "لإبراز نقطة مهمة في موضوع الجريمة." },
+                    { id: 'b2_e_6', type: "Prüfung B2 (Diskussion)", ger: "Es lässt sich nicht leugnen, dass...", eng: "It cannot be denied that...", ar: "لا يمكن إنكار أن...", context: "للاتفاق على حقيقة ثابتة كدليل أو إحصائية." },
+                    { id: 'b2_e_7', type: "Prüfung B2 (Diskussion)", ger: "Im Gegensatz dazu steht...", eng: "In contrast to this stands...", ar: "على النقيض من ذلك نجد...", context: "لعرض وجهة نظر مضادة أو مناقشة أدلة الدفاع." },
+                    { id: 'b2_e_8', type: "Prüfung B2 (Diskussion)", ger: "Aus meiner Sicht...", eng: "From my perspective...", ar: "من وجهة نظري...", context: "تعبير راقٍ لبدء رأيك حول قرار المحكمة." },
+                    { id: 'b2_e_9', type: "Prüfung B2 (Diskussion)", ger: "Ich bin der festen Überzeugung, dass...", eng: "I am firmly convinced that...", ar: "أنا على قناعة تامة بأن...", context: "للتعبير عن اليقين من براءة أو ذنب شخص ما." },
+                    { id: 'b2_e_10', type: "Prüfung B2 (Diskussion)", ger: "Das Argument leuchtet mir ein, aber...", eng: "The argument makes sense to me, but...", ar: "هذه الحجة تبدو منطقية بالنسبة لي، ولكن...", context: "لإبداء تفهمك لحجة الخصم قبل الرد عليها." },
+                    { id: 'b2_e_11', type: "Prüfung B2 (Diskussion)", ger: "Wir müssen die Vor- und Nachteile abwägen.", eng: "We must weigh the pros and cons.", ar: "يجب علينا أن نوازن بين الإيجابيات والسلبيات.", context: "لإظهار القدرة على التحليل الموضوعي." },
+                    { id: 'b2_e_12', type: "Prüfung B2 (Diskussion)", ger: "Letztendlich läuft es darauf hinaus, dass...", eng: "Ultimately it comes down to...", ar: "في النهاية يؤول الأمر إلى أن / الخلاصة هي...", context: "تعبير ختامي ممتاز لإنهاء المناقشة أو تلخيص الحكم." }
+                ],
+                grammar: [
+                    {
+                        title: "1. المبني للمجهول مع الأفعال الناقصة (Passiv mit Modalverben)",
+                        desc: "يُستخدم بكثرة في التقارير الجنائية والأخبار لبيان ما *يجب* أو *كان يجب* فعله دون ذكر الفاعل. تكوينه في المضارع: (Modalverb + Partizip II + werden).",
+                        structure: "Modalverb (Präsens/Präteritum) + Subjekt + ... + Partizip II + werden",
+                        examples: [
+                            { g: "Der Täter <span class='text-indigo-600 font-bold'>muss</span> streng <span class='text-indigo-600 font-bold'>bestraft werden</span>.", a: "الجاني يجب أن يُعاقب بشدة. (مضارع)" },
+                            { g: "Der Tatort <span class='text-indigo-600 font-bold'>durfte</span> nicht <span class='text-indigo-600 font-bold'>betreten werden</span>.", a: "لم يكن مسموحاً الدخول إلى مسرح الجريمة. (ماضي)" },
+                            { g: "Das Opfer <span class='text-indigo-600 font-bold'>konnte</span> rechtzeitig <span class='text-indigo-600 font-bold'>gerettet werden</span>.", a: "أمكن إنقاذ الضحية في الوقت المناسب. (ماضي)" }
+                        ]
+                    },
+                    {
+                        title: "2. اسم الفاعل والمفعول كصفات (Partizip I & II als Adjektive)",
+                        desc: "قاعدة أساسية في B2 لاختصار الجمل الموصولة. نستخدم (Partizip I = Verb + d) للحدث المستمر، و (Partizip II) للحدث المنتهي، ويتم إعرابهما كأي صفة قبل الاسم.",
+                        structure: "Artikel + (Partizip I oder II + Adjektivendung) + Nomen",
+                        examples: [
+                            { g: "Die Polizei jagt den <span class='text-indigo-600 font-bold'>fliehenden</span> Täter.", a: "الشرطة تطارد الجاني (الذي يهرب / الهارب). [Partizip I]" },
+                            { g: "Das <span class='text-indigo-600 font-bold'>gestohlene</span> Geld wurde gefunden.", a: "تم العثور على المال (الذي سُرق / المسروق). [Partizip II]" },
+                            { g: "Wir sprechen mit der <span class='text-indigo-600 font-bold'>weinenden</span> Frau.", a: "نحن نتحدث مع المرأة (التي تبكي / الباكية). [Partizip I]" }
+                        ]
+                    },
+                    {
+                        title: "3. الروابط المزدوجة (Zweiteilige Konnektoren)",
+                        desc: "لربط الأفكار في الامتحانات والمناقشات بشكل احترافي. الشقين إما يضيفان (nicht nur... sondern auch)، أو ينفيان (weder... noch)، أو يخيرّان (entweder... oder).",
+                        structure: "Teil 1 ... + Teil 2 ... (ربط بين كلمتين أو جملتين)",
+                        examples: [
+                            { g: "Er ist <span class='text-indigo-600 font-bold'>weder</span> der Mörder <span class='text-indigo-600 font-bold'>noch</span> der Komplize.", a: "هو لا القاتل ولا الشريك. (نفي مزدوج)" },
+                            { g: "Sie hat <span class='text-indigo-600 font-bold'>nicht nur</span> gestohlen, <span class='text-indigo-600 font-bold'>sondern auch</span> gelogen.", a: "هي لم تسرق فقط، بل كذبت أيضاً. (إضافة)" },
+                            { g: "Der Täter war <span class='text-indigo-600 font-bold'>sowohl</span> raffiniert <span class='text-indigo-600 font-bold'>als auch</span> eiskalt.", a: "الجاني كان داهية و(كذلك) بدم بارد في نفس الوقت." }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        const { useState, useEffect } = React;
+
+        // --- HELPER FOR ARTICLES COLORING ---
+        const colorizeArticles = (text) => {
+            if (!text) return text;
+            const regex = /(der |die |das )/gi;
+            const parts = text.split(regex);
+            return parts.map((part, i) => {
+                const lower = part.toLowerCase();
+                if (lower === 'der ') return <span key={i} className="text-blue-500 font-extrabold">{part}</span>;
+                if (lower === 'die ') return <span key={i} className="text-rose-500 font-extrabold">{part}</span>;
+                if (lower === 'das ') return <span key={i} className="text-emerald-500 font-extrabold">{part}</span>;
+                return <span key={i}>{part}</span>;
+            });
+        };
+
+        // --- COMPONENTS ---
+        const ProgressBar = ({ total, learned, colorClass }) => {
+            const percentage = total === 0 ? 0 : Math.round((learned / total) * 100);
+            return (
+                <div className="glass-panel p-5 rounded-2xl mb-8 flex items-center justify-between transition-all" dir="rtl">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider ar-text mb-1">مستوى التقدم</h3>
+                        <p className="text-3xl font-extrabold text-slate-800">{learned} <span className="text-sm font-medium text-slate-400">/ {total} أتقنتهم</span></p>
+                    </div>
+                    <div className="relative w-20 h-20 drop-shadow-md">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path className="text-slate-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                            <path className={`${colorClass} transition-all duration-1000 ease-out`} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold text-slate-700">
+                            {percentage}%
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const WordCard = ({ item, isLearned, toggleLearned }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            return (
+                <div className="relative group perspective-1000 w-full h-[24rem]">
+                    <div className={`w-full h-full transition-all duration-700 transform-style-3d shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl ${isFlipped ? 'rotate-y-180' : ''}`}>
+                        
+                        {/* FRONT */}
+                        <div className="absolute w-full h-full backface-hidden bg-white border border-slate-100 rounded-2xl p-5 flex flex-col cursor-pointer hover:shadow-lg transition-shadow" 
+                             onClick={() => setIsFlipped(true)}>
+                            <div className="flex justify-between items-start shrink-0" dir="rtl">
+                                <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider ar-text">كلمة / صفة</span>
+                                <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            
+                            <div className="text-center mt-2 flex-grow flex flex-col justify-center overflow-y-auto front-scroll px-1 py-3">
+                                <div className="flex flex-col justify-center items-center gap-3 mb-1">
+                                    <h3 className="text-2xl font-bold text-slate-800 leading-tight">{colorizeArticles(item.ger)}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={(e) => playAudio(item.ger, e)} className="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors shadow-sm"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                        <SpeechTester targetText={item.ger} />
+                                    </div>
+                                </div>
+                                <div className="mt-4 space-y-1">
+                                    <p className="text-slate-500 font-medium text-sm">{item.eng}</p>
+                                    <p className="text-blue-600 font-bold ar-text text-lg" dir="rtl">{item.ar}</p>
+                                </div>
+                            </div>
+                            
+                            <div className="text-center text-xs text-slate-400 font-medium flex items-center justify-center gap-1 ar-text mt-2 shrink-0">
+                                <i data-lucide="rotate-cw" className="w-3 h-3"></i> اضغط للأمثلة
+                            </div>
+                        </div>
+
+                        {/* BACK */}
+                        <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl p-5 shadow-lg flex flex-col cursor-pointer overflow-hidden" 
+                             onClick={() => setIsFlipped(false)} style={{ transform: 'rotateY(180deg)' }}>
+                            <div className="mb-3 border-b border-white/20 pb-2 flex justify-between items-center shrink-0" dir="rtl">
+                                <h4 className="font-bold text-white/90 text-sm tracking-wider ar-text">أمثلة سياقية</h4>
+                                <i data-lucide="rotate-ccw" className="w-4 h-4 text-white/60"></i>
+                            </div>
+                            <div className="overflow-y-auto card-scroll flex-grow pr-2 pb-2">
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="text-sm bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/5">
+                                            <div className="flex items-start gap-2 mb-1.5">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className="p-1 text-blue-200 hover:text-white shrink-0 mt-0.5"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <span className="leading-relaxed" dangerouslySetInnerHTML={{ __html: sentence.g }}></span>
+                                            </div>
+                                            <div className="text-blue-200 text-xs italic ml-8 mb-1.5">{sentence.e}</div>
+                                            <div className="text-amber-300 text-sm font-bold ar-text border-t border-white/10 pt-1.5 mt-1" dir="rtl">{sentence.a}</div>
+                                        </li>
+                                    ))}
+                                    {!item.s && <li className="text-sm text-white/70 italic text-center mt-10">Keine Sätze vorhanden</li>}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ListRow = ({ item, isLearned, toggleLearned, colorTheme }) => {
+            const [expanded, setExpanded] = useState(false);
+            
+            const themes = {
+                emerald: 'hover:border-emerald-300 text-emerald-600 bg-emerald-50 text-emerald-700',
+                amber: 'hover:border-amber-300 text-amber-600 bg-amber-50 text-amber-700',
+                rose: 'hover:border-rose-300 text-rose-600 bg-rose-50 text-rose-700',
+                teal: 'hover:border-teal-300 text-teal-600 bg-teal-50 text-teal-700',
+                indigo: 'hover:border-indigo-300 text-indigo-600 bg-indigo-50 text-indigo-700',
+            };
+            const themeClass = themes[colorTheme] || themes.emerald;
+            const textAccent = `text-${colorTheme}-600`;
+
+            return (
+                <div className={`bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md`} dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? `bg-${colorTheme}-100 ${textAccent}` : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                    {item.ger} 
+                                    <button onClick={(e) => playAudio(item.ger, e)} className={`${textAccent} opacity-70 hover:opacity-100 transition-opacity`}><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                </h3>
+                                <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className={`${textAccent} font-bold ar-text`} dir="rtl">{item.ar}</span></p>
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            <ul className="space-y-4">
+                                {item.s && item.s.map((sentence, idx) => (
+                                    <li key={idx} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm group flex flex-col sm:flex-row gap-4 justify-between items-start">
+                                        <div className="flex-1">
+                                            <div className="flex items-start gap-3 mb-2">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className={`mt-0.5 ${textAccent} bg-${colorTheme}-50 p-1.5 rounded-lg shrink-0`}><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <p className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: sentence.g }}></p>
+                                            </div>
+                                            <p className="text-slate-500 text-sm ml-10 mb-2">{sentence.e}</p>
+                                            <div className={`ml-10 ${textAccent} text-base font-bold ar-text border-t border-slate-100 pt-2`} dir="rtl">{sentence.a}</div>
+                                        </div>
+                                        <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-slate-50 p-1.5 rounded-full" dir="ltr">
+                                            <SpeechTester targetText={sentence.g} />
+                                        </div>
+                                    </li>
+                                ))}
+                                {!item.s && <p className="text-slate-500 italic px-4">Keine Beispiele vorhanden.</p>}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const IrregularVerbRow = ({ item, isLearned, toggleLearned }) => {
+            const [expanded, setExpanded] = useState(false);
+            
+            return (
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md" dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                    {item.ger} 
+                                    <button onClick={(e) => playAudio(item.ger, e)} className="text-emerald-600 opacity-70 hover:opacity-100 transition-opacity"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                </h3>
+                                <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className="text-emerald-600 font-bold ar-text" dir="rtl">{item.ar}</span></p>
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präsens (مضارع)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praesens, e)} className="text-emerald-600 bg-emerald-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-sm font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: item.praesens }}></p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.praesens} /></div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präteritum (ماضي بسيط)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praeteritum, e)} className="text-amber-600 bg-amber-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-sm font-medium leading-relaxed mt-1">{item.praeteritum}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.praeteritum} /></div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Perfekt (ماضي تام)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.perfekt, e)} className="text-purple-600 bg-purple-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-sm font-medium leading-relaxed mt-1">{item.perfekt}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.perfekt} /></div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <h4 className="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider ar-text">أمثلة سياقية</h4>
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm group flex flex-col sm:flex-row gap-4 justify-between items-start">
+                                            <div className="flex-1">
+                                                <div className="flex items-start gap-3 mb-2">
+                                                    <button onClick={(e) => playAudio(sentence.g, e)} className="mt-0.5 text-emerald-600 bg-emerald-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                    <p className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: sentence.g }}></p>
+                                                </div>
+                                                <p className="text-slate-500 text-sm ml-10 mb-2">{sentence.e}</p>
+                                                <div className="ml-10 text-emerald-600 text-base font-bold ar-text border-t border-slate-100 pt-2" dir="rtl">{sentence.a}</div>
+                                            </div>
+                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-slate-50 p-1.5 rounded-full" dir="ltr">
+                                                <SpeechTester targetText={sentence.g} />
+                                            </div>
+                                        </li>
+                                    ))}
+                                    {!item.s && <p className="text-slate-500 italic px-4">Keine Beispiele vorhanden.</p>}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- MAIN APP ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('words');
+            const [learnedItems, setLearnedItems] = useState(new Set());
+            const [searchTerm, setSearchTerm] = useState('');
+            const [expandedReview, setExpandedReview] = useState('rev-nomen-verb');
+
+            useEffect(() => {
+                lucide.createIcons();
+            });
+
+            const toggleLearned = (id) => {
+                const newLearned = new Set(learnedItems);
+                if (newLearned.has(id)) newLearned.delete(id);
+                else newLearned.add(id);
+                setLearnedItems(newLearned);
+            };
+
+            const totalWords = LEARNING_DATA.words.verbrechen.length + LEARNING_DATA.words.polizei.length + LEARNING_DATA.words.gericht.length + LEARNING_DATA.words.medien.length + LEARNING_DATA.words.adjektive.length;
+            const totalVerbs = LEARNING_DATA.verbs.length + LEARNING_DATA.irregularVerbs.length;
+            const totalExp = LEARNING_DATA.expressions.length;
+            const totalPrep = LEARNING_DATA.prepositions.length;
+            const totalGrammar = LEARNING_DATA.grammar.length;
+            const totalReview = LEARNING_DATA.review.reduce((acc, cat) => acc + cat.items.length, 0);
+            const totalB2 = LEARNING_DATA.b2.words.length + LEARNING_DATA.b2.expressions.length; 
+            const grandTotal = totalWords + totalVerbs + totalExp + totalPrep + totalGrammar + totalReview + totalB2;
+
+            const tabConfig = {
+                words: { labelEn: 'Nouns & Adj', labelAr: 'الأسماء والصفات', icon: 'book-open', color: 'blue' },
+                verbs: { labelEn: 'Verbs', labelAr: 'الأفعال', icon: 'activity', color: 'emerald' },
+                expressions: { labelEn: 'Expressions', labelAr: 'تعبيرات', icon: 'message-circle', color: 'amber' },
+                prepositions: { labelEn: 'Prepositions', labelAr: 'حروف الجر', icon: 'link', color: 'rose' },
+                grammar: { labelEn: 'Grammar', labelAr: 'القواعد الشاملة', icon: 'pen-tool', color: 'purple' },
+                review: { labelEn: 'Review', labelAr: 'المراجعة الشاملة', icon: 'clipboard-check', color: 'teal' },
+                b2_expansion: { labelEn: 'B2 Expansion', labelAr: 'توسعة B2', icon: 'trending-up', color: 'indigo' }
+            };
+
+            const activeColor = tabConfig[activeTab].color;
+
+            return (
+                <div className="h-screen flex flex-col bg-slate-50" dir="rtl">
+                    {/* TOP NAVIGATION HEADER */}
+                    <header className="w-full bg-slate-900 text-white shadow-xl z-50 shrink-0 relative overflow-hidden">
+                        <div className={`absolute top-0 left-0 w-full h-1 bg-${activeColor}-500 transition-colors duration-500`}></div>
+                        
+                        <div className="flex justify-between items-center px-4 md:px-8 py-3 border-b border-slate-800">
+                            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-3 ar-text">
+                                <span className={`bg-${activeColor}-500 p-2 rounded-xl transition-colors duration-500 shadow-lg`}>
+                                    <i data-lucide="shield-alert" className="w-5 h-5 md:w-6 md:h-6 text-white"></i>
+                                </span>
+                                ألماني B1+ (Spektrum K12)
+                            </h1>
+
+                            <div className="flex items-center gap-3" dir="ltr">
+                                <div className="text-right hidden sm:block">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mastery</div>
+                                    <div className={`text-sm font-extrabold text-${activeColor}-400 transition-colors`}>{grandTotal === 0 ? 0 : Math.round((learnedItems.size / grandTotal) * 100)}%</div>
+                                </div>
+                                <div className="relative w-10 h-10">
+                                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                        <path className="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                                        <path className={`text-${activeColor}-500 transition-all duration-1000 ease-out`} strokeDasharray={`${grandTotal === 0 ? 0 : (learnedItems.size / grandTotal) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Horizontal Navigation Tabs */}
+                        <nav className="flex overflow-x-auto scrollbar-hide px-4 py-2 gap-2 snap-x">
+                            {Object.entries(tabConfig).map(([key, tab]) => (
+                                <button 
+                                    key={key}
+                                    onClick={() => { setActiveTab(key); setSearchTerm(''); }}
+                                    className={`snap-center shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold ar-text group relative overflow-hidden ${activeTab === key ? `bg-${tab.color}-600 text-white shadow-md` : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <i data-lucide={tab.icon} className={`w-5 h-5 ${activeTab === key ? 'text-white' : `text-${tab.color}-400 group-hover:text-${tab.color}-300`} transition-colors`}></i>
+                                    <span className="text-sm whitespace-nowrap">{tab.labelAr}</span>
+                                    {activeTab === key && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-white/50 rounded-t-full"></div>}
+                                </button>
+                            ))}
+                        </nav>
+                    </header>
+
+                    {/* MAIN CONTENT AREA */}
+                    <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 relative" dir="ltr">
+                        <div className={`fixed top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-${activeColor}-200/20 blur-3xl -z-10 transition-colors duration-1000`}></div>
+                        
+                        <div className="max-w-7xl mx-auto">
+                            
+                            {activeTab !== 'grammar' && activeTab !== 'review' && (
+                                <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                    <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                        <div className={`absolute -inset-0.5 bg-gradient-to-r from-${activeColor}-400 to-${activeColor}-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                        <div className="relative">
+                                            <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                            <input 
+                                                type="text" 
+                                                placeholder="ابحث بالعربي أو الألماني..." 
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className="w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-blue-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'words' && <ProgressBar total={totalWords} learned={Array.from(learnedItems).filter(id => id.startsWith('w') || id.startsWith('a')).length} colorClass="text-blue-500" />}
+                            {activeTab === 'verbs' && <ProgressBar total={totalVerbs} learned={Array.from(learnedItems).filter(id => id.startsWith('v') || id.startsWith('iv')).length} colorClass="text-emerald-500" />}
+                            {activeTab === 'expressions' && <ProgressBar total={totalExp} learned={Array.from(learnedItems).filter(id => id.startsWith('e') && !id.startsWith('b2_e')).length} colorClass="text-amber-500" />}
+                            {activeTab === 'prepositions' && <ProgressBar total={totalPrep} learned={Array.from(learnedItems).filter(id => id.startsWith('p')).length} colorClass="text-rose-500" />}
+                            {activeTab === 'review' && <ProgressBar total={totalReview} learned={Array.from(learnedItems).filter(id => id.startsWith('r_')).length} colorClass="text-teal-500" />}
+                            {activeTab === 'b2_expansion' && <ProgressBar total={totalB2} learned={Array.from(learnedItems).filter(id => id.startsWith('b2_')).length} colorClass="text-indigo-500" />}
+
+                            {/* TAB: WORDS & ADJECTIVES */}
+                            {activeTab === 'words' && (
+                                <div className="space-y-12">
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="skull" className="w-6 h-6"></i></span> الجريمة والجناة (Verbrechen & Täter)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.verbrechen.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="shield" className="w-6 h-6"></i></span> الشرطة والتحقيقات (Polizei & Ermittlungen)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.polizei.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+                                    
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="scale" className="w-6 h-6"></i></span> المحكمة والقضاء (Gericht & Justiz)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.gericht.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="tv" className="w-6 h-6"></i></span> التلفزيون والأدب البوليسي (Fernsehen & Krimi)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.medien.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="sparkles" className="w-6 h-6"></i></span> الصفات والظروف (Adjektive & Adverbien)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.adjektive.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
+
+                            {/* TAB: VERBS */}
+                            {activeTab === 'verbs' && (
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="activity" className="w-6 h-6"></i></span>
+                                        الأفعال الأساسية
+                                    </h2>
+                                    <div className="space-y-4 mb-12">
+                                        {LEARNING_DATA.verbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <ListRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} colorTheme="emerald" />
+                                        ))}
+                                    </div>
+
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="alert-circle" className="w-6 h-6"></i></span>
+                                        الأفعال الشاذة وتصريفاتها (Unregelmäßige Verben)
+                                    </h2>
+                                    <div className="space-y-4">
+                                        {LEARNING_DATA.irregularVerbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <IrregularVerbRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: EXPRESSIONS */}
+                            {activeTab === 'expressions' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-amber-100 p-2 rounded-xl text-amber-600"><i data-lucide="message-circle" className="w-6 h-6"></i></span>
+                                        تعبيرات ومصطلحات (Nomen-Verb & Überraschung)
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {LEARNING_DATA.expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                            <div key={exp.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative group hover:shadow-xl hover:border-amber-200 transition-all duration-300">
+                                                <button onClick={() => toggleLearned(exp.id)} className={`absolute top-5 left-5 p-2 rounded-full transition-colors z-10 ${learnedItems.has(exp.id) ? 'bg-amber-100 text-amber-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                                </button>
+                                                <span className="inline-block bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-xs font-bold mb-4 ar-text border border-amber-100">{exp.type}</span>
+                                                <div className="flex items-start gap-3 mb-3" dir="ltr">
+                                                    <div className="flex flex-col gap-2 shrink-0">
+                                                        <button onClick={(e) => playAudio(exp.ger, e)} className="text-amber-500 bg-amber-50 p-2 rounded-xl hover:bg-amber-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                        <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={exp.ger} /></div>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight mt-1">"{exp.ger}"</h3>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
+                                                    <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
+                                                    <p className="text-amber-700 font-extrabold text-xl mb-4 ar-text">{exp.ar}</p>
+                                                    <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
+                                                        <i data-lucide="info" className="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>
+                                                        <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: PREPOSITIONS */}
+                            {activeTab === 'prepositions' && (
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-rose-100 p-2 rounded-xl text-rose-600"><i data-lucide="link" className="w-6 h-6"></i></span> 
+                                        حروف الجر والأفعال المرتبطة بها (Präpositionen)
+                                    </h2>
+                                    <div className="space-y-4">
+                                        {LEARNING_DATA.prepositions.filter(p => p.ger.toLowerCase().includes(searchTerm.toLowerCase()) || p.eng.toLowerCase().includes(searchTerm.toLowerCase()) || p.ar.includes(searchTerm)).map(prep => (
+                                            <ListRow key={prep.id} item={prep} isLearned={learnedItems.has(prep.id)} toggleLearned={toggleLearned} colorTheme="rose" />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: GRAMMAR */}
+                            {activeTab === 'grammar' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-purple-700 to-indigo-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="pen-tool" className="absolute -right-4 -bottom-4 w-48 h-48 text-white opacity-10 transform rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">القواعد النحوية (Kapitel 12)</h2>
+                                            <p className="text-purple-200 ar-text text-lg max-w-2xl">شرح قاعدة الجمل المقارنة الخيالية (Irreale Vergleichssätze) باستخدام als ob / als مع صيغة التمني (Konjunktiv II).</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-8">
+                                        {LEARNING_DATA.grammar.map((gram, idx) => (
+                                            <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                    <div className="bg-purple-100 p-3 rounded-2xl text-purple-600 shrink-0 mt-1">
+                                                        <i data-lucide="braces" className="w-6 h-6"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                        <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="p-8">
+                                                    <div className="bg-slate-900 text-purple-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
+                                                        <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i> {gram.structure}
+                                                    </div>
+                                                    
+                                                    <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                    <ul className="space-y-4">
+                                                        {gram.examples.map((ex, i) => (
+                                                            <li key={i} className="bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
+                                                                <div className="flex gap-4 items-center mb-3" dir="ltr">
+                                                                    <button onClick={(e) => playAudio(ex.g, e)} className="text-purple-500 bg-white p-2 rounded-xl shadow-sm hover:bg-purple-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                    <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                </div>
+                                                                <div className="text-purple-700 font-bold ar-text border-t border-purple-200/50 pt-3 mt-3">{ex.a}</div>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: REVIEW */}
+                            {activeTab === 'review' && (
+                                <div dir="rtl" className="pb-10">
+                                    <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                        <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                            <div className={`absolute -inset-0.5 bg-gradient-to-r from-teal-400 to-teal-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                            <div className="relative">
+                                                <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="ابحث في المراجعة الشاملة..." 
+                                                    value={searchTerm}
+                                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                                    className="w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-teal-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-gradient-to-br from-teal-700 to-emerald-900 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="clipboard-check" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10 text-center">
+                                            <h2 className="text-4xl font-extrabold mb-4 ar-text">المراجعة الشاملة</h2>
+                                            <p className="text-teal-100 ar-text text-lg max-w-3xl mx-auto leading-relaxed">كل التعبيرات والنصائح وارتباطات الأفعال التي وردت في المنهج (Kapitel 12)، تم فصلها بالكامل لسهولة التدريب والاختبار الصوتي.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        {LEARNING_DATA.review.map((cat, cIdx) => (
+                                            <div key={cIdx} className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300">
+                                                <button 
+                                                    className={`w-full p-6 flex items-center justify-between text-right transition-colors ${expandedReview === cat.catId ? 'bg-teal-50' : 'hover:bg-slate-50'}`}
+                                                    onClick={() => setExpandedReview(expandedReview === cat.catId ? null : cat.catId)}
+                                                >
+                                                    <h3 className="text-2xl font-bold text-slate-800 ar-text flex items-center gap-3">
+                                                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${expandedReview === cat.catId ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-600'}`}>{cIdx + 1}</span>
+                                                        {cat.title}
+                                                    </h3>
+                                                    <i data-lucide="chevron-down" className={`w-6 h-6 text-slate-400 transform transition-transform duration-300 ${expandedReview === cat.catId ? 'rotate-180 text-teal-600' : ''}`}></i>
+                                                </button>
+                                                
+                                                <div className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedReview === cat.catId ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                                    <div className="p-6 border-t border-slate-100 bg-slate-50/50">
+                                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                                            {cat.items.filter(item => item.g.toLowerCase().includes(searchTerm.toLowerCase()) || item.e.toLowerCase().includes(searchTerm.toLowerCase()) || item.a.includes(searchTerm)).map((item) => (
+                                                                <div key={item.id} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm relative group hover:shadow-md hover:border-teal-200 transition-all duration-300" dir="ltr">
+                                                                    <button onClick={() => toggleLearned(item.id)} className={`absolute top-4 right-4 p-2 rounded-full transition-colors z-10 ${learnedItems.has(item.id) ? 'bg-teal-100 text-teal-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                                        <i data-lucide="check" className="w-5 h-5"></i>
+                                                                    </button>
+                                                                    <div className="flex items-start gap-3 mb-3 pr-10">
+                                                                        <div className="flex flex-col gap-2 shrink-0">
+                                                                            <button onClick={(e) => playAudio(item.g, e)} className="text-teal-500 bg-teal-50 p-2 rounded-xl hover:bg-teal-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                            <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={item.g} /></div>
+                                                                        </div>
+                                                                        <h3 className="text-lg font-bold text-slate-800 leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: item.g }}></h3>
+                                                                    </div>
+                                                                    <div className="pl-12 space-y-2">
+                                                                        <p className="text-slate-500 text-sm">{item.e}</p>
+                                                                        <p className="text-teal-700 font-bold text-lg ar-text border-t border-slate-100 pt-2" dir="rtl">{item.a}</p>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: B2 EXPANSION */}
+                            {activeTab === 'b2_expansion' && (
+                                <div dir="rtl" className="pb-10">
+                                    <div className="bg-gradient-to-br from-indigo-700 to-indigo-900 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="trending-up" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10 text-center">
+                                            <h2 className="text-4xl font-extrabold mb-4 ar-text">توسعة مستوى B2 (Erweiterung)</h2>
+                                            <p className="text-indigo-200 ar-text text-lg max-w-3xl mx-auto leading-relaxed">
+                                                هذا القسم الإضافي صُمم خصيصاً للارتقاء بمستواك اللغوي في نفس موضوع الجريمة والقضاء (Krimi & Gericht) ليتطابق مع متطلبات امتحانات الـ B2. يتضمن مفردات جنائية متقدمة، تعبيرات للمناقشة الشفوية، وقواعد متقدمة.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* B2 Words Section */}
+                                    <section className="mb-16">
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text"><span className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><i data-lucide="book-open" className="w-6 h-6"></i></span> مفردات جنائية متقدمة (B2 Wortschatz)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.b2.words.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    {/* B2 Expressions Section */}
+                                    <section className="mb-16">
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text"><span className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><i data-lucide="messages-square" className="w-6 h-6"></i></span> تعبيرات للمناقشة وامتحانات B2 (Diskussion & Meinung)</h2>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            {LEARNING_DATA.b2.expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                                <div key={exp.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative group hover:shadow-xl hover:border-indigo-200 transition-all duration-300">
+                                                    <button onClick={() => toggleLearned(exp.id)} className={`absolute top-5 left-5 p-2 rounded-full transition-colors z-10 ${learnedItems.has(exp.id) ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                        <i data-lucide="check" className="w-5 h-5"></i>
+                                                    </button>
+                                                    <span className="inline-block bg-indigo-50 text-indigo-600 px-3 py-1 rounded-lg text-xs font-bold mb-4 ar-text border border-indigo-100">{exp.type}</span>
+                                                    <div className="flex items-start gap-3 mb-3" dir="ltr">
+                                                        <div className="flex flex-col gap-2 shrink-0">
+                                                            <button onClick={(e) => playAudio(exp.ger, e)} className="text-indigo-500 bg-indigo-50 p-2 rounded-xl hover:bg-indigo-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                            <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={exp.ger} /></div>
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="text-xl font-extrabold text-slate-800 leading-tight mt-1">"{exp.ger}"</h3>
+                                                        </div>
+                                                    </div>
+                                                    <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
+                                                        <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
+                                                        <p className="text-indigo-700 font-extrabold text-xl mb-4 ar-text">{exp.ar}</p>
+                                                        <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
+                                                            <i data-lucide="info" className="w-5 h-5 text-indigo-400 mt-0.5 shrink-0"></i>
+                                                            <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    {/* B2 Grammar Section */}
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text"><span className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><i data-lucide="pen-tool" className="w-6 h-6"></i></span> قواعد متقدمة (B2 Grammatik)</h2>
+                                        <div className="grid gap-8">
+                                            {LEARNING_DATA.b2.grammar.map((gram, idx) => (
+                                                <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                    <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                        <div className="bg-indigo-100 p-3 rounded-2xl text-indigo-600 shrink-0 mt-1">
+                                                            <i data-lucide="zap" className="w-6 h-6"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                            <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="p-8">
+                                                        <div className="bg-slate-900 text-indigo-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
+                                                            <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i> {gram.structure}
+                                                        </div>
+                                                        
+                                                        <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                        <ul className="space-y-4">
+                                                            {gram.examples.map((ex, i) => (
+                                                                <li key={i} className="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100">
+                                                                    <div className="flex gap-4 items-center mb-3" dir="ltr">
+                                                                        <button onClick={(e) => playAudio(ex.g, e)} className="text-indigo-500 bg-white p-2 rounded-xl shadow-sm hover:bg-indigo-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                        <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                    </div>
+                                                                    <div className="text-indigo-700 font-bold ar-text border-t border-indigo-200/50 pt-3 mt-3">{ex.a}</div>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
+
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

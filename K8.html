@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch Lernen: B1+ Spektrum K8 (Konsum & Technik)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f1f5f9; 
+            color: #1e293b;
+            overflow: hidden;
+        }
+        .ar-text { 
+            font-family: 'Cairo', sans-serif; 
+            line-height: 1.6;
+        }
+        /* Refined Card Flips */
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Glassmorphism subtle effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+        }
+
+        /* Custom Scrollbars for Cards */
+        .card-scroll::-webkit-scrollbar { width: 5px; }
+        .card-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .card-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 10px; }
+        .card-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.6); }
+        
+        .front-scroll::-webkit-scrollbar { width: 5px; }
+        .front-scroll::-webkit-scrollbar-track { background: transparent; }
+        .front-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .front-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- HELPERS FOR AUDIO & SPEECH ---
+        const playAudio = (text, e) => {
+            if (e) e.stopPropagation();
+            const cleanText = text.replace(/<[^>]+>/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'de-DE';
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const SpeechTester = ({ targetText }) => {
+            const [status, setStatus] = React.useState('idle'); 
+            const [heard, setHeard] = React.useState('');
+
+            const listen = (e) => {
+                if (e) e.stopPropagation();
+                if (!('webkitSpeechRecognition' in window)) {
+                    alert('المتصفح ده مش بيدعم تسجيل الصوت، جرب Google Chrome.');
+                    return;
+                }
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+                
+                recognition.onstart = () => setStatus('listening');
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    setHeard(speechResult);
+                    
+                    const clean = (str) => str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,!?]/g, '').trim();
+                    const targetClean = clean(targetText);
+                    const heardClean = clean(speechResult);
+                    
+                    if (heardClean.includes(targetClean) || targetClean.includes(heardClean) || heardClean === targetClean) {
+                        setStatus('success');
+                    } else {
+                        setStatus('fail');
+                    }
+                };
+                recognition.onerror = () => setStatus('fail');
+                recognition.onend = () => { if(status === 'listening') setStatus('idle'); };
+                recognition.start();
+            };
+
+            return (
+                <div className="inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={listen} title="جرب تنطقها" className={`p-2 rounded-full transition-all duration-300 shadow-sm ${status === 'listening' ? 'bg-red-500 text-white animate-pulse scale-110' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'}`}>
+                        <i data-lucide="mic" className="w-4 h-4"></i>
+                    </button>
+                    {status === 'success' && <span className="text-emerald-500 text-xs font-bold ar-text animate-bounce">✅ ممتاز!</span>}
+                    {status === 'fail' && <span className="text-red-500 text-xs ar-text font-bold" title={`سمعت: ${heard}`}>❌ جرب تاني</span>}
+                </div>
+            );
+        };
+
+        // --- COMPREHENSIVE LEARNING DATA (KAPITEL 8) ---
+        const LEARNING_DATA = {
+            words: {
+                konsum_besitz: [
+                    { id: 'w1', ger: "das Produkt", eng: "Product", ar: "المنتج", s: [
+                        { g: "Dieses <strong>Produkt</strong> ist sehr umweltfreundlich.", e: "This product is very eco-friendly.", a: "المنتج ده صديق جداً للبيئة." },
+                        { g: "Wir haben ein neues <strong>Produkt</strong> entwickelt.", e: "We have developed a new product.", a: "إحنا طورنا منتج جديد." },
+                        { g: "Die Qualität dieses <strong>Produkts</strong> ist ausgezeichnet.", e: "The quality of this product is excellent.", a: "جودة المنتج ده ممتازة." }
+                    ] },
+                    { id: 'w2', ger: "der Konsum", eng: "Consumption", ar: "الاستهلاك", s: [
+                        { g: "Der weltweite <strong>Konsum</strong> steigt stetig an.", e: "Global consumption is steadily rising.", a: "الاستهلاك العالمي بيزيد باستمرار." },
+                        { g: "Hoher <strong>Konsum</strong> schadet der Umwelt.", e: "High consumption harms the environment.", a: "الاستهلاك العالي بيضر البيئة." },
+                        { g: "Wir müssen unseren <strong>Konsum</strong> reduzieren.", e: "We must reduce our consumption.", a: "لازم نقلل استهلاكنا." }
+                    ] },
+                    { id: 'w3', ger: "das Konsumverhalten", eng: "Consumer behavior", ar: "السلوك الاستهلاكي", s: [
+                        { g: "Das <strong>Konsumverhalten</strong> der Menschen hat sich geändert.", e: "People's consumer behavior has changed.", a: "السلوك الاستهلاكي للناس اتغير." },
+                        { g: "Werbung beeinflusst unser <strong>Konsumverhalten</strong> stark.", e: "Advertising strongly influences our consumer behavior.", a: "الإعلانات بتأثر بقوة على سلوكنا الاستهلاكي." },
+                        { g: "Ein nachhaltiges <strong>Konsumverhalten</strong> ist heute wichtig.", e: "Sustainable consumer behavior is important today.", a: "السلوك الاستهلاكي المستدام بقى مهم النهاردة." }
+                    ] },
+                    { id: 'w4', ger: "der Besitz", eng: "Property / Belongings", ar: "الملكية / ما يمتلكه الشخص", s: [
+                        { g: "Mein ganzer <strong>Besitz</strong> passt in einen Koffer.", e: "All my belongings fit in one suitcase.", a: "كل ممتلكاتي تكفي في شنطة واحدة." },
+                        { g: "Materieller <strong>Besitz</strong> macht nicht immer glücklich.", e: "Material possessions don't always make you happy.", a: "الملكية المادية مش دايماً بتجيب السعادة." },
+                        { g: "Er hat seinen gesamten <strong>Besitz</strong> verkauft.", e: "He sold all his belongings.", a: "هو باع كل ما يملك." }
+                    ] },
+                    { id: 'w5', ger: "die Habseligkeiten", eng: "Belongings / Possessions", ar: "المقتنيات / الأغراض الشخصية", s: [
+                        { g: "Er packte seine wenigen <strong>Habseligkeiten</strong>.", e: "He packed his few belongings.", a: "هو عبى مقتنياته القليلة." },
+                        { g: "Sie hat ihre <strong>Habseligkeiten</strong> im Auto gelassen.", e: "She left her belongings in the car.", a: "هي سابت أغراضها في العربية." },
+                        { g: "Der Flüchtling verlor alle seine <strong>Habseligkeiten</strong>.", e: "The refugee lost all his possessions.", a: "اللاجئ فقد كل مقتنياته." }
+                    ] },
+                    { id: 'w6', ger: "das Einkaufsgespräch", eng: "Shopping conversation", ar: "محادثة التسوق", s: [
+                        { g: "Ein freundliches <strong>Einkaufsgespräch</strong> ist wichtig.", e: "A friendly shopping conversation is important.", a: "محادثة التسوق الودية مهمة." },
+                        { g: "Wir haben ein nettes <strong>Einkaufsgespräch</strong> geführt.", e: "We had a nice shopping conversation.", a: "عملنا محادثة تسوق لطيفة." },
+                        { g: "Das <strong>Einkaufsgespräch</strong> dauerte nur fünf Minuten.", e: "The shopping conversation lasted only five minutes.", a: "محادثة التسوق خدت ٥ دقايق بس." }
+                    ] },
+                    { id: 'w7', ger: "die Inventur", eng: "Inventory", ar: "الجرد", s: [
+                        { g: "Am Jahresende machen wir <strong>Inventur</strong> im Geschäft.", e: "At the end of the year, we do inventory in the store.", a: "في آخر السنة بنعمل جرد في المحل." },
+                        { g: "Wegen <strong>Inventur</strong> bleibt der Laden heute geschlossen.", e: "Closed today due to inventory.", a: "المحل مقفول النهاردة بسبب الجرد." },
+                        { g: "Die <strong>Inventur</strong> war sehr anstrengend.", e: "The inventory was very exhausting.", a: "الجرد كان متعب جداً." }
+                    ] },
+                    { id: 'w8', ger: "das Stück", eng: "Piece", ar: "القطعة", s: [
+                        { g: "Ich nehme ein <strong>Stück</strong> Kuchen.", e: "I'll take a piece of cake.", a: "هاخد قطعة كيك." },
+                        { g: "Dieses <strong>Stück</strong> kostet fünf Euro.", e: "This piece costs five euros.", a: "القطعة دي بـ ٥ يورو." },
+                        { g: "Er hat das beste <strong>Stück</strong> Fleisch bekommen.", e: "He got the best piece of meat.", a: "هو أخد أحسن حتة لحمة." }
+                    ] },
+                    { id: 'w9', ger: "die Masse", eng: "Mass / Bulk", ar: "الكتلة / الكمية الكبيرة", s: [
+                        { g: "Die Produkte werden für die <strong>Masse</strong> produziert.", e: "The products are produced for the masses.", a: "المنتجات دي بتتصنع للكميات الكبيرة (الجماهير)." },
+                        { g: "Er verschwand schnell in der <strong>Masse</strong> der Menschen.", e: "He quickly disappeared into the mass of people.", a: "هو اختفى بسرعة وسط زحمة الناس." },
+                        { g: "Wir kaufen die Waren in großer <strong>Masse</strong>.", e: "We buy the goods in bulk.", a: "إحنا بنشتري البضايع بكميات كبيرة." }
+                    ] },
+                    { id: 'w10', ger: "das Experiment", eng: "Experiment", ar: "التجربة", s: [
+                        { g: "Wir führen ein wissenschaftliches <strong>Experiment</strong> durch.", e: "We are conducting a scientific experiment.", a: "إحنا بنعمل تجربة علمية." },
+                        { g: "Das <strong>Experiment</strong> war ein voller Erfolg.", e: "The experiment was a complete success.", a: "التجربة نجحت نجاح كامل." },
+                        { g: "Für das <strong>Experiment</strong> brauchen wir spezielles Equipment.", e: "We need special equipment for the experiment.", a: "محتاجين معدات خاصة للتجربة دي." }
+                    ] },
+                    { id: 'w11', ger: "die Minimalismus-Bewegung", eng: "Minimalism movement", ar: "حركة التقليلية", s: [
+                        { g: "Die <strong>Minimalismus-Bewegung</strong> wird immer populärer.", e: "The minimalism movement is becoming increasingly popular.", a: "حركة التقليلية (العيش بالقليل) بتنتشر أكتر." },
+                        { g: "Anhänger der <strong>Minimalismus-Bewegung</strong> besitzen sehr wenig.", e: "Followers of the minimalism movement own very little.", a: "أتباع حركة التقليلية بيمتلكوا حاجات قليلة جداً." },
+                        { g: "Die <strong>Minimalismus-Bewegung</strong> fordert bewussten Konsum.", e: "The minimalism movement calls for conscious consumption.", a: "الحركة دي بتطالب بالاستهلاك الواعي." }
+                    ] },
+                    { id: 'w12', ger: "der Anhänger", eng: "Supporter / Follower", ar: "المُشجع / المنتمي لفكرة", s: [
+                        { g: "Er ist ein <strong>Anhänger</strong> dieser neuen Theorie.", e: "He is a supporter of this new theory.", a: "هو من مشجعي النظرية الجديدة دي." },
+                        { g: "Die Partei hat viele junge <strong>Anhänger</strong>.", e: "The party has many young supporters.", a: "الحزب ليه مشجعين شباب كتير." },
+                        { g: "Bist du ein <strong>Anhänger</strong> des Minimalismus?", e: "Are you a follower of minimalism?", a: "هل أنت من أتباع فكر التقليلية؟" }
+                    ] },
+                    { id: 'w13', ger: "der Schritt", eng: "Step", ar: "الخطوة", s: [
+                        { g: "Das ist ein wichtiger <strong>Schritt</strong> in die Zukunft.", e: "This is an important step into the future.", a: "دي خطوة مهمة للمستقبل." },
+                        { g: "Wir müssen den nächsten <strong>Schritt</strong> planen.", e: "We need to plan the next step.", a: "لازم نخطط للخطوة الجاية." },
+                        { g: "Sie machte einen <strong>Schritt</strong> nach vorne.", e: "She took a step forward.", a: "هي أخدت خطوة لقدام." }
+                    ] },
+                    { id: 'w14', ger: "die Vorliebe", eng: "Preference", ar: "الميل / التفضيل", s: [
+                        { g: "Er hat eine große <strong>Vorliebe</strong> für alte Autos.", e: "He has a strong preference for old cars.", a: "عنده ميل كبير للعربيات القديمة." },
+                        { g: "Meine <strong>Vorliebe</strong> für Schokolade ist bekannt.", e: "My preference for chocolate is well known.", a: "حبي وشغفي بالشوكولاتة معروف." },
+                        { g: "Jeder hat seine eigenen <strong>Vorlieben</strong> beim Essen.", e: "Everyone has their own food preferences.", a: "كل واحد ليه تفضيلاته في الأكل." }
+                    ] },
+                    { id: 'w15', ger: "der Ausgangspunkt", eng: "Starting point", ar: "نقطة الانطلاق", s: [
+                        { g: "Das war der <strong>Ausgangspunkt</strong> unserer Diskussion.", e: "That was the starting point of our discussion.", a: "دي كانت نقطة انطلاق نقاشنا." },
+                        { g: "Der Bahnhof war der <strong>Ausgangspunkt</strong> der Reise.", e: "The train station was the starting point of the journey.", a: "المحطة كانت نقطة بداية الرحلة." },
+                        { g: "Wir brauchen einen neuen <strong>Ausgangspunkt</strong>.", e: "We need a new starting point.", a: "محتاجين نقطة انطلاق جديدة." }
+                    ] },
+                    { id: 'w16', ger: "die Konsequenz", eng: "Consequence", ar: "العاقبة / النتيجة", s: [
+                        { g: "Das hat eine negative <strong>Konsequenz</strong>.", e: "That has a negative consequence.", a: "ده ليه عاقبة سلبية." },
+                        { g: "Du musst die <strong>Konsequenzen</strong> deines Handelns tragen.", e: "You have to bear the consequences of your actions.", a: "لازم تتحمل عواقب أفعالك." },
+                        { g: "Als <strong>Konsequenz</strong> daraus kündigte er seinen Job.", e: "As a consequence, he quit his job.", a: "وكنتيجة لده، هو استقال من شغله." }
+                    ] },
+                    { id: 'w17', ger: "das Gegenteil", eng: "Opposite", ar: "العكس", s: [
+                        { g: "Das <strong>Gegenteil</strong> von groß ist klein.", e: "The opposite of big is small.", a: "عكس كبير هو صغير." },
+                        { g: "Genau das <strong>Gegenteil</strong> ist der Fall.", e: "Exactly the opposite is the case.", a: "العكس تماماً هو اللي حصل." },
+                        { g: "Ich kann dir das <strong>Gegenteil</strong> beweisen.", e: "I can prove the opposite to you.", a: "أقدر أثبتلك العكس." }
+                    ] },
+                    { id: 'w18', ger: "die Zählung", eng: "Count / Census", ar: "العَد / الإحصاء", s: [
+                        { g: "Die <strong>Zählung</strong> der Waren dauert lange.", e: "The counting of the goods takes a long time.", a: "عد البضايع بياخد وقت طويل." },
+                        { g: "Bei der letzten <strong>Zählung</strong> fehlten zwei Stücke.", e: "At the last count, two pieces were missing.", a: "في العدة اللي فاتت كان فيه قطعتين ناقصين." },
+                        { g: "Die offizielle <strong>Zählung</strong> beginnt morgen.", e: "The official census starts tomorrow.", a: "الإحصاء الرسمي هيبدأ بكرة." }
+                    ] },
+                    { id: 'w19', ger: "die Liste", eng: "List", ar: "القائمة", s: [
+                        { g: "Schreib das bitte auf die <strong>Liste</strong>.", e: "Please write that on the list.", a: "لو سمحت اكتب ده في القائمة." },
+                        { g: "Ich habe eine <strong>Liste</strong> mit meinen Ausgaben gemacht.", e: "I made a list of my expenses.", a: "عملت لستة بمصاريفي." },
+                        { g: "Er steht ganz oben auf der <strong>Liste</strong>.", e: "He is at the top of the list.", a: "هو أول واحد في القائمة." }
+                    ] }
+                ],
+                haushalt_zimmer: [
+                    { id: 'w20', ger: "die WG (Wohngemeinschaft)", eng: "Shared apartment", ar: "السكن المشترك", s: [
+                        { g: "Ich lebe mit drei Studenten in einer <strong>WG</strong>.", e: "I live with three students in a shared apartment.", a: "أنا عايش مع ٣ طلاب في سكن مشترك." },
+                        { g: "Eine <strong>WG</strong> ist oft günstiger als eine eigene Wohnung.", e: "A shared apartment is often cheaper than your own.", a: "سكن الشراكة غالباً أرخص من شقة لوحدك." },
+                        { g: "Unsere <strong>WG</strong> hat eine große Küche.", e: "Our shared apartment has a large kitchen.", a: "السكن بتاعنا فيه مطبخ كبير." }
+                    ] },
+                    { id: 'w21', ger: "das Jugendzimmer", eng: "Youth room", ar: "غرفة الشباب", s: [
+                        { g: "Sein <strong>Jugendzimmer</strong> ist sehr unordentlich.", e: "His youth room is very messy.", a: "أوضته الشبابية متبهدلة جداً." },
+                        { g: "Sie hat ihr <strong>Jugendzimmer</strong> neu gestrichen.", e: "She repainted her youth room.", a: "هي دهنت أوضتها من جديد." },
+                        { g: "Plakate hängen an der Wand im <strong>Jugendzimmer</strong>.", e: "Posters hang on the wall in the youth room.", a: "البوسترات متعلقة على الحيطة في الأوضة." }
+                    ] },
+                    { id: 'w22', ger: "der Dekorationsgegenstand", eng: "Decorative item", ar: "قطعة الديكور", s: [
+                        { g: "Sie kauft oft <strong>Dekorationsgegenstände</strong>.", e: "She often buys decorative items.", a: "هي بتشتري قطع ديكور كتير." },
+                        { g: "Das Regal ist voller <strong>Dekorationsgegenstände</strong>.", e: "The shelf is full of decorative items.", a: "الرف مليان تحف وديكورات." },
+                        { g: "Dieser <strong>Dekorationsgegenstand</strong> passt gut zum Sofa.", e: "This decorative item goes well with the sofa.", a: "قطعة الديكور دي لايقة جداً مع الكنبة." }
+                    ] },
+                    { id: 'w23', ger: "die Kerze", eng: "Candle", ar: "الشمعة", s: [
+                        { g: "Zünde bitte eine <strong>Kerze</strong> an.", e: "Please light a candle.", a: "ولع شمعة لو سمحت." },
+                        { g: "Die <strong>Kerze</strong> duftet nach Vanille.", e: "The candle smells like vanilla.", a: "الشمعة ريحتها فانيليا." },
+                        { g: "Beim Abendessen hatten sie romantische <strong>Kerzen</strong>.", e: "They had romantic candles at dinner.", a: "كان عندهم شمع رومانسي وقت العشا." }
+                    ] },
+                    { id: 'w24', ger: "die Tischdecke", eng: "Tablecloth", ar: "مفرش الطاولة", s: [
+                        { g: "Die weiße <strong>Tischdecke</strong> ist schmutzig.", e: "The white tablecloth is dirty.", a: "مفرش الترابيزة الأبيض متوسخ." },
+                        { g: "Wir brauchen eine neue <strong>Tischdecke</strong> für das Fest.", e: "We need a new tablecloth for the party.", a: "محتاجين مفرش جديد للحفلة." },
+                        { g: "Er hat Rotwein auf die <strong>Tischdecke</strong> verschüttet.", e: "He spilled red wine on the tablecloth.", a: "هو دلق نبيذ أحمر على المفرش." }
+                    ] },
+                    { id: 'w25', ger: "der Nagel", eng: "Nail", ar: "المسمار", s: [
+                        { g: "Ich brauche einen <strong>Nagel</strong> für das Bild.", e: "I need a nail for the picture.", a: "محتاج مسمار عشان أعلق الصورة." },
+                        { g: "Schlag den <strong>Nagel</strong> vorsichtig in die Wand.", e: "Hit the nail carefully into the wall.", a: "دق المسمار في الحيطة براحة." },
+                        { g: "Der <strong>Nagel</strong> ist verbogen.", e: "The nail is bent.", a: "المسمار ده معووج." }
+                    ] },
+                    { id: 'w26', ger: "die Schraube", eng: "Screw", ar: "المسمار المُلولب (البرغي)", s: [
+                        { g: "Diese <strong>Schraube</strong> ist locker.", e: "This screw is loose.", a: "المسمار ده مهوي." },
+                        { g: "Zieh die <strong>Schraube</strong> bitte fest.", e: "Please tighten the screw.", a: "اربط المسمار كويس لو سمحت." },
+                        { g: "Mir fehlt eine <strong>Schraube</strong>, um das Regal aufzubauen.", e: "I'm missing a screw to assemble the shelf.", a: "ناقصني مسمار عشان أركب الرف." }
+                    ] },
+                    { id: 'w27', ger: "die Schere", eng: "Scissors", ar: "المقص", s: [
+                        { g: "Kannst du mir die <strong>Schere</strong> geben?", e: "Can you give me the scissors?", a: "ممكن تديني المقص؟" },
+                        { g: "Die <strong>Schere</strong> ist nicht scharf genug.", e: "The scissors are not sharp enough.", a: "المقص ده مش حامي كفاية." },
+                        { g: "Schneide das Papier mit der <strong>Schere</strong>.", e: "Cut the paper with the scissors.", a: "قص الورقة بالمقص." }
+                    ] },
+                    { id: 'w28', ger: "das Stofftier", eng: "Stuffed animal", ar: "الدمية المحشوة (دبدوب)", s: [
+                        { g: "Das Kind schläft mit seinem <strong>Stofftier</strong>.", e: "The child sleeps with its stuffed animal.", a: "الطفل نايم مع الدبدوب بتاعه." },
+                        { g: "Sie hat ein neues <strong>Stofftier</strong> geschenkt bekommen.", e: "She was given a new stuffed animal.", a: "جالها دبدوب جديد هدية." },
+                        { g: "Das kleine <strong>Stofftier</strong> sieht aus wie ein Hund.", e: "The little stuffed animal looks like a dog.", a: "اللعبة المحشية دي شكلها زي الكلب." }
+                    ] },
+                    { id: 'w29', ger: "der Kugelschreiber", eng: "Ballpoint pen", ar: "قلم الحبر", s: [
+                        { g: "Hast du einen <strong>Kugelschreiber</strong> für mich?", e: "Do you have a pen for me?", a: "معاك قلم جاف ليا؟" },
+                        { g: "Mein <strong>Kugelschreiber</strong> schreibt nicht mehr.", e: "My pen doesn't write anymore.", a: "القلم الجاف بتاعي مبقاش يكتب." },
+                        { g: "Er unterschreibt den Vertrag mit einem blauen <strong>Kugelschreiber</strong>.", e: "He signs the contract with a blue pen.", a: "هو بيمضي العقد بقلم جاف أزرق." }
+                    ] },
+                    { id: 'w30', ger: "die Kaffeemaschine", eng: "Coffee machine", ar: "ماكينة القهوة", s: [
+                        { g: "Die <strong>Kaffeemaschine</strong> ist kaputt.", e: "The coffee machine is broken.", a: "مكنسة القهوة بايظة." },
+                        { g: "Ich mache sie jeden Morgen als Erstes an, die <strong>Kaffeemaschine</strong>.", e: "I turn the coffee machine on first thing every morning.", a: "بشغل ماكينة القهوة أول حاجة كل يوم الصبح." },
+                        { g: "Wir brauchen eine neue <strong>Kaffeemaschine</strong> fürs Büro.", e: "We need a new coffee machine for the office.", a: "محتاجين ماكينة قهوة جديدة للمكتب." }
+                    ] },
+                    { id: 'w31', ger: "der Staubsauger", eng: "Vacuum cleaner", ar: "المكنسة الكهربائية", s: [
+                        { g: "Ich muss heute den <strong>Staubsauger</strong> benutzen.", e: "I have to use the vacuum cleaner today.", a: "لازم أستخدم المكنسة الكهربائية النهاردة." },
+                        { g: "Der <strong>Staubsauger</strong> ist sehr laut.", e: "The vacuum cleaner is very loud.", a: "صوت المكنسة عالي جداً." },
+                        { g: "Kannst du den <strong>Staubsauger</strong> aus dem Schrank holen?", e: "Can you get the vacuum from the closet?", a: "ممكن تجيب المكنسة من الدولاب؟" }
+                    ] },
+                    { id: 'w32', ger: "der Geschirrspüler", eng: "Dishwasher", ar: "غسالة الأطباق", s: [
+                        { g: "Räumst du bitte den <strong>Geschirrspüler</strong> aus?", e: "Will you please empty the dishwasher?", a: "ممكن تفضي غسالة الأطباق؟" },
+                        { g: "Wir haben endlich einen neuen <strong>Geschirrspüler</strong> gekauft.", e: "We finally bought a new dishwasher.", a: "أخيراً اشترينا غسالة أطباق جديدة." },
+                        { g: "Der <strong>Geschirrspüler</strong> spart viel Zeit im Haushalt.", e: "The dishwasher saves a lot of time in the household.", a: "غسالة الأطباق بتوفر وقت كتير في البيت." }
+                    ] },
+                    { id: 'w33', ger: "das Bügeleisen", eng: "Iron", ar: "المكواة", s: [
+                        { g: "Pass auf, das <strong>Bügeleisen</strong> ist heiß!", e: "Watch out, the iron is hot!", a: "خلي بالك، المكواة سخنة!" },
+                        { g: "Ich hasse es, Hemden mit dem <strong>Bügeleisen</strong> zu glätten.", e: "I hate ironing shirts with the iron.", a: "بكره كوي القمصان بالمكواة." },
+                        { g: "Hast du vergessen, das <strong>Bügeleisen</strong> auszuschalten?", e: "Did you forget to turn off the iron?", a: "أنت نسيت تطفي المكواة؟" }
+                    ] },
+                    { id: 'w34', ger: "die Zimmerpflanze", eng: "Houseplant", ar: "نبات الزينة", s: [
+                        { g: "Die <strong>Zimmerpflanze</strong> braucht Wasser.", e: "The houseplant needs water.", a: "الزرعة محتاجة مية." },
+                        { g: "Ich habe eine neue <strong>Zimmerpflanze</strong> für mein Büro gekauft.", e: "I bought a new houseplant for my office.", a: "اشتريت زرعة جديدة للمكتب بتاعي." },
+                        { g: "Diese <strong>Zimmerpflanze</strong> braucht viel Licht.", e: "This houseplant needs a lot of light.", a: "نبات الزينة ده محتاج نور كتير." }
+                    ] },
+                    { id: 'w35', ger: "das Sitzkissen", eng: "Seat cushion", ar: "وسادة الجلوس", s: [
+                        { g: "Das <strong>Sitzkissen</strong> ist sehr bequem.", e: "The seat cushion is very comfortable.", a: "مخدة القعدة دي مريحة جداً." },
+                        { g: "Lege ein <strong>Sitzkissen</strong> auf den Stuhl.", e: "Put a seat cushion on the chair.", a: "حط مخدة جلوس على الكرسي." },
+                        { g: "Die bunten <strong>Sitzkissen</strong> passen gut ins Wohnzimmer.", e: "The colorful seat cushions fit well in the living room.", a: "مخدات القعدة الملونة لايقة أوي في الصالة." }
+                    ] },
+                    { id: 'w36', ger: "das Möbelstück", eng: "Piece of furniture", ar: "قطعة الأثاث", s: [
+                        { g: "Das Sofa ist ein großes <strong>Möbelstück</strong>.", e: "The sofa is a large piece of furniture.", a: "الكنبة دي قطعة أثاث كبيرة." },
+                        { g: "Dieses antike <strong>Möbelstück</strong> ist sehr wertvoll.", e: "This antique piece of furniture is very valuable.", a: "قطعة الأثاث الأنتيكة دي قيمتها عالية جداً." },
+                        { g: "Wir suchen nach einem passenden <strong>Möbelstück</strong> für die Ecke.", e: "We are looking for a suitable piece of furniture for the corner.", a: "بندور على قطعة أثاث مناسبة للركن ده." }
+                    ] },
+                    { id: 'w37', ger: "der Zauberwürfel", eng: "Rubik's cube", ar: "مكعب روبيك", s: [
+                        { g: "Er kann den <strong>Zauberwürfel</strong> schnell lösen.", e: "He can solve the Rubik's cube quickly.", a: "بيقدر يحل مكعب روبيك بسرعة." },
+                        { g: "Der <strong>Zauberwürfel</strong> war in den 80er Jahren sehr beliebt.", e: "The Rubik's cube was very popular in the 80s.", a: "مكعب روبيك كان مشهور جداً في التمانينات." },
+                        { g: "Ich habe nie verstanden, wie der <strong>Zauberwürfel</strong> funktioniert.", e: "I never understood how the Rubik's cube works.", a: "عمري ما فهمت مكعب روبيك بيتحل إزاي." }
+                    ] }
+                ],
+                technik: [
+                    { id: 'w38', ger: "das Entertainment", eng: "Entertainment", ar: "الترفيه", s: [
+                        { g: "Dieses System bietet tolles <strong>Entertainment</strong>.", e: "This system offers great entertainment.", a: "النظام ده بيقدم ترفيه رائع." },
+                        { g: "Filme und Spiele gehören zum digitalen <strong>Entertainment</strong>.", e: "Movies and games are part of digital entertainment.", a: "الأفلام والألعاب من ضمن الترفيه الرقمي." },
+                        { g: "Wir geben viel Geld für <strong>Entertainment</strong> aus.", e: "We spend a lot of money on entertainment.", a: "إحنا بنصرف فلوس كتير على الترفيه." }
+                    ] },
+                    { id: 'w39', ger: "die Spielkonsole", eng: "Game console", ar: "منصة الألعاب", s: [
+                        { g: "Er spielt jeden Tag auf seiner <strong>Spielkonsole</strong>.", e: "He plays on his game console every day.", a: "بيلعب كل يوم على البلايستيشن بتاعه." },
+                        { g: "Die neue <strong>Spielkonsole</strong> ist fast überall ausverkauft.", e: "The new game console is almost sold out everywhere.", a: "منصة الألعاب الجديدة خلصت من كل حتة تقريباً." },
+                        { g: "Meine <strong>Spielkonsole</strong> ist mit dem Fernseher verbunden.", e: "My game console is connected to the TV.", a: "جهاز الألعاب بتاعي متوصل بالتلفزيون." }
+                    ] },
+                    { id: 'w40', ger: "der Fernseher", eng: "Television", ar: "التلفاز", s: [
+                        { g: "Der <strong>Fernseher</strong> läuft den ganzen Tag.", e: "The television is on all day.", a: "التلفزيون شغال طول اليوم." },
+                        { g: "Wir haben einen großen, flachen <strong>Fernseher</strong> gekauft.", e: "We bought a large, flat TV.", a: "اشترينا تلفزيون كبير فلات." },
+                        { g: "Schalte bitte den <strong>Fernseher</strong> aus, wir essen jetzt.", e: "Please turn off the TV, we are eating now.", a: "طفي التلفزيون لو سمحت، إحنا بناكل دلوقتي." }
+                    ] },
+                    { id: 'w41', ger: "der Lautsprecher", eng: "Speaker", ar: "مكبر الصوت (السماعة)", s: [
+                        { g: "Der Ton aus dem <strong>Lautsprecher</strong> ist sehr klar.", e: "The sound from the speaker is very clear.", a: "الصوت من السماعة دي واضح جداً." },
+                        { g: "Ich habe den <strong>Lautsprecher</strong> mit meinem Handy verbunden.", e: "I connected the speaker to my phone.", a: "وصلت السماعة بموبايلي." },
+                        { g: "Diese <strong>Lautsprecher</strong> haben einen starken Bass.", e: "These speakers have a strong bass.", a: "السماعات دي البيز بتاعها قوي." }
+                    ] },
+                    { id: 'w42', ger: "das Smartphone", eng: "Smartphone", ar: "الهاتف الذكي", s: [
+                        { g: "Ich kann ohne mein <strong>Smartphone</strong> nicht leben.", e: "I can't live without my smartphone.", a: "مقدرش أعيش من غير الموبايل بتاعي." },
+                        { g: "Er hat sich das neueste <strong>Smartphone</strong> gekauft.", e: "He bought the latest smartphone.", a: "هو اشترى أحدث هاتف ذكي." },
+                        { g: "Die Kamera von diesem <strong>Smartphone</strong> ist fantastisch.", e: "The camera of this smartphone is fantastic.", a: "كاميرا الموبايل ده خرافية." }
+                    ] },
+                    { id: 'w43', ger: "das Gehäuse", eng: "Casing / Housing", ar: "الهيكل الخارجي (للجهاز)", s: [
+                        { g: "Das <strong>Gehäuse</strong> aus Metall ist sehr stabil.", e: "The metal casing is very stable.", a: "الهيكل المعدني ده متين جداً." },
+                        { g: "Beim Sturz wurde das <strong>Gehäuse</strong> stark beschädigt.", e: "The casing was badly damaged in the fall.", a: "الهيكل اتكسر جامد وقت الوقعة." },
+                        { g: "Dieses Laptop hat ein sehr dünnes <strong>Gehäuse</strong>.", e: "This laptop has a very thin casing.", a: "اللاب توب ده هيكله الخارجي رفيع جداً." }
+                    ] },
+                    { id: 'w44', ger: "der Bildschirm", eng: "Screen / Monitor", ar: "الشاشة", s: [
+                        { g: "Der <strong>Bildschirm</strong> meines Laptops ist kaputt.", e: "The screen of my laptop is broken.", a: "شاشة اللاب توب بتاعتي مكسورة." },
+                        { g: "Du solltest nicht so nah am <strong>Bildschirm</strong> sitzen.", e: "You shouldn't sit so close to the screen.", a: "المفروض متقعدش قريب أوي كده من الشاشة." },
+                        { g: "Dieser <strong>Bildschirm</strong> bietet eine extrem hohe Auflösung.", e: "This screen offers an extremely high resolution.", a: "الشاشة دي بتقدم جودة ووضوح عالي جداً." }
+                    ] },
+                    { id: 'w45', ger: "die Vorderseite", eng: "Front side", ar: "الجهة الأمامية", s: [
+                        { g: "Die Kamera ist auf der <strong>Vorderseite</strong>.", e: "The camera is on the front side.", a: "الكاميرا موجودة في الجهة الأمامية." },
+                        { g: "Die <strong>Vorderseite</strong> des Gebäudes sieht modern aus.", e: "The front of the building looks modern.", a: "الواجهة الأمامية للمبنى شكلها حديث." },
+                        { g: "Auf der <strong>Vorderseite</strong> gibt es keine Knöpfe mehr.", e: "There are no buttons on the front anymore.", a: "مبقاش فيه زراير على الجهة الأمامية." }
+                    ] },
+                    { id: 'w46', ger: "die Rückseite", eng: "Back side", ar: "الجهة الخلفية", s: [
+                        { g: "Auf der <strong>Rückseite</strong> gibt es Kratzer.", e: "There are scratches on the back.", a: "في خرابيش في الضهر." },
+                        { g: "Unterschreibe bitte auch auf der <strong>Rückseite</strong> des Papiers.", e: "Please also sign on the back of the paper.", a: "امضي كمان على ضهر الورقة لو سمحت." },
+                        { g: "Der Sensor befindet sich auf der <strong>Rückseite</strong>.", e: "The sensor is located on the back.", a: "المستشعر موجود في الجهة الخلفية." }
+                    ] },
+                    { id: 'w47', ger: "das Objektiv", eng: "Lens", ar: "العدسة", s: [
+                        { g: "Das <strong>Objektiv</strong> dieser Kamera ist sehr teuer.", e: "The lens of this camera is very expensive.", a: "عدسة الكاميرا دي غالية جداً." },
+                        { g: "Du musst das <strong>Objektiv</strong> regelmäßig reinigen.", e: "You have to clean the lens regularly.", a: "لازم تنضف العدسة بانتظام." },
+                        { g: "Mit diesem <strong>Objektiv</strong> macht man tolle Porträts.", e: "With this lens you take great portraits.", a: "بالعدسة دي بتصور بورتريهات رائعة." }
+                    ] },
+                    { id: 'w48', ger: "der Fingerabdruck", eng: "Fingerprint", ar: "بصمة الإصبع", s: [
+                        { g: "Entsperren Sie das Gerät mit Ihrem <strong>Fingerabdruck</strong>.", e: "Unlock the device with your fingerprint.", a: "افتح الجهاز ببصمة صباعك." },
+                        { g: "Die Polizei fand seinen <strong>Fingerabdruck</strong> am Tatort.", e: "The police found his fingerprint at the crime scene.", a: "الشرطة لقت بصمة صباعه في مسرح الجريمة." },
+                        { g: "Jeder <strong>Fingerabdruck</strong> ist weltweit einzigartig.", e: "Every fingerprint is unique worldwide.", a: "كل بصمة إصبع فريدة من نوعها في العالم." }
+                    ] },
+                    { id: 'w49', ger: "der Akku", eng: "Battery (rechargeable)", ar: "البطارية", s: [
+                        { g: "Mein <strong>Akku</strong> ist fast leer.", e: "My battery is almost empty.", a: "بطاريتي قربت تفصل." },
+                        { g: "Der <strong>Akku</strong> hält nur noch zwei Stunden.", e: "The battery only lasts two hours now.", a: "البطارية مبقتش تقعد غير ساعتين." },
+                        { g: "Du musst den <strong>Akku</strong> deines Laptops wechseln.", e: "You need to change the battery of your laptop.", a: "لازم تغير بطارية اللاب توب بتاعك." }
+                    ] },
+                    { id: 'w50', ger: "das Netzteil", eng: "Power adapter", ar: "مزود الطاقة (الشاحن)", s: [
+                        { g: "Hast du das <strong>Netzteil</strong> für den Laptop?", e: "Do you have the power adapter for the laptop?", a: "معاك شاحن اللاب توب؟" },
+                        { g: "Das <strong>Netzteil</strong> wird beim Laden sehr heiß.", e: "The power adapter gets very hot while charging.", a: "الشاحن بيسخن جداً وقت الشحن." },
+                        { g: "Ich habe mein <strong>Netzteil</strong> im Hotel vergessen.", e: "I forgot my power adapter in the hotel.", a: "نسيت الشاحن بتاعي في الفندق." }
+                    ] },
+                    { id: 'w51', ger: "die Laufzeit", eng: "Runtime / Battery life", ar: "مدة التشغيل", s: [
+                        { g: "Die <strong>Laufzeit</strong> des Akkus ist beeindruckend.", e: "The battery life is impressive.", a: "مدة تشغيل البطارية مبهرة." },
+                        { g: "Wir garantieren eine lange <strong>Laufzeit</strong> für dieses Gerät.", e: "We guarantee a long runtime for this device.", a: "إحنا بنضمن مدة تشغيل طويلة للجهاز ده." },
+                        { g: "Nach dem Update hat sich die <strong>Laufzeit</strong> verkürzt.", e: "After the update, the runtime has decreased.", a: "بعد التحديث، مدة التشغيل قلت." }
+                    ] },
+                    { id: 'w52', ger: "der Speicherplatz", eng: "Storage space", ar: "مساحة التخزين", s: [
+                        { g: "Ich habe nicht genug <strong>Speicherplatz</strong> für Fotos.", e: "I don't have enough storage space for photos.", a: "معنديش مساحة تخزين كفاية للصور." },
+                        { g: "Der <strong>Speicherplatz</strong> auf meinem Handy ist voll.", e: "The storage space on my phone is full.", a: "المساحة على موبايلي اتملت." },
+                        { g: "Du kannst zusätzlichen <strong>Speicherplatz</strong> online kaufen.", e: "You can buy additional storage space online.", a: "تقدر تشتري مساحة تخزين إضافية أونلاين." }
+                    ] },
+                    { id: 'w53', ger: "der Marktführer", eng: "Market leader", ar: "رائد السوق", s: [
+                        { g: "Diese Firma ist der <strong>Marktführer</strong> bei Handys.", e: "This company is the market leader for mobile phones.", a: "الشركة دي متصدرة سوق الموبايلات." },
+                        { g: "Sie wollen in zwei Jahren <strong>Marktführer</strong> werden.", e: "They want to become the market leader in two years.", a: "هما عايزين يبقوا رواد السوق خلال سنتين." },
+                        { g: "Als <strong>Marktführer</strong> trägt man eine große Verantwortung.", e: "As a market leader, one bears a great responsibility.", a: "كرائد في السوق، الواحد بيشيل مسؤولية كبيرة." }
+                    ] },
+                    { id: 'w54', ger: "die Spitzentechnologie", eng: "High-tech / Cutting-edge technology", ar: "التكنولوجيا الفائقة", s: [
+                        { g: "Das Auto nutzt <strong>Spitzentechnologie</strong>.", e: "The car uses cutting-edge technology.", a: "العربية بتستخدم تكنولوجيا فائقة." },
+                        { g: "Wir investieren viel Geld in <strong>Spitzentechnologie</strong>.", e: "We invest a lot of money in high-tech.", a: "إحنا بنستثمر فلوس كتير في التكنولوجيا الفائقة." },
+                        { g: "Die neue Klinik ist mit <strong>Spitzentechnologie</strong> ausgestattet.", e: "The new clinic is equipped with cutting-edge technology.", a: "العيادة الجديدة مجهزة بأحدث التكنولوجيا الفائقة." }
+                    ] }
+                ],
+                werbung_buero: [
+                    { id: 'w55', ger: "die Werbung", eng: "Advertisement / Advertising", ar: "الإعلان", s: [
+                        { g: "Ich finde diese <strong>Werbung</strong> sehr lustig.", e: "I find this advertisement very funny.", a: "أنا شايف الإعلان ده مضحك جداً." },
+                        { g: "Gute <strong>Werbung</strong> beeinflusst die Kunden.", e: "Good advertising influences the customers.", a: "الإعلانات الكويسة بتأثر على الزباين." },
+                        { g: "Wir machen <strong>Werbung</strong> im Internet und im Fernsehen.", e: "We advertise on the internet and on TV.", a: "إحنا بنعمل إعلانات على النت والتلفزيون." }
+                    ] },
+                    { id: 'w56', ger: "der Werbetext", eng: "Advertising copy", ar: "النص الإعلاني", s: [
+                        { g: "Der <strong>Werbetext</strong> muss die Kunden überzeugen.", e: "The advertising copy must convince the customers.", a: "النص الإعلاني لازم يقنع الزباين." },
+                        { g: "Sie arbeitet als Texterin und schreibt <strong>Werbetexte</strong>.", e: "She works as a copywriter and writes advertising texts.", a: "هي شغالة كاتبة وبتكتب نصوص إعلانية." },
+                        { g: "Dieser <strong>Werbetext</strong> ist sehr kreativ geschrieben.", e: "This advertising copy is written very creatively.", a: "النص الإعلاني ده مكتوب بإبداع جداً." }
+                    ] },
+                    { id: 'w57', ger: "das Image", eng: "Image / Reputation", ar: "الصورة الذهنية", s: [
+                        { g: "Die Firma hat ein gutes <strong>Image</strong>.", e: "The company has a good image.", a: "الشركة ليها صورة ذهنية كويسة." },
+                        { g: "Ein Skandal kann das <strong>Image</strong> schnell zerstören.", e: "A scandal can quickly destroy the image.", a: "الفضيحة ممكن تدمر السمعة بسرعة." },
+                        { g: "Sie versuchen, ihr <strong>Image</strong> aufzubessern.", e: "They are trying to improve their image.", a: "هما بيحاولوا يحسنوا صورتهم الذهنية." }
+                    ] },
+                    { id: 'w58', ger: "die Beliebtheit", eng: "Popularity", ar: "الشعبية", s: [
+                        { g: "Die <strong>Beliebtheit</strong> der App wächst schnell.", e: "The popularity of the app is growing fast.", a: "شعبية التطبيق بتزيد بسرعة." },
+                        { g: "Der Sänger erfreut sich großer <strong>Beliebtheit</strong>.", e: "The singer enjoys great popularity.", a: "المغني بيتمتع بشعبية كبيرة." },
+                        { g: "Trotz des hohen Preises verliert das Auto nicht an <strong>Beliebtheit</strong>.", e: "Despite the high price, the car does not lose popularity.", a: "رغم السعر العالي، العربية مش بتفقد شعبيتها." }
+                    ] },
+                    { id: 'w59', ger: "das Label", eng: "Label / Brand", ar: "العلامة التجارية", s: [
+                        { g: "Sie kauft nur Kleidung von einem bekannten <strong>Label</strong>.", e: "She only buys clothes from a well-known label.", a: "بتشتري هدوم من ماركات معروفة بس." },
+                        { g: "Das <strong>Label</strong> garantiert hohe Qualität.", e: "The label guarantees high quality.", a: "العلامة التجارية بتضمن جودة عالية." },
+                        { g: "Viele Jugendliche tragen gerne teure <strong>Labels</strong>.", e: "Many teenagers like to wear expensive labels.", a: "شباب كتير بيحبوا يلبسوا ماركات غالية." }
+                    ] },
+                    { id: 'w60', ger: "der Verbraucher", eng: "Consumer", ar: "المستهلك", s: [
+                        { g: "Der <strong>Verbraucher</strong> entscheidet, was gekauft wird.", e: "The consumer decides what is bought.", a: "المستهلك هو اللي بيقرر إيه اللي هيتشري." },
+                        { g: "Die Preise sind für den normalen <strong>Verbraucher</strong> zu hoch.", e: "The prices are too high for the average consumer.", a: "الأسعار عالية جداً على المستهلك العادي." },
+                        { g: "Die Rechte der <strong>Verbraucher</strong> müssen geschützt werden.", e: "Consumer rights must be protected.", a: "لازم حقوق المستهلكين تتحمي." }
+                    ] },
+                    { id: 'w61', ger: "der Hersteller", eng: "Manufacturer", ar: "المُصنّع / المنتج", s: [
+                        { g: "Der <strong>Hersteller</strong> gibt zwei Jahre Garantie.", e: "The manufacturer gives a two-year warranty.", a: "المُصنع بيدي ضمان سنتين." },
+                        { g: "Wir haben Kontakt mit dem <strong>Hersteller</strong> aufgenommen.", e: "We have contacted the manufacturer.", a: "إحنا تواصلنا مع الشركة المصنعة." },
+                        { g: "Viele <strong>Hersteller</strong> produzieren heute in Asien.", e: "Many manufacturers produce in Asia today.", a: "مصنعين كتير النهاردة بينتجوا في آسيا." }
+                    ] },
+                    { id: 'w62', ger: "das Plakat", eng: "Poster", ar: "الملصق الإعلاني", s: [
+                        { g: "Das <strong>Plakat</strong> hängt an der Bushaltestelle.", e: "The poster hangs at the bus stop.", a: "البوستر متعلق في محطة الأتوبيس." },
+                        { g: "Überall in der Stadt sieht man <strong>Plakate</strong> für den Film.", e: "You can see posters for the film everywhere in the city.", a: "هتشوف بوسترات الفيلم في كل حتة في المدينة." },
+                        { g: "Wer hat dieses bunte <strong>Plakat</strong> entworfen?", e: "Who designed this colorful poster?", a: "مين اللي صمم البوستر الملون ده؟" }
+                    ] },
+                    { id: 'w63', ger: "die Werbeunterbrechung", eng: "Commercial break", ar: "الفاصل الإعلاني", s: [
+                        { g: "Ich hasse die lange <strong>Werbeunterbrechung</strong> im Film.", e: "I hate the long commercial break in the movie.", a: "بكره الفاصل الإعلاني الطويل في الفيلم." },
+                        { g: "Wir nutzen die <strong>Werbeunterbrechung</strong>, um Snacks zu holen.", e: "We use the commercial break to get snacks.", a: "بنستغل الفاصل الإعلاني عشان نجيب سناكس." },
+                        { g: "Nach einer kurzen <strong>Werbeunterbrechung</strong> geht es weiter.", e: "It continues after a short commercial break.", a: "هنكمل بعد فاصل إعلاني قصير." }
+                    ] },
+                    { id: 'w64', ger: "der Anzug", eng: "Suit", ar: "البدلة", s: [
+                        { g: "Er trägt einen dunklen <strong>Anzug</strong>.", e: "He is wearing a dark suit.", a: "لابس بدلة غامقة." },
+                        { g: "Für das Vorstellungsgespräch kaufte er sich einen neuen <strong>Anzug</strong>.", e: "He bought a new suit for the job interview.", a: "اشترى بدلة جديدة عشان الانترفيو." },
+                        { g: "Der <strong>Anzug</strong> passt ihm wie angegossen.", e: "The suit fits him perfectly.", a: "البدلة مقاسه بالظبط (كأنها مصبوبة عليه)." }
+                    ] },
+                    { id: 'w65', ger: "die Krawatte", eng: "Tie", ar: "رابطة العنق (كرافتة)", s: [
+                        { g: "Diese <strong>Krawatte</strong> passt nicht zum Hemd.", e: "This tie doesn't match the shirt.", a: "الكرافتة دي مش لايقة على القميص." },
+                        { g: "Er muss jeden Tag eine <strong>Krawatte</strong> im Büro tragen.", e: "He has to wear a tie in the office every day.", a: "لازم يلبس كرافتة كل يوم في المكتب." },
+                        { g: "Kannst du mir helfen, die <strong>Krawatte</strong> zu binden?", e: "Can you help me tie the tie?", a: "ممكن تساعدني أربط الكرافتة؟" }
+                    ] },
+                    { id: 'w66', ger: "der Locher", eng: "Hole punch", ar: "الخرامة", s: [
+                        { g: "Ich brauche den <strong>Locher</strong> für die Papiere.", e: "I need the hole punch for the papers.", a: "محتاج الخرامة عشان الورق." },
+                        { g: "Wo hast du den <strong>Locher</strong> hingelegt?", e: "Where did you put the hole punch?", a: "حطيت الخرامة فين؟" },
+                        { g: "Mit dem <strong>Locher</strong> mache ich Löcher in die Dokumente.", e: "With the hole punch I make holes in the documents.", a: "بالخرامة بعمل أخرام في المستندات." }
+                    ] }
+                ]
+            },
+            verbs: [
+                { id: 'v1', ger: "brauchen", eng: "to need", ar: "يحتاج", s: [
+                    { g: "Ich <strong>brauche</strong> mehr Zeit dafür.", e: "I need more time for that.", a: "محتاج وقت أكتر لده." },
+                    { g: "Wir <strong>brauchen</strong> deine Hilfe bei diesem Projekt.", e: "We need your help with this project.", a: "محتاجين مساعدتك في المشروع ده." },
+                    { g: "<strong>Brauchst</strong> du das Auto heute Abend?", e: "Do you need the car tonight?", a: "محتاج العربية النهاردة بالليل؟" }
+                ] },
+                { id: 'v2', ger: "nutzen", eng: "to use / benefit from", ar: "يستفيد من / يستخدم", s: [
+                    { g: "Wir <strong>nutzen</strong> die Gelegenheit.", e: "We use the opportunity.", a: "إحنا بنستغل الفرصة." },
+                    { g: "Welche Apps <strong>nutzen</strong> Sie am häufigsten?", e: "Which apps do you use most often?", a: "إيه التطبيقات اللي بتستخدمها أكتر حاجة؟" },
+                    { g: "Man sollte seine Zeit sinnvoll <strong>nutzen</strong>.", e: "One should use their time sensibly.", a: "المفروض الواحد يستغل وقته في حاجة مفيدة." }
+                ] },
+                { id: 'v3', ger: "benutzen", eng: "to use", ar: "يستخدم (أداة)", s: [
+                    { g: "Bitte <strong>benutzen</strong> Sie den Seiteneingang.", e: "Please use the side entrance.", a: "لو سمحت استخدم الباب الجانبي." },
+                    { g: "Darf ich kurz dein Telefon <strong>benutzen</strong>?", e: "May I use your phone briefly?", a: "ممكن أستخدم تليفونك ثانية؟" },
+                    { g: "Er <strong>benutzt</strong> immer denselben Stift.", e: "He always uses the same pen.", a: "هو دايماً بيستخدم نفس القلم." }
+                ] },
+                { id: 'v4', ger: "zählen", eng: "to count", ar: "يَعُد", s: [
+                    { g: "Der Verkäufer <strong>zählt</strong> das Geld.", e: "The seller is counting the money.", a: "البياع بيعد الفلوس." },
+                    { g: "Kannst du bitte die Kartons im Lager <strong>zählen</strong>?", e: "Can you please count the boxes in the warehouse?", a: "ممكن تعد الكراتين اللي في المخزن لو سمحت؟" },
+                    { g: "Das Kind lernt gerade, bis hundert zu <strong>zählen</strong>.", e: "The child is currently learning to count to a hundred.", a: "الطفل بيتعلم دلوقتي يعد لحد مية." }
+                ] },
+                { id: 'v5', ger: "notieren", eng: "to note down", ar: "يُدون", s: [
+                    { g: "Ich <strong>notiere</strong> mir den Termin.", e: "I note down the appointment.", a: "بدون الميعاد في نوتة." },
+                    { g: "Bitte <strong>notieren</strong> Sie Ihre Fragen für später.", e: "Please note down your questions for later.", a: "لو سمحت دون أسئلتك عشان بعدين." },
+                    { g: "Sie hat die wichtigsten Punkte auf einem Zettel <strong>notiert</strong>.", e: "She noted the most important points on a piece of paper.", a: "هي دونت النقط المهمة على ورقة." }
+                ] },
+                { id: 'v6', ger: "eintragen", eng: "to register / enter", ar: "يُسجل (في قائمة)", s: [
+                    { g: "Bitte <strong>tragen</strong> Sie sich in die Liste <strong>ein</strong>.", e: "Please enter your name in the list.", a: "لو سمحت سجل اسمك في القائمة." },
+                    { g: "Ich habe den Termin in meinen Kalender <strong>eingetragen</strong>.", e: "I entered the appointment in my calendar.", a: "أنا سجلت الميعاد في نتيجتي." },
+                    { g: "Vergessen Sie nicht, das Passwort <strong>einzutragen</strong>.", e: "Do not forget to enter the password.", a: "ماتنساش تدخل كلمة السر." }
+                ] },
+                { id: 'v7', ger: "herstellen", eng: "to manufacture / produce", ar: "يُصنّع", s: [
+                    { g: "Diese Firma <strong>stellt</strong> Möbel <strong>her</strong>.", e: "This company manufactures furniture.", a: "الشركة دي بتصنع أثاث." },
+                    { g: "Wir <strong>stellen</strong> unsere Produkte in Deutschland <strong>her</strong>.", e: "We manufacture our products in Germany.", a: "إحنا بنصنع منتجاتنا في ألمانيا." },
+                    { g: "Wie wird dieses Material <strong>hergestellt</strong>?", e: "How is this material manufactured?", a: "المادة دي بتتصنع إزاي؟" }
+                ] },
+                { id: 'v8', ger: "produzieren", eng: "to produce", ar: "يُنتج", s: [
+                    { g: "Wir <strong>produzieren</strong> hochwertige Geräte.", e: "We produce high-quality devices.", a: "إحنا بننتج أجهزة عالية الجودة." },
+                    { g: "Die Fabrik <strong>produziert</strong> jeden Tag tausende Autos.", e: "The factory produces thousands of cars every day.", a: "المصنع بينتج آلاف العربيات كل يوم." },
+                    { g: "Dieser Film wurde in Hollywood <strong>produziert</strong>.", e: "This film was produced in Hollywood.", a: "الفيلم ده تم إنتاجه في هوليوود." }
+                ] },
+                { id: 'v9', ger: "einführen", eng: "to introduce (to the market)", ar: "يُقدم / يطرح", s: [
+                    { g: "Das neue Produkt wird bald <strong>eingeführt</strong>.", e: "The new product will be introduced soon.", a: "المنتج الجديد هيطرح قريب." },
+                    { g: "Die Regierung will neue Regeln <strong>einführen</strong>.", e: "The government wants to introduce new rules.", a: "الحكومة عايزة تطبق قواعد جديدة." },
+                    { g: "Wann wurde das Smartphone auf dem Markt <strong>eingeführt</strong>?", e: "When was the smartphone introduced to the market?", a: "إمتى تم طرح الموبايل ده في السوق؟" }
+                ] },
+                { id: 'v10', ger: "ausstatten", eng: "to equip", ar: "يُجهز بـ", s: [
+                    { g: "Das Handy ist mit einer guten Kamera <strong>ausgestattet</strong>.", e: "The phone is equipped with a good camera.", a: "الموبايل مجهز بكاميرا كويسة." },
+                    { g: "Das Hotel <strong>stattet</strong> alle Zimmer mit WLAN <strong>aus</strong>.", e: "The hotel equips all rooms with Wi-Fi.", a: "الفندق بيجهز كل الأوض بواي فاي." },
+                    { g: "Die Autos sind mit der neuesten Technik <strong>ausgestattet</strong>.", e: "The cars are equipped with the latest technology.", a: "العربيات مجهزة بأحدث تكنولوجيا." }
+                ] },
+                { id: 'v11', ger: "einbauen", eng: "to install / build in", ar: "يُدمج / يُركب", s: [
+                    { g: "Der Speicher ist fest <strong>eingebaut</strong>.", e: "The memory is permanently built-in.", a: "الميموري متركبة وثابتة جوه." },
+                    { g: "Wir müssen noch einen Schrank in die Nische <strong>einbauen</strong>.", e: "We still need to build a closet into the niche.", a: "لسه لازم نركب دولاب في التجويف ده." },
+                    { g: "Der Handwerker <strong>baut</strong> das neue Fenster <strong>ein</strong>.", e: "The craftsman is installing the new window.", a: "العامل بيركب الشباك الجديد." }
+                ] },
+                { id: 'v12', ger: "sichern", eng: "to secure / backup", ar: "يُؤمّن", s: [
+                    { g: "Sie müssen das Gerät mit einem Code <strong>sichern</strong>.", e: "You must secure the device with a code.", a: "لازم تأمن الجهاز برمز." },
+                    { g: "Hast du deine Daten auf einer Festplatte <strong>gesichert</strong>?", e: "Did you backup your data on a hard drive?", a: "عملت نسخة احتياطية من بياناتك على هارد؟" },
+                    { g: "Die Polizei <strong>sichert</strong> das Gebäude.", e: "The police are securing the building.", a: "الشرطة بتأمن المبنى." }
+                ] },
+                { id: 'v13', ger: "beschädigen", eng: "to damage", ar: "يُتلف / يكسر", s: [
+                    { g: "Das Gehäuse wurde beim Transport <strong>beschädigt</strong>.", e: "The casing was damaged during transport.", a: "الهيكل اتكسر أثناء النقل." },
+                    { g: "Wasser kann das Handy irreparabel <strong>beschädigen</strong>.", e: "Water can damage the phone irreparably.", a: "المية ممكن تتلف الموبايل بشكل ميتصلحش." },
+                    { g: "Achtung, du <strong>beschädigst</strong> sonst den Lack!", e: "Careful, otherwise you will damage the paint!", a: "حاسب، وإلا هتبوظ الدهان!" }
+                ] },
+                { id: 'v14', ger: "ersetzen", eng: "to replace", ar: "يستبدل", s: [
+                    { g: "Das alte Gerät muss <strong>ersetzt</strong> werden.", e: "The old device must be replaced.", a: "الجهاز القديم لازم يتغير." },
+                    { g: "Roboter werden viele menschliche Arbeiter <strong>ersetzen</strong>.", e: "Robots will replace many human workers.", a: "الروبوتات هتستبدل عمال بشريين كتير." },
+                    { g: "Können Sie mir das kaputte Teil <strong>ersetzen</strong>?", e: "Can you replace the broken part for me?", a: "ممكن تبدلي الجزء البايظ ده؟" }
+                ] },
+                { id: 'v15', ger: "revolutionieren", eng: "to revolutionize", ar: "يُحدث ثورة في", s: [
+                    { g: "Das Smartphone hat die Welt <strong>revolutioniert</strong>.", e: "The smartphone revolutionized the world.", a: "الموبايل عمل ثورة في العالم." },
+                    { g: "Das Internet <strong>revolutionierte</strong> unsere Art zu kommunizieren.", e: "The internet revolutionized our way of communicating.", a: "النت عمل ثورة في طريقتنا للتواصل." },
+                    { g: "Diese Erfindung wird die Medizin <strong>revolutionieren</strong>.", e: "This invention will revolutionize medicine.", a: "الاختراع ده هيعمل ثورة في الطب." }
+                ] },
+                { id: 'v16', ger: "nerven", eng: "to annoy", ar: "يُزعج", s: [
+                    { g: "Die ständige Werbung <strong>nervt</strong> mich.", e: "The constant advertising annoys me.", a: "الإعلانات المستمرة بتزعجني." },
+                    { g: "Es <strong>nervt</strong>, wenn das Internet so langsam ist.", e: "It's annoying when the internet is so slow.", a: "حاجة تعصب لما النت يكون بطيء كده." },
+                    { g: "Hör auf zu singen, du <strong>nervst</strong> alle!", e: "Stop singing, you are annoying everyone!", a: "بطل غنا، أنت بتزعج الكل!" }
+                ] },
+                { id: 'v17', ger: "stören", eng: "to disturb", ar: "يضايق / يزعج", s: [
+                    { g: "Bitte <strong>stören</strong> Sie mich nicht beim Arbeiten.", e: "Please don't disturb me while working.", a: "لو سمحت ماتزعجنيش وأنا شغال." },
+                    { g: "Der Lärm von draußen <strong>stört</strong> meinen Schlaf.", e: "The noise from outside disturbs my sleep.", a: "الدوشة اللي برة بتزعج نومي." },
+                    { g: "<strong>Stört</strong> es dich, wenn ich das Fenster öffne?", e: "Does it bother you if I open the window?", a: "يضايقك لو فتحت الشباك؟" }
+                ] },
+                { id: 'v18', ger: "warnen", eng: "to warn", ar: "يُحذر", s: [
+                    { g: "Experten <strong>warnen</strong> vor diesem Produkt.", e: "Experts warn against this product.", a: "الخبراء بيحذروا من المنتج ده." },
+                    { g: "Ich habe dich vorher <strong>gewarnt</strong>!", e: "I warned you beforehand!", a: "أنا حذرتك قبلها!" },
+                    { g: "Die Regierung <strong>warnt</strong> die Bürger vor dem Sturm.", e: "The government warns citizens about the storm.", a: "الحكومة بتحذر المواطنين من العاصفة." }
+                ] },
+                { id: 'v19', ger: "überzeugen", eng: "to convince", ar: "يُقنع", s: [
+                    { g: "Die Qualität des Produkts hat mich <strong>überzeugt</strong>.", e: "The product's quality convinced me.", a: "جودة المنتج أقنعتني." },
+                    { g: "Ich versuche, ihn von meiner Idee zu <strong>überzeugen</strong>.", e: "I am trying to convince him of my idea.", a: "بحاول أقنعه بفكرتي." },
+                    { g: "Ihre Argumente waren nicht sehr <strong>überzeugend</strong>.", e: "Her arguments were not very convincing.", a: "حججها مكنتش مقنعة أوي." }
+                ] },
+                { id: 'v20', ger: "loben", eng: "to praise", ar: "يمدح", s: [
+                    { g: "Der Chef <strong>lobt</strong> seine Mitarbeiter.", e: "The boss praises his employees.", a: "المدير بيمدح الموظفين بتوعه." },
+                    { g: "Man muss Kinder auch mal <strong>loben</strong>.", e: "One also has to praise children sometimes.", a: "لازم الواحد يمدح الأطفال من وقت للتاني." },
+                    { g: "Das Produkt wird in den Kritiken hoch <strong>gelobt</strong>.", e: "The product is highly praised in the reviews.", a: "المنتج بيتمدح جداً في التقييمات." }
+                ] },
+                { id: 'v21', ger: "aufpoppen", eng: "to pop up", ar: "ينبثق (إعلان)", s: [
+                    { g: "Plötzlich <strong>poppt</strong> ein Werbefenster <strong>auf</strong>.", e: "Suddenly an ad window pops up.", a: "فجأة طلع إعلان منبثق." },
+                    { g: "Immer wenn ich surfe, <strong>poppen</strong> diese Anzeigen <strong>auf</strong>.", e: "Whenever I surf, these ads pop up.", a: "كل ما أتصفح، الإعلانات دي بتطلعلي فجأة." },
+                    { g: "Eine Fehlermeldung <strong>poppte</strong> auf dem Bildschirm <strong>auf</strong>.", e: "An error message popped up on the screen.", a: "رسالة خطأ انبثقت على الشاشة." }
+                ] },
+                { id: 'v22', ger: "entwickeln", eng: "to develop", ar: "يُطوّر", s: [
+                    { g: "Wir <strong>entwickeln</strong> eine neue App.", e: "We are developing a new app.", a: "إحنا بنطور تطبيق جديد." },
+                    { g: "Technologie <strong>entwickelt</strong> sich heutzutage sehr schnell.", e: "Technology develops very fast nowadays.", a: "التكنولوجيا بتتطور بسرعة جداً الأيام دي." },
+                    { g: "Das Unternehmen hat ein neues Konzept <strong>entwickelt</strong>.", e: "The company has developed a new concept.", a: "الشركة طورت فكرة/مفهوم جديد." }
+                ] }
+            ],
+            irregularVerbs: [
+                { id: 'iv1', ger: "besitzen", eng: "to own / possess", ar: "يمتلك", praesens: "Er besitzt ein Haus.", praeteritum: "er besaß", perfekt: "er hat besessen" },
+                { id: 'iv2', ger: "ausgeben", eng: "to spend (money)", ar: "يُنفِق", praesens: "Ich gebe viel Geld aus.", praeteritum: "ich gab aus", perfekt: "ich habe ausgegeben" },
+                { id: 'iv3', ger: "wegwerfen", eng: "to throw away", ar: "يرمي", praesens: "Wir werfen alte Sachen weg.", praeteritum: "wir warfen weg", perfekt: "wir haben weggeworfen" },
+                { id: 'iv4', ger: "abbrechen", eng: "to cancel / abort", ar: "يُلغي", praesens: "Er bricht das Experiment ab.", praeteritum: "er brach ab", perfekt: "er hat abgebrochen" },
+                { id: 'iv5', ger: "erfinden", eng: "to invent", ar: "يخترع", praesens: "Wer erfindet das Gerät?", praeteritum: "er erfand", perfekt: "er hat erfunden" },
+                { id: 'iv6', ger: "aufladen", eng: "to charge", ar: "يشحن", praesens: "Ich lade den Akku auf.", praeteritum: "ich lud auf", perfekt: "ich habe aufgeladen" },
+                { id: 'iv7', ger: "unterbrechen", eng: "to interrupt", ar: "يُقاطع", praesens: "Werbung unterbricht den Film.", praeteritum: "sie unterbrach", perfekt: "sie hat unterbrochen" },
+                { id: 'iv8', ger: "beweisen", eng: "to prove", ar: "يُثبت", praesens: "Er beweist das Gegenteil.", praeteritum: "er bewies", perfekt: "er hat bewiesen" }
+            ],
+            expressions: [
+                { id: 'e1', type: "Konsum (الاستهلاك)", ger: "Kaufen Sie gern ein?", eng: "Do you like shopping?", ar: "هل تحب التسوق؟", context: "سؤال لفتح نقاش عن التسوق." },
+                { id: 'e2', type: "Konsum (الاستهلاك)", ger: "Was kaufen Sie am liebsten?", eng: "What is your favorite thing to buy?", ar: "ما هو أكثر شيء تحب شراءه؟", context: "للسؤال عن التفضيلات." },
+                { id: 'e3', type: "Konsum (الاستهلاك)", ger: "Welche Dinge nutzen Sie am häufigsten?", eng: "Which things do you use most often?", ar: "ما هي الأشياء التي تستخدمها بكثرة؟", context: "نقاش عن الاستهلاك اليومي." },
+                { id: 'e4', type: "Konsum (الاستهلاك)", ger: "Was machen Sie mit Dingen, die Sie nicht mehr brauchen?", eng: "What do you do with things you no longer need?", ar: "ماذا تفعل بالأشياء التي لم تعد بحاجة إليها؟", context: "عن التخلص من الأشياء القديمة." },
+                { id: 'e5', type: "Konsum (الاستهلاك)", ger: "Können Sie sich vorstellen, Ihren Besitz zu reduzieren?", eng: "Can you imagine reducing your belongings?", ar: "هل يمكنك تخيل تقليص ممتلكاتك؟", context: "نقاش عن فكرة التقليلية (Minimalismus)." },
+                { id: 'e6', type: "Redewendung", ger: "auf eine Idee kommen", eng: "to come up with an idea", ar: "تخطر بباله فكرة", context: "Plötzlich bin ich auf eine tolle Idee gekommen." },
+                { id: 'e7', type: "Redewendung", ger: "das Gegenteil beweisen", eng: "to prove the opposite", ar: "يثبت العكس", context: "Er wollte allen das Gegenteil beweisen." },
+                { id: 'e8', type: "Kommentar (كتابة تعليق)", ger: "In dem Artikel wird über ... berichtet.", eng: "The article reports about...", ar: "في المقال يتم التقرير عن...", context: "مقدمة للرد على مقال." },
+                { id: 'e9', type: "Kommentar (كتابة تعليق)", ger: "In dem Artikel geht es um ...", eng: "The article is about...", ar: "المقال يدور حول...", context: "لتلخيص الفكرة الأساسية." },
+                { id: 'e10', type: "Kommentar (كتابة تعليق)", ger: "Ich fand es besonders interessant, dass...", eng: "I found it particularly interesting that...", ar: "وجدت من المثير للاهتمام بشكل خاص أن...", context: "لإبداء الإعجاب بجزء معين." },
+                { id: 'e11', type: "Kommentar (كتابة تعليق)", ger: "Mich hat überrascht, dass...", eng: "It surprised me that...", ar: "فاجأني أن...", context: "للتعبير عن الدهشة." },
+                { id: 'e12', type: "Kommentar (كتابة تعليق)", ger: "Ich persönlich denke, dass...", eng: "Personally, I think that...", ar: "أنا شخصياً أعتقد أن...", context: "لإبداء الرأي الشخصي." },
+                { id: 'e13', type: "Kommentar (كتابة تعليق)", ger: "Was mich betrifft, ...", eng: "As for me, ...", ar: "أما فيما يخصني...", context: "للحديث عن موقفك الخاص." },
+                { id: 'e14', type: "Kommentar (كتابة تعليق)", ger: "Meinen Erfahrungen nach...", eng: "In my experience...", ar: "وفقاً لخبراتي...", context: "לربط الموضوع بالواقع." },
+                { id: 'e15', type: "Kommentar (كتابة تعليق)", ger: "Wenn ich an meine Wohnung denke, muss ich zugeben, dass...", eng: "When I think of my apartment, I must admit that...", ar: "عندما أفكر في شقتي، يجب أن أعترف بأن...", context: "مثال من واقع الحياة." },
+                { id: 'e16', type: "Adjektiv", ger: "sinnvoll sein", eng: "to be sensible / useful", ar: "يكون منطقياً أو مفيداً", context: "Diese neue Technik ist sehr sinnvoll." },
+                { id: 'e17', type: "Adjektiv", ger: "notwendig sein", eng: "to be necessary", ar: "يكون ضرورياً", context: "Ein Update ist unbedingt notwendig." },
+                { id: 'e18', type: "Adjektiv", ger: "spektakulär / sensationell", eng: "spectacular / sensational", ar: "مذهل / استثنائي", context: "Die neue Erfindung ist wirklich spektakulär." },
+                { id: 'e19', type: "Adjektiv", ger: "leistungsstark", eng: "powerful / high-performance", ar: "قوي الأداء", context: "Das Smartphone hat einen leistungsstarken Akku." },
+                { id: 'e20', type: "Adjektiv", ger: "massentauglich", eng: "suitable for the masses", ar: "مناسب للاستهلاك الجماهيري", context: "Das Produkt muss massentauglich sein." },
+                { id: 'e21', type: "Adjektiv", ger: "minderwertig", eng: "inferior / of low quality", ar: "رديء / منخفض الجودة", context: "Kaufen Sie keine minderwertige Ware." },
+                { id: 'e22', type: "Adjektiv", ger: "lästig / aufdringlich", eng: "annoying / intrusive", ar: "مزعج / لحوح", context: "Aufdringliche Werbung im Internet ist lästig." }
+            ],
+            prepositions: [
+                { id: 'p1', ger: "kommen (auf + Akk)", eng: "to come up with", ar: "تخطر بباله", s: [
+                    { g: "Wie bist du <strong>auf</strong> diese Idee gekommen?", e: "How did you come up with this idea?", a: "الفكرة دي خطرت على بالك إزاي؟" },
+                    { g: "Ich <strong>komme</strong> einfach nicht <strong>auf</strong> die Lösung.", e: "I just can't come up with the solution.", a: "مش قادر أوصل للحل." },
+                    { g: "Er <strong>kam auf</strong> den Gedanken, ein Buch zu schreiben.", e: "He came up with the thought of writing a book.", a: "خطرت في باله فكرة كتابة كتاب." }
+                ] },
+                { id: 'p2', ger: "kommen (auf + Akk)", eng: "to enter the market", ar: "يُطرح في (السوق)", s: [
+                    { g: "Das neue Handy kommt bald <strong>auf</strong> den Markt.", e: "The new phone will hit the market soon.", a: "الموبايل الجديد هينزل السوق قريب." },
+                    { g: "Im Herbst kommen neue Modelle <strong>auf</strong> den Markt.", e: "New models will enter the market in autumn.", a: "في الخريف هتنزل موديلات جديدة السوق." },
+                    { g: "Das Produkt kam erst gestern <strong>auf</strong> den Markt.", e: "The product only entered the market yesterday.", a: "المنتج لسه نازل السوق امبارح." }
+                ] },
+                { id: 'p3', ger: "achten (auf + Akk)", eng: "to pay attention to", ar: "ينتبه لـ", s: [
+                    { g: "Kunden achten sehr <strong>auf</strong> die Preise.", e: "Customers pay close attention to prices.", a: "الزباين بيركزوا جداً مع الأسعار." },
+                    { g: "Du musst beim Einkaufen <strong>auf</strong> die Qualität achten.", e: "You have to pay attention to the quality when shopping.", a: "لازم تركز على الجودة وأنت بتشتري." },
+                    { g: "Er achtete nicht <strong>auf</strong> die Warnungen.", e: "He did not pay attention to the warnings.", a: "هو منتبهش للتحذيرات." }
+                ] },
+                { id: 'p4', ger: "liegen (im Schnitt)", eng: "on average", ar: "في المتوسط", s: [
+                    { g: "Der Preis liegt <strong>im</strong> Schnitt bei 500 Euro.", e: "The price is around 500 euros on average.", a: "السعر في المتوسط ٥٠٠ يورو." },
+                    { g: "Wir arbeiten <strong>im</strong> Schnitt acht Stunden pro Tag.", e: "We work eight hours a day on average.", a: "إحنا بنشتغل في المتوسط ٨ ساعات في اليوم." },
+                    { g: "Die Kosten liegen <strong>im</strong> Schnitt viel höher.", e: "The costs are much higher on average.", a: "التكاليف في المتوسط أعلى بكتير." }
+                ] },
+                { id: 'p5', ger: "werden (zu + Dat)", eng: "to become", ar: "يصبح (رائدًا)", s: [
+                    { g: "Die Firma ist <strong>zum</strong> Marktführer geworden.", e: "The company has become the market leader.", a: "الشركة بقت متصدرة السوق." },
+                    { g: "Der kleine Laden wurde schnell <strong>zu</strong> einem großen Unternehmen.", e: "The small shop quickly became a large company.", a: "المحل الصغير بقى شركة كبيرة بسرعة." },
+                    { g: "Sein Hobby wurde bald <strong>zu</strong> seinem Beruf.", e: "His hobby soon became his profession.", a: "هوايته بقت مهنته بسرعة." }
+                ] },
+                { id: 'p6', ger: "beitragen (zu + Dat)", eng: "to contribute to", ar: "يساهم في", s: [
+                    { g: "Werbung trägt stark <strong>zum</strong> Erfolg bei.", e: "Advertising strongly contributes to success.", a: "الإعلانات بتساهم جداً في النجاح." },
+                    { g: "Jeder Mitarbeiter hat <strong>zu</strong> diesem Ergebnis beigetragen.", e: "Every employee contributed to this result.", a: "كل موظف ساهم في النتيجة دي." },
+                    { g: "Eine gute Idee kann viel <strong>zur</strong> Problemlösung beitragen.", e: "A good idea can contribute a lot to solving the problem.", a: "الفكرة الكويسة ممكن تساهم كتير في حل المشكلة." }
+                ] },
+                { id: 'p7', ger: "einschalten (mit + Dat)", eng: "to switch on with", ar: "يُشغل باستخدام", s: [
+                    { g: "Man kann das Gerät <strong>mit</strong> einem Code einschalten.", e: "You can turn on the device with a code.", a: "ممكن تشغل الجهاز بكود." },
+                    { g: "Schalten Sie den Fernseher <strong>mit</strong> der Fernbedienung ein.", e: "Turn on the TV with the remote control.", a: "شغل التلفزيون بالريموت." },
+                    { g: "Die Lampe wird <strong>mit</strong> einem Schalter eingeschaltet.", e: "The lamp is switched on with a switch.", a: "اللمبة بتشتغل بمفتاح." }
+                ] },
+                { id: 'p8', ger: "sichern (mit + Dat)", eng: "to secure with", ar: "يؤمن بـ", s: [
+                    { g: "Ich habe den Laptop <strong>mit</strong> einem Passwort gesichert.", e: "I secured the laptop with a password.", a: "أمنت اللاب توب بباسورد." },
+                    { g: "Die Tür wurde <strong>mit</strong> einem extra Schloss gesichert.", e: "The door was secured with an extra lock.", a: "الباب اتأمن بقفل زيادة." },
+                    { g: "Sichern Sie Ihre Daten am besten <strong>mit</strong> einer Cloud.", e: "It's best to secure your data with a cloud.", a: "أحسن حاجة تأمن بياناتك عن طريق الكلاود." }
+                ] },
+                { id: 'p9', ger: "warnen (vor + Dat)", eng: "to warn against", ar: "يُحذر من", s: [
+                    { g: "Ich warne dich <strong>vor</strong> minderwertigen Produkten.", e: "I warn you against inferior products.", a: "بحذرك من المنتجات الرديئة." },
+                    { g: "Die Polizei warnt <strong>vor</strong> Betrügern im Internet.", e: "The police warn against scammers on the internet.", a: "الشرطة بتحذر من النصابين على النت." },
+                    { g: "Experten warnen <strong>vor</strong> den Folgen des Klimawandels.", e: "Experts warn against the consequences of climate change.", a: "الخبراء بيحذروا من عواقب التغير المناخي." }
+                ] },
+                { id: 'p10', ger: "liegen (bei + Dat)", eng: "to rank at", ar: "يقع في (تصنيف)", s: [
+                    { g: "Das Produkt liegt <strong>bei</strong> der Beliebtheit auf Platz eins.", e: "The product ranks first in popularity.", a: "المنتج في المركز الأول من حيث الشعبية." },
+                    { g: "Die Marke liegt <strong>bei</strong> den Verkaufszahlen ganz vorne.", e: "The brand is right at the top in sales figures.", a: "الماركة في المقدمة من حيث أرقام المبيعات." },
+                    { g: "Wir liegen <strong>bei</strong> der Qualität noch weit hinten.", e: "We are still far behind in terms of quality.", a: "إحنا لسه متأخرين أوي من حيث الجودة." }
+                ] }
+            ],
+            grammar: [
+                {
+                    title: "1. Passiv mit Modalverben (Präsens)",
+                    desc: "المبني للمجهول مع الأفعال الناقصة في الحاضر. للتعبير عن 'يجب أن يُفعل'، 'يمكن أن يباع'، إلخ.",
+                    structure: "Modalverb (Position 2) + ... + Partizip II + werden (am Ende)",
+                    examples: [
+                        { g: "Das Gehäuse <span class='text-purple-600 font-bold'>kann</span> leicht beschädigt <span class='text-purple-600 font-bold'>werden</span>.", a: "يُمكن أن يُتلف الهيكل الخارجي بسهولة." },
+                        { g: "Das Smartphone <span class='text-purple-600 font-bold'>darf</span> nicht in der Waschmaschine gewaschen <span class='text-purple-600 font-bold'>werden</span>.", a: "لا يُسمح بأن يُغسل الهاتف في الغسالة." },
+                        { g: "Das Gerät <span class='text-purple-600 font-bold'>muss</span> mit einem Passwort gesichert <span class='text-purple-600 font-bold'>werden</span>.", a: "يجب أن يُؤمن الجهاز بكلمة مرور." }
+                    ]
+                },
+                {
+                    title: "2. Passiv mit Modalverben (Präteritum)",
+                    desc: "المبني للمجهول مع الأفعال الناقصة في الماضي. بنغير بس الـ Modalverb لصيغة الماضي.",
+                    structure: "Modalverb im Präteritum (konnte, musste...) + ... + Partizip II + werden (am Ende)",
+                    examples: [
+                        { g: "Das Smartphone <span class='text-purple-600 font-bold'>konnte</span> gesichert <span class='text-purple-600 font-bold'>werden</span>.", a: "كان يُمكن أن يُؤمن الموبايل." },
+                        { g: "Der Akku <span class='text-purple-600 font-bold'>musste</span> sofort aufgeladen <span class='text-purple-600 font-bold'>werden</span>.", a: "كان يجب أن تُشحن البطارية فوراً." },
+                        { g: "Das Programm <span class='text-purple-600 font-bold'>sollte</span> nicht gelöscht <span class='text-purple-600 font-bold'>werden</span>.", a: "كان ينبغي ألا يُمسح البرنامج." }
+                    ]
+                },
+                {
+                    title: "3. Aktiv in Passiv umformen (تحويل الجملة)",
+                    desc: "عند التحويل للمجهول: المفعول به (Akkusativ) في جملة المعلوم، يصبح هو الفاعل (Nominativ) في جملة المجهول.",
+                    structure: "Aktiv: Subjekt + Modalverb + Akkusativ-Objekt + Infinitiv \nPassiv: Neues Subjekt (Nominativ) + Modalverb + Partizip II + werden",
+                    examples: [
+                        { g: "<span class='text-slate-500'>Aktiv:</span> Man <span class='text-emerald-600 font-bold'>muss</span> den Akku <span class='text-emerald-600 font-bold'>aufladen</span>.", a: "المرء يجب أن يشحن البطارية." },
+                        { g: "<span class='text-purple-600'>Passiv:</span> Der Akku <span class='text-purple-600 font-bold'>muss aufgeladen werden</span>.", a: "البطارية يجب أن تُشحن. (مبني للمجهول)" },
+                        { g: "<span class='text-slate-500'>Aktiv:</span> Wir <span class='text-emerald-600 font-bold'>konnten</span> das Problem nicht <span class='text-emerald-600 font-bold'>lösen</span>.", a: "لم نستطع حل المشكلة." },
+                        { g: "<span class='text-purple-600'>Passiv:</span> Das Problem <span class='text-purple-600 font-bold'>konnte</span> nicht <span class='text-purple-600 font-bold'>gelöst werden</span>.", a: "لم يمكن حل المشكلة." }
+                    ]
+                }
+            ],
+            review: [
+                {
+                    catId: 'rev-konsum',
+                    title: '1. Konsum & Besitz (الاستهلاك والممتلكات)',
+                    items: [
+                        { id: 'r_k_1', g: "das Konsumverhalten ändern", e: "change consumer behavior", a: "يغير السلوك الاستهلاكي" },
+                        { id: 'r_k_2', g: "seinen Besitz reduzieren", e: "reduce one's belongings", a: "يقلص ممتلكاته" },
+                        { id: 'r_k_3', g: "Dinge wegwerfen", e: "throw things away", a: "يرمي الأشياء" },
+                        { id: 'r_k_4', g: "ein freundliches Einkaufsgespräch führen", e: "have a friendly shopping conversation", a: "يجري محادثة تسوق ودية" },
+                        { id: 'r_k_5', g: "Inventur machen", e: "take inventory", a: "يعمل جرد" },
+                        { id: 'r_k_6', g: "die Minimalismus-Bewegung unterstützen", e: "support the minimalism movement", a: "يدعم حركة التقليلية" },
+                        { id: 'r_k_7', g: "ein Anhänger dieser Idee sein", e: "be a supporter of this idea", a: "يكون مشجعاً لهذه الفكرة" },
+                        { id: 'r_k_8', g: "auf eine Idee kommen", e: "come up with an idea", a: "تخطر بباله فكرة" },
+                        { id: 'r_k_9', g: "eine Liste schreiben", e: "write a list", a: "يكتب قائمة" }
+                    ]
+                },
+                {
+                    catId: 'rev-technik',
+                    title: '2. Technik & Geräte (التكنولوجيا والأجهزة)',
+                    items: [
+                        { id: 'r_t_1', g: "ein Gerät auf den Markt bringen", e: "bring a device to market", a: "يطرح جهاز في السوق" },
+                        { id: 'r_t_2', g: "Spitzentechnologie nutzen", e: "use cutting-edge technology", a: "يستخدم التكنولوجيا الفائقة" },
+                        { id: 'r_t_3', g: "den Akku aufladen", e: "charge the battery", a: "يشحن البطارية" },
+                        { id: 'r_t_4', g: "das Smartphone mit einem Passwort sichern", e: "secure the smartphone with a password", a: "يؤمن الهاتف بكلمة مرور" },
+                        { id: 'r_t_5', g: "das Gehäuse beschädigen", e: "damage the casing", a: "يتلف هيكل الجهاز" },
+                        { id: 'r_t_6', g: "genug Speicherplatz haben", e: "have enough storage space", a: "لديه مساحة تخزين كافية" },
+                        { id: 'r_t_7', g: "auf der Vorderseite / Rückseite", e: "on the front / back", a: "على الجهة الأمامية / الخلفية" },
+                        { id: 'r_t_8', g: "zum Marktführer werden", e: "become the market leader", a: "يصبح رائد السوق" },
+                        { id: 'r_t_9', g: "die Welt revolutionieren", e: "revolutionize the world", a: "يحدث ثورة في العالم" }
+                    ]
+                },
+                {
+                    catId: 'rev-werbung',
+                    title: '3. Werbung & Image (الإعلانات والصورة الذهنية)',
+                    items: [
+                        { id: 'r_w_1', g: "eine Werbeunterbrechung hassen", e: "hate a commercial break", a: "يكره الفاصل الإعلاني" },
+                        { id: 'r_w_2', g: "ein gutes Image haben", e: "have a good image", a: "لديه صورة ذهنية جيدة" },
+                        { id: 'r_w_3', g: "die Verbraucher überzeugen", e: "convince the consumers", a: "يقنع المستهلكين" },
+                        { id: 'r_w_4', g: "vor minderwertigen Produkten warnen", e: "warn against inferior products", a: "يحذر من المنتجات الرديئة" },
+                        { id: 'r_w_5', g: "auf poppende Werbung im Internet", e: "pop-up ads on the internet", a: "إعلانات منبثقة على الإنترنت" },
+                        { id: 'r_w_6', g: "ein massentaugliches Produkt herstellen", e: "manufacture a mass-market product", a: "يصنع منتجاً مناسباً للجماهير" },
+                        { id: 'r_w_7', g: "aufdringliche Werbung stört", e: "intrusive advertising is annoying", a: "الإعلانات المتطفلة تزعج" }
+                    ]
+                },
+                {
+                    catId: 'rev-passiv_modal',
+                    title: '4. Passiv mit Modalverben (المبني للمجهول)',
+                    items: [
+                        { id: 'r_p_1', g: "Das Gerät muss aufgeladen werden.", e: "The device must be charged.", a: "الجهاز يجب أن يُشحن." },
+                        { id: 'r_p_2', g: "Das Handy kann repariert werden.", e: "The mobile phone can be repaired.", a: "الموبايل ممكن يتصلح." },
+                        { id: 'r_p_3', g: "Der Code darf nicht vergessen werden.", e: "The code must not be forgotten.", a: "الرمز لا يُسمح بأن يُنسى." },
+                        { id: 'r_p_4', g: "Das Produkt sollte nicht weggeworfen werden.", e: "The product should not be thrown away.", a: "المنتج كان ينبغي ألا يُرمى." },
+                        { id: 'r_p_5', g: "Die Waschmaschine konnte repariert werden.", e: "The washing machine could be repaired.", a: "كان ممكن الغسالة تتصلح." },
+                        { id: 'r_p_6', g: "Das Haus musste verkauft werden.", e: "The house had to be sold.", a: "البيت كان لازم يتباع." },
+                        { id: 'r_p_7', g: "Das Gehäuse kann leicht beschädigt werden.", e: "The casing can easily be damaged.", a: "الهيكل ممكن يتكسر بسهولة." }
+                    ]
+                }
+            ],
+            b2_words: [
+                { id: 'b2w1', ger: "die Wegwerfgesellschaft", eng: "Throwaway society", ar: "مجتمع الاستهلاك والرمي", s: [
+                    { g: "Wir leben in einer <strong>Wegwerfgesellschaft</strong>, in der Dinge schnell ersetzt werden.", e: "We live in a throwaway society where things are quickly replaced.", a: "إحنا عايشين في مجتمع استهلاكي بيستبدل الأشياء بسرعة ويرميها." },
+                    { g: "Die Kritik an der <strong>Wegwerfgesellschaft</strong> wird lauter.", e: "Criticism of the throwaway society is getting louder.", a: "الانتقاد لمجتمع الرمي والاستهلاك بيزيد." },
+                    { g: "Wie können wir der <strong>Wegwerfgesellschaft</strong> entkommen?", e: "How can we escape the throwaway society?", a: "إزاي نقدر نهرب من مجتمع الاستهلاك ده؟" }
+                ] },
+                { id: 'b2w2', ger: "die Nachhaltigkeit", eng: "Sustainability", ar: "الاستدامة", s: [
+                    { g: "<strong>Nachhaltigkeit</strong> ist beim Konsum sehr wichtig geworden.", e: "Sustainability has become very important in consumption.", a: "الاستدامة بقت مهمة جداً في الاستهلاك." },
+                    { g: "Das Unternehmen achtet auf <strong>Nachhaltigkeit</strong>.", e: "The company pays attention to sustainability.", a: "الشركة بتهتم بالاستدامة." },
+                    { g: "Wir diskutieren über ökologische <strong>Nachhaltigkeit</strong>.", e: "We are discussing ecological sustainability.", a: "إحنا بنتناقش في الاستدامة البيئية." }
+                ] },
+                { id: 'b2w3', ger: "die Obsoleszenz", eng: "Obsolescence", ar: "التقادم (المخطط له)", s: [
+                    { g: "Geplante <strong>Obsoleszenz</strong> zwingt uns, öfter neu zu kaufen.", e: "Planned obsolescence forces us to buy new more often.", a: "التقادم المخطط له بيجبرنا نشتري جديد أكتر." },
+                    { g: "Die <strong>Obsoleszenz</strong> von Handys ist ein großes Problem.", e: "The obsolescence of mobile phones is a big problem.", a: "عمر الموبايلات القصير بقى مشكلة كبيرة." },
+                    { g: "Viele kritisieren die geplante <strong>Obsoleszenz</strong> der Hersteller.", e: "Many criticize the planned obsolescence by manufacturers.", a: "كتير بينتقدوا التقادم المتعمد من الشركات." }
+                ] },
+                { id: 'b2w4', ger: "der Elektroschrott", eng: "E-waste", ar: "النفايات الإلكترونية", s: [
+                    { g: "Alte Smartphones landen oft im <strong>Elektroschrott</strong>.", e: "Old smartphones often end up as e-waste.", a: "الموبايلات القديمة غالباً بتنتهي كنفايات إلكترونية." },
+                    { g: "Wir produzieren jedes Jahr Tonnen von <strong>Elektroschrott</strong>.", e: "We produce tons of e-waste every year.", a: "إحنا بننتج أطنان من النفايات الإلكترونية كل سنة." },
+                    { g: "Wie können wir <strong>Elektroschrott</strong> besser recyceln?", e: "How can we recycle e-waste better?", a: "إزاي نقدر نعيد تدوير النفايات الإلكترونية أحسن؟" }
+                ] },
+                { id: 'b2w5', ger: "die Ressource", eng: "Resource", ar: "المورد / الموارد", s: [
+                    { g: "Wir müssen unsere natürlichen <strong>Ressourcen</strong> schonen.", e: "We must conserve our natural resources.", a: "لازم نحافظ على مواردنا الطبيعية." },
+                    { g: "Die <strong>Ressourcen</strong> der Erde sind begrenzt.", e: "The Earth's resources are limited.", a: "موارد الأرض محدودة." },
+                    { g: "Dieses Projekt erfordert viele finanzielle <strong>Ressourcen</strong>.", e: "This project requires many financial resources.", a: "المشروع ده محتاج موارد مالية كتير." }
+                ] },
+                { id: 'b2w6', ger: "das Statussymbol", eng: "Status symbol", ar: "رمز المكانة الاجتماعية", s: [
+                    { g: "Ein teures Auto dient oft als <strong>Statussymbol</strong>.", e: "A luxury car often serves as a status symbol.", a: "العربية الغالية غالباً بتستخدم كرمز للمكانة." },
+                    { g: "Ist ein Smartphone heute noch ein <strong>Statussymbol</strong>?", e: "Is a smartphone still a status symbol today?", a: "هل الموبايل لسه رمز للمكانة النهاردة؟" },
+                    { g: "Manche Leute brauchen Markenkleidung als <strong>Statussymbol</strong>.", e: "Some people need brand clothing as a status symbol.", a: "بعض الناس بتحتاج الهدوم الماركة كرمز اجتماعي." }
+                ] },
+                { id: 'b2w7', ger: "das Prestigeobjekt", eng: "Prestige object", ar: "شيء للتباهي والتفاخر", s: [
+                    { g: "Für viele ist das neue Handy ein echtes <strong>Prestigeobjekt</strong>.", e: "For many, the new phone is a real prestige object.", a: "بالنسبة لناس كتير الموبايل الجديد ده شيء للتفاخر." },
+                    { g: "Die Villa am See ist sein größtes <strong>Prestigeobjekt</strong>.", e: "The villa by the lake is his biggest prestige object.", a: "الفيلا اللي على البحيرة هي أكبر شيء بيتباهى بيه." },
+                    { g: "Ich brauche keine <strong>Prestigeobjekte</strong>, um glücklich zu sein.", e: "I don't need prestige objects to be happy.", a: "أنا مش محتاج حاجات للمنظرة عشان أبقى مبسوط." }
+                ] },
+                { id: 'b2w8', ger: "die Reizüberflutung", eng: "Sensory overload", ar: "التحفيز المفرط للِحواس (بسبب كثرة الإعلانات)", s: [
+                    { g: "Im Internet herrscht oft eine extreme <strong>Reizüberflutung</strong>.", e: "There is often an extreme sensory overload on the internet.", a: "على النت غالباً بيكون فيه تشتيت وتكدس مفرط للمؤثرات." },
+                    { g: "Die vielen bunten Bilder führten zu einer <strong>Reizüberflutung</strong>.", e: "The many colorful pictures led to a sensory overload.", a: "الصور الملونة الكتير أدت لإرهاق وتشتيت الحواس." },
+                    { g: "Kinder leiden heute oft unter <strong>Reizüberflutung</strong>.", e: "Children today often suffer from sensory overload.", a: "الأطفال النهاردة غالباً بيعانوا من تشتت الانتباه بسبب كثرة المؤثرات." }
+                ] },
+                { id: 'b2w9', ger: "die Zielgruppe", eng: "Target audience", ar: "الفئة المستهدفة", s: [
+                    { g: "Die Werbung richtet sich an eine junge <strong>Zielgruppe</strong>.", e: "The advertising is aimed at a young target audience.", a: "الإعلان موجه لفئة شبابية مستهدفة." },
+                    { g: "Wir müssen unsere <strong>Zielgruppe</strong> besser analysieren.", e: "We need to analyze our target audience better.", a: "لازم نحلل الفئة المستهدفة بتاعتنا أحسن." },
+                    { g: "Dieses Produkt spricht eine sehr spezifische <strong>Zielgruppe</strong> an.", e: "This product appeals to a very specific target audience.", a: "المنتج ده بيخاطب فئة مستهدفة معينة جداً." }
+                ] },
+                { id: 'b2w10', ger: "die Vermarktung", eng: "Marketing / Commercialization", ar: "التسويق", s: [
+                    { g: "Die weltweite <strong>Vermarktung</strong> des Produkts beginnt heute.", e: "The global marketing of the product begins today.", a: "التسويق العالمي للمنتج بيبدأ النهاردة." },
+                    { g: "Sie arbeitet in der Abteilung für <strong>Vermarktung</strong>.", e: "She works in the marketing department.", a: "هي شغالة في قسم التسويق." },
+                    { g: "Eine gute <strong>Vermarktung</strong> ist entscheidend für den Erfolg.", e: "Good marketing is crucial for success.", a: "التسويق الكويس حاسم للنجاح." }
+                ] },
+                { id: 'b2w11', ger: "die Lebensdauer", eng: "Lifespan", ar: "العمر الافتراضي", s: [
+                    { g: "Die <strong>Lebensdauer</strong> von Geräten wird immer kürzer.", e: "The lifespan of devices is getting shorter.", a: "العمر الافتراضي للأجهزة بيقصر." },
+                    { g: "Wie können wir die <strong>Lebensdauer</strong> des Akkus verlängern?", e: "How can we extend the battery's lifespan?", a: "إزاي نقدر نطول عمر البطارية؟" },
+                    { g: "Die durchschnittliche <strong>Lebensdauer</strong> einer Waschmaschine sinkt.", e: "The average lifespan of a washing machine is decreasing.", a: "متوسط عمر الغسالة بينزل." }
+                ] },
+                { id: 'b2w12', ger: "der Kompromiss", eng: "Compromise", ar: "التسوية / الحل الوسط", s: [
+                    { g: "Wir müssen einen guten <strong>Kompromiss</strong> finden.", e: "We have to find a good compromise.", a: "لازم نلاقي حل وسط يرضي الأطراف." },
+                    { g: "Diese Lösung ist nur ein fauler <strong>Kompromiss</strong>.", e: "This solution is only a bad compromise.", a: "الحل ده مجرد تسوية أي كلام." },
+                    { g: "Bist du bereit, einen <strong>Kompromiss</strong> einzugehen?", e: "Are you willing to make a compromise?", a: "مستعد تعمل حل وسط؟" }
+                ] },
+                { id: 'b2w13', ger: "manipulieren", eng: "to manipulate", ar: "يتلاعب بـ", s: [
+                    { g: "Werbung versucht, unser Kaufverhalten zu <strong>manipulieren</strong>.", e: "Advertising tries to manipulate our buying behavior.", a: "الإعلانات بتحاول تتلاعب بسلوكنا الشرائي." },
+                    { g: "Die Daten wurden absichtlich <strong>manipuliert</strong>.", e: "The data was deliberately manipulated.", a: "البيانات تم التلاعب بيها عن قصد." },
+                    { g: "Lass dich nicht von solchen Leuten <strong>manipulieren</strong>.", e: "Don't let such people manipulate you.", a: "متخليش الناس دي تتلاعب بيك." }
+                ] },
+                { id: 'b2w14', ger: "suggerieren", eng: "to suggest / imply", ar: "يُلمح / يوحي بـ", s: [
+                    { g: "Bilder in der Werbung <strong>suggerieren</strong> ein perfektes Leben.", e: "Images in advertising suggest a perfect life.", a: "الصور في الإعلانات بتوحي بحياة مثالية." },
+                    { g: "Der Artikel <strong>suggeriert</strong>, dass dies die einzige Lösung sei.", e: "The article suggests that this is the only solution.", a: "المقال بيلمح إن ده الحل الوحيد." },
+                    { g: "Was wollen Sie mir damit <strong>suggerieren</strong>?", e: "What are you trying to imply with that?", a: "أنت عايز توحيلي بإيه بكلامك ده؟" }
+                ] },
+                { id: 'b2w15', ger: "verleiten (zu)", eng: "to tempt (to)", ar: "يغري بـ / يستدرج", s: [
+                    { g: "Rabatte <strong>verleiten</strong> Kunden zu unnötigen Käufen.", e: "Discounts tempt customers to make unnecessary purchases.", a: "الخصومات بتغري الزباين يشتروا حاجات ملهاش لازمة." },
+                    { g: "Der Duft von Kaffee <strong>verleitete</strong> mich dazu, einen zu trinken.", e: "The smell of coffee tempted me to drink one.", a: "ريحة القهوة أغرتني أشرب واحدة." },
+                    { g: "Lass dich nicht zum Lügen <strong>verleiten</strong>.", e: "Do not be tempted to lie.", a: "متخليش حد يستدرجك للكذب." }
+                ] },
+                { id: 'b2w16', ger: "boykottieren", eng: "to boycott", ar: "يقاطع (تجارياً)", s: [
+                    { g: "Verbraucher <strong>boykottieren</strong> den Hersteller wegen Umweltverschmutzung.", e: "Consumers boycott the manufacturer due to pollution.", a: "المستهلكين بيقاطعوا المُصنع عشان التلوث." },
+                    { g: "Viele Menschen <strong>boykottieren</strong> Produkte aus diesem Land.", e: "Many people boycott products from this country.", a: "ناس كتير بتقاطع منتجات من البلد دي." },
+                    { g: "Wir sollten Unternehmen <strong>boykottieren</strong>, die unethisch handeln.", e: "We should boycott companies that act unethically.", a: "المفروض نقاطع الشركات اللي بتتصرف بغير أخلاقية." }
+                ] },
+                { id: 'b2w17', ger: "sich etablieren", eng: "to establish oneself", ar: "يُثبت نفسه / يرسخ", s: [
+                    { g: "Das Startup hat sich schnell auf dem Markt <strong>etabliert</strong>.", e: "The startup quickly established itself on the market.", a: "الشركة الناشئة ثبتت نفسها بسرعة في السوق." },
+                    { g: "Diese Technologie wird sich in Zukunft <strong>etablieren</strong>.", e: "This technology will establish itself in the future.", a: "التكنولوجيا دي هترسخ وتثبت نفسها في المستقبل." },
+                    { g: "Es dauert Jahre, bis sich eine neue Marke <strong>etabliert</strong>.", e: "It takes years for a new brand to establish itself.", a: "الموضوع بياخد سنين لحد ما الماركة الجديدة تثبت نفسها." }
+                ] },
+                { id: 'b2w18', ger: "entsorgen", eng: "to dispose of", ar: "يتخلص من (نفايات)", s: [
+                    { g: "Wie kann man Batterien umweltgerecht <strong>entsorgen</strong>?", e: "How can batteries be disposed of in an eco-friendly way?", a: "إزاي نقدر نتخلص من البطاريات بشكل صديق للبيئة؟" },
+                    { g: "Bitte <strong>entsorgen</strong> Sie Ihren Müll richtig.", e: "Please dispose of your trash properly.", a: "لو سمحت ارمي زبالتك بشكل صح." },
+                    { g: "Alte Medikamente dürfen nicht im Hausmüll <strong>entsorgt</strong> werden.", e: "Old medicines must not be disposed of in household waste.", a: "ممنوع تتخلص من الأدوية القديمة في زبالة البيت." }
+                ] },
+                { id: 'b2w19', ger: "anpreisen", eng: "to praise / promote highly", ar: "يُروّج بشدة / يمدح للبيع", s: [
+                    { g: "Das Produkt wird im Fernsehen stark <strong>angepriesen</strong>.", e: "The product is heavily promoted on TV.", a: "بيتم الترويج للمنتج ده بشدة في التلفزيون." },
+                    { g: "Der Händler <strong>pries</strong> seine Ware auf dem Markt <strong>an</strong>.", e: "The merchant praised his goods at the market.", a: "التاجر قعد يمدح ويروج لبضاعته في السوق." },
+                    { g: "Sie <strong>preisen</strong> die Creme als Wundermittel <strong>an</strong>.", e: "They promote the cream as a miracle cure.", a: "هما بيروجوا للكريم على إنه علاج سحري." }
+                ] },
+                { id: 'b2w20', ger: "verschwenden", eng: "to waste", ar: "يُهدر / يُسرف", s: [
+                    { g: "Man sollte weder Geld noch Ressourcen <strong>verschwenden</strong>.", e: "One should waste neither money nor resources.", a: "المفروض الواحد ميهدرش لا الفلوس ولا الموارد." },
+                    { g: "Wir haben keine Zeit zu <strong>verschwenden</strong>.", e: "We have no time to waste.", a: "معندناش وقت نضيعه." },
+                    { g: "Sie <strong>verschwendet</strong> ihr Talent in diesem Job.", e: "She is wasting her talent in this job.", a: "هي بتضيع موهبتها في الشغلانة دي." }
+                ] },
+                { id: 'b2w21', ger: "beeinträchtigen", eng: "to impair / affect negatively", ar: "يُضعف / يُؤثر سلباً", s: [
+                    { g: "Lärm kann die Konzentration massiv <strong>beeinträchtigen</strong>.", e: "Noise can massively impair concentration.", a: "الدوشة ممكن تأثر سلباً بشكل كبير على التركيز." },
+                    { g: "Ihre Gesundheit ist stark <strong>beeinträchtigt</strong>.", e: "Her health is severely impaired.", a: "صحتها متأثرة وضعيفة جداً." },
+                    { g: "Das schlechte Wetter wird unsere Reise <strong>beeinträchtigen</strong>.", e: "The bad weather will affect our trip.", a: "الطقس السيء هيأثر على رحلتنا." }
+                ] },
+                { id: 'b2w22', ger: "innovativ", eng: "innovative", ar: "مبتكر", s: [
+                    { g: "Diese Firma nutzt <strong>innovative</strong> Technologien.", e: "This company uses innovative technologies.", a: "الشركة دي بتستخدم تكنولوجيا مبتكرة." },
+                    { g: "Das ist ein sehr <strong>innovativer</strong> Lösungsansatz.", e: "This is a very innovative approach to a solution.", a: "دي طريقة حل مبتكرة جداً." },
+                    { g: "Wir suchen nach <strong>innovativen</strong> Ideen für das Projekt.", e: "We are looking for innovative ideas for the project.", a: "بندور على أفكار مبتكرة للمشروع." }
+                ] },
+                { id: 'b2w23', ger: "überflüssig", eng: "superfluous / unnecessary", ar: "زائد عن الحاجة / لا داعي له", s: [
+                    { g: "Viele Produkte in unserem Alltag sind eigentlich <strong>überflüssig</strong>.", e: "Many products in our daily lives are actually superfluous.", a: "منتجات كتير في حياتنا اليومية ملهاش أي لازمة أصلاً." },
+                    { g: "Deine Kommentare sind völlig <strong>überflüssig</strong>.", e: "Your comments are completely unnecessary.", a: "تعليقاتك ملهاش أي داعي." },
+                    { g: "Sie strich alle <strong>überflüssigen</strong> Wörter aus dem Text.", e: "She crossed out all superfluous words from the text.", a: "هي شطبت كل الكلمات الزايدة عن الحاجة من النص." }
+                ] },
+                { id: 'b2w24', ger: "unverzichtbar", eng: "indispensable", ar: "لا غنى عنه", s: [
+                    { g: "Für viele Menschen ist das Internet <strong>unverzichtbar</strong> geworden.", e: "For many people, the internet has become indispensable.", a: "بالنسبة لناس كتير، النت بقى شيء لا غنى عنه." },
+                    { g: "Wasser ist für das Überleben <strong>unverzichtbar</strong>.", e: "Water is indispensable for survival.", a: "المية لا غنى عنها للبقاء على قيد الحياة." },
+                    { g: "Ein gutes Team ist für den Erfolg <strong>unverzichtbar</strong>.", e: "A good team is indispensable for success.", a: "الفريق الكويس لا غنى عنه للنجاح." }
+                ] },
+                { id: 'b2w25', ger: "lukrativ", eng: "lucrative", ar: "مربح", s: [
+                    { g: "Das Geschäft mit Smartphones ist extrem <strong>lukrativ</strong>.", e: "The smartphone business is extremely lucrative.", a: "شغل الموبايلات مربح جداً." },
+                    { g: "Er bekam ein sehr <strong>lukratives</strong> Jobangebot.", e: "He got a very lucrative job offer.", a: "جاله عرض شغل مربح جداً." },
+                    { g: "Immobilien können eine <strong>lukrative</strong> Investition sein.", e: "Real estate can be a lucrative investment.", a: "العقارات ممكن تبقى استثمار مربح." }
+                ] },
+                { id: 'b2w26', ger: "umstritten", eng: "controversial", ar: "مثير للجدل", s: [
+                    { g: "Diese Werbekampagne war sehr <strong>umstritten</strong>.", e: "This advertising campaign was very controversial.", a: "الحملة الإعلانية دي كانت مثيرة للجدل جداً." },
+                    { g: "Die neue Regelung ist politisch hoch <strong>umstritten</strong>.", e: "The new regulation is highly controversial politically.", a: "القانون الجديد مثير للجدل سياسياً جداً." },
+                    { g: "Er ist eine <strong>umstrittene</strong> Persönlichkeit.", e: "He is a controversial personality.", a: "هو شخصية مثيرة للجدل." }
+                ] }
+            ],
+            b2_expressions: [
+                { id: 'b2e1', type: "Präsentation (مقدمة للعرض)", ger: "In meiner Präsentation geht es um das Thema...", eng: "My presentation is about the topic...", ar: "في عرضي التقديمي سأتحدث عن موضوع...", context: "تستخدم لبدء الـ Präsentation في امتحان B2." },
+                { id: 'b2e2', type: "Präsentation (هيكلة العرض)", ger: "Lassen Sie mich zunächst einen Blick auf ... werfen.", eng: "Let me first take a look at...", ar: "دعوني في البداية ألقي نظرة على...", context: "للانتقال للنقطة الأولى بطريقة احترافية." },
+                { id: 'b2e3', type: "Präsentation (هيكلة العرض)", ger: "Als Nächstes möchte ich auf ... eingehen.", eng: "Next, I would like to address...", ar: "بعد ذلك، أود التطرق إلى...", context: "للانتقال لنقطة جديدة في العرض." },
+                { id: 'b2e4', type: "Präsentation (الخاتمة)", ger: "Zusammenfassend lässt sich sagen, dass...", eng: "In summary, it can be said that...", ar: "خلاصة القول هي أن...", context: "ممتازة لختام أي موضوع." },
+                { id: 'b2e5', type: "Diskussion (إبداء رأي)", ger: "Ich stehe auf dem Standpunkt, dass...", eng: "I take the view that...", ar: "أنا أتبنى وجهة النظر القائلة بأن...", context: "بديل متقدم جداً لـ Ich denke dass." },
+                { id: 'b2e6', type: "Diskussion (تأكيد حقيقة)", ger: "Es ist nicht von der Hand zu weisen, dass...", eng: "It cannot be denied that...", ar: "لا يمكن إنكار أن...", context: "لتأكيد حجة قوية." },
+                { id: 'b2e7', type: "Diskussion (رفض مهذب)", ger: "Dem kann ich nur bedingt zustimmen.", eng: "I can only agree to a limited extent.", ar: "أستطيع الموافقة على هذا بشكل جزئي فقط.", context: "للاختلاف مع الشريك في امتحان التحدث بتهذيب." },
+                { id: 'b2e8', type: "Diskussion (إبراز شيء)", ger: "Ein wesentlicher Aspekt ist...", eng: "An essential aspect is...", ar: "أحد الجوانب الجوهرية هو...", context: "للتركيز على نقطة مهمة." },
+                { id: 'b2e9', type: "Abwägen (مقارنة أفكار)", ger: "Auf der einen Seite..., auf der anderen Seite...", eng: "On the one hand..., on the other hand...", ar: "من ناحية... ومن ناحية أخرى...", context: "للمقارنة بين رأيين مختلفين." },
+                { id: 'b2e10', type: "Abwägen (إضافة حجة)", ger: "Ein weiteres Argument für/gegen ... ist...", eng: "Another argument for/against ... is...", ar: "حجة أخرى لـ / ضد ... هي...", context: "لإضافة أسباب أثناء النقاش." },
+                { id: 'b2e11', type: "Abwägen (التنبيه لشيء)", ger: "Dabei muss man auch berücksichtigen, dass...", eng: "One must also take into account that...", ar: "وفي هذا الصدد يجب أيضاً مراعاة أن...", context: "للفت الانتباه لتفصيلة معينة." },
+                { id: 'b2e12', type: "Abwägen (استنتاج)", ger: "Wägt man die Vor- und Nachteile ab, so kommt man zu dem Schluss, dass...", eng: "Weighing the pros and cons, one concludes that...", ar: "بموازنة المزايا والعيوب، نصل إلى استنتاج أن...", context: "جملة رائعة لختام كتابة مقال (Schreiben) في B2." }
+            ],
+            b2_grammar: [
+                {
+                    title: "1. Passiv-Ersatzformen (بدائل المبني للمجهول)",
+                    desc: "في مستوى B2، بدلاً من استخدام (werden + Partizip II) دائماً، نستخدم صيغاً بديلة أسرع وأكثر احترافية تعطي نفس معنى المبني للمجهول.",
+                    structure: "sich lassen + Inf. | sein + zu + Inf. | Adjektive auf -bar / -lich",
+                    examples: [
+                        { g: "Das Smartphone <span class='text-indigo-600 font-bold'>lässt sich</span> leicht <span class='text-indigo-600 font-bold'>reparieren</span>.", a: "يمكن إصلاح الهاتف بسهولة (بديلة لـ kann repariert werden)." },
+                        { g: "Der Fehler <span class='text-indigo-600 font-bold'>ist</span> schnell <span class='text-indigo-600 font-bold'>zu beheben</span>.", a: "يمكن/يجب تدارك الخطأ سريعاً (بديلة لـ kann/muss behoben werden)." },
+                        { g: "Die Dateien sind jederzeit <span class='text-indigo-600 font-bold'>abrufbar</span>.", a: "الملفات قابلة للاستدعاء في أي وقت (بديلة لـ können abgerufen werden)." }
+                    ]
+                },
+                {
+                    title: "2. Nomen-Verb-Verbindungen (التركيبات الاسمية الفعلية)",
+                    desc: "أفعال تُدمج مع أسماء لتعطي معنى فعل واحد. تستخدم بكثرة جداً في اللغة الرسمية وامتحانات B2/C1.",
+                    structure: "Nomen + Funktionsverb (treffen, nehmen, stehen, ziehen...)",
+                    examples: [
+                        { g: "Wir müssen eine <span class='text-indigo-600 font-bold'>Entscheidung treffen</span>.", a: "يجب أن نتخذ قراراً. (نفس معنى entscheiden)." },
+                        { g: "Der neue Computer <span class='text-indigo-600 font-bold'>steht</span> uns <span class='text-indigo-600 font-bold'>zur Verfügung</span>.", a: "الكمبيوتر الجديد متاح لنا (تحت تصرفنا)." },
+                        { g: "Man muss Nachteile <span class='text-indigo-600 font-bold'>in Kauf nehmen</span>.", a: "يجب على المرء تقبل (الرضا بـ) العيوب." }
+                    ]
+                },
+                {
+                    title: "3. Zweiteilige Konnektoren (الروابط المزدوجة)",
+                    desc: "في B2 يجب أن تربط الجمل بشكل أكثر تعقيداً باستخدام الروابط التي تتكون من جزئين.",
+                    structure: "zwar... aber | nicht nur... sondern auch | sowohl... als auch | weder... noch",
+                    examples: [
+                        { g: "Das Gerät ist <span class='text-indigo-600 font-bold'>zwar</span> teuer, <span class='text-indigo-600 font-bold'>aber</span> extrem leistungsstark.", a: "صحيح أن الجهاز غالي، ولكنه قوي الأداء جداً." },
+                        { g: "Er kauft <span class='text-indigo-600 font-bold'>sowohl</span> das Handy <span class='text-indigo-600 font-bold'>als auch</span> das Tablet.", a: "هو يشتري الهاتف والتابلت على حد سواء." },
+                        { g: "Dieses Modell ist <span class='text-indigo-600 font-bold'>weder</span> innovativ <span class='text-indigo-600 font-bold'>noch</span> günstig.", a: "هذا الموديل ليس مبتكراً ولا رخيصاً (لا هذا ولا ذاك)." }
+                    ]
+                }
+            ]
+        };
+
+        const { useState, useEffect } = React;
+
+        // --- HELPER FOR ARTICLES COLORING ---
+        const colorizeArticles = (text) => {
+            if (!text) return text;
+            const regex = /(der |die |das )/gi;
+            const parts = text.split(regex);
+            return parts.map((part, i) => {
+                const lower = part.toLowerCase();
+                if (lower === 'der ') return <span key={i} className="text-blue-500 font-extrabold">{part}</span>;
+                if (lower === 'die ') return <span key={i} className="text-rose-500 font-extrabold">{part}</span>;
+                if (lower === 'das ') return <span key={i} className="text-emerald-500 font-extrabold">{part}</span>;
+                return <span key={i}>{part}</span>;
+            });
+        };
+
+        // --- COMPONENTS ---
+        const ProgressBar = ({ total, learned, colorClass }) => {
+            const percentage = total === 0 ? 0 : Math.round((learned / total) * 100);
+            return (
+                <div className="glass-panel p-5 rounded-2xl mb-8 flex items-center justify-between transition-all" dir="rtl">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider ar-text mb-1">مستوى التقدم</h3>
+                        <p className="text-3xl font-extrabold text-slate-800">{learned} <span className="text-sm font-medium text-slate-400">/ {total} أتقنتهم</span></p>
+                    </div>
+                    <div className="relative w-20 h-20 drop-shadow-md">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path className="text-slate-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                            <path className={`${colorClass} transition-all duration-1000 ease-out`} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold text-slate-700">
+                            {percentage}%
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const WordCard = ({ item, isLearned, toggleLearned }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            return (
+                <div className="relative group perspective-1000 w-full h-[24rem]">
+                    <div className={`w-full h-full transition-all duration-700 transform-style-3d shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl ${isFlipped ? 'rotate-y-180' : ''}`}>
+                        
+                        {/* FRONT */}
+                        <div className="absolute w-full h-full backface-hidden bg-white border border-slate-100 rounded-2xl p-5 flex flex-col cursor-pointer hover:shadow-lg transition-shadow" 
+                             onClick={() => setIsFlipped(true)}>
+                            <div className="flex justify-between items-start shrink-0" dir="rtl">
+                                <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider ar-text">كلمة منفصلة</span>
+                                <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            
+                            <div className="text-center mt-2 flex-grow flex flex-col justify-center overflow-y-auto front-scroll px-1 py-3">
+                                <div className="flex flex-col justify-center items-center gap-3 mb-1">
+                                    <h3 className="text-2xl font-bold text-slate-800 leading-tight">{colorizeArticles(item.ger)}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={(e) => playAudio(item.ger, e)} className="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors shadow-sm"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                        <SpeechTester targetText={item.ger} />
+                                    </div>
+                                </div>
+                                <div className="mt-4 space-y-1">
+                                    <p className="text-slate-500 font-medium text-sm">{item.eng}</p>
+                                    <p className="text-blue-600 font-bold ar-text text-lg" dir="rtl">{item.ar}</p>
+                                </div>
+                            </div>
+                            
+                            <div className="text-center text-xs text-slate-400 font-medium flex items-center justify-center gap-1 ar-text mt-2 shrink-0">
+                                <i data-lucide="rotate-cw" className="w-3 h-3"></i> اضغط للأمثلة
+                            </div>
+                        </div>
+
+                        {/* BACK */}
+                        <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl p-5 shadow-lg flex flex-col cursor-pointer overflow-hidden" 
+                             onClick={() => setIsFlipped(false)} style={{ transform: 'rotateY(180deg)' }}>
+                            <div className="mb-3 border-b border-white/20 pb-2 flex justify-between items-center shrink-0" dir="rtl">
+                                <h4 className="font-bold text-white/90 text-sm tracking-wider ar-text">أمثلة سياقية</h4>
+                                <i data-lucide="rotate-ccw" className="w-4 h-4 text-white/60"></i>
+                            </div>
+                            <div className="overflow-y-auto card-scroll flex-grow pr-2 pb-2">
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="text-sm bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/5">
+                                            <div className="flex items-start gap-2 mb-1.5">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className="p-1 text-blue-200 hover:text-white shrink-0 mt-0.5"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <span className="leading-relaxed" dangerouslySetInnerHTML={{ __html: sentence.g }}></span>
+                                            </div>
+                                            <div className="text-blue-200 text-xs italic ml-8 mb-1.5">{sentence.e}</div>
+                                            <div className="text-amber-300 text-sm font-bold ar-text border-t border-white/10 pt-1.5 mt-1" dir="rtl">{sentence.a}</div>
+                                        </li>
+                                    ))}
+                                    {!item.s && <li className="text-sm text-white/70 italic text-center mt-10">Keine Sätze vorhanden</li>}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ListRow = ({ item, isLearned, toggleLearned, colorTheme }) => {
+            const [expanded, setExpanded] = useState(false);
+            
+            const themes = {
+                emerald: 'hover:border-emerald-300 text-emerald-600 bg-emerald-50 text-emerald-700',
+                amber: 'hover:border-amber-300 text-amber-600 bg-amber-50 text-amber-700',
+                rose: 'hover:border-rose-300 text-rose-600 bg-rose-50 text-rose-700',
+                teal: 'hover:border-teal-300 text-teal-600 bg-teal-50 text-teal-700',
+            };
+            const themeClass = themes[colorTheme] || themes.emerald;
+            const textAccent = `text-${colorTheme}-600`;
+
+            return (
+                <div className={`bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md`} dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? `bg-${colorTheme}-100 ${textAccent}` : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                    {item.ger} 
+                                    <button onClick={(e) => playAudio(item.ger, e)} className={`${textAccent} opacity-70 hover:opacity-100 transition-opacity`}><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                </h3>
+                                <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className={`${textAccent} font-bold ar-text`} dir="rtl">{item.ar}</span></p>
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            <ul className="space-y-4">
+                                {item.s && item.s.map((sentence, idx) => (
+                                    <li key={idx} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm group flex flex-col sm:flex-row gap-4 justify-between items-start">
+                                        <div className="flex-1">
+                                            <div className="flex items-start gap-3 mb-2">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className={`mt-0.5 ${textAccent} bg-${colorTheme}-50 p-1.5 rounded-lg shrink-0`}><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <p className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: sentence.g }}></p>
+                                            </div>
+                                            <p className="text-slate-500 text-sm ml-10 mb-2">{sentence.e}</p>
+                                            <div className={`ml-10 ${textAccent} text-base font-bold ar-text border-t border-slate-100 pt-2`} dir="rtl">{sentence.a}</div>
+                                        </div>
+                                        <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-slate-50 p-1.5 rounded-full" dir="ltr">
+                                            <SpeechTester targetText={sentence.g} />
+                                        </div>
+                                    </li>
+                                ))}
+                                {!item.s && <p className="text-slate-500 italic px-4">Keine Beispiele vorhanden.</p>}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const IrregularVerbRow = ({ item, isLearned, toggleLearned }) => {
+            const [expanded, setExpanded] = useState(false);
+            
+            return (
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md" dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                    {item.ger} 
+                                    <button onClick={(e) => playAudio(item.ger, e)} className="text-emerald-600 opacity-70 hover:opacity-100 transition-opacity"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                </h3>
+                                <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className="text-emerald-600 font-bold ar-text" dir="rtl">{item.ar}</span></p>
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präsens (مضارع)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praesens, e)} className="text-emerald-600 bg-emerald-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-sm font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: item.praesens }}></p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.praesens} /></div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präteritum (ماضي بسيط)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praeteritum, e)} className="text-amber-600 bg-amber-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-sm font-medium leading-relaxed mt-1">{item.praeteritum}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.praeteritum} /></div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Perfekt (ماضي تام)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.perfekt, e)} className="text-purple-600 bg-purple-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-sm font-medium leading-relaxed mt-1">{item.perfekt}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.perfekt} /></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- MAIN APP ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('words');
+            const [learnedItems, setLearnedItems] = useState(new Set());
+            const [searchTerm, setSearchTerm] = useState('');
+            const [expandedReview, setExpandedReview] = useState('rev-konsum');
+
+            useEffect(() => {
+                lucide.createIcons();
+            });
+
+            const toggleLearned = (id) => {
+                const newLearned = new Set(learnedItems);
+                if (newLearned.has(id)) newLearned.delete(id);
+                else newLearned.add(id);
+                setLearnedItems(newLearned);
+            };
+
+            const totalWords = LEARNING_DATA.words.konsum_besitz.length + LEARNING_DATA.words.haushalt_zimmer.length + LEARNING_DATA.words.technik.length + LEARNING_DATA.words.werbung_buero.length;
+            const totalVerbs = LEARNING_DATA.verbs.length + LEARNING_DATA.irregularVerbs.length;
+            const totalExp = LEARNING_DATA.expressions.length;
+            const totalPrep = LEARNING_DATA.prepositions.length;
+            const totalGrammar = LEARNING_DATA.grammar.length;
+            const totalReview = LEARNING_DATA.review.reduce((acc, cat) => acc + cat.items.length, 0);
+            
+            const totalB2 = LEARNING_DATA.b2_words.length + LEARNING_DATA.b2_expressions.length + LEARNING_DATA.b2_grammar.length;
+            const grandTotal = totalWords + totalVerbs + totalExp + totalPrep + totalGrammar + totalReview + totalB2;
+
+            const tabConfig = {
+                words: { labelEn: 'Words', labelAr: 'الأسماء والكلمات', icon: 'book-open', color: 'blue' },
+                verbs: { labelEn: 'Verbs', labelAr: 'الأفعال', icon: 'activity', color: 'emerald' },
+                expressions: { labelEn: 'Expressions', labelAr: 'تعبيرات', icon: 'message-circle', color: 'amber' },
+                prepositions: { labelEn: 'Prepositions', labelAr: 'حروف الجر', icon: 'link', color: 'rose' },
+                grammar: { labelEn: 'Grammar', labelAr: 'القواعد الشاملة', icon: 'pen-tool', color: 'purple' },
+                review: { labelEn: 'Review', labelAr: 'المراجعة الشاملة', icon: 'clipboard-check', color: 'teal' },
+                b2_expansion: { labelEn: 'B2 Expansion', labelAr: 'توسعة B2', icon: 'trending-up', color: 'indigo' }
+            };
+
+            const activeColor = tabConfig[activeTab].color;
+
+            return (
+                <div className="h-screen flex flex-col bg-slate-50" dir="rtl">
+                    {/* TOP NAVIGATION HEADER */}
+                    <header className="w-full bg-slate-900 text-white shadow-xl z-50 shrink-0 relative overflow-hidden">
+                        <div className={`absolute top-0 left-0 w-full h-1 bg-${activeColor}-500 transition-colors duration-500`}></div>
+                        
+                        <div className="flex justify-between items-center px-4 md:px-8 py-3 border-b border-slate-800">
+                            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-3 ar-text">
+                                <span className={`bg-${activeColor}-500 p-2 rounded-xl transition-colors duration-500 shadow-lg`}>
+                                    <i data-lucide="smartphone" className="w-5 h-5 md:w-6 md:h-6 text-white"></i>
+                                </span>
+                                ألماني B1+ (Spektrum K8)
+                            </h1>
+
+                            <div className="flex items-center gap-3" dir="ltr">
+                                <div className="text-right hidden sm:block">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mastery</div>
+                                    <div className={`text-sm font-extrabold text-${activeColor}-400 transition-colors`}>{grandTotal === 0 ? 0 : Math.round((learnedItems.size / grandTotal) * 100)}%</div>
+                                </div>
+                                <div className="relative w-10 h-10">
+                                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                        <path className="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                                        <path className={`text-${activeColor}-500 transition-all duration-1000 ease-out`} strokeDasharray={`${grandTotal === 0 ? 0 : (learnedItems.size / grandTotal) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Horizontal Navigation Tabs */}
+                        <nav className="flex overflow-x-auto scrollbar-hide px-4 py-2 gap-2 snap-x">
+                            {Object.entries(tabConfig).map(([key, tab]) => (
+                                <button 
+                                    key={key}
+                                    onClick={() => { setActiveTab(key); setSearchTerm(''); }}
+                                    className={`snap-center shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold ar-text group relative overflow-hidden ${activeTab === key ? `bg-${tab.color}-600 text-white shadow-md` : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <i data-lucide={tab.icon} className={`w-5 h-5 ${activeTab === key ? 'text-white' : `text-${tab.color}-400 group-hover:text-${tab.color}-300`} transition-colors`}></i>
+                                    <span className="text-sm whitespace-nowrap">{tab.labelAr}</span>
+                                    {activeTab === key && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-white/50 rounded-t-full"></div>}
+                                </button>
+                            ))}
+                        </nav>
+                    </header>
+
+                    {/* MAIN CONTENT AREA */}
+                    <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 relative" dir="ltr">
+                        <div className={`fixed top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-${activeColor}-200/20 blur-3xl -z-10 transition-colors duration-1000`}></div>
+                        
+                        <div className="max-w-7xl mx-auto">
+                            
+                            {activeTab !== 'grammar' && activeTab !== 'review' && (
+                                <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                    <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                        <div className={`absolute -inset-0.5 bg-gradient-to-r from-${activeColor}-400 to-${activeColor}-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                        <div className="relative">
+                                            <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                            <input 
+                                                type="text" 
+                                                placeholder="ابحث بالعربي أو الألماني..." 
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className="w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-blue-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'words' && <ProgressBar total={totalWords} learned={Array.from(learnedItems).filter(id => id.startsWith('w')).length} colorClass="text-blue-500" />}
+                            {activeTab === 'verbs' && <ProgressBar total={totalVerbs} learned={Array.from(learnedItems).filter(id => id.startsWith('v') || id.startsWith('iv')).length} colorClass="text-emerald-500" />}
+                            {activeTab === 'expressions' && <ProgressBar total={totalExp} learned={Array.from(learnedItems).filter(id => id.startsWith('e')).length} colorClass="text-amber-500" />}
+                            {activeTab === 'prepositions' && <ProgressBar total={totalPrep} learned={Array.from(learnedItems).filter(id => id.startsWith('p')).length} colorClass="text-rose-500" />}
+                            {activeTab === 'review' && <ProgressBar total={totalReview} learned={Array.from(learnedItems).filter(id => id.startsWith('r_')).length} colorClass="text-teal-500" />}
+                            {activeTab === 'b2_expansion' && <ProgressBar total={totalB2} learned={Array.from(learnedItems).filter(id => id.startsWith('b2')).length} colorClass="text-indigo-500" />}
+
+                            {/* TAB: WORDS */}
+                            {activeTab === 'words' && (
+                                <div className="space-y-12">
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="shopping-bag" className="w-6 h-6"></i></span> الاستهلاك، الممتلكات والتسوق</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.konsum_besitz.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="home" className="w-6 h-6"></i></span> أغراض المنزل والغرفة</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.haushalt_zimmer.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+                                    
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="cpu" className="w-6 h-6"></i></span> التكنولوجيا والأجهزة</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.technik.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="megaphone" className="w-6 h-6"></i></span> الإعلانات والملابس والمكتب</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.werbung_buero.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
+
+                            {/* TAB: VERBS */}
+                            {activeTab === 'verbs' && (
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="activity" className="w-6 h-6"></i></span>
+                                        الأفعال الأساسية
+                                    </h2>
+                                    <div className="space-y-4 mb-12">
+                                        {LEARNING_DATA.verbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <ListRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} colorTheme="emerald" />
+                                        ))}
+                                    </div>
+
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="alert-circle" className="w-6 h-6"></i></span>
+                                        الأفعال الشاذة وتصريفاتها (Unregelmäßig)
+                                    </h2>
+                                    <div className="space-y-4">
+                                        {LEARNING_DATA.irregularVerbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <IrregularVerbRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: B2 EXPANSION */}
+                            {activeTab === 'b2_expansion' && (
+                                <div className="space-y-12" dir="rtl">
+                                    <div className="bg-gradient-to-br from-indigo-700 to-violet-900 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="trending-up" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10 text-center">
+                                            <h2 className="text-4xl font-extrabold mb-4 ar-text">توسعة مستوى B2</h2>
+                                            <p className="text-indigo-100 ar-text text-lg max-w-3xl mx-auto leading-relaxed">استكمالاً لمواضيع التكنولوجيا والاستهلاك، هذا القسم يقدم لك مفردات وتعبيرات وقواعد متقدمة (مستوى B2) لتجهيزك للامتحانات والنقاشات المعقدة.</p>
+                                        </div>
+                                    </div>
+
+                                    {/* B2 Words */}
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text">
+                                            <span className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><i data-lucide="book-open" className="w-6 h-6"></i></span> 
+                                            مفردات B2 المتقدمة (Wortschatz)
+                                        </h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.b2_words.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    {/* B2 Expressions */}
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text">
+                                            <span className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><i data-lucide="message-square" className="w-6 h-6"></i></span> 
+                                            تعبيرات امتحانات B2 (Redemittel)
+                                        </h2>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            {LEARNING_DATA.b2_expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                                <div key={exp.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative group hover:shadow-xl hover:border-indigo-200 transition-all duration-300">
+                                                    <button onClick={() => toggleLearned(exp.id)} className={`absolute top-5 left-5 p-2 rounded-full transition-colors z-10 ${learnedItems.has(exp.id) ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                        <i data-lucide="check" className="w-5 h-5"></i>
+                                                    </button>
+                                                    <span className="inline-block bg-indigo-50 text-indigo-600 px-3 py-1 rounded-lg text-xs font-bold mb-4 ar-text border border-indigo-100">{exp.type}</span>
+                                                    <div className="flex items-start gap-3 mb-3" dir="ltr">
+                                                        <div className="flex flex-col gap-2 shrink-0">
+                                                            <button onClick={(e) => playAudio(exp.ger, e)} className="text-indigo-500 bg-indigo-50 p-2 rounded-xl hover:bg-indigo-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                            <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={exp.ger} /></div>
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="text-lg font-extrabold text-slate-800 leading-tight mt-1">"{exp.ger}"</h3>
+                                                        </div>
+                                                    </div>
+                                                    <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
+                                                        <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
+                                                        <p className="text-indigo-700 font-extrabold text-xl mb-4 ar-text">{exp.ar}</p>
+                                                        <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
+                                                            <i data-lucide="info" className="w-5 h-5 text-indigo-400 mt-0.5 shrink-0"></i>
+                                                            <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    {/* B2 Grammar */}
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text">
+                                            <span className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><i data-lucide="pen-tool" className="w-6 h-6"></i></span> 
+                                            قواعد متقدمة (Grammatik B2)
+                                        </h2>
+                                        <div className="grid gap-8">
+                                            {LEARNING_DATA.b2_grammar.map((gram, idx) => (
+                                                <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                    <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                        <div className="bg-indigo-100 p-3 rounded-2xl text-indigo-600 shrink-0 mt-1">
+                                                            <i data-lucide="zap" className="w-6 h-6"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                            <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-8">
+                                                        <div className="bg-slate-900 text-indigo-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
+                                                            <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i> {gram.structure}
+                                                        </div>
+                                                        <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                        <ul className="space-y-4">
+                                                            {gram.examples.map((ex, i) => (
+                                                                <li key={i} className="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100">
+                                                                    <div className="flex gap-4 items-center mb-3" dir="ltr">
+                                                                        <button onClick={(e) => playAudio(ex.g, e)} className="text-indigo-500 bg-white p-2 rounded-xl shadow-sm hover:bg-indigo-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                        <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                    </div>
+                                                                    <div className="text-indigo-700 font-bold ar-text border-t border-indigo-200/50 pt-3 mt-3">{ex.a}</div>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
+
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

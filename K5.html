@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch Lernen: B1+ Spektrum Kapitel 4 & B2 Expansion</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f1f5f9; 
+            color: #1e293b;
+            overflow: hidden;
+        }
+        .ar-text { 
+            font-family: 'Cairo', sans-serif; 
+            line-height: 1.6;
+        }
+        /* Refined Card Flips */
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Glassmorphism subtle effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+        }
+
+        /* Custom Scrollbars for Cards */
+        .card-scroll::-webkit-scrollbar { width: 5px; }
+        .card-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .card-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 10px; }
+        .card-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.6); }
+        
+        .front-scroll::-webkit-scrollbar { width: 5px; }
+        .front-scroll::-webkit-scrollbar-track { background: transparent; }
+        .front-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .front-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- HELPERS FOR AUDIO & SPEECH ---
+        const playAudio = (text, e) => {
+            if (e) e.stopPropagation();
+            const cleanText = text.replace(/<[^>]+>/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'de-DE';
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const SpeechTester = ({ targetText }) => {
+            const [status, setStatus] = React.useState('idle'); 
+            const [heard, setHeard] = React.useState('');
+
+            const listen = (e) => {
+                if (e) e.stopPropagation();
+                if (!('webkitSpeechRecognition' in window)) {
+                    alert('المتصفح ده مش بيدعم تسجيل الصوت، جرب Google Chrome.');
+                    return;
+                }
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+                
+                recognition.onstart = () => setStatus('listening');
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    setHeard(speechResult);
+                    
+                    const clean = (str) => str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,!?]/g, '').trim();
+                    const targetClean = clean(targetText);
+                    const heardClean = clean(speechResult);
+                    
+                    if (heardClean.includes(targetClean) || targetClean.includes(heardClean) || heardClean === targetClean) {
+                        setStatus('success');
+                    } else {
+                        setStatus('fail');
+                    }
+                };
+                recognition.onerror = () => setStatus('fail');
+                recognition.onend = () => { if(status === 'listening') setStatus('idle'); };
+                recognition.start();
+            };
+
+            return (
+                <div className="inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={listen} title="جرب تنطقها" className={`p-2 rounded-full transition-all duration-300 shadow-sm ${status === 'listening' ? 'bg-red-500 text-white animate-pulse scale-110' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'}`}>
+                        <i data-lucide="mic" className="w-4 h-4"></i>
+                    </button>
+                    {status === 'success' && <span className="text-emerald-500 text-xs font-bold ar-text animate-bounce">✅ ممتاز!</span>}
+                    {status === 'fail' && <span className="text-red-500 text-xs ar-text font-bold" title={`سمعت: ${heard}`}>❌ جرب تاني</span>}
+                </div>
+            );
+        };
+
+        // --- COMPREHENSIVE LEARNING DATA FOR KAPITEL 4 & B2 EXPANSION ---
+        const LEARNING_DATA = {
+            words: {
+                tourismus: [
+                    { id: 'w1', ger: "die Lieblingsstadt", eng: "Favorite city", ar: "المدينة المفضلة", s: [{ g: "Berlin ist meine <strong>Lieblingsstadt</strong>.", e: "Berlin is my favorite city.", a: "برلين هي مدينتي المفضلة." }] },
+                    { id: 'w2', ger: "die fremde Stadt", eng: "Foreign/Unknown city", ar: "المدينة الغريبة", s: [{ g: "In einer <strong>fremden Stadt</strong> verläuft man sich leicht.", e: "In a foreign city, it's easy to get lost.", a: "في مدينة غريبة الواحد ممكن يتوه بسهولة." }] },
+                    { id: 'w3', ger: "der Tourist", eng: "Tourist", ar: "السائح", s: [{ g: "Jedes Jahr kommen Millionen <strong>Touristen</strong> hierher.", e: "Every year millions of tourists come here.", a: "كل سنة بييجي ملايين السياح هنا." }] },
+                    { id: 'w4', ger: "der Besucher", eng: "Visitor", ar: "الزائر", s: [{ g: "Das Museum hat viele <strong>Besucher</strong>.", e: "The museum has many visitors.", a: "المتحف ليه زوار كتير." }] },
+                    { id: 'w5', ger: "die Sehenswürdigkeit", eng: "Tourist attraction / Sight", ar: "المعلم السياحي", s: [{ g: "Das Brandenburger Tor ist eine berühmte <strong>Sehenswürdigkeit</strong>.", e: "The Brandenburg Gate is a famous sight.", a: "بوابة براندنبورغ هي معلم سياحي مشهور." }] },
+                    { id: 'w6', ger: "die Lage", eng: "Location", ar: "الموقع", s: [{ g: "Die <strong>Lage</strong> des Hotels ist perfekt.", e: "The location of the hotel is perfect.", a: "موقع الفندق ممتاز." }] },
+                    { id: 'w7', ger: "der Einwohner", eng: "Inhabitant / Citizen", ar: "الساكن / المواطن", s: [{ g: "Die Stadt hat zwei Millionen <strong>Einwohner</strong>.", e: "The city has two million inhabitants.", a: "المدينة فيها ٢ مليون ساكن." }] },
+                    { id: 'w8', ger: "das Wahrzeichen", eng: "Landmark / Symbol", ar: "المعلم المميز / رمز المدينة", s: [{ g: "Der Eiffelturm ist das <strong>Wahrzeichen</strong> von Paris.", e: "The Eiffel Tower is the landmark of Paris.", a: "برج إيفل هو الرمز المميز لباريس." }] },
+                    { id: 'w9', ger: "der Geheimtipp", eng: "Insider tip / Secret spot", ar: "نصيحة سرية (مكان مميز غير معروف)", s: [{ g: "Dieses kleine Café ist ein echter <strong>Geheimtipp</strong>.", e: "This small cafe is a real insider tip.", a: "الكافيه الصغير ده مكان مميز في السر كدة." }] },
+                    { id: 'w10', ger: "der Ausflug", eng: "Excursion / Trip", ar: "رحلة قصيرة", s: [{ g: "Wir machen einen <strong>Ausflug</strong> in die Berge.", e: "We are taking a trip to the mountains.", a: "طالعين رحلة قصيرة للجبال." }] },
+                    { id: 'w11', ger: "die Führung", eng: "Guided tour", ar: "جولة إرشادية", s: [{ g: "Die <strong>Führung</strong> durch das Schloss dauert eine Stunde.", e: "The guided tour through the castle takes an hour.", a: "الجولة الإرشادية في القصر بتاخد ساعة." }] },
+                    { id: 'w12', ger: "die Umgebung", eng: "Surroundings", ar: "المناطق المحيطة / الجوار", s: [{ g: "Die <strong>Umgebung</strong> der Stadt ist sehr grün.", e: "The surroundings of the city are very green.", a: "المناطق اللي حوالين المدينة خضرا جداً." }] },
+                    { id: 'w13', ger: "die Unterkunft", eng: "Accommodation", ar: "مكان الإقامة", s: [{ g: "Wir suchen noch eine günstige <strong>Unterkunft</strong>.", e: "We are still looking for cheap accommodation.", a: "لسه بندور على مكان إقامة رخيص." }] },
+                    { id: 'w14', ger: "die Übernachtung", eng: "Overnight stay", ar: "المبيت", s: [{ g: "Eine <strong>Übernachtung</strong> mit Frühstück kostet 50 Euro.", e: "An overnight stay with breakfast costs 50 euros.", a: "المبيت بالفطار بـ ٥٠ يورو." }] },
+                    { id: 'w15', ger: "die Touristeninformation", eng: "Tourist information", ar: "استعلامات السياحة", s: [{ g: "Ich hole mir einen Stadtplan in der <strong>Touristeninformation</strong>.", e: "I'll get a city map at the tourist information.", a: "هجيب خريطة للمدينة من الاستعلامات السياحية." }] },
+                    { id: 'w16', ger: "die Eintrittspreise", eng: "Admission prices", ar: "أسعار الدخول", s: [{ g: "Die <strong>Eintrittspreise</strong> für das Museum sind hoch.", e: "The admission prices for the museum are high.", a: "أسعار الدخول للمتحف غالية." }] },
+                    { id: 'w17', ger: "die Öffnungszeiten", eng: "Opening hours", ar: "أوقات العمل", s: [{ g: "Beachten Sie unsere <strong>Öffnungszeiten</strong>.", e: "Please note our opening hours.", a: "خد بالك من مواعيد العمل بتاعتنا." }] },
+                    { id: 'w18', ger: "die Postkarte", eng: "Postcard", ar: "بطاقة بريدية", s: [{ g: "Ich schreibe meiner Oma eine <strong>Postkarte</strong>.", e: "I am writing a postcard to my grandma.", a: "بكتب كارت بوستال لجدتي." }] },
+                    { id: 'w19', ger: "die Rückfahrt", eng: "Return journey", ar: "رحلة العودة", s: [{ g: "Die <strong>Rückfahrt</strong> war sehr anstrengend.", e: "The return journey was very exhausting.", a: "رحلة الرجوع كانت مرهقة جداً." }] },
+                    { id: 'w20', ger: "das Reiseziel", eng: "Travel destination", ar: "وجهة السفر", s: [{ g: "Spanien ist ein beliebtes <strong>Reiseziel</strong>.", e: "Spain is a popular travel destination.", a: "إسبانيا دي وجهة سفر محبوبة." }] },
+                    { id: 'w21', ger: "die Anziehungskraft", eng: "Attraction / Appeal", ar: "الجاذبية / سحر المكان", s: [{ g: "Die Stadt hat eine magische <strong>Anziehungskraft</strong>.", e: "The city has a magical attraction.", a: "المدينة ليها جاذبية وسحر خاص." }] },
+                    { id: 'w22', ger: "der Hafen", eng: "Harbor / Port", ar: "الميناء", s: [{ g: "Der Hamburger <strong>Hafen</strong> ist riesig.", e: "The Hamburg harbor is huge.", a: "ميناء هامبورغ ضخم جداً." }] },
+                    { id: 'w23', ger: "die Stadtmauer", eng: "City wall", ar: "سور المدينة", s: [{ g: "Wir spazieren entlang der alten <strong>Stadtmauer</strong>.", e: "We are walking along the old city wall.", a: "بنتتمشى على طول سور المدينة القديم." }] },
+                    { id: 'w24', ger: "der Aussichtsturm", eng: "Observation tower", ar: "برج المراقبة / المشاهدة", s: [{ g: "Vom <strong>Aussichtsturm</strong> hat man einen tollen Blick.", e: "From the observation tower, you have a great view.", a: "من برج المشاهدة ده هتشوف منظر رائع." }] }
+                ],
+                geschichte: [
+                    { id: 'w25', ger: "das Dokument", eng: "Document", ar: "الوثيقة", s: [{ g: "Die ersten <strong>Dokumente</strong> stammen aus dem 12. Jahrhundert.", e: "The first documents date back to the 12th century.", a: "أول وثائق بترجع للقرن الـ ١٢." }] },
+                    { id: 'w26', ger: "das Stadtrecht", eng: "City rights", ar: "حقوق المدينة", s: [{ g: "Leipzig erhielt früh das <strong>Stadtrecht</strong>.", e: "Leipzig received city rights early on.", a: "لايبزيغ خدت حقوق المدينة بدري." }] },
+                    { id: 'w27', ger: "das Bauwerk", eng: "Structure / Monument", ar: "الصرح / المبنى (تاريخي)", s: [{ g: "Der Dom ist ein beeindruckendes <strong>Bauwerk</strong>.", e: "The cathedral is an impressive structure.", a: "الكاتدرائية دي صرح مبهر." }] },
+                    { id: 'w28', ger: "das Gebäude", eng: "Building", ar: "المبنى", s: [{ g: "Das <strong>Gebäude</strong> wurde 1900 erbaut.", e: "The building was built in 1900.", a: "المبنى ده اتبنى سنة ١٩٠٠." }] },
+                    { id: 'w29', ger: "die Architekturgeschichte", eng: "Architectural history", ar: "تاريخ العمارة", s: [{ g: "Wir lernen viel über die <strong>Architekturgeschichte</strong>.", e: "We learn a lot about architectural history.", a: "بنتعلم كتير عن تاريخ العمارة." }] },
+                    { id: 'w30', ger: "der barocke Stil", eng: "Baroque style", ar: "الطراز الباروكي", s: [{ g: "Das Schloss ist im <strong>barocken Stil</strong> gebaut.", e: "The castle is built in the baroque style.", a: "القصر مبني على الطراز الباروكي." }] },
+                    { id: 'w31', ger: "die Persönlichkeit", eng: "Personality / Prominent figure", ar: "شخصية (مشهورة)", s: [{ g: "Goethe war eine bekannte <strong>Persönlichkeit</strong>.", e: "Goethe was a famous personality.", a: "جوته كان شخصية معروفة." }] },
+                    { id: 'w32', ger: "der Dichter", eng: "Poet", ar: "الشاعر", s: [{ g: "Schiller war ein großer deutscher <strong>Dichter</strong>.", e: "Schiller was a great German poet.", a: "شيلر كان شاعر ألماني عظيم." }] },
+                    { id: 'w33', ger: "der Philosoph", eng: "Philosopher", ar: "الفيلسوف", s: [{ g: "Kant ist ein berühmter <strong>Philosoph</strong>.", e: "Kant is a famous philosopher.", a: "كانت فيلسوف مشهور." }] },
+                    { id: 'w34', ger: "der Wissenschaftler", eng: "Scientist", ar: "العَالِم", s: [{ g: "Der <strong>Wissenschaftler</strong> macht ein Experiment.", e: "The scientist is conducting an experiment.", a: "العالم بيعمل تجربة." }] },
+                    { id: 'w35', ger: "das Gedicht", eng: "Poem", ar: "القصيدة", s: [{ g: "Ich lerne ein <strong>Gedicht</strong> auswendig.", e: "I am learning a poem by heart.", a: "أنا بحفظ قصيدة." }] },
+                    { id: 'w36', ger: "der Roman", eng: "Novel", ar: "الرواية", s: [{ g: "Dieser <strong>Roman</strong> ist sehr spannend.", e: "This novel is very exciting.", a: "الرواية دي مشوقة جداً." }] },
+                    { id: 'w37', ger: "das Theaterstück", eng: "Play", ar: "المسرحية", s: [{ g: "Wir sehen heute Abend ein <strong>Theaterstück</strong>.", e: "We are watching a play tonight.", a: "هنتفرج على مسرحية النهاردة بالليل." }] },
+                    { id: 'w38', ger: "das Meisterwerk", eng: "Masterpiece", ar: "التحفة الفنية / العمل المتقن", s: [{ g: "Dieses Bild ist ein wahres <strong>Meisterwerk</strong>.", e: "This painting is a true masterpiece.", a: "اللوحة دي تحفة فنية بجد." }] },
+                    { id: 'w39', ger: "das Original", eng: "Original", ar: "النسخة الأصلية", s: [{ g: "Im Museum hängt das <strong>Original</strong>.", e: "The original hangs in the museum.", a: "النسخة الأصلية متعلقة في المتحف." }] },
+                    { id: 'w40', ger: "das Weltkulturerbe", eng: "World Cultural Heritage", ar: "التراث الثقافي العالمي", s: [{ g: "Diese Altstadt gehört zum UNESCO-<strong>Weltkulturerbe</strong>.", e: "This old town belongs to the UNESCO World Heritage.", a: "المدينة القديمة دي من التراث العالمي لليونسكو." }] },
+                    { id: 'w41', ger: "das Archiv", eng: "Archive", ar: "الأرشيف", s: [{ g: "Alte Dokumente liegen im <strong>Archiv</strong>.", e: "Old documents are kept in the archive.", a: "الوثائق القديمة موجودة في الأرشيف." }] },
+                    { id: 'w42', ger: "das Denkmal", eng: "Monument", ar: "النصب التذكاري", s: [{ g: "Mitten auf dem Platz steht ein <strong>Denkmal</strong>.", e: "There is a monument in the middle of the square.", a: "فيه نصب تذكاري في نص الميدان." }] },
+                    { id: 'w43', ger: "das Rathaus", eng: "City hall", ar: "مبنى البلدية", s: [{ g: "Der Bürgermeister arbeitet im <strong>Rathaus</strong>.", e: "The mayor works in the city hall.", a: "العمدة بيشتغل في مبنى البلدية." }] },
+                    { id: 'w44', ger: "das Schloss", eng: "Castle / Palace", ar: "القصر", s: [{ g: "Das <strong>Schloss</strong> hat viele prachtvolle Zimmer.", e: "The castle has many magnificent rooms.", a: "القصر فيه أوض فخمة كتير." }] },
+                    { id: 'w45', ger: "der Schlosspark", eng: "Castle park", ar: "حديقة القصر", s: [{ g: "Wir machen einen Spaziergang im <strong>Schlosspark</strong>.", e: "We are taking a walk in the castle park.", a: "بنتتمشى في حديقة القصر." }] },
+                    { id: 'w46', ger: "die Residenz", eng: "Residence", ar: "مقر الإقامة", s: [{ g: "Würzburg war eine wichtige <strong>Residenz</strong>.", e: "Würzburg was an important residence.", a: "فورتسبورج كانت مقر إقامة مهم." }] },
+                    { id: 'w47', ger: "der botanische Garten", eng: "Botanical garden", ar: "الحديقة النباتية", s: [{ g: "Im <strong>botanischen Garten</strong> gibt es exotische Pflanzen.", e: "There are exotic plants in the botanical garden.", a: "في الحديقة النباتية فيه نباتات غريبة." }] },
+                    { id: 'w48', ger: "die Pflanzenarten", eng: "Plant species", ar: "أنواع النباتات", s: [{ g: "Hier wachsen seltene <strong>Pflanzenarten</strong>.", e: "Rare plant species grow here.", a: "بينمو هنا أنواع نباتات نادرة." }] },
+                    { id: 'w49', ger: "das Mittelalter", eng: "Middle Ages", ar: "العصور الوسطى", s: [{ g: "Die Kirche stammt aus dem <strong>Mittelalter</strong>.", e: "The church dates back to the Middle Ages.", a: "الكنيسة دي من العصور الوسطى." }] },
+                    { id: 'w50', ger: "die Menschheit", eng: "Humanity / Mankind", ar: "البشرية", s: [{ g: "Das ist ein großer Schritt für die <strong>Menschheit</strong>.", e: "That is a great step for humanity.", a: "دي خطوة كبيرة للبشرية." }] },
+                    { id: 'w51', ger: "die Schlagzeilen", eng: "Headlines", ar: "العناوين الرئيسية (في الصحف)", s: [{ g: "Das Ereignis war in allen <strong>Schlagzeilen</strong>.", e: "The event was in all the headlines.", a: "الحدث ده كان في كل العناوين الرئيسية." }] }
+                ],
+                museen_katastrophen: [
+                    { id: 'w52', ger: "das Museum", eng: "Museum", ar: "المتحف", s: [{ g: "Wir besuchen morgen das historische <strong>Museum</strong>.", e: "We are visiting the historical museum tomorrow.", a: "هنزور المتحف التاريخي بكرة." }] },
+                    { id: 'w53', ger: "die Museumsinsel", eng: "Museum Island", ar: "جزيرة المتاحف", s: [{ g: "Die <strong>Museumsinsel</strong> in Berlin ist weltberühmt.", e: "The Museum Island in Berlin is world famous.", a: "جزيرة المتاحف في برلين مشهورة عالمياً." }] },
+                    { id: 'w54', ger: "das Ausstellungsstück", eng: "Exhibit", ar: "قطعة العرض", s: [{ g: "Bitte berühren Sie die <strong>Ausstellungsstücke</strong> nicht.", e: "Please do not touch the exhibits.", a: "لو سمحت ماتلمسش قطع العرض." }] },
+                    { id: 'w55', ger: "das Fundstück", eng: "Find / Artifact", ar: "القطعة الأثرية المكتشفة", s: [{ g: "Dieses archäologische <strong>Fundstück</strong> ist sehr alt.", e: "This archaeological find is very old.", a: "القطعة الأثرية دي قديمة جداً." }] },
+                    { id: 'w56', ger: "die Antikensammlung", eng: "Collection of antiquities", ar: "مجموعة الآثار", s: [{ g: "Die <strong>Antikensammlung</strong> zeigt römische Kunst.", e: "The collection of antiquities shows Roman art.", a: "مجموعة الآثار بتعرض فن روماني." }] },
+                    { id: 'w57', ger: "die Gemäldesammlung", eng: "Painting collection", ar: "مجموعة اللوحات", s: [{ g: "Wir haben uns die <strong>Gemäldesammlung</strong> angesehen.", e: "We looked at the painting collection.", a: "اتفرجنا على مجموعة اللوحات." }] },
+                    { id: 'w58', ger: "die lebensgroße Rekonstruktion", eng: "Life-size reconstruction", ar: "إعادة بناء بالحجم الطبيعي", s: [{ g: "Es gibt eine <strong>lebensgroße Rekonstruktion</strong> des Tempels.", e: "There is a life-size reconstruction of the temple.", a: "فيه إعادة بناء للمعبد بالحجم الطبيعي." }] },
+                    { id: 'w59', ger: "die mediale Installation", eng: "Media installation", ar: "تركيب فني إعلامي", s: [{ g: "Die Ausstellung nutzt <strong>mediale Installationen</strong>.", e: "The exhibition uses media installations.", a: "المعرض بيستخدم تركيبات إعلامية وميديا." }] },
+                    { id: 'w60', ger: "das Modell", eng: "Model", ar: "نموذج / مجسم", s: [{ g: "Das <strong>Modell</strong> zeigt die Stadt im Jahr 1800.", e: "The model shows the city in the year 1800.", a: "المجسم بيوضح المدينة في سنة ١٨٠٠." }] },
+                    { id: 'w61', ger: "das Vorkenntnis", eng: "Previous knowledge", ar: "المعرفة المسبقة", s: [{ g: "Man braucht keine naturwissenschaftlichen <strong>Vorkenntnisse</strong>.", e: "One needs no previous scientific knowledge.", a: "مش محتاج تكون عندك معرفة علمية مسبقة." }] },
+                    { id: 'w62', ger: "der Brand", eng: "Fire / Blaze", ar: "الحريق", s: [{ g: "Beim großen <strong>Brand</strong> wurde viel zerstört.", e: "Much was destroyed in the great fire.", a: "في الحريق الكبير حاجات كتير اتدمرت." }] },
+                    { id: 'w63', ger: "das Feuer", eng: "Fire", ar: "النار", s: [{ g: "Das <strong>Feuer</strong> brach in der Nacht aus.", e: "The fire broke out in the night.", a: "النار مسكت بالليل." }] },
+                    { id: 'w64', ger: "die Feuerwehr", eng: "Fire department", ar: "فرقة الإطفاء", s: [{ g: "Die <strong>Feuerwehr</strong> war schnell vor Ort.", e: "The fire department was quickly on site.", a: "المطافي وصلت بسرعة." }] },
+                    { id: 'w65', ger: "der technische Defekt", eng: "Technical defect", ar: "عطل فني", s: [{ g: "Ein <strong>technischer Defekt</strong> löste das Feuer aus.", e: "A technical defect caused the fire.", a: "عطل فني هو اللي سبب الحريقة." }] },
+                    { id: 'w66', ger: "der Sachschaden", eng: "Property damage", ar: "الضرر المادي / الخسارة المادية", s: [{ g: "Der <strong>Sachschaden</strong> betrug Millionen Euro.", e: "The property damage amounted to millions of euros.", a: "الخسارة المادية وصلت لملايين اليوروهات." }] },
+                    { id: 'w67', ger: "die Geldspende", eng: "Financial donation", ar: "التبرع المالي", s: [{ g: "Mithilfe von <strong>Geldspenden</strong> wurde es restauriert.", e: "It was restored with the help of financial donations.", a: "اترمم بفضل التبرعات المالية." }] },
+                    { id: 'w68', ger: "die Restaurierung", eng: "Restoration", ar: "الترميم", s: [{ g: "Die <strong>Restaurierung</strong> dauerte viele Jahre.", e: "The restoration took many years.", a: "الترميم أخد سنين كتير." }] },
+                    { id: 'w69', ger: "die Sanierung", eng: "Renovation", ar: "التجديد والإصلاح", s: [{ g: "Die <strong>Sanierung</strong> des Altbaus ist teuer.", e: "The renovation of the old building is expensive.", a: "تجديد المبنى القديم غالي." }] },
+                    { id: 'w70', ger: "die Rettung", eng: "Rescue", ar: "الإنقاذ", s: [{ g: "Die schnelle <strong>Rettung</strong> verhinderte Schlimmeres.", e: "The quick rescue prevented worse things.", a: "الإنقاذ السريع منع كوارث أكبر." }] }
+                ],
+                bildung_adjektive: [
+                    { id: 'w71', ger: "die Forschungsergebnisse", eng: "Research results", ar: "نتائج الأبحاث", s: [{ g: "Die Universität präsentiert neue <strong>Forschungsergebnisse</strong>.", e: "The university presents new research results.", a: "الجامعة بتعرض نتائج أبحاث جديدة." }] },
+                    { id: 'w72', ger: "das Unternehmen", eng: "Enterprise", ar: "الشركة / المؤسسة", s: [{ g: "Das <strong>Unternehmen</strong> hat 500 Mitarbeiter.", e: "The enterprise has 500 employees.", a: "الشركة فيها ٥٠٠ موظف." }] },
+                    { id: 'w73', ger: "die Firma", eng: "Company", ar: "الشركة", s: [{ g: "Er arbeitet in einer großen <strong>Firma</strong>.", e: "He works in a large company.", a: "هو شغال في شركة كبيرة." }] },
+                    { id: 'w74', ger: "der wirtschaftliche Gewinn", eng: "Economic profit", ar: "الربح الاقتصادي", s: [{ g: "Die Stadt machte <strong>wirtschaftlichen Gewinn</strong>.", e: "The city made an economic profit.", a: "المدينة حققت ربح اقتصادي." }] },
+                    { id: 'w75', ger: "das optische Gerät", eng: "Optical device", ar: "الجهاز البصري", s: [{ g: "Die Firma stellt <strong>optische Geräte</strong> her.", e: "The company manufactures optical devices.", a: "الشركة بتصنع أجهزة بصرية." }] },
+                    { id: 'w76', ger: "das Mikroskop", eng: "Microscope", ar: "الميكروسكوب", s: [{ g: "Wissenschaftler arbeiten oft mit einem <strong>Mikroskop</strong>.", e: "Scientists often work with a microscope.", a: "العلماء غالباً بيشتغلوا بالميكروسكوب." }] },
+                    { id: 'w77', ger: "der Ruf", eng: "Reputation", ar: "السمعة", s: [{ g: "Die Universität hat einen exzellenten <strong>Ruf</strong>.", e: "The university has an excellent reputation.", a: "الجامعة ليها سمعة ممتازة." }] },
+                    { id: 'w78', ger: "der Absolvent", eng: "Graduate", ar: "الخريج", s: [{ g: "Die <strong>Absolventen</strong> finden schnell einen Job.", e: "The graduates quickly find a job.", a: "الخريجين بيلاقوا شغل بسرعة." }] },
+                    { id: 'w79', ger: "die Arbeitschancen", eng: "Job opportunities", ar: "فرص العمل", s: [{ g: "Die <strong>Arbeitschancen</strong> in dieser Branche sind gut.", e: "The job opportunities in this industry are good.", a: "فرص العمل في المجال ده كويسة." }] },
+                    { id: 'w80', ger: "die Spezialität", eng: "Specialty", ar: "أكلة مميزة", s: [{ g: "Jede Region hat ihre eigene <strong>Spezialität</strong>.", e: "Every region has its own specialty.", a: "كل منطقة ليها أكلتها المميزة." }] },
+                    { id: 'w81', ger: "das Gericht", eng: "Dish / Meal", ar: "طبق / أكلة", s: [{ g: "Dieses <strong>Gericht</strong> schmeckt fantastisch.", e: "This dish tastes fantastic.", a: "الطبق ده طعمه خرافي." }] },
+                    { id: 'w82', ger: "die Bratwurst", eng: "Fried sausage", ar: "السجق المشوي", s: [{ g: "Thüringer <strong>Bratwurst</strong> ist sehr bekannt.", e: "Thuringian bratwurst is very well-known.", a: "السجق بتاع تورينغن معروف جداً." }] },
+                    { id: 'w83', ger: "das Schnitzel", eng: "Schnitzel", ar: "الشنيتسل", s: [{ g: "Ich bestelle ein Wiener <strong>Schnitzel</strong>.", e: "I am ordering a Wiener Schnitzel.", a: "هطلب شنيتسل فيينا." }] },
+                    { id: 'w84', ger: "die Paste", eng: "Paste / Pastry", ar: "معجون / معجنات", s: [{ g: "Man isst es mit einer leckeren <strong>Paste</strong>.", e: "You eat it with a delicious paste.", a: "بيتاكل مع معجون طعمه حلو." }] },
+                    { id: 'w85', ger: "das Marzipan", eng: "Marzipan", ar: "المرزيبان (حلوى اللوز)", s: [{ g: "Lübecker <strong>Marzipan</strong> ist weltberühmt.", e: "Lübeck marzipan is world famous.", a: "حلوى اللوز بتاعة لوبيك مشهورة عالمياً." }] },
+                    
+                    // Adjektive & Adverbien
+                    { id: 'w86', ger: "historisch", eng: "Historical", ar: "تاريخي", s: [{ g: "Das ist ein <strong>historisches</strong> Gebäude.", e: "This is a historical building.", a: "ده مبنى تاريخي." }] },
+                    { id: 'w87', ger: "modern", eng: "Modern", ar: "حديث", s: [{ g: "Die Architektur hier ist sehr <strong>modern</strong>.", e: "The architecture here is very modern.", a: "العمارة هنا حديثة جداً." }] },
+                    { id: 'w88', ger: "bedeutend", eng: "Significant / Important", ar: "مهم (ذو شأن)", s: [{ g: "Goethe war ein <strong>bedeutender</strong> Dichter.", e: "Goethe was a significant poet.", a: "جوته كان شاعر مهم وله شأن." }] },
+                    { id: 'w89', ger: "berühmt", eng: "Famous", ar: "مشهور", s: [{ g: "Die Stadt ist <strong>berühmt</strong> für ihr Museum.", e: "The city is famous for its museum.", a: "المدينة مشهورة بمتحفها." }] },
+                    { id: 'w90', ger: "sehenswert", eng: "Worth seeing", ar: "يستحق الرؤية", s: [{ g: "Die Altstadt ist absolut <strong>sehenswert</strong>.", e: "The old town is absolutely worth seeing.", a: "المدينة القديمة تستحق الرؤية فعلاً." }] },
+                    { id: 'w91', ger: "archäologisch", eng: "Archaeological", ar: "أثري", s: [{ g: "Es gibt hier <strong>archäologische</strong> Funde.", e: "There are archaeological finds here.", a: "فيه هنا اكتشافات أثرية." }] },
+                    { id: 'w92', ger: "botanisch", eng: "Botanical", ar: "نباتي", s: [{ g: "Wir besuchen den <strong>botanischen</strong> Garten.", e: "We visit the botanical garden.", a: "بنزور الحديقة النباتية." }] },
+                    { id: 'w93', ger: "lebensgroß", eng: "Life-size", ar: "بالحجم الطبيعي", s: [{ g: "Die Statue ist <strong>lebensgroß</strong>.", e: "The statue is life-size.", a: "التمثال ده بالحجم الطبيعي." }] },
+                    { id: 'w94', ger: "interaktiv", eng: "Interactive", ar: "تفاعلي", s: [{ g: "Die Ausstellung ist sehr <strong>interaktiv</strong> gestaltet.", e: "The exhibition is designed very interactively.", a: "المعرض متصمم بشكل تفاعلي جداً." }] },
+                    { id: 'w95', ger: "hautnah", eng: "Up close", ar: "عن قرب / بشكل مباشر", s: [{ g: "Man kann die Geschichte <strong>hautnah</strong> erleben.", e: "You can experience history up close.", a: "ممكن تعيش التاريخ عن قرب." }] },
+                    { id: 'w96', ger: "zeitweise", eng: "Temporarily / At times", ar: "لفترة مؤقته / من حين لآخر", s: [{ g: "Das Museum war <strong>zeitweise</strong> geschlossen.", e: "The museum was temporarily closed.", a: "المتحف كان مقفول لفترة مؤقتة." }] },
+                    { id: 'w97', ger: "glücklicherweise", eng: "Fortunately", ar: "لحسن الحظ", s: [{ g: "<strong>Glücklicherweise</strong> wurde niemand verletzt.", e: "Fortunately, no one was injured.", a: "لحسن الحظ محدش اتصاب." }] },
+                    { id: 'w98', ger: "umliegend", eng: "Surrounding", ar: "محيط / مجاور", s: [{ g: "Wir besuchten auch <strong>umliegende</strong> Dörfer.", e: "We also visited surrounding villages.", a: "زرنا كمان القرى المحيطة." }] }
+                ]
+            },
+            verbs: [
+                { id: 'v1', ger: "besichtigen", eng: "to visit (a sight)", ar: "يزور (معلماً سياحياً)", s: [{ g: "Wir <strong>besichtigen</strong> den Kölner Dom.", e: "We visit the Cologne Cathedral.", a: "إحنا بنزور كاتدرائية كولونيا." }] },
+                { id: 'v2', ger: "unternehmen", eng: "to undertake / do", ar: "يقوم بـ / يُجري (نشاطاً)", s: [{ g: "Was wollen wir heute <strong>unternehmen</strong>?", e: "What do we want to do today?", a: "عايزين نعمل إيه النهاردة؟" }] },
+                { id: 'v3', ger: "übernachten", eng: "to stay overnight", ar: "يبيت / يقضي الليل", s: [{ g: "Wir <strong>übernachten</strong> in einem kleinen Hotel.", e: "We stay overnight in a small hotel.", a: "هنببات في فندق صغير." }] },
+                { id: 'v4', ger: "bewundern", eng: "to admire", ar: "يُعجب بـ / يتأمل", s: [{ g: "Die Touristen <strong>bewundern</strong> das Schloss.", e: "The tourists admire the castle.", a: "السياح معجبين بالقصر وبيشوفوه بانبهار." }] },
+                { id: 'v5', ger: "bummeln", eng: "to stroll", ar: "يتجول (للتنزه)", s: [{ g: "Wir <strong>bummeln</strong> durch die Altstadt.", e: "We stroll through the old town.", a: "بنتجول ونتمشى في المدينة القديمة." }] },
+                { id: 'v6', ger: "bauen", eng: "to build", ar: "يبني", s: [{ g: "Die Stadt plant, ein neues Rathaus zu <strong>bauen</strong>.", e: "The city plans to build a new city hall.", a: "المدينة بتخطط تبني مبنى بلدية جديد." }] },
+                { id: 'v7', ger: "erbauen", eng: "to construct / build", ar: "يُشيّد", s: [{ g: "Das Gebäude wurde im 18. Jahrhundert <strong>erbaut</strong>.", e: "The building was constructed in the 18th century.", a: "المبنى ده اتشيّد في القرن الـ ١٨." }] },
+                { id: 'v8', ger: "zerstören", eng: "to destroy", ar: "يُدمر", s: [{ g: "Der Krieg hat viele Gebäude <strong>zerstört</strong>.", e: "The war destroyed many buildings.", a: "الحرب دمرت مباني كتير." }] },
+                { id: 'v9', ger: "boomen", eng: "to boom", ar: "يزدهر / ينمو بسرعة", s: [{ g: "Die Wirtschaft der Stadt <strong>boomt</strong>.", e: "The city's economy is booming.", a: "اقتصاد المدينة بيزدهر." }] },
+                { id: 'v10', ger: "beschädigen", eng: "to damage", ar: "يُتلف / يُلحق ضرراً", s: [{ g: "Das Feuer hat das Archiv <strong>beschädigt</strong>.", e: "The fire damaged the archive.", a: "النار أتلفت الأرشيف." }] },
+                { id: 'v11', ger: "retten", eng: "to save", ar: "يُنقذ", s: [{ g: "Die Feuerwehr konnte das Museum <strong>retten</strong>.", e: "The fire department was able to save the museum.", a: "المطافي قدرت تنقذ المتحف." }] },
+                { id: 'v12', ger: "sanieren", eng: "to renovate / redevelop", ar: "يُجدد / يُصلح المبانى", s: [{ g: "Man muss das alte Haus <strong>sanieren</strong>.", e: "One has to renovate the old house.", a: "لازم يجددوا البيت القديم." }] },
+                { id: 'v13', ger: "renovieren", eng: "to renovate", ar: "يُجدد", s: [{ g: "Wir <strong>renovieren</strong> unser Wohnzimmer.", e: "We are renovating our living room.", a: "بنجدد أوضة المعيشة." }] },
+                { id: 'v14', ger: "restaurieren", eng: "to restore", ar: "يُرمم (آثار/لوحات)", s: [{ g: "Das Gemälde wird sorgfältig <strong>restauriert</strong>.", e: "The painting is carefully restored.", a: "اللوحة بتترمم بعناية." }] },
+                { id: 'v15', ger: "wieder eröffnen", eng: "to reopen", ar: "يُعيد الافتتاح", s: [{ g: "Das Theater wird bald <strong>wieder eröffnet</strong>.", e: "The theater will be reopened soon.", a: "المسرح هيعيدوا افتتاحه قريب." }] },
+                { id: 'v16', ger: "beherbergen", eng: "to house / accommodate", ar: "يأوي / يضم", s: [{ g: "Das Museum <strong>beherbergt</strong> alte Fundstücke.", e: "The museum houses old artifacts.", a: "المتحف بيضم قطع أثرية قديمة." }] },
+                { id: 'v17', ger: "konzipieren", eng: "to conceptualize / design", ar: "يُصمم / يضع خطة لـ", s: [{ g: "Die Ausstellung ist sehr gut <strong>konzipiert</strong>.", e: "The exhibition is very well designed.", a: "المعرض متصمم بشكل ممتاز." }] },
+                { id: 'v18', ger: "ausstellen", eng: "to exhibit", ar: "يعرض", s: [{ g: "Sie <strong>ausstellen</strong> dort moderne Kunst.", e: "They exhibit modern art there.", a: "بيعرضوا هناك فن حديث." }] },
+                { id: 'v19', ger: "erleben", eng: "to experience", ar: "يعيش التجربة / يختبر", s: [{ g: "Hier kann man Geschichte hautnah <strong>erleben</strong>.", e: "Here you can experience history up close.", a: "هنا تقدر تعيش التاريخ عن قرب." }] },
+                { id: 'v20', ger: "lehren", eng: "to teach", ar: "يُدرِّس", s: [{ g: "Der Professor <strong>lehrt</strong> an der Universität.", e: "The professor teaches at the university.", a: "الدكتور بيدرس في الجامعة." }] },
+                { id: 'v21', ger: "studieren", eng: "to study (university)", ar: "يدرس (جامعي)", s: [{ g: "Ich <strong>studiere</strong> Architekturgeschichte.", e: "I study architectural history.", a: "أنا بدرس تاريخ العمارة." }] },
+                { id: 'v22', ger: "weiterentwickeln", eng: "to further develop", ar: "يُطور", s: [{ g: "Wir müssen das Produkt <strong>weiterentwickeln</strong>.", e: "We need to further develop the product.", a: "لازم نطور المنتج أكتر." }] }
+            ],
+            irregularVerbs: [
+                { id: 'iv1', ger: "gründen", eng: "to found / establish", ar: "يُؤسس", praesens: "Er gründet eine Firma.", praeteritum: "er gründete", perfekt: "er hat gegründet" },
+                { id: 'iv2', ger: "erwähnen", eng: "to mention", ar: "يذكر", praesens: "Die Stadt wird erwähnt.", praeteritum: "sie wurde erwähnt", perfekt: "sie ist erwähnt worden" },
+                { id: 'iv3', ger: "erhalten", eng: "to receive", ar: "يحصل على", praesens: "Leipzig erhält das Recht.", praeteritum: "es erhielt", perfekt: "es hat erhalten" },
+                { id: 'iv4', ger: "entstehen", eng: "to arise / be formed", ar: "ينشأ / يتأسس", praesens: "Eine neue Stadt entsteht.", praeteritum: "sie entstand", perfekt: "sie ist entstanden" },
+                { id: 'iv5', ger: "stammen", eng: "to date from / originate", ar: "يعود تاريخه إلى / ينحدر من", praesens: "Das Dokument stammt aus 1800.", praeteritum: "es stammte", perfekt: "es hat gestammt" },
+                { id: 'iv6', ger: "in Brand geraten", eng: "to catch fire", ar: "تشتعل فيه النيران", praesens: "Das Gebäude gerät in Brand.", praeteritum: "es geriet in Brand", perfekt: "es ist in Brand geraten" },
+                { id: 'iv7', ger: "verbrennen", eng: "to burn down", ar: "يحترق", praesens: "Die Bücher verbrennen.", praeteritum: "sie verbrannten", perfekt: "sie sind verbrannt" }
+            ],
+            expressions: [
+                { id: 'e1', type: "Präsentation", ger: "Die Stadt liegt in...", eng: "The city is located in...", ar: "المدينة تقع في...", context: "لوصف موقع المدينة جغرافياً.", s: [{ g: "Die Stadt liegt im Süden des Landes.", e: "The city is located in the south of the country.", a: "تقع المدينة في جنوب البلاد." }, { g: "München liegt in Bayern.", e: "Munich is located in Bavaria.", a: "ميونيخ تقع في ولاية بافاريا." }, { g: "Das kleine Dorf liegt in einem tiefen Tal.", e: "The small village is located in a deep valley.", a: "القرية الصغيرة تقع في وادٍ عميق." }] },
+                { id: 'e2', type: "Präsentation", ger: "Die Stadt hat ... Einwohner.", eng: "The city has ... inhabitants.", ar: "المدينة يبلغ عدد سكانها...", context: "لذكر التعداد السكاني.", s: [{ g: "Die Stadt hat über zwei Millionen Einwohner.", e: "The city has over two million inhabitants.", a: "المدينة فيها أكتر من ٢ مليون ساكن." }, { g: "Mein Heimatdorf hat nur 500 Einwohner.", e: "My home village has only 500 inhabitants.", a: "قريتي مفيهاش غير ٥٠٠ ساكن بس." }, { g: "Wie viele Einwohner hat diese Stadt?", e: "How many inhabitants does this city have?", a: "المدينة دي فيها كام ساكن؟" }] },
+                { id: 'e3', type: "Präsentation", ger: "... wurde zum ersten Mal erwähnt.", eng: "... was mentioned for the first time.", ar: "ذُكرت لأول مرة...", context: "للحديث عن أول ذكر تاريخي في الوثائق.", s: [{ g: "Die Burg wurde 1250 zum ersten Mal erwähnt.", e: "The castle was first mentioned in 1250.", a: "القلعة ذُكرت لأول مرة سنة ١٢٥٠." }, { g: "Der Name des Dorfes wurde in einem alten Text zum ersten Mal erwähnt.", e: "The name of the village was first mentioned in an old text.", a: "اسم القرية اتذكر لأول مرة في نص قديم." }, { g: "Diese Region wurde bereits im 9. Jahrhundert zum ersten Mal erwähnt.", e: "This region was already mentioned for the first time in the 9th century.", a: "المنطقة دي اتذكرت لأول مرة بالفعل في القرن التاسع." }] },
+                { id: 'e4', type: "Präsentation", ger: "Die ersten Dokumente stammen aus dem Jahr...", eng: "The first documents date back to the year...", ar: "الوثائق الأولى تعود لعام...", context: "لذكر أقدم الوثائق.", s: [{ g: "Die ersten Dokumente stammen aus dem Jahr 1400.", e: "The first documents date back to the year 1400.", a: "أول وثائق بترجع لسنة ١٤٠٠." }, { g: "Diese schönen Bilder stammen aus dem Jahr 1920.", e: "These beautiful pictures date back to the year 1920.", a: "الصور الحلوة دي بترجع لسنة ١٩٢٠." }, { g: "Die ältesten Funde stammen aus der Antike.", e: "The oldest finds date from antiquity.", a: "أقدم الاكتشافات بترجع للعصور القديمة." }] },
+                { id: 'e5', type: "Präsentation", ger: "... spielte eine große Rolle.", eng: "... played a big role.", ar: "لعبت دوراً كبيراً.", context: "لتوضيح أهمية المدينة في التاريخ.", s: [{ g: "Der Hafen spielte eine große Rolle für die Wirtschaft.", e: "The port played a major role for the economy.", a: "الميناء لعب دور كبير في الاقتصاد." }, { g: "Die Musik spielte in seinem Leben eine große Rolle.", e: "Music played a big role in his life.", a: "المزيكا لعبت دور كبير في حياته." }, { g: "Das alte Theater spielte eine große Rolle in der Kultur der Stadt.", e: "The old theater played a big role in the city's culture.", a: "المسرح القديم لعب دور كبير في ثقافة المدينة." }] },
+                { id: 'e6', type: "Präsentation", ger: "Bedeutende Bauwerke sind...", eng: "Significant structures are...", ar: "المباني الهامة هي...", context: "عند سرد المعالم.", s: [{ g: "Bedeutende Bauwerke sind der Dom und das Rathaus.", e: "Significant structures are the cathedral and the city hall.", a: "المباني الهامة هي الكاتدرائية ومبنى البلدية." }, { g: "Bedeutende Bauwerke der Stadt wurden im Krieg leider zerstört.", e: "Significant buildings of the city were unfortunately destroyed in the war.", a: "مباني هامة في المدينة للأسف اتدمرت في الحرب." }, { g: "Hier sind viele historische und bedeutende Bauwerke zu besichtigen.", e: "Many historical and significant structures can be visited here.", a: "هنا تقدر تزور مباني تاريخية وهامة كتير." }] },
+                { id: 'e7', type: "Präsentation", ger: "Ein Wahrzeichen der Stadt ist...", eng: "A landmark of the city is...", ar: "من معالم المدينة المميزة (رمزها)...", context: "للإشارة للرمز الأشهر للمدينة.", s: [{ g: "Ein Wahrzeichen der Stadt ist der alte Turm am Fluss.", e: "A landmark of the city is the old tower by the river.", a: "من رموز المدينة المميزة هو البرج القديم اللي ع النهر." }, { g: "Das Brandenburger Tor ist ein weltbekanntes Wahrzeichen Berlins.", e: "The Brandenburg Gate is a world-famous landmark of Berlin.", a: "بوابة براندنبورغ هي معلم عالمي معروف لبرلين." }, { g: "Welches Gebäude ist das Wahrzeichen von Paris?", e: "Which building is the landmark of Paris?", a: "إيه المبنى اللي بيعتبر الرمز المميز لباريس؟" }] },
+                { id: 'e8', type: "Präsentation", ger: "Zu den Sehenswürdigkeiten zählen...", eng: "The sights include...", ar: "يُعد من ضمن المعالم السياحية...", context: "تعبير راقي لسرد المعالم.", s: [{ g: "Zu den Sehenswürdigkeiten zählen das Schloss und der große Park.", e: "The sights include the castle and the large park.", a: "المعالم السياحية بتشمل القصر والحديقة الكبيرة." }, { g: "Zu den wichtigsten Sehenswürdigkeiten zählen die historischen Museen.", e: "The most important sights include the historical museums.", a: "من أهم المعالم السياحية المتاحف التاريخية." }, { g: "Zählt dieser antike Tempel auch zu den Sehenswürdigkeiten?", e: "Does this ancient temple also count among the sights?", a: "هل المعبد الأثري ده بيُعد كمان من ضمن المعالم السياحية؟" }] },
+                { id: 'e9', type: "Präsentation", ger: "Auch kulturell hat ... viel zu bieten.", eng: "Culturally, too, ... has much to offer.", ar: "ثقافياً أيضاً، لديها الكثير لتقدمه.", context: "للانتقال للحديث عن الثقافة.", s: [{ g: "Auch kulturell hat die ganze Region wirklich viel zu bieten.", e: "Culturally, too, the whole region really has a lot to offer.", a: "المنطقة كلها ثقافياً كمان عندها حاجات كتير بجد تقدمها." }, { g: "Diese Kleinstadt hat auch kulturell erstaunlich viel zu bieten.", e: "This small town also has surprisingly much to offer culturally.", a: "المدينة الصغيرة دي كمان بتقدم عروض ثقافية كتير بشكل مدهش." }, { g: "Berlin hat nicht nur Geschichte, sondern auch kulturell viel zu bieten.", e: "Berlin not only has history but also has a lot to offer culturally.", a: "برلين مش بس تاريخ، دي ثقافياً كمان غنية جداً." }] },
+                { id: 'e10', type: "Präsentation", ger: "Die Stadt boomt.", eng: "The city is booming.", ar: "المدينة تزدهر (تنمو بسرعة).", context: "لوصف التطور الاقتصادي أو المعماري السريع.", s: [{ g: "Die Stadt boomt und viele neue Häuser werden gebaut.", e: "The city is booming and many new houses are being built.", a: "المدينة بتزدهر وبيتبني فيها بيوت جديدة كتير." }, { g: "Dank der neuen Industrie boomt die ganze Region.", e: "Thanks to the new industry, the whole region is booming.", a: "بفضل الصناعة الجديدة المنطقة كلها منتعشة." }, { g: "Der Tourismus in unserer schönen Stadt boomt diesen Sommer.", e: "Tourism in our beautiful city is booming this summer.", a: "السياحة في مدينتنا الحلوة مزدهرة جداً الصيف ده." }] },
+                { id: 'e11', type: "Präsentation", ger: "Als Geheimtipp gilt...", eng: "Considered an insider tip is...", ar: "كنصيحة سرية (أو ذهبية) يُعتبر...", context: "لاقتراح مكان مميز غير معروف للسياح.", s: [{ g: "Als Geheimtipp gilt das kleine, gemütliche Restaurant am Fluss.", e: "The small, cozy restaurant by the river is considered an insider tip.", a: "المطعم الصغير المريح اللي ع النهر ده مكان مميز في السر كدة." }, { g: "Dieser ruhige Strandabschnitt gilt als echter Geheimtipp.", e: "This quiet stretch of beach is considered a real insider tip.", a: "الجزء الهادي من الشاطئ ده بيُعتبر كنز مخفي بجد." }, { g: "Als Geheimtipp gilt ein Museumsbesuch am frühen Morgen.", e: "A museum visit in the early morning is considered an insider tip.", a: "زيارة المتحف الصبح بدري دي أحسن نصيحة ممكن تاخدها." }] },
+                { id: 'e12', type: "Diskussion", ger: "Also, ich möchte gerne...", eng: "Well, I would like to...", ar: "حسناً، أود أن...", context: "لإبداء الرغبة.", s: [{ g: "Also, ich möchte gerne heute Nachmittag das Museum besichtigen.", e: "Well, I would like to visit the museum this afternoon.", a: "حسناً، أنا حابب أزور المتحف النهاردة بعد الضهر." }, { g: "Also, ich möchte gerne eine kurze Kaffeepause machen.", e: "Well, I would like to take a short coffee break.", a: "طيب، أنا عايز أخد استراحة قهوة قصيرة." }, { g: "Also, ich möchte gerne mehr über die Stadtgeschichte erfahren.", e: "Well, I would like to learn more about the city's history.", a: "طيب، أنا حابب أعرف معلومات أكتر عن تاريخ المدينة." }] },
+                { id: 'e13', type: "Diskussion", ger: "Ich würde am liebsten...", eng: "I would most prefer to...", ar: "أفضل أن (أكتر حاجة بحبها)...", context: "للتعبير عن التفضيل الأول.", s: [{ g: "Ich würde am liebsten den ganzen Tag faul am Strand liegen.", e: "I would most prefer to lie lazily on the beach all day.", a: "أنا أفضل إني أفضل نايم بكسل ع الشاطئ طول اليوم." }, { g: "Ich würde am liebsten sofort ins Hotel fahren.", e: "I would prefer to go to the hotel immediately.", a: "أنا يا ريت أروح الفندق دلوقتي فوراً." }, { g: "Welches Land würdest du am liebsten im Urlaub besuchen?", e: "Which country would you most like to visit on vacation?", a: "إيه أكتر بلد نفسك تزورها في الأجازة؟" }] },
+                { id: 'e14', type: "Diskussion", ger: "Ich finde ... interessant.", eng: "I find ... interesting.", ar: "أجد ... مثيراً للاهتمام.", context: "لإبداء رأي في فكرة أو نشاط.", s: [{ g: "Ich finde moderne Architektur wirklich sehr interessant.", e: "I find modern architecture really very interesting.", a: "أنا شايف العمارة الحديثة دي مثيرة للاهتمام بجد." }, { g: "Ich finde deinen Vorschlag für das Wochenende ziemlich interessant.", e: "I find your suggestion for the weekend quite interesting.", a: "أنا لاقي اقتراحك للويك إند ده شيق جداً." }, { g: "Findest du diese Kunstausstellung auch so interessant?", e: "Do you also find this art exhibition so interesting?", a: "هل إنت كمان شايف المعرض الفني ده حلو كدة؟" }] },
+                { id: 'e15', type: "Diskussion", ger: "Mein Vorschlag wäre, dass wir...", eng: "My suggestion would be that we...", ar: "اقتراحي سيكون أننا...", context: "لتقديم اقتراح بطريقة مهذبة.", s: [{ g: "Mein Vorschlag wäre, dass wir morgen früh gemeinsam starten.", e: "My suggestion would be that we start together tomorrow morning.", a: "اقتراحي هو إننا نتحرك مع بعض بكرة الصبح بدري." }, { g: "Mein Vorschlag wäre, dass wir uns die Fahrtkosten fair teilen.", e: "My suggestion would be that we share the travel costs fairly.", a: "اقتراحي إننا نقسم مصاريف السفر بينا بالعدل." }, { g: "Mein Vorschlag wäre, dass wir zuerst eine Kleinigkeit essen gehen.", e: "My suggestion would be that we go out to eat a little something first.", a: "رأيي إننا نروح ناكل أي حاجة خفيفة الأول." }] },
+                { id: 'e16', type: "Diskussion", ger: "Wie wäre es, wenn wir...?", eng: "How about if we...?", ar: "ماذا لو أننا...؟", context: "لطرح فكرة للمناقشة.", s: [{ g: "Wie wäre es, wenn wir für den Ausflug ein Auto mieten?", e: "How about if we rent a car for the trip?", a: "إيه رأيك لو نأجر عربية للرحلة دي؟" }, { g: "Wie wäre es, wenn wir am Wochenende im Park grillen?", e: "How about if we barbecue in the park on the weekend?", a: "إيه رأيك نشوي في الحديقة الويك إند ده؟" }, { g: "Wie wäre es, wenn wir für die Tour einen Reiseführer buchen?", e: "How about if we book a tour guide for the tour?", a: "إيه رأيك لو نحجز مرشد سياحي للجولة؟" }] },
+                { id: 'e17', type: "Tourismus", ger: "Wir besichtigen das Museum, das an ... erinnert.", eng: "We visit the museum that commemorates...", ar: "نحن نزور المتحف الذي يُذكرنا بـ...", context: "لشرح هدف الزيارة في الاستعلامات.", s: [{ g: "Wir besichtigen das Museum, das an den Zweiten Weltkrieg erinnert.", e: "We visit the museum that commemorates the Second World War.", a: "إحنا بنزور المتحف اللي بيذكرنا بالحرب العالمية التانية." }, { g: "Das Denkmal, das an den berühmten Dichter erinnert, ist sehr groß.", e: "The monument that commemorates the famous poet is very large.", a: "النصب اللي بيذكرنا بالشاعر المشهور ده ضخم جداً." }, { g: "Sie bauten ein Haus, das an die gute alte Zeit erinnert.", e: "They built a house that reminds of the good old times.", a: "هما بنوا بيت بيفكر الناس بالزمن الجميل." }] },
+                { id: 'e18', type: "Tourismus", ger: "Goethe verdoppelte die Anzahl der Bücher.", eng: "Goethe doubled the number of books.", ar: "ضاعف جوته عدد الكتب.", context: "معلومة تاريخية من الدرس.", s: [{ g: "Goethe verdoppelte die Anzahl der Bücher in der Herzogin Anna Amalia Bibliothek.", e: "Goethe doubled the number of books in the Duchess Anna Amalia Library.", a: "جوته ضاعف عدد الكتب في مكتبة الدوقة آنا أماليا." }, { g: "Wir haben die Anzahl der Kursteilnehmer in diesem Jahr verdoppelt.", e: "We have doubled the number of course participants this year.", a: "إحنا ضاعفنا عدد المشاركين في الكورس السنة دي." }, { g: "Der wirtschaftliche Gewinn der Firma hat sich in diesem Jahr verdoppelt.", e: "The company's economic profit has doubled this year.", a: "الربح الاقتصادي للشركة اتضاعف السنة دي." }] },
+                { id: 'e19', type: "Tourismus", ger: "Der Sachschaden betrug etwa 67 Millionen Euro.", eng: "The property damage was about 67 million euros.", ar: "بلغت الخسائر المادية حوالي 67 مليون يورو.", context: "لوصف حجم أضرار حريق مكتبة آنا أماليا.", s: [{ g: "Der Sachschaden betrug nach dem schweren Sturm etwa 67 Millionen Euro.", e: "The property damage after the severe storm was about 67 million euros.", a: "الخسارة بعد العاصفة الشديدة كانت حوالي ٦٧ مليون يورو." }, { g: "Glücklicherweise wurde niemand verletzt, aber der Sachschaden war enorm.", e: "Fortunately no one was injured, but the property damage was enormous.", a: "لحسن الحظ محدش اتصاب، بس الخسارة المادية كانت ضخمة جداً." }, { g: "Die Versicherung übernimmt den gesamten Sachschaden nach dem Feuer.", e: "The insurance covers the entire property damage after the fire.", a: "شركة التأمين هتتكفل بكل الأضرار المادية بعد الحريقة." }] }
+            ],
+            prepositions: [
+                { id: 'p1', ger: "in (+ Dativ)", eng: "in / at", ar: "في (المكان أو الحالة)", s: [{ g: "Das Museum ist <strong>in</strong> der Stadt.", e: "The museum is in the city.", a: "المتحف في المدينة." }, { g: "Es ist <strong>im</strong> guten Zustand.", e: "It is in good condition.", a: "هو في حالة جيدة." }, { g: "Er handelt <strong>im</strong> Auftrag der Firma.", e: "He acts on behalf of the company.", a: "بيتصرف بتكليف من الشركة." }] },
+                { id: 'p2', ger: "auf (+ Dativ/Akk)", eng: "on / to", ar: "على / إلى", s: [{ g: "Wir treffen uns <strong>auf</strong> dem Markt.", e: "We meet at the market.", a: "هنتقابل في السوق." }, { g: "Achten Sie <strong>auf</strong> die Ausstattung.", e: "Pay attention to the equipment.", a: "انتبه للتجهيزات." }] },
+                { id: 'p3', ger: "an (+ Dativ)", eng: "at / by", ar: "على / عند", s: [{ g: "Wir spazieren <strong>an</strong> der Stadtmauer.", e: "We walk along the city wall.", a: "بنتتمشى عند سور المدينة." }] },
+                { id: 'p4', ger: "aus (+ Dativ)", eng: "from (time/origin)", ar: "من (الزمن/الأصل)", s: [{ g: "Das Gebäude stammt <strong>aus</strong> dem Jahr 1800.", e: "The building dates from 1800.", a: "المبنى ده من سنة ١٨٠٠." }, { g: "Es stammt <strong>aus</strong> dem Mittelalter.", e: "It dates from the Middle Ages.", a: "يرجع للعصور الوسطى." }] },
+                { id: 'p5', ger: "mit (+ Dativ)", eng: "with", ar: "بـ / مع", s: [{ g: "Die Firma hilft <strong>mit</strong> ihren Gewinnen.", e: "The company helps with its profits.", a: "الشركة بتساعد بأرباحها." }, { g: "Sie finanzieren es <strong>mit</strong> einem Teil des Geldes.", e: "They finance it with a part of the money.", a: "بيمولوه بجزء من الفلوس." }] },
+                { id: 'p6', ger: "zu (+ Dativ)", eng: "to / part of", ar: "إلى / ضمن (يُعد من)", s: [{ g: "Dieses Haus gehört <strong>zu</strong> den ältesten.", e: "This house belongs to the oldest.", a: "البيت ده بينتمي لأقدم البيوت." }, { g: "Die Stadt zählt <strong>zum</strong> Weltkulturerbe.", e: "The city is part of the World Heritage.", a: "المدينة بتُصنف كتراث عالمي." }] },
+                { id: 'p7', ger: "durch (+ Akkusativ)", eng: "through / by means of", ar: "بسبب / من خلال", s: [{ g: "Das Feuer entstand <strong>durch</strong> einen technischen Defekt.", e: "The fire was caused by a technical defect.", a: "الحريقة حصلت بسبب عطل فني." }, { g: "Viele Bücher wurden <strong>durch</strong> das Feuer zerstört.", e: "Many books were destroyed by the fire.", a: "كتب كتير اتدمرت بسبب الحريق." }] },
+                { id: 'p8', ger: "mithilfe von (+ Dativ)", eng: "with the help of", ar: "بمساعدة", s: [{ g: "Das Gebäude wurde <strong>mithilfe von</strong> Geldspenden restauriert.", e: "The building was restored with the help of donations.", a: "المبنى اترمم بمساعدة التبرعات المالية." }] }
+            ],
+            grammar: [
+                {
+                    title: "1. Relativsätze (الجمل الموصولة)",
+                    desc: "هي جمل جانبية (Nebensätze) بتوصف شخص أو شيء في الجملة الرئيسية. الضمير الموصول بياخد (النوع والعدد) من الكلمة اللي بيعود عليها، لكن بياخد إعرابه (حسب وظيفته في الجملته هو). الفعل دايماً بييجي في الآخر.",
+                    structure: "Nominativ: der/die/das/die | Akkusativ: den/die/das/die | Dativ: dem/der/dem/denen",
+                    examples: [
+                        { g: "Das ist der Wissenschaftler, <span class='text-purple-600 font-bold'>der</span> das Gerät entwickelt <span class='text-purple-600 font-bold'>hat</span>.", a: "ده العالم اللي (الفاعل) طور الجهاز." },
+                        { g: "Das ist die Stadt, in <span class='text-purple-600 font-bold'>der</span> Schiller gelehrt <span class='text-purple-600 font-bold'>hat</span>.", a: "دي المدينة اللي (Dativ بسبب حرف in) شيلر درس فيها." },
+                        { g: "Das sind die Politiker, <span class='text-purple-600 font-bold'>denen</span> die Bürger <span class='text-purple-600 font-bold'>vertrauen</span>.", a: "دول السياسيين اللي (Dativ جمع عشان فعل vertrauen) المواطنين بيثقوا فيهم." }
+                    ]
+                },
+                {
+                    title: "2. Orte als Attribute (أسماء المدن كصفات)",
+                    desc: "لما نستخدم اسم مدينة عشان نوصف شيء، بنضيف لاسم المدينة النهاية (-er). الصفة دي دايماً بتتكتب بحرف Capital ومش بتاخد نهايات إعراب (مابتتغيرش أبداً).",
+                    structure: "Stadtname + er (Immer großgeschrieben, nicht dekliniert)",
+                    examples: [
+                        { g: "Kennen Sie den <span class='text-purple-600 font-bold'>Hamburger</span> Hafen?", a: "تعرف ميناء هامبورغ؟ (كلمة Hamburger فضلت زي ما هي بدون إضافات للمفعول)." },
+                        { g: "Haben Sie schon <span class='text-purple-600 font-bold'>Thüringer</span> Bratwürste gegessen?", a: "كلت قبل كدة سجق من تورينغن؟" },
+                        { g: "Ich bestelle ein <span class='text-purple-600 font-bold'>Wiener</span> Schnitzel.", a: "هطلب شنيتسل فيينا." }
+                    ]
+                },
+                {
+                    title: "3. Lokale Präpositionen (حروف الجر المكانية: Wohin? vs. Wo?)",
+                    desc: "أفعال الحركة (إلى أين - Wohin) بتاخد Akkusativ. أفعال الثبات (أين - Wo) بتاخد Dativ.",
+                    structure: "Wohin? (Akkusativ) + in/an/auf/nach/zu | Wo? (Dativ) + in/an/auf/bei",
+                    examples: [
+                        { g: "Wohin? -> Wir gehen <span class='text-purple-600 font-bold'>in die</span> Stadt / <span class='text-purple-600 font-bold'>an den</span> Strand / <span class='text-purple-600 font-bold'>auf den</span> Berg.", a: "حركة: للمدينة، للشاطئ، للجبل (Akkusativ)." },
+                        { g: "Wohin? -> Wir fahren <span class='text-purple-600 font-bold'>nach</span> Berlin / <span class='text-purple-600 font-bold'>zum</span> Arzt.", a: "حركة: لبرلين (بدون أداة)، للدكتور (شخص أو مبنى محدد)." },
+                        { g: "Wo? -> Wir sind <span class='text-purple-600 font-bold'>in der</span> Stadt / <span class='text-purple-600 font-bold'>am</span> Strand / <span class='text-purple-600 font-bold'>beim</span> Arzt.", a: "ثبات: في المدينة، على الشاطئ، عند الدكتور (Dativ)." }
+                    ]
+                },
+                {
+                    title: "4. Partizipien als Adjektive (اسم الفاعل والمفعول كصفات)",
+                    desc: "ممكن نستخدم الأفعال كصفات قبل الاسم. Partizip I (Infinitiv+d) بيعبر عن حدث مستمر. Partizip II (ge...t/en) بيعبر عن حدث خلص.",
+                    structure: "Partizip I: Infinitiv + d + Adjektivendung | Partizip II: Ge-Form + Adjektivendung",
+                    examples: [
+                        { g: "Partizip I: Das <span class='text-purple-600 font-bold'>brennende</span> Haus.", a: "البيت اللي بيولع دلوقتي (حدث مستمر: brennen + d + e)." },
+                        { g: "Partizip I: Die <span class='text-purple-600 font-bold'>boomende</span> Stadt.", a: "المدينة اللي بتزدهر حالياً." },
+                        { g: "Partizip II: Das <span class='text-purple-600 font-bold'>beschädigte</span> Gebäude.", a: "المبنى اللي اتضرر وخلصت الحريقة (حدث ماضي/مبني للمجهول)." },
+                        { g: "Partizip II: Die <span class='text-purple-600 font-bold'>restaurierten</span> Bücher.", a: "الكتب اللي تم ترميمها." }
+                    ]
+                }
+            ],
+            review: [
+                {
+                    catId: 'rev-tourismus',
+                    title: '1. السياحة وتقديم المدن (Tourismus & Städte)',
+                    items: [
+                        { id: 'r_t_1', g: "Die Stadt liegt im Süden des Landes.", e: "The city is located in the south of the country.", a: "المدينة تقع في جنوب البلاد." },
+                        { id: 'r_t_2', g: "Die Stadt hat über eine Million Einwohner.", e: "The city has over a million inhabitants.", a: "المدينة فيها أكتر من مليون ساكن." },
+                        { id: 'r_t_3', g: "Die ersten Dokumente stammen aus dem Jahr 1200.", e: "The first documents date back to the year 1200.", a: "الوثائق الأولى تعود لعام ١٢٠٠." },
+                        { id: 'r_t_4', g: "Ein Wahrzeichen der Stadt ist der alte Aussichtsturm.", e: "A landmark of the city is the old observation tower.", a: "من معالم المدينة المميزة برج المراقبة القديم." },
+                        { id: 'r_t_5', g: "Zu den Sehenswürdigkeiten zählen das Museum und die Stadtmauer.", e: "The sights include the museum and the city wall.", a: "من ضمن المعالم السياحية المتحف وسور المدينة." },
+                        { id: 'r_t_6', g: "Als Geheimtipp gilt der kleine botanische Garten.", e: "The small botanical garden is considered an insider tip.", a: "الحديقة النباتية الصغيرة دي مكان مميز مش معروف أوي (نصيحة سرية)." },
+                        { id: 'r_t_7', g: "Die Touristeninformation bietet Karten für die Stadtführung an.", e: "The tourist information offers tickets for the guided city tour.", a: "استعلامات السياحة بتقدم تذاكر للجولة الإرشادية في المدينة." },
+                        { id: 'r_t_8', g: "Wir suchen eine günstige Übernachtung für unseren Ausflug.", e: "We are looking for a cheap overnight stay for our excursion.", a: "بندور على مبيت رخيص عشان الرحلة بتاعتنا." }
+                    ]
+                },
+                {
+                    catId: 'rev-geschichte',
+                    title: '2. التاريخ والثقافة (Geschichte & Kultur)',
+                    items: [
+                        { id: 'r_k_1', g: "Goethe war ein bedeutender deutscher Dichter.", e: "Goethe was a significant German poet.", a: "جوته كان شاعر ألماني مهم." },
+                        { id: 'r_k_2', g: "Das Bauwerk wurde im barocken Stil erbaut.", e: "The structure was built in the baroque style.", a: "الصرح ده اتشيّد على الطراز الباروكي." },
+                        { id: 'r_k_3', g: "Die Altstadt gehört zum Weltkulturerbe der UNESCO.", e: "The old town belongs to the UNESCO World Heritage.", a: "المدينة القديمة من ضمن التراث الثقافي العالمي لليونسكو." },
+                        { id: 'r_k_4', g: "Im Museum hängt das Original des Meisterwerks.", e: "The original of the masterpiece hangs in the museum.", a: "النسخة الأصلية للتحفة الفنية متعلقة في المتحف." },
+                        { id: 'r_k_5', g: "Wir haben uns ein spannendes Theaterstück angesehen.", e: "We watched an exciting play.", a: "اتفرجنا على مسرحية مشوقة." },
+                        { id: 'r_k_6', g: "Das Gebäude stammt aus dem Mittelalter.", e: "The building dates back to the Middle Ages.", a: "المبنى بيرجع للعصور الوسطى." },
+                        { id: 'r_k_7', g: "Die Architekturgeschichte der Residenz ist sehr interessant.", e: "The architectural history of the residence is very interesting.", a: "تاريخ العمارة لمقر الإقامة ده شيق جداً." }
+                    ]
+                },
+                {
+                    catId: 'rev-katastrophen',
+                    title: '3. الكوارث، الترميم والمتاحف (Katastrophen & Museen)',
+                    items: [
+                        { id: 'r_m_1', g: "Durch einen technischen Defekt brach ein Feuer aus.", e: "A fire broke out due to a technical defect.", a: "حريقة قامت بسبب عطل فني." },
+                        { id: 'r_m_2', g: "Das Archiv geriet in der Nacht in Brand.", e: "The archive caught fire during the night.", a: "الأرشيف ولعت فيه النار بالليل." },
+                        { id: 'r_m_3', g: "Der Sachschaden betrug viele Millionen Euro.", e: "The property damage amounted to many millions of euros.", a: "الخسائر المادية وصلت لملايين اليوروهات." },
+                        { id: 'r_m_4', g: "Mithilfe von Geldspenden konnte die Bibliothek saniert werden.", e: "With the help of financial donations, the library could be renovated.", a: "المكتبة اتجددت بفضل التبرعات المالية." },
+                        { id: 'r_m_5', g: "Die Feuerwehr hat die wertvollen Ausstellungsstücke gerettet.", e: "The fire department saved the valuable exhibits.", a: "المطافي أنقذت قطع العرض القيمة." },
+                        { id: 'r_m_6', g: "Jetzt werden die beschädigten Bücher sorgfältig restauriert.", e: "Now the damaged books are carefully restored.", a: "دلوقتي الكتب اللي اتضررت بتترمم بعناية." },
+                        { id: 'r_m_7', g: "Die Museumsinsel beherbergt eine riesige Antikensammlung.", e: "The Museum Island houses a huge collection of antiquities.", a: "جزيرة المتاحف بتضم مجموعة آثار ضخمة." },
+                        { id: 'r_m_8', g: "Man kann eine lebensgroße Rekonstruktion des Tempels bewundern.", e: "You can admire a life-size reconstruction of the temple.", a: "تقدر تتأمل بإعجاب إعادة بناء للمعبد بالحجم الطبيعي." }
+                    ]
+                },
+                {
+                    catId: 'rev-grammatik',
+                    title: '4. أمثلة القواعد المجمعة (Grammatik-Beispiele)',
+                    items: [
+                        { id: 'r_g_1', g: "Das ist die Stadt, in der ich geboren bin.", e: "That is the city where I was born.", a: "دي المدينة اللي أنا اتولدت فيها. (Relativsatz)" },
+                        { id: 'r_g_2', g: "Kennst du den Wissenschaftler, der das Mikroskop erfunden hat?", e: "Do you know the scientist who invented the microscope?", a: "تعرف العالم اللي اخترع الميكروسكوب؟ (Relativsatz)" },
+                        { id: 'r_g_3', g: "Wir haben echte Nürnberger Rostbratwürste probiert.", e: "We tried real Nuremberg bratwursts.", a: "دوقنا السجق المشوي بتاع نورنبرغ الأصلي. (Orte als Attribute)" },
+                        { id: 'r_g_4', g: "Der Kölner Dom ist ein Meisterwerk.", e: "The Cologne Cathedral is a masterpiece.", a: "كاتدرائية كولونيا تحفة فنية. (Orte als Attribute)" },
+                        { id: 'r_g_5', g: "Wir fahren ans Meer und übernachten in einem kleinen Hotel.", e: "We are driving to the sea and staying overnight in a small hotel.", a: "هنسافر للبحر وهنبات في فندق صغير. (Lokale Präpositionen - Wohin/Wo)" },
+                        { id: 'r_g_6', g: "Ich stehe an der Stadtmauer, nachdem ich auf den Turm gestiegen bin.", e: "I am standing at the city wall after climbing the tower.", a: "أنا واقف عند سور المدينة بعد ما طلعت البرج. (Wo / Wohin)" },
+                        { id: 'r_g_7', g: "Die brennende Bibliothek konnte nicht komplett gerettet werden.", e: "The burning library could not be completely saved.", a: "المكتبة اللي كانت بتولع مقدروش ينقذوها بالكامل. (Partizip I)" },
+                        { id: 'r_g_8', g: "Das renovierte Museum wird morgen wieder eröffnet.", e: "The renovated museum will be reopened tomorrow.", a: "المتحف المتجدد هيتفتح تاني بكرة. (Partizip II)" }
+                    ]
+                }
+            ],
+            // ==========================================
+            // NEW SECTION: B2 EXPANSION (توسعة B2)
+            // ==========================================
+            b2: {
+                words: [
+                    { id: 'b2_w1', ger: "die Infrastruktur", eng: "Infrastructure", ar: "البنية التحتية", s: [{ g: "Die <strong>Infrastruktur</strong> der Stadt muss dringend ausgebaut werden.", e: "The city's infrastructure urgently needs to be expanded.", a: "البنية التحتية للمدينة لازم تتوسع ضروري." }, { g: "Eine gute <strong>Infrastruktur</strong> zieht viele Unternehmen an.", e: "Good infrastructure attracts many companies.", a: "البنية التحتية الجيدة بتجذب شركات كتير." }, { g: "Die Regierung investiert in die digitale <strong>Infrastruktur</strong>.", e: "The government is investing in the digital infrastructure.", a: "الحكومة بتستثمر في البنية التحتية الرقمية." }] },
+                    { id: 'b2_w2', ger: "die Urbanisierung", eng: "Urbanization", ar: "التوسع الحضري", s: [{ g: "Die <strong>Urbanisierung</strong> führt zu Platzmangel in den Städten.", e: "Urbanization leads to a lack of space in cities.", a: "التوسع الحضري بيؤدي لنقص المساحات في المدن." }, { g: "Die weltweite <strong>Urbanisierung</strong> schreitet schnell voran.", e: "Global urbanization is progressing quickly.", a: "التوسع الحضري العالمي بيتقدم بسرعة." }, { g: "Ein großes Problem der <strong>Urbanisierung</strong> ist die Luftverschmutzung.", e: "A major problem of urbanization is air pollution.", a: "من أكبر مشاكل التوسع الحضري هو تلوث الهواء." }] },
+                    { id: 'b2_w3', ger: "der demografische Wandel", eng: "Demographic change", ar: "التغير الديموغرافي", s: [{ g: "Der <strong>demografische Wandel</strong> ist eine große Herausforderung.", e: "Demographic change is a major challenge.", a: "التغير الديموغرافي بيمثل تحدي كبير." }, { g: "Aufgrund des <strong>demografischen Wandels</strong> fehlen Fachkräfte.", e: "Due to demographic change, there is a lack of skilled workers.", a: "بسبب التغير الديموغرافي، عندنا نقص في العمالة الماهرة." }, { g: "Wir müssen uns an den <strong>demografischen Wandel</strong> anpassen.", e: "We must adapt to demographic change.", a: "لازم نتأقلم ونتكيف مع التغير الديموغرافي." }] },
+                    { id: 'b2_w4', ger: "die Gentrifizierung", eng: "Gentrification", ar: "الاستطباق (تجديد الأحياء وارتفاع أسعارها)", s: [{ g: "Wegen der <strong>Gentrifizierung</strong> müssen viele alte Bewohner umziehen.", e: "Because of gentrification, many old residents have to move.", a: "بسبب ارتفاع الأسعار وتجديد الأحياء، سكان قدام كتير بيضطروا يعزلوا." }, { g: "Die <strong>Gentrifizierung</strong> verändert den Charakter dieses Viertels komplett.", e: "Gentrification is completely changing the character of this neighborhood.", a: "الاستطباق بيغير طابع الحي ده بالكامل." }, { g: "Gegen die <strong>Gentrifizierung</strong> in der Innenstadt gibt es viele Proteste.", e: "There are many protests against gentrification in the city center.", a: "فيه احتجاجات كتير ضد ارتفاع الأسعار في وسط البلد." }] },
+                    { id: 'b2_w5', ger: "die Lebensqualität", eng: "Quality of life", ar: "جودة الحياة", s: [{ g: "Viele Grünflächen erhöhen die <strong>Lebensqualität</strong> enorm.", e: "Many green spaces greatly increase the quality of life.", a: "المساحات الخضراء بتزود جودة الحياة بشكل كبير." }, { g: "Die <strong>Lebensqualität</strong> in dieser Stadt wurde mehrfach ausgezeichnet.", e: "The quality of life in this city has been awarded multiple times.", a: "جودة الحياة في المدينة دي أخدت جوايز كتير." }, { g: "Lärm und ständiger Stress verringern die <strong>Lebensqualität</strong>.", e: "Noise and constant stress reduce the quality of life.", a: "الدوشة والتوتر المستمر بيقللوا من جودة الحياة." }] },
+                    { id: 'b2_w6', ger: "die Nachhaltigkeit", eng: "Sustainability", ar: "الاستدامة", s: [{ g: "Bei der Stadtplanung wird heute auf <strong>Nachhaltigkeit</strong> geachtet.", e: "In urban planning today, attention is paid to sustainability.", a: "في تخطيط المدن دلوقتي، بيهتموا جداً بالاستدامة." }, { g: "<strong>Nachhaltigkeit</strong> sollte in unserer Wirtschaft Priorität haben.", e: "Sustainability should be a priority in our economy.", a: "الاستدامة المفروض تكون أولوية في اقتصادنا." }, { g: "Das Unternehmen setzt stark auf ökologische <strong>Nachhaltigkeit</strong>.", e: "The company strongly focuses on ecological sustainability.", a: "الشركة بتعتمد بقوة على الاستدامة البيئية." }] },
+                    { id: 'b2_w7', ger: "die Integration", eng: "Integration", ar: "الاندماج", s: [{ g: "Die <strong>Integration</strong> von Zuwanderern ist wichtig für den sozialen Frieden.", e: "The integration of immigrants is important for social peace.", a: "اندماج المهاجرين مهم للسلام الاجتماعي." }, { g: "Sprache ist der Schlüssel zur erfolgreichen <strong>Integration</strong>.", e: "Language is the key to successful integration.", a: "اللغة هي أهم مفتاح للاندماج الناجح." }, { g: "Das Projekt fördert die soziale <strong>Integration</strong> von Jugendlichen.", e: "The project promotes the social integration of young people.", a: "المشروع بيدعم الاندماج الاجتماعي للشباب." }] },
+                    { id: 'b2_w8', ger: "die Ausgrenzung", eng: "Exclusion / Marginalization", ar: "التهميش / الإقصاء", s: [{ g: "Soziale <strong>Ausgrenzung</strong> führt oft zu schweren Konflikten.", e: "Social exclusion often leads to severe conflicts.", a: "التهميش الاجتماعي غالباً بيؤدي لصراعات خطيرة." }, { g: "Wir müssen gegen Diskriminierung und <strong>Ausgrenzung</strong> kämpfen.", e: "We must fight against discrimination and exclusion.", a: "لازم نحارب التمييز والإقصاء." }, { g: "Armut führt nicht selten zu gesellschaftlicher <strong>Ausgrenzung</strong>.", e: "Poverty not infrequently leads to social exclusion.", a: "الفقر المادي كتير بيؤدي للتهميش المجتمعي." }] },
+                    { id: 'b2_w9', ger: "die Abwanderung", eng: "Emigration / Migration away", ar: "النزوح / الهجرة من مكان", s: [{ g: "Die <strong>Abwanderung</strong> junger Menschen schwächt ländliche Regionen.", e: "The emigration of young people weakens rural regions.", a: "نزوح الشباب وهجرتهم بتضعف المناطق الريفية." }, { g: "Die Regierung plant Jobs, um die <strong>Abwanderung</strong> zu stoppen.", e: "The government plans jobs to stop the emigration.", a: "الحكومة بتخطط توفر وظايف عشان توقف النزوح." }, { g: "Einige Bundesländer leiden stark unter der <strong>Abwanderung</strong>.", e: "Some states suffer greatly from emigration.", a: "فيه ولايات بتعاني بشدة من هجرة السكان." }] },
+                    { id: 'b2_w10', ger: "der Ballungsraum", eng: "Metropolitan area / Agglomeration", ar: "المنطقة الحضرية المكتظة", s: [{ g: "In einem <strong>Ballungsraum</strong> sind die Mieten extrem hoch.", e: "Rents are extremely high in a metropolitan area.", a: "في المناطق المكتظة الإيجارات بتكون غالية جداً." }, { g: "Der Verkehr im <strong>Ballungsraum</strong> ist ein großes Problem.", e: "Traffic in the metropolitan area is a big problem.", a: "الزحمة المرورية في المنطقة الحضرية مشكلة كبيرة." }, { g: "Millionen Menschen leben im <strong>Ballungsraum</strong> Paris.", e: "Millions of people live in the Paris metropolitan area.", a: "ملايين الناس عايشين في منطقة باريس الكبرى." }] },
+                    { id: 'b2_w11', ger: "die Luftverschmutzung", eng: "Air pollution", ar: "تلوث الهواء", s: [{ g: "Die hohe <strong>Luftverschmutzung</strong> ist ein Gesundheitsrisiko.", e: "High air pollution is a health risk.", a: "تلوث الهواء العالي خطر على الصحة." }, { g: "Bäume helfen dabei, die <strong>Luftverschmutzung</strong> zu reduzieren.", e: "Trees help to reduce air pollution.", a: "الأشجار بتساعد في تقليل تلوث الهواء." }, { g: "Maßnahmen gegen die <strong>Luftverschmutzung</strong> sind oft teuer.", e: "Measures against air pollution are often expensive.", a: "الإجراءات ضد تلوث الهواء غالباً بتكون غالية." }] },
+                    { id: 'b2_w12', ger: "die Verkehrsbelastung", eng: "Traffic congestion", ar: "الازدحام / العبء المروري", s: [{ g: "Maßnahmen zur Reduzierung der <strong>Verkehrsbelastung</strong> werden diskutiert.", e: "Measures to reduce traffic congestion are being discussed.", a: "بيتناقشوا في إجراءات لتقليل الزحمة المرورية." }, { g: "Die <strong>Verkehrsbelastung</strong> in der Innenstadt ist morgens hoch.", e: "Traffic congestion in the city center is high in the morning.", a: "الضغط المروري في وسط البلد بيكون عالي الصبح." }, { g: "Ein gutes Bahnnetz senkt die <strong>Verkehrsbelastung</strong>.", e: "A good rail network reduces traffic congestion.", a: "شبكة القطارات الكويسة بتقلل الزحمة على الطرق." }] },
+                    { id: 'b2_w13', ger: "die Stadtplanung", eng: "City planning", ar: "تخطيط المدن", s: [{ g: "Die moderne <strong>Stadtplanung</strong> bevorzugt Fußgänger und Radfahrer.", e: "Modern city planning favors pedestrians and cyclists.", a: "تخطيط المدن الحديث بيفضل المشاة والعجل." }, { g: "Gute <strong>Stadtplanung</strong> berücksichtigt die Bedürfnisse aller.", e: "Good city planning considers everyone's needs.", a: "التخطيط الجيد بيراعي احتياجات الكل." }, { g: "Er hat ein Studium in <strong>Stadtplanung</strong> abgeschlossen.", e: "He completed a degree in city planning.", a: "هو خلص دراسته في تخطيط المدن." }] },
+                    { id: 'b2_w14', ger: "das Stadtbild", eng: "Cityscape", ar: "المظهر العام للمدينة", s: [{ g: "Die historischen Gebäude prägen das <strong>Stadtbild</strong> stark.", e: "Historical buildings strongly shape the cityscape.", a: "المباني التاريخية بتطبع شكل المدينة بطابع مميز." }, { g: "Moderne Wolkenkratzer verändern das traditionelle <strong>Stadtbild</strong>.", e: "Modern skyscrapers change the traditional cityscape.", a: "ناطحات السحاب بتغير الشكل التقليدي للمدينة." }, { g: "Das <strong>Stadtbild</strong> ist von kleinen Cafés geprägt.", e: "The cityscape is characterized by small cafes.", a: "المظهر العام بيتميز بالكافيهات الصغيرة." }] },
+                    { id: 'b2_w15', ger: "der Vorort", eng: "Suburb", ar: "الضاحية", s: [{ g: "Familien ziehen oft in einen ruhigen <strong>Vorort</strong>.", e: "Families often move to a quiet suburb.", a: "العائلات غالباً بتعزل لضاحية هادية." }, { g: "Das Leben im <strong>Vorort</strong> ist entspannter als im Zentrum.", e: "Life in the suburb is more relaxed than in the center.", a: "الحياة في الضاحية أهدى بكتير من المركز." }, { g: "Die Zugverbindung vom <strong>Vorort</strong> in die Stadt ist gut.", e: "The train connection from the suburb to the city is good.", a: "خط القطر من الضاحية للمدينة ممتاز." }] },
+                    { id: 'b2_w16', ger: "der Pendler", eng: "Commuter", ar: "المسافر اليومي للعمل", s: [{ g: "Jeden Morgen stehen Tausende <strong>Pendler</strong> im Stau.", e: "Every morning, thousands of commuters are stuck in traffic jams.", a: "كل يوم الصبح آلاف المسافرين بيقفوا في الزحمة." }, { g: "Die Züge sind morgens voller <strong>Pendler</strong>.", e: "The trains are full of commuters in the morning.", a: "القطارات الصبح بتكون مليانة باللي مسافرين شغلهم." }, { g: "Für <strong>Pendler</strong> ist ein zuverlässiger Nahverkehr wichtig.", e: "For commuters, reliable local transport is important.", a: "للمسافرين يومياً، المواصلات الموثوقة دي شيء مهم جداً." }] },
+                    { id: 'b2_w17', ger: "pendeln", eng: "to commute", ar: "يتنقل يومياً للعمل", s: [{ g: "Ich muss jeden Tag eine Stunde zur Arbeit <strong>pendeln</strong>.", e: "I have to commute an hour to work every day.", a: "لازم أسافر ساعة كل يوم لشغلي." }, { g: "Viele Menschen <strong>pendeln</strong> zwischen Berlin und Potsdam.", e: "Many people commute between Berlin and Potsdam.", a: "ناس كتير بتسافر يومياً بين برلين وبوتسدام." }, { g: "Das tägliche <strong>Pendeln</strong> mit dem Auto ist anstrengend.", e: "Daily commuting by car is exhausting.", a: "السفر اليومي بالعربية مرهق." }] },
+                    { id: 'b2_w18', ger: "sich ansiedeln", eng: "to settle / locate", ar: "يستوطن / يستقر في مكان", s: [{ g: "Viele internationale Firmen <strong>siedeln sich</strong> hier <strong>an</strong>.", e: "Many international companies are settling here.", a: "شركات دولية كتير بتستقر وتفتح هنا." }, { g: "Immer mehr Start-ups <strong>siedeln sich</strong> im Technologiepark <strong>an</strong>.", e: "More and more start-ups are locating in the technology park.", a: "شركات ناشئة كتير بتستقر في مجمع التكنولوجيا." }, { g: "Neue Industrien haben <strong>sich</strong> hier <strong>angesiedelt</strong>.", e: "New industries have settled here.", a: "صناعات جديدة استقرت في المنطقة دي." }] },
+                    { id: 'b2_w19', ger: "prägen", eng: "to shape / characterize", ar: "يطبع بطابعه / يميز", s: [{ g: "Die Industrie hat diese Region stark <strong>geprägt</strong>.", e: "Industry has strongly shaped this region.", a: "الصناعة أثرت وطبعت المنطقة دي بطابعها." }, { g: "Der Fluss <strong>prägt</strong> die Landschaft der Gegend.", e: "The river shapes the landscape of the area.", a: "النهر بيميز المناظر الطبيعية للمنطقة." }, { g: "Diese Erfahrung hat sein ganzes Leben <strong>geprägt</strong>.", e: "This experience shaped his entire life.", a: "التجربة دي سابت أثرها على كل حياته." }] },
+                    { id: 'b2_w20', ger: "florieren", eng: "to flourish / boom", ar: "يزدهر / ينتعش", s: [{ g: "Dank des Tourismus <strong>floriert</strong> die lokale Wirtschaft.", e: "Thanks to tourism, the local economy is flourishing.", a: "بفضل السياحة، الاقتصاد المحلي رجع يزدهر تاني." }, { g: "Der Online-Handel <strong>floriert</strong> in dieser Jahreszeit.", e: "Online trade is flourishing in this season.", a: "التجارة الإلكترونية بتنتعش جداً في الموسم ده." }, { g: "Das Geschäft <strong>floriert</strong> überraschenderweise trotz der Krise.", e: "The business is surprisingly flourishing despite the crisis.", a: "المحل بيزدهر بشكل مفاجئ رغم الأزمة." }] },
+                    { id: 'b2_w21', ger: "verfallen", eng: "to decay / deteriorate", ar: "يتهالك / ينهار", s: [{ g: "Das alte Schloss ist im Laufe der Jahre <strong>verfallen</strong>.", e: "The old castle has decayed over the years.", a: "القصر القديم للأسف اتهالك مع مرور السنين." }, { g: "Wenn man das Haus nicht pflegt, wird es <strong>verfallen</strong>.", e: "If you don't maintain the house, it will decay.", a: "لو مهتمتش بالبيت، هيقع قريب." }, { g: "Das <strong>verfallene</strong> Gebäude wird nun abgerissen.", e: "The decayed building is now being demolished.", a: "المبنى المتهالك بيتهد دلوقتي." }] },
+                    { id: 'b2_w22', ger: "die Instandhaltung", eng: "Maintenance", ar: "الصيانة", s: [{ g: "Die regelmäßige <strong>Instandhaltung</strong> von Brücken ist lebenswichtig.", e: "The regular maintenance of bridges is vital.", a: "الصيانة الدورية للكباري شيء حيوي وأساسي." }, { g: "Die Kosten für die <strong>Instandhaltung</strong> sind gestiegen.", e: "The costs for maintenance have increased.", a: "تكاليف الصيانة زادت." }, { g: "Er ist für die <strong>Instandhaltung</strong> der Maschinen verantwortlich.", e: "He is responsible for the maintenance of the machines.", a: "هو مسؤول عن صيانة الماكينات." }] },
+                    { id: 'b2_w23', ger: "die Verwaltung", eng: "Administration", ar: "الإدارة / الجهة الإدارية", s: [{ g: "Die städtische <strong>Verwaltung</strong> arbeitet an neuen Projekten.", e: "The municipal administration is working on new projects.", a: "الإدارة المحلية شغالة على مشاريع جديدة." }, { g: "Der Antrag muss von der <strong>Verwaltung</strong> geprüft werden.", e: "The application must be checked by the administration.", a: "الطلب لازم يتراجع من الإدارة الأول." }, { g: "Sie arbeitet in der öffentlichen <strong>Verwaltung</strong> der Stadt.", e: "She works in the city's public administration.", a: "هي شغالة في الإدارة العامة للمدينة." }] },
+                    { id: 'b2_w24', ger: "das Gutachten", eng: "Expert opinion / report", ar: "تقرير الخبراء", s: [{ g: "Ein unabhängiges <strong>Gutachten</strong> bestätigt die Sicherheit.", e: "An independent expert report confirms the safety.", a: "تقرير خبراء مستقل بيأكد السلامة." }, { g: "Wir warten noch auf das medizinische <strong>Gutachten</strong>.", e: "We are still waiting for the medical report.", a: "لسه مستنيين التقرير الطبي." }, { g: "Das <strong>Gutachten</strong> zeigt, dass die Brücke unsicher ist.", e: "The expert report shows that the bridge is unsafe.", a: "التقرير بيوضح إن الكوبري مش آمن." }] },
+                    { id: 'b2_w25', ger: "die Bürgerinitiative", eng: "Citizens' initiative", ar: "مبادرة المواطنين", s: [{ g: "Eine <strong>Bürgerinitiative</strong> protestiert gegen den Bau.", e: "A citizens' initiative is protesting against the construction.", a: "مبادرة مواطنين بتعترض على البناء." }, { g: "Die <strong>Bürgerinitiative</strong> sammelt Unterschriften für den Park.", e: "The citizens' initiative is collecting signatures for the park.", a: "المبادرة بتجمع توقيعات عشان الحديقة." }, { g: "Sie hat eine <strong>Bürgerinitiative</strong> für Umweltschutz gegründet.", e: "She founded a citizens' initiative for environmental protection.", a: "هي أسست مبادرة عشان حماية البيئة." }] },
+                    { id: 'b2_w26', ger: "der Kompromiss", eng: "Compromise", ar: "الحل الوسط", s: [{ g: "Nach langen Verhandlungen fanden sie einen <strong>Kompromiss</strong>.", e: "After long negotiations, they found a compromise.", a: "بعد مفاوضات طويلة، لقوا حل وسط." }, { g: "Man muss manchmal einen fairen <strong>Kompromiss</strong> schließen.", e: "You sometimes have to make a fair compromise.", a: "أحياناً لازم تعمل تنازل وتوصل لحل وسط." }, { g: "Beide Seiten waren zu einem <strong>Kompromiss</strong> bereit.", e: "Both sides were ready for a compromise.", a: "الطرفين كانوا مستعدين لحل وسط." }] },
+                    { id: 'b2_w27', ger: "die Umsetzung", eng: "Implementation", ar: "التنفيذ / التطبيق", s: [{ g: "Die konkrete <strong>Umsetzung</strong> des Plans dauert lange.", e: "The concrete implementation of the plan takes a long time.", a: "التنفيذ الفعلي للخطة بياخد وقت." }, { g: "Wir beginnen morgen mit der praktischen <strong>Umsetzung</strong>.", e: "We will start with the practical implementation tomorrow.", a: "هنبدأ بكرة في التنفيذ العملي." }, { g: "Die schnelle <strong>Umsetzung</strong> der Idee war ein Erfolg.", e: "The fast implementation of the idea was a success.", a: "التنفيذ السريع للفكرة كان نجاح كبير." }] },
+                    { id: 'b2_w28', ger: "die Vielfalt", eng: "Diversity", ar: "التنوع", s: [{ g: "Die kulturelle <strong>Vielfalt</strong> macht die Stadt attraktiv.", e: "Cultural diversity makes the city attractive.", a: "التنوع الثقافي بيخلي المدينة دي جذابة جداً." }, { g: "Der Wald bietet eine erstaunliche <strong>Vielfalt</strong> an Pflanzen.", e: "The forest offers an amazing variety of plants.", a: "الغابة بتقدم تنوع مدهش من النباتات." }, { g: "Wir schätzen und schützen die <strong>Vielfalt</strong> der Meinungen.", e: "We value and protect the diversity of opinions.", a: "إحنا بنقدر ونحمي تنوع الآراء." }] },
+                    { id: 'b2_w29', ger: "der Wohlstand", eng: "Prosperity / Wealth", ar: "الرخاء / الرفاهية", s: [{ g: "Bildung ist der Schlüssel zu gesellschaftlichem <strong>Wohlstand</strong>.", e: "Education is the key to societal prosperity.", a: "التعليم الجيد هو المفتاح للرخاء المجتمعي." }, { g: "Der wirtschaftliche <strong>Wohlstand</strong> des Landes wächst.", e: "The economic prosperity of the country is growing.", a: "الرخاء الاقتصادي للبلد بينمو." }, { g: "Sie leben nun endlich in finanziellem <strong>Wohlstand</strong>.", e: "They now finally live in financial prosperity.", a: "هما دلوقتي عايشين في رفاهية مادية." }] },
+                    { id: 'b2_w30', ger: "fördern", eng: "to promote / support", ar: "يدعم / يعزز", s: [{ g: "Der Staat sollte umweltfreundliche Projekte stärker <strong>fördern</strong>.", e: "The state should promote environmentally friendly projects more strongly.", a: "الدولة المفروض تدعم المشاريع البيئية بقوة." }, { g: "Das Projekt <strong>fördert</strong> die Kreativität von Kindern.", e: "The project promotes the creativity of children.", a: "المشروع بيدعم الإبداع عند الأطفال." }, { g: "Wir möchten junge Talente an der Universität <strong>fördern</strong>.", e: "We want to support young talents at the university.", a: "إحنا عايزين ندعم المواهب الشابة في الجامعة." }] }
+                ],
+                expressions: [
+                    { id: 'b2_e1', type: "Meinung äußern", ger: "Ich stehe auf dem Standpunkt, dass...", eng: "I take the view that...", ar: "أنا أقف عند وجهة النظر القائلة بأن...", context: "لتوضيح رأيك بثقة في النقاش.", s: [{ g: "Ich stehe auf dem Standpunkt, dass Umweltschutz Priorität haben muss.", e: "I take the view that environmental protection must have priority.", a: "أنا أرى أن حماية البيئة يجب أن تكون أولوية." }, { g: "Hinsichtlich dieses Themas stehe ich auf dem Standpunkt, dass wir mehr tun müssen.", e: "Regarding this topic, I take the view that we must do more.", a: "فيما يخص هذا الموضوع، أرى أنه يجب أن نفعل المزيد." }, { g: "Sie steht auf dem Standpunkt, dass diese Maßnahme nutzlos ist.", e: "She takes the view that this measure is useless.", a: "هي ترى أن هذا الإجراء بلا فائدة." }] },
+                    { id: 'b2_e2', type: "Meinung äußern", ger: "Ich bin fest davon überzeugt, dass...", eng: "I am firmly convinced that...", ar: "أنا مقتنع تماماً بأن...", context: "لإبداء رأي قوي لا يقبل الشك.", s: [{ g: "Ich bin fest davon überzeugt, dass Technologie unser Leben verbessert.", e: "I am firmly convinced that technology improves our lives.", a: "أنا مقتنع تماماً إن التكنولوجيا بتحسن حياتنا." }, { g: "Wir sind fest davon überzeugt, dass dieser Weg der richtige ist.", e: "We are firmly convinced that this path is the right one.", a: "إحنا مقتنعين تماماً إن الطريق ده هو الصح." }, { g: "Er ist fest davon überzeugt, dass wir das Ziel bald erreichen.", e: "He is firmly convinced that we will reach the goal soon.", a: "هو مقتنع تماماً إننا هنوصل للهدف قريب." }] },
+                    { id: 'b2_e3', type: "Argumentieren", ger: "Ein wesentlicher Aspekt ist, dass...", eng: "An essential aspect is that...", ar: "جانب جوهري هو أن...", context: "لتقديم حجة أساسية أو نقطة هامة.", s: [{ g: "Ein wesentlicher Aspekt ist, dass die Kosten langfristig sinken.", e: "An essential aspect is that costs will decrease in the long term.", a: "جانب أساسي هو إن التكاليف هتقل على المدى الطويل." }, { g: "Ein wesentlicher Aspekt in dieser Diskussion ist die Gesundheit.", e: "An essential aspect in this discussion is health.", a: "جانب جوهري في النقاش ده هو الصحة." }, { g: "Ein weiterer wesentlicher Aspekt ist, dass viel Zeit gespart wird.", e: "Another essential aspect is that a lot of time is saved.", a: "جانب مهم تاني هو إن ده بيوفر وقت كتير." }] },
+                    { id: 'b2_e4', type: "Argumentieren", ger: "Man darf auch nicht vergessen, dass...", eng: "One must also not forget that...", ar: "كما يجب ألا ننسى أن...", context: "لإضافة نقطة قد يغفل عنها الآخرون.", s: [{ g: "Man darf auch nicht vergessen, dass viele Menschen arbeitslos sind.", e: "One must also not forget that many people are unemployed.", a: "لازم مننساش برضه إن فيه ناس كتير عاطلة." }, { g: "Dabei darf man auch nicht vergessen, dass Kinder viel Bewegung brauchen.", e: "One must not forget that children need a lot of exercise.", a: "في السياق ده مننساش إن الأطفال محتاجين حركة كتير." }, { g: "Man darf auch nicht vergessen, dass dies erst der Anfang ist.", e: "One must also not forget that this is only the beginning.", a: "لازم مننساش كمان إن دي مجرد البداية." }] },
+                    { id: 'b2_e5', type: "Gegensätze", ger: "Einerseits ..., andererseits ...", eng: "On the one hand..., on the other hand...", ar: "من ناحية...، ومن ناحية أخرى...", context: "لعرض مميزات وعيوب موضوع ما (يستخدم كثيراً في الكتابة).", s: [{ g: "Einerseits ist das Auto billig, andererseits ist die Qualität schlecht.", e: "On the one hand the car is cheap, on the other hand the quality is bad.", a: "من ناحية العربية رخيصة، ومن ناحية تانية جودتها وحشة." }, { g: "Einerseits liebe ich die Stadt, andererseits vermisse ich die Natur.", e: "On the one hand I love the city, on the other hand I miss nature.", a: "من ناحية بحب المدينة، ومن ناحية تانية مفتقد الطبيعة." }, { g: "Einerseits bringt das Internet Vorteile, andererseits entstehen Risiken.", e: "On the one hand the internet brings benefits, on the other hand risks arise.", a: "من ناحية النت بيجيب فوايد، ومن ناحية تانية بيخلق مخاطر." }] },
+                    { id: 'b2_e6', type: "Gegensätze", ger: "Im Gegensatz dazu steht...", eng: "In contrast to this stands...", ar: "في المقابل نجد...", context: "لعرض وجهة نظر معاكسة تماماً.", s: [{ g: "Im Gegensatz dazu steht die offizielle Meinung der Opposition.", e: "In contrast to this stands the official opinion of the opposition.", a: "في المقابل نلاقي الرأي الرسمي للمعارضة." }, { g: "Im Gegensatz dazu steht die Tatsache, dass alles teurer wird.", e: "In contrast to this stands the fact that everything is getting more expensive.", a: "على العكس من ده بنلاقي حقيقة إن كل حاجة بتغلى." }, { g: "Im Gegensatz dazu steht unser eigener, günstigerer Vorschlag.", e: "In contrast to this stands our own, cheaper proposal.", a: "في المقابل بنلاقي اقتراحنا إحنا اللي أرخص." }] },
+                    { id: 'b2_e7', type: "Erfahrung", ger: "Aus meiner persönlichen Erfahrung kann ich sagen, dass...", eng: "From my personal experience I can say that...", ar: "من واقع خبرتي الشخصية أستطيع القول إن...", context: "لربط الموضوع بتجربتك (مطلوب في B2).", s: [{ g: "Aus meiner persönlichen Erfahrung kann ich sagen, dass Reisen bildet.", e: "From my personal experience I can say that traveling is educational.", a: "من واقع خبرتي الشخصية أقدر أقول إن السفر بيثقف." }, { g: "Aus meiner persönlichen Erfahrung kann ich sagen, dass der Kurs hilft.", e: "From my personal experience I can say that the course helps.", a: "من تجربتي أقدر أقول إن الكورس بيساعد بجد." }, { g: "Aus meiner persönlichen Erfahrung kann ich sagen, dass sich Arbeit auszahlt.", e: "From my personal experience I can say that work pays off.", a: "من تجربتي أقدر أؤكد إن الشغل بيجيب نتيجته." }] },
+                    { id: 'b2_e8', type: "Tatsache betonen", ger: "Es ist nicht zu leugnen, dass...", eng: "It cannot be denied that...", ar: "مما لا يمكن إنكاره أن...", context: "لذكر حقيقة أو واقع بديهي.", s: [{ g: "Es ist nicht zu leugnen, dass das Klima sich drastisch ändert.", e: "It cannot be denied that the climate is changing drastically.", a: "مما لا يمكن إنكاره إن المناخ بيتغير بشدة." }, { g: "Es ist nicht zu leugnen, dass er einen großen Fehler gemacht hat.", e: "It cannot be denied that he made a big mistake.", a: "لا يمكن إنكار إنه عمل غلطة كبيرة." }, { g: "Es ist nicht zu leugnen, dass diese Methode extrem effektiv ist.", e: "It cannot be denied that this method is extremely effective.", a: "لا يمكن ننكر إن الطريقة دي فعالة جداً." }] },
+                    { id: 'b2_e9', type: "Wichtigkeit", ger: "Es spielt eine entscheidende Rolle.", eng: "It plays a crucial role.", ar: "إنه يلعب دوراً حاسماً.", context: "لتوضيح أهمية شيء لدرجة كبيرة.", s: [{ g: "Gute Bildung spielt eine entscheidende Rolle in unserer Gesellschaft.", e: "Good education plays a crucial role in our society.", a: "التعليم الجيد بيلعب دور حاسم في مجتمعنا." }, { g: "Bei diesem Projekt spielt die Kommunikation eine entscheidende Rolle.", e: "In this project, communication plays a crucial role.", a: "في المشروع ده، التواصل بيلعب دور حاسم." }, { g: "Das Wetter spielt bei dieser Veranstaltung eine entscheidende Rolle.", e: "The weather plays a crucial role in this event.", a: "الجو بيلعب دور محوري جداً في الفعالية دي." }] },
+                    { id: 'b2_e10', type: "Folgen", ger: "Das führt unweigerlich dazu, dass...", eng: "That inevitably leads to...", ar: "هذا يؤدي حتماً إلى أن...", context: "لشرح عواقب تصرف أو ظاهرة.", s: [{ g: "Das führt unweigerlich dazu, dass die Preise weiter steigen.", e: "That inevitably leads to prices continuing to rise.", a: "ده بيؤدي حتماً لإن الأسعار بتزيد." }, { g: "Ständiger Lärm führt unweigerlich dazu, dass die Konzentration sinkt.", e: "Constant noise inevitably leads to a drop in concentration.", a: "الدوشة المستمرة بتؤدي حتماً لإن التركيز بيقل." }, { g: "Dieser Fehler führt unweigerlich dazu, dass wir neu starten müssen.", e: "This mistake inevitably leads to us having to restart.", a: "الغلطة دي هتؤدي حتماً لإننا نعمل ريستارت." }] },
+                    { id: 'b2_e11', type: "Zweifel", ger: "Ich bezweifle, dass...", eng: "I doubt that...", ar: "أشك في أن...", context: "لإبداء الشك في صحة ادعاء معين.", s: [{ g: "Ich bezweifle ernsthaft, dass das eine gute Idee ist.", e: "I seriously doubt that this is a good idea.", a: "أنا بشك بجدية في إن دي فكرة كويسة." }, { g: "Er bezweifelt stark, dass wir rechtzeitig fertig werden.", e: "He strongly doubts that we will finish on time.", a: "هو بيشك بشدة إننا هنخلص في الميعاد." }, { g: "Wir bezweifeln, dass diese Information der Wahrheit entspricht.", e: "We doubt that this information corresponds to the truth.", a: "إحنا بنشك إن المعلومة دي مطابقة للحقيقة." }] },
+                    { id: 'b2_e12', type: "Zustimmung/Einwand", ger: "Ich stimme dir teilweise zu, aber...", eng: "I agree with you partially, but...", ar: "أوافقك جزئياً، ولكن...", context: "للموافقة مع وجود تحفظ أو استدراك.", s: [{ g: "Ich stimme dir teilweise zu, aber es gibt noch andere Probleme.", e: "I agree with you partially, but there are still other problems.", a: "أوافقك جزئياً، بس فيه هنا مشاكل تانية." }, { g: "Ich stimme dir teilweise zu, aber wir müssen das Budget beachten.", e: "I agree with you partially, but we must consider the budget.", a: "موافق معاك لدرجة ما، بس لازم نراعي الميزانية." }, { g: "Ich stimme dir teilweise zu, aber die Lösung ist nicht so einfach.", e: "I agree with you partially, but the solution is not that simple.", a: "أنا معاك جزئياً، بس الحل مش بالسهولة دي." }] },
+                    { id: 'b2_e13', type: "Argumentieren", ger: "Ein weiteres Argument dafür/dagegen ist...", eng: "Another argument for/against it is...", ar: "حجة أخرى تؤيد/تعارض هذا هي...", context: "لإضافة سبب داعم أو معارض إضافي.", s: [{ g: "Ein weiteres Argument dafür ist die enorme Zeitersparnis.", e: "Another argument for it is the enormous time savings.", a: "حجة قوية تانية تأيد ده هي توفير الوقت." }, { g: "Ein weiteres Argument dagegen ist das hohe finanzielle Risiko.", e: "Another argument against it is the high financial risk.", a: "حجة تقيلة تانية ضد ده هي الخطر المالي الكبير." }, { g: "Ein weiteres Argument dafür ist die Tatsache, dass es die Umwelt schont.", e: "Another argument for it is the fact that it protects the environment.", a: "حجة تانية مع ده هي حقيقة إنه بيحمي البيئة." }] },
+                    { id: 'b2_e14', type: "Zusammenfassung", ger: "Zusammenfassend lässt sich sagen, dass...", eng: "In summary, it can be said that...", ar: "وخلاصة القول هي أن...", context: "لإنهاء العرض أو المقال الكتابي.", s: [{ g: "Zusammenfassend lässt sich sagen, dass beide Seiten gute Ideen haben.", e: "In summary, it can be said that both sides have good ideas.", a: "وخلاصة القول، إن الطرفين عندهم أفكار كويسة." }, { g: "Zusammenfassend lässt sich sagen, dass das Projekt ein Erfolg war.", e: "In summary, it can be said that the project was a success.", a: "نقدر نلخص ونقول إن المشروع كان نجاح كبير." }, { g: "Zusammenfassend lässt sich sagen, dass mehr Investitionen nötig sind.", e: "In summary, it can be said that more investments are needed.", a: "كخلاصة، نقدر نقول إننا محتاجين استثمارات أكتر." }] },
+                    { id: 'b2_e15', type: "Meinung äußern", ger: "Meines Erachtens ist es wichtig, dass...", eng: "In my opinion, it is important that...", ar: "في اعتقادي (في رأيي)، من المهم أن...", context: "تعبير رسمي ومتقدم لكلمة Meiner Meinung nach.", s: [{ g: "Meines Erachtens ist es wichtig, dass wir in dieser Krise sofort handeln.", e: "In my opinion, it is important that we act immediately in this crisis.", a: "في اعتقادي، من المهم إننا نتحرك فوراً في الأزمة دي." }, { g: "Meines Erachtens ist es wichtig, dass alle Parteien einverstanden sind.", e: "In my opinion, it is important that all parties agree.", a: "في رأيي، المهم إن كل الأطراف تكون موافقة." }, { g: "Meines Erachtens ist es wichtig, dass die Qualität erhalten bleibt.", e: "In my opinion, it is important that the quality is maintained.", a: "في اعتقادي، من المهم إن الجودة تفضل محفوظة." }] }
+                ],
+                grammar: [
+                    {
+                        title: "1. Nomen-Verb-Verbindungen (روابط الاسم والفعل)",
+                        desc: "في مستوى B2، نستبدل الأفعال العادية بتعبيرات تتكون من (اسم + فعل) ليكون الأسلوب أكثر رسمية واحترافية (خاصة في الكتابة والأخبار).",
+                        structure: "Nomen (oft im Akkusativ) + Funktionsverb (wie treffen, nehmen, stellen)",
+                        examples: [
+                            { g: "Statt: Wir <em>entscheiden</em> heute. -> Wir <span class='text-indigo-600 font-bold'>treffen</span> heute eine <span class='text-indigo-600 font-bold'>Entscheidung</span>.", a: "بدلاً من 'نقرر'، نقول 'نتخذ قراراً'." },
+                            { g: "Statt: Er <em>beansprucht</em> den Service. -> Er <span class='text-indigo-600 font-bold'>nimmt</span> den Service in <span class='text-indigo-600 font-bold'>Anspruch</span>.", a: "بدلاً من 'يطالب/يستفيد'، نقول 'يأخذ الخدمة في الاعتبار (يستفيد منها)'." },
+                            { g: "Statt: Ich <em>frage</em> etwas. -> Ich <span class='text-indigo-600 font-bold'>stelle</span> eine <span class='text-indigo-600 font-bold'>Frage</span>.", a: "أطرح سؤالاً." }
+                        ]
+                    },
+                    {
+                        title: "2. Passiversatzformen (بدائل المبني للمجهول)",
+                        desc: "بدلاً من استخدام (werden + Partizip II)، نستخدم صيغاً أخرى أسهل وأكثر شيوعاً في B2 لتعطي معنى 'يمكن فعله' أو 'يجب فعله'.",
+                        structure: "1) sich lassen + Infinitiv | 2) sein + zu + Infinitiv | 3) Adjektive auf -bar/-lich",
+                        examples: [
+                            { g: "Passiv: Das Problem <em>kann gelöst werden</em>.", a: "المبني للمجهول المعتاد: المشكلة يمكن أن تُحل." },
+                            { g: "Alternative 1: Das Problem <span class='text-indigo-600 font-bold'>lässt sich lösen</span>.", a: "البديل الأول (الأكثر شيوعاً): المشكلة 'تترك نفسها' للحل (يمكن حلها)." },
+                            { g: "Alternative 2: Das Problem <span class='text-indigo-600 font-bold'>ist zu lösen</span>.", a: "البديل الثاني: المشكلة قابلة للحل (أو يجب حلها)." },
+                            { g: "Alternative 3: Das Problem ist <span class='text-indigo-600 font-bold'>lösbar</span>.", a: "البديل الثالث (باستخدام صفة): المشكلة حلُولة (قابلة للحل)." }
+                        ]
+                    },
+                    {
+                        title: "3. Zweiteilige Konnektoren (الروابط المزدوجة)",
+                        desc: "لربط الجمل المعقدة بطريقة راقية، نستخدم الروابط التي تتكون من جزأين لتوضيح (الإضافة، النفي المزدوج، التناقض، التناسب).",
+                        structure: "nicht nur ... sondern auch | weder ... noch | entweder ... oder | je ... desto",
+                        examples: [
+                            { g: "Die Stadt ist <span class='text-indigo-600 font-bold'>nicht nur</span> historisch, <span class='text-indigo-600 font-bold'>sondern auch</span> sehr modern.", a: "ليس فقط ... بل أيضاً: المدينة ليست فقط تاريخية، بل أيضاً حديثة جداً." },
+                            { g: "Er spricht <span class='text-indigo-600 font-bold'>weder</span> Englisch <span class='text-indigo-600 font-bold'>noch</span> Deutsch.", a: "لا ... ولا: هو لا يتحدث الإنجليزية ولا الألمانية." },
+                            { g: "<span class='text-indigo-600 font-bold'>Je</span> mehr ich lerne, <span class='text-indigo-600 font-bold'>desto</span> besser spreche ich.", a: "كلما ... كلما: كلما ذاكرت أكتر، كلما اتكلمت أحسن (Je تأخذ الفعل في الآخر، desto تبدأ كفعل وموقع 2)." }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        const { useState, useEffect } = React;
+
+        // --- HELPER FOR ARTICLES COLORING ---
+        const colorizeArticles = (text) => {
+            if (!text) return text;
+            const regex = /(der |die |das )/gi;
+            const parts = text.split(regex);
+            return parts.map((part, i) => {
+                const lower = part.toLowerCase();
+                if (lower === 'der ') return <span key={i} className="text-blue-500 font-extrabold">{part}</span>;
+                if (lower === 'die ') return <span key={i} className="text-rose-500 font-extrabold">{part}</span>;
+                if (lower === 'das ') return <span key={i} className="text-emerald-500 font-extrabold">{part}</span>;
+                return <span key={i}>{part}</span>;
+            });
+        };
+
+        // --- COMPONENTS ---
+        const ProgressBar = ({ total, learned, colorClass }) => {
+            const percentage = total === 0 ? 0 : Math.round((learned / total) * 100);
+            return (
+                <div className="glass-panel p-5 rounded-2xl mb-8 flex items-center justify-between transition-all" dir="rtl">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider ar-text mb-1">مستوى التقدم</h3>
+                        <p className="text-3xl font-extrabold text-slate-800">{learned} <span className="text-sm font-medium text-slate-400">/ {total} أتقنتهم</span></p>
+                    </div>
+                    <div className="relative w-20 h-20 drop-shadow-md">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path className="text-slate-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                            <path className={`${colorClass} transition-all duration-1000 ease-out`} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold text-slate-700">
+                            {percentage}%
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const WordCard = ({ item, isLearned, toggleLearned, colorTheme = "blue" }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+            const frontBg = colorTheme === 'indigo' ? 'bg-indigo-50 text-indigo-600' : 'bg-blue-50 text-blue-600';
+            const backGradient = colorTheme === 'indigo' ? 'from-indigo-600 to-purple-700' : 'from-blue-600 to-indigo-700';
+
+            return (
+                <div className="relative group perspective-1000 w-full h-[24rem]">
+                    <div className={`w-full h-full transition-all duration-700 transform-style-3d shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl ${isFlipped ? 'rotate-y-180' : ''}`}>
+                        
+                        {/* FRONT */}
+                        <div className="absolute w-full h-full backface-hidden bg-white border border-slate-100 rounded-2xl p-5 flex flex-col cursor-pointer hover:shadow-lg transition-shadow" 
+                             onClick={() => setIsFlipped(true)}>
+                            <div className="flex justify-between items-start shrink-0" dir="rtl">
+                                <span className={`${frontBg} text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider ar-text`}>كلمة منفصلة</span>
+                                <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            
+                            <div className="text-center mt-2 flex-grow flex flex-col justify-center overflow-y-auto front-scroll px-1 py-3">
+                                <div className="flex flex-col justify-center items-center gap-3 mb-1">
+                                    <h3 className="text-2xl font-bold text-slate-800 leading-tight">{colorizeArticles(item.ger)}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={(e) => playAudio(item.ger, e)} className={`p-2 rounded-full ${frontBg} hover:bg-opacity-80 transition-colors shadow-sm`}><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                        <SpeechTester targetText={item.ger} />
+                                    </div>
+                                </div>
+                                <div className="mt-4 space-y-1">
+                                    <p className="text-slate-500 font-medium text-sm">{item.eng}</p>
+                                    <p className={`text-${colorTheme}-600 font-bold ar-text text-lg`} dir="rtl">{item.ar}</p>
+                                </div>
+                            </div>
+                            
+                            <div className="text-center text-xs text-slate-400 font-medium flex items-center justify-center gap-1 ar-text mt-2 shrink-0">
+                                <i data-lucide="rotate-cw" className="w-3 h-3"></i> اضغط للأمثلة
+                            </div>
+                        </div>
+
+                        {/* BACK */}
+                        <div className={`absolute w-full h-full backface-hidden bg-gradient-to-br ${backGradient} text-white rounded-2xl p-5 shadow-lg flex flex-col cursor-pointer overflow-hidden`} 
+                             onClick={() => setIsFlipped(false)} style={{ transform: 'rotateY(180deg)' }}>
+                            <div className="mb-3 border-b border-white/20 pb-2 flex justify-between items-center shrink-0" dir="rtl">
+                                <h4 className="font-bold text-white/90 text-sm tracking-wider ar-text">أمثلة سياقية</h4>
+                                <i data-lucide="rotate-ccw" className="w-4 h-4 text-white/60"></i>
+                            </div>
+                            <div className="overflow-y-auto card-scroll flex-grow pr-2 pb-2">
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="text-sm bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/5">
+                                            <div className="flex items-start gap-2 mb-1.5">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className="p-1 text-white/70 hover:text-white shrink-0 mt-0.5"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <span className="leading-relaxed" dangerouslySetInnerHTML={{ __html: sentence.g }}></span>
+                                            </div>
+                                            <div className="text-white/60 text-xs italic ml-8 mb-1.5">{sentence.e}</div>
+                                            <div className="text-amber-300 text-sm font-bold ar-text border-t border-white/10 pt-1.5 mt-1" dir="rtl">{sentence.a}</div>
+                                        </li>
+                                    ))}
+                                    {!item.s && <li className="text-sm text-white/70 italic text-center mt-10">Keine Sätze vorhanden</li>}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ListRow = ({ item, isLearned, toggleLearned, colorTheme }) => {
+            const [expanded, setExpanded] = useState(false);
+            
+            const themes = {
+                emerald: 'hover:border-emerald-300 text-emerald-600 bg-emerald-50 text-emerald-700',
+                amber: 'hover:border-amber-300 text-amber-600 bg-amber-50 text-amber-700',
+                rose: 'hover:border-rose-300 text-rose-600 bg-rose-50 text-rose-700',
+                teal: 'hover:border-teal-300 text-teal-600 bg-teal-50 text-teal-700',
+                indigo: 'hover:border-indigo-300 text-indigo-600 bg-indigo-50 text-indigo-700',
+            };
+            const themeClass = themes[colorTheme] || themes.emerald;
+            const textAccent = `text-${colorTheme}-600`;
+
+            return (
+                <div className={`bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md`} dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? `bg-${colorTheme}-100 ${textAccent}` : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                    {item.ger} 
+                                    <button onClick={(e) => playAudio(item.ger, e)} className={`${textAccent} opacity-70 hover:opacity-100 transition-opacity`}><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                </h3>
+                                {item.eng && item.ar && <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className={`${textAccent} font-bold ar-text`} dir="rtl">{item.ar}</span></p>}
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            {item.context && (
+                                <div className="mb-4 text-sm text-slate-600 flex gap-2 items-start p-3 bg-white rounded-xl border border-slate-200" dir="rtl">
+                                    <i data-lucide="info" className={`w-5 h-5 ${textAccent} mt-0.5 shrink-0`}></i>
+                                    <span className="ar-text leading-relaxed">{item.context}</span>
+                                </div>
+                            )}
+                            <ul className="space-y-4">
+                                {item.s && item.s.map((sentence, idx) => (
+                                    <li key={idx} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm group flex flex-col sm:flex-row gap-4 justify-between items-start">
+                                        <div className="flex-1">
+                                            <div className="flex items-start gap-3 mb-2">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className={`mt-0.5 ${textAccent} bg-${colorTheme}-50 p-1.5 rounded-lg shrink-0`}><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <p className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: sentence.g }}></p>
+                                            </div>
+                                            <p className="text-slate-500 text-sm ml-10 mb-2">{sentence.e}</p>
+                                            <div className={`ml-10 ${textAccent} text-base font-bold ar-text border-t border-slate-100 pt-2`} dir="rtl">{sentence.a}</div>
+                                        </div>
+                                        <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-slate-50 p-1.5 rounded-full" dir="ltr">
+                                            <SpeechTester targetText={sentence.g} />
+                                        </div>
+                                    </li>
+                                ))}
+                                {!item.s && !item.context && <p className="text-slate-500 italic px-4">Keine Beispiele vorhanden.</p>}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const IrregularVerbRow = ({ item, isLearned, toggleLearned }) => {
+            const [expanded, setExpanded] = useState(false);
+            
+            return (
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md" dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                    {item.ger} 
+                                    <button onClick={(e) => playAudio(item.ger, e)} className="text-emerald-600 opacity-70 hover:opacity-100 transition-opacity"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                </h3>
+                                <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className="text-emerald-600 font-bold ar-text" dir="rtl">{item.ar}</span></p>
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präsens (مضارع)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praesens, e)} className="text-emerald-600 bg-emerald-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-sm font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: item.praesens }}></p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.praesens} /></div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präteritum (ماضي بسيط)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praeteritum, e)} className="text-amber-600 bg-amber-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-sm font-medium leading-relaxed mt-1">{item.praeteritum}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.praeteritum} /></div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Perfekt (ماضي تام)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.perfekt, e)} className="text-purple-600 bg-purple-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-sm font-medium leading-relaxed mt-1">{item.perfekt}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.perfekt} /></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- MAIN APP ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('words');
+            const [learnedItems, setLearnedItems] = useState(new Set());
+            const [searchTerm, setSearchTerm] = useState('');
+            const [expandedReview, setExpandedReview] = useState('rev-tourismus');
+
+            useEffect(() => {
+                lucide.createIcons();
+            });
+
+            const toggleLearned = (id) => {
+                const newLearned = new Set(learnedItems);
+                if (newLearned.has(id)) newLearned.delete(id);
+                else newLearned.add(id);
+                setLearnedItems(newLearned);
+            };
+
+            const totalWords = Object.values(LEARNING_DATA.words).flat().length;
+            const totalVerbs = LEARNING_DATA.verbs.length + LEARNING_DATA.irregularVerbs.length;
+            const totalExp = LEARNING_DATA.expressions.length;
+            const totalPrep = LEARNING_DATA.prepositions.length;
+            const totalGrammar = LEARNING_DATA.grammar.length;
+            const totalReview = LEARNING_DATA.review.reduce((acc, cat) => acc + cat.items.length, 0);
+            
+            // Calculate B2 Totals
+            const totalB2 = LEARNING_DATA.b2.words.length + LEARNING_DATA.b2.expressions.length;
+
+            const grandTotal = totalWords + totalVerbs + totalExp + totalPrep + totalGrammar + totalReview + totalB2;
+
+            const tabConfig = {
+                words: { labelEn: 'Words', labelAr: 'الأسماء والكلمات', icon: 'book-open', color: 'blue' },
+                verbs: { labelEn: 'Verbs', labelAr: 'الأفعال', icon: 'activity', color: 'emerald' },
+                expressions: { labelEn: 'Expressions', labelAr: 'تعبيرات', icon: 'message-circle', color: 'amber' },
+                prepositions: { labelEn: 'Prepositions', labelAr: 'حروف الجر', icon: 'link', color: 'rose' },
+                grammar: { labelEn: 'Grammar', labelAr: 'القواعد الشاملة', icon: 'pen-tool', color: 'purple' },
+                review: { labelEn: 'Review', labelAr: 'المراجعة الشاملة', icon: 'clipboard-check', color: 'teal' },
+                b2: { labelEn: 'B2 Expansion', labelAr: 'توسعة B2', icon: 'trending-up', color: 'indigo' } // NEW TAB
+            };
+
+            const activeColor = tabConfig[activeTab].color;
+
+            return (
+                <div className="h-screen flex flex-col bg-slate-50" dir="rtl">
+                    {/* TOP NAVIGATION HEADER */}
+                    <header className="w-full bg-slate-900 text-white shadow-xl z-50 shrink-0 relative overflow-hidden">
+                        <div className={`absolute top-0 left-0 w-full h-1 bg-${activeColor}-500 transition-colors duration-500`}></div>
+                        
+                        <div className="flex justify-between items-center px-4 md:px-8 py-3 border-b border-slate-800">
+                            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-3 ar-text">
+                                <span className={`bg-${activeColor}-500 p-2 rounded-xl transition-colors duration-500 shadow-lg`}>
+                                    <i data-lucide="map" className="w-5 h-5 md:w-6 md:h-6 text-white"></i>
+                                </span>
+                                B1+ Spektrum (Kapitel 4)
+                            </h1>
+
+                            <div className="flex items-center gap-3" dir="ltr">
+                                <div className="text-right hidden sm:block">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mastery</div>
+                                    <div className={`text-sm font-extrabold text-${activeColor}-400 transition-colors`}>{grandTotal === 0 ? 0 : Math.round((learnedItems.size / grandTotal) * 100)}%</div>
+                                </div>
+                                <div className="relative w-10 h-10">
+                                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                        <path className="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                                        <path className={`text-${activeColor}-500 transition-all duration-1000 ease-out`} strokeDasharray={`${grandTotal === 0 ? 0 : (learnedItems.size / grandTotal) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Horizontal Navigation Tabs */}
+                        <nav className="flex overflow-x-auto scrollbar-hide px-4 py-2 gap-2 snap-x">
+                            {Object.entries(tabConfig).map(([key, tab]) => (
+                                <button 
+                                    key={key}
+                                    onClick={() => { setActiveTab(key); setSearchTerm(''); }}
+                                    className={`snap-center shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold ar-text group relative overflow-hidden ${activeTab === key ? `bg-${tab.color}-600 text-white shadow-md` : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <i data-lucide={tab.icon} className={`w-5 h-5 ${activeTab === key ? 'text-white' : `text-${tab.color}-400 group-hover:text-${tab.color}-300`} transition-colors`}></i>
+                                    <span className="text-sm whitespace-nowrap">{tab.labelAr}</span>
+                                    {activeTab === key && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-white/50 rounded-t-full"></div>}
+                                </button>
+                            ))}
+                        </nav>
+                    </header>
+
+                    {/* MAIN CONTENT AREA */}
+                    <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 relative" dir="ltr">
+                        <div className={`fixed top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-${activeColor}-200/20 blur-3xl -z-10 transition-colors duration-1000`}></div>
+                        
+                        <div className="max-w-7xl mx-auto">
+                            
+                            {activeTab !== 'grammar' && activeTab !== 'review' && (
+                                <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                    <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                        <div className={`absolute -inset-0.5 bg-gradient-to-r from-${activeColor}-400 to-${activeColor}-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                        <div className="relative">
+                                            <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                            <input 
+                                                type="text" 
+                                                placeholder="ابحث بالعربي أو الألماني..." 
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className="w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-blue-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'words' && <ProgressBar total={totalWords} learned={Array.from(learnedItems).filter(id => id.startsWith('w')).length} colorClass="text-blue-500" />}
+                            {activeTab === 'verbs' && <ProgressBar total={totalVerbs} learned={Array.from(learnedItems).filter(id => id.startsWith('v') || id.startsWith('iv')).length} colorClass="text-emerald-500" />}
+                            {activeTab === 'expressions' && <ProgressBar total={totalExp} learned={Array.from(learnedItems).filter(id => id.startsWith('e')).length} colorClass="text-amber-500" />}
+                            {activeTab === 'prepositions' && <ProgressBar total={totalPrep} learned={Array.from(learnedItems).filter(id => id.startsWith('p')).length} colorClass="text-rose-500" />}
+                            {activeTab === 'review' && <ProgressBar total={totalReview} learned={Array.from(learnedItems).filter(id => id.startsWith('r_')).length} colorClass="text-teal-500" />}
+                            {activeTab === 'b2' && <ProgressBar total={totalB2} learned={Array.from(learnedItems).filter(id => id.startsWith('b2_')).length} colorClass="text-indigo-500" />}
+
+                            {/* TAB: WORDS */}
+                            {activeTab === 'words' && (
+                                <div className="space-y-12">
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="map" className="w-6 h-6"></i></span> المدن، السياحة والمعالم (Städte & Tourismus)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.tourismus.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="landmark" className="w-6 h-6"></i></span> التاريخ، الثقافة والعمارة (Geschichte & Kultur)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.geschichte.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+                                    
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="flame" className="w-6 h-6"></i></span> المتاحف، الكوارث والترميم (Museen & Katastrophen)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.museen_katastrophen.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="star" className="w-6 h-6"></i></span> صفات، تعليم واقتصاد (Bildung, Wirtschaft & Adjektive)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.bildung_adjektive.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
+
+                            {/* TAB: VERBS */}
+                            {activeTab === 'verbs' && (
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="activity" className="w-6 h-6"></i></span>
+                                        الأفعال الأساسية (السياحة والترميم)
+                                    </h2>
+                                    <div className="space-y-4 mb-12">
+                                        {LEARNING_DATA.verbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <ListRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} colorTheme="emerald" />
+                                        ))}
+                                    </div>
+
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="alert-circle" className="w-6 h-6"></i></span>
+                                        الأفعال الشاذة وتصريفاتها (Unregelmäßige Verben)
+                                    </h2>
+                                    <div className="space-y-4">
+                                        {LEARNING_DATA.irregularVerbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <IrregularVerbRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: EXPRESSIONS */}
+                            {activeTab === 'expressions' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-amber-100 p-2 rounded-xl text-amber-600"><i data-lucide="message-circle" className="w-6 h-6"></i></span>
+                                        تعبيرات ومصطلحات (وصف المدن والمناقشة)
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {LEARNING_DATA.expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                            <div key={exp.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative group hover:shadow-xl hover:border-amber-200 transition-all duration-300">
+                                                <button onClick={() => toggleLearned(exp.id)} className={`absolute top-5 left-5 p-2 rounded-full transition-colors z-10 ${learnedItems.has(exp.id) ? 'bg-amber-100 text-amber-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                                </button>
+                                                <span className="inline-block bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-xs font-bold mb-4 ar-text border border-amber-100">{exp.type}</span>
+                                                <div className="flex items-start gap-3 mb-3" dir="ltr">
+                                                    <div className="flex flex-col gap-2 shrink-0">
+                                                        <button onClick={(e) => playAudio(exp.ger, e)} className="text-amber-500 bg-amber-50 p-2 rounded-xl hover:bg-amber-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                        <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={exp.ger} /></div>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight mt-1">"{exp.ger}"</h3>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
+                                                    <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
+                                                    <p className="text-amber-700 font-extrabold text-xl mb-4 ar-text">{exp.ar}</p>
+                                                    <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
+                                                        <i data-lucide="info" className="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>
+                                                        <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: PREPOSITIONS */}
+                            {activeTab === 'prepositions' && (
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-rose-100 p-2 rounded-xl text-rose-600"><i data-lucide="link" className="w-6 h-6"></i></span> 
+                                        حروف الجر وارتباطاتها (Präpositionen)
+                                    </h2>
+                                    <div className="space-y-4">
+                                        {LEARNING_DATA.prepositions.filter(p => p.ger.toLowerCase().includes(searchTerm.toLowerCase()) || p.eng.toLowerCase().includes(searchTerm.toLowerCase()) || p.ar.includes(searchTerm)).map(prep => (
+                                            <ListRow key={prep.id} item={prep} isLearned={learnedItems.has(prep.id)} toggleLearned={toggleLearned} colorTheme="rose" />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: GRAMMAR */}
+                            {activeTab === 'grammar' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-purple-700 to-indigo-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="pen-tool" className="absolute -right-4 -bottom-4 w-48 h-48 text-white opacity-10 transform rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">القواعد النحوية الشاملة (B1+)</h2>
+                                            <p className="text-purple-200 ar-text text-lg max-w-2xl">ملخص لأهم قواعد Kapitel 4: الجمل الموصولة، صفات المدن، حروف الجر المكانية، واسم الفاعل كصفة.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-8">
+                                        {LEARNING_DATA.grammar.map((gram, idx) => (
+                                            <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                    <div className="bg-purple-100 p-3 rounded-2xl text-purple-600 shrink-0 mt-1">
+                                                        <i data-lucide="braces" className="w-6 h-6"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                        <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="p-8">
+                                                    <div className="bg-slate-900 text-purple-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
+                                                        <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i> {gram.structure}
+                                                    </div>
+                                                    
+                                                    <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                    <ul className="space-y-4">
+                                                        {gram.examples.map((ex, i) => (
+                                                            <li key={i} className="bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
+                                                                <div className="flex gap-4 items-center mb-3" dir="ltr">
+                                                                    <button onClick={(e) => playAudio(ex.g, e)} className="text-purple-500 bg-white p-2 rounded-xl shadow-sm hover:bg-purple-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                    <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                </div>
+                                                                <div className="text-purple-700 font-bold ar-text border-t border-purple-200/50 pt-3 mt-3">{ex.a}</div>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: REVIEW */}
+                            {activeTab === 'review' && (
+                                <div dir="rtl" className="pb-10">
+                                    <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                        <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                            <div className={`absolute -inset-0.5 bg-gradient-to-r from-teal-400 to-teal-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                            <div className="relative">
+                                                <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="ابحث في المراجعة الشاملة..." 
+                                                    value={searchTerm}
+                                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                                    className="w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-teal-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-gradient-to-br from-teal-700 to-emerald-900 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="clipboard-check" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10 text-center">
+                                            <h2 className="text-4xl font-extrabold mb-4 ar-text">المراجعة الشاملة (Kapitel 4)</h2>
+                                            <p className="text-teal-100 ar-text text-lg max-w-3xl mx-auto leading-relaxed">كل التعبيرات والنصائح والجمل النحوية التي وردت في المنهج، تم فصلها بالكامل لسهولة التدريب والاختبار الصوتي.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        {LEARNING_DATA.review.map((cat, cIdx) => (
+                                            <div key={cIdx} className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300">
+                                                <button 
+                                                    className={`w-full p-6 flex items-center justify-between text-right transition-colors ${expandedReview === cat.catId ? 'bg-teal-50' : 'hover:bg-slate-50'}`}
+                                                    onClick={() => setExpandedReview(expandedReview === cat.catId ? null : cat.catId)}
+                                                >
+                                                    <h3 className="text-2xl font-bold text-slate-800 ar-text flex items-center gap-3">
+                                                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${expandedReview === cat.catId ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-600'}`}>{cIdx + 1}</span>
+                                                        {cat.title}
+                                                    </h3>
+                                                    <i data-lucide="chevron-down" className={`w-6 h-6 text-slate-400 transform transition-transform duration-300 ${expandedReview === cat.catId ? 'rotate-180 text-teal-600' : ''}`}></i>
+                                                </button>
+                                                
+                                                <div className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedReview === cat.catId ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                                    <div className="p-6 border-t border-slate-100 bg-slate-50/50">
+                                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                                            {cat.items.filter(item => item.g.toLowerCase().includes(searchTerm.toLowerCase()) || item.e.toLowerCase().includes(searchTerm.toLowerCase()) || item.a.includes(searchTerm)).map((item) => (
+                                                                <div key={item.id} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm relative group hover:shadow-md hover:border-teal-200 transition-all duration-300" dir="ltr">
+                                                                    <button onClick={() => toggleLearned(item.id)} className={`absolute top-4 right-4 p-2 rounded-full transition-colors z-10 ${learnedItems.has(item.id) ? 'bg-teal-100 text-teal-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                                        <i data-lucide="check" className="w-5 h-5"></i>
+                                                                    </button>
+                                                                    <div className="flex items-start gap-3 mb-3 pr-10">
+                                                                        <div className="flex flex-col gap-2 shrink-0">
+                                                                            <button onClick={(e) => playAudio(item.g, e)} className="text-teal-500 bg-teal-50 p-2 rounded-xl hover:bg-teal-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                            <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={item.g} /></div>
+                                                                        </div>
+                                                                        <h3 className="text-lg font-bold text-slate-800 leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: item.g }}></h3>
+                                                                    </div>
+                                                                    <div className="pl-12 space-y-2">
+                                                                        <p className="text-slate-500 text-sm">{item.e}</p>
+                                                                        <p className="text-teal-700 font-bold text-lg ar-text border-t border-slate-100 pt-2" dir="rtl">{item.a}</p>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: B2 EXPANSION (NEW TAB) */}
+                            {activeTab === 'b2' && (
+                                <div className="space-y-12 pb-10" dir="rtl">
+                                    <div className="bg-gradient-to-br from-indigo-700 to-blue-900 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="trending-up" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10 text-center">
+                                            <h2 className="text-4xl font-extrabold mb-4 ar-text">توسعة B2 (B2 Expansion)</h2>
+                                            <p className="text-indigo-200 ar-text text-lg max-w-3xl mx-auto leading-relaxed">هذا القسم مخصص لنقلك بقوة نحو مستوى B2. يحتوي على مصطلحات أكاديمية، تعبيرات النقاش في امتحانات (Goethe/Telc)، وشرح لأهم قواعد B2 المرتبطة بالدرس.</p>
+                                        </div>
+                                    </div>
+
+                                    {/* B2 Words */}
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text">
+                                            <span className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><i data-lucide="book-plus" className="w-6 h-6"></i></span> 
+                                            مفردات متقدمة للمدن والمجتمع (B2 Wortschatz)
+                                        </h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.b2.words.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} colorTheme="indigo" />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    {/* B2 Expressions */}
+                                    <section className="mt-16">
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                            <span className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><i data-lucide="message-square" className="w-6 h-6"></i></span>
+                                            تعبيرات امتحانات B2 (Diskussion & Präsentation)
+                                        </h2>
+                                        <div className="space-y-4">
+                                            {LEARNING_DATA.b2.expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                                <ListRow key={exp.id} item={exp} isLearned={learnedItems.has(exp.id)} toggleLearned={toggleLearned} colorTheme="indigo" />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    {/* B2 Grammar */}
+                                    <section className="mt-16">
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                            <span className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><i data-lucide="feather" className="w-6 h-6"></i></span>
+                                            قواعد B2 التكميلية (B2 Grammatik)
+                                        </h2>
+                                        <div className="grid gap-8">
+                                            {LEARNING_DATA.b2.grammar.map((gram, idx) => (
+                                                <div key={idx} className="bg-white rounded-3xl shadow-sm border border-indigo-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                    <div className="p-8 border-b border-indigo-50 bg-indigo-50/30 flex items-start gap-4">
+                                                        <div className="bg-indigo-100 p-3 rounded-2xl text-indigo-600 shrink-0 mt-1">
+                                                            <i data-lucide="braces" className="w-6 h-6"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                            <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="p-8">
+                                                        <div className="bg-slate-900 text-indigo-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
+                                                            <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i> {gram.structure}
+                                                        </div>
+                                                        
+                                                        <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                        <ul className="space-y-4">
+                                                            {gram.examples.map((ex, i) => (
+                                                                <li key={i} className="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100">
+                                                                    <div className="flex gap-4 items-center mb-3" dir="ltr">
+                                                                        <button onClick={(e) => playAudio(ex.g, e)} className="text-indigo-500 bg-white p-2 rounded-xl shadow-sm hover:bg-indigo-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                        <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                    </div>
+                                                                    <div className="text-indigo-700 font-bold ar-text border-t border-indigo-200/50 pt-3 mt-3">{ex.a}</div>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
+
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
