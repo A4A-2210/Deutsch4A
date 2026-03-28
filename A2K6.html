@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch A2: Was uns glücklich macht</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            overflow: hidden;
+        }
+
+        .ar-text {
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Refined Card Flips */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .card-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .front-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .front-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- HELPERS FOR AUDIO & SPEECH ---
+        const playAudio = (text, e) => {
+            if (e) e.stopPropagation();
+            const cleanText = text.replace(/<[^>]+>/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'de-DE';
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const SpeechTester = ({ targetText }) => {
+            const [status, setStatus] = React.useState('idle');
+            const [heard, setHeard] = React.useState('');
+
+            const listen = (e) => {
+                if (e) e.stopPropagation();
+                if (!('webkitSpeechRecognition' in window)) {
+                    alert('المتصفح ده مش بيدعم تسجيل الصوت، جرب Google Chrome.');
+                    return;
+                }
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+
+                recognition.onstart = () => setStatus('listening');
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    setHeard(speechResult);
+
+                    const clean = (str) => str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,!?:]/g, '').trim();
+                    const targetClean = clean(targetText);
+                    const heardClean = clean(speechResult);
+
+                    if (heardClean.includes(targetClean) || targetClean.includes(heardClean) || heardClean === targetClean) {
+                        setStatus('success');
+                    } else {
+                        setStatus('fail');
+                    }
+                };
+                recognition.onerror = () => setStatus('fail');
+                recognition.onend = () => { if (status === 'listening') setStatus('idle'); };
+                recognition.start();
+            };
+
+            return (
+                <div className="inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={listen} title="جرب تنطقها" className={`p-2 rounded-full transition-all duration-300 shadow-sm ${status === 'listening' ? 'bg-red-500 text-white animate-pulse scale-110' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'}`}>
+                        <i data-lucide="mic" className="w-4 h-4"></i>
+                    </button>
+                    {status === 'success' && <span className="text-emerald-500 text-xs font-bold ar-text animate-bounce">✅ ممتاز!</span>}
+                    {status === 'fail' && <span className="text-red-500 text-xs ar-text font-bold" title={`سمعت: ${heard}`}>❌ جرب تاني</span>}
+                </div>
+            );
+        };
+
+        // --- LESSON DATA: Was uns glücklich macht ---
+        const LEARNING_DATA = {
+            words: {
+                glueck_und_feste: [
+                    {
+                        id: 'w1', ger: "das Glück", eng: "Happiness / Luck", ar: "السعادة / الحظ", s: [
+                            { g: "Gesundheit ist wichtig für das persönliche <strong>Glück</strong>.", e: "Health is important for personal happiness.", a: "الصحة مهمة للسعادة الشخصية." },
+                            { g: "Das Sprichwort sagt: Geld allein macht nicht <strong>glücklich</strong>.", e: "The saying goes: Money alone does not make you happy.", a: "يقول المثل: المال وحده لا يجلب السعادة." },
+                            { g: "Ich wünsche dir viel <strong>Glück</strong> für die Prüfung!", e: "I wish you a lot of luck for the exam!", a: "أتمنى لك حظاً سعيداً في الامتحان!" }
+                        ]
+                    },
+                    {
+                        id: 'w2', ger: "die Zufriedenheit", eng: "Satisfaction", ar: "الرضا / القناعة", s: [
+                            { g: "Materielle Sicherheit ist eine Voraussetzung für <strong>Zufriedenheit</strong>.", e: "Material security is a prerequisite for satisfaction.", a: "الأمان المادي شرط أساسي للرضا." },
+                            { g: "Die Gesundheit hat großen Einfluss auf die <strong>Zufriedenheit</strong>.", e: "Health has a big influence on satisfaction.", a: "الصحة لها تأثير كبير على الرضا." },
+                            { g: "Er lächelte voller <strong>Zufriedenheit</strong> über seinen Erfolg.", e: "He smiled with full satisfaction about his success.", a: "ابتسم ببالغ الرضا عن نجاحه." }
+                        ]
+                    },
+                    {
+                        id: 'w3', ger: "die Gesundheit", eng: "Health", ar: "الصحة", s: [
+                            { g: "Die <strong>Gesundheit</strong> zählt zu den wichtigsten Glücksfaktoren.", e: "Health is one of the most important factors for happiness.", a: "تُعد الصحة من أهم عوامل السعادة." },
+                            { g: "Wir wünschen Ihnen gute <strong>Gesundheit</strong> und ein langes Leben.", e: "We wish you good health and a long life.", a: "نتمنى لكم صحة جيدة وعمراً مديداً." },
+                            { g: "Sport treiben ist gut für die <strong>Gesundheit</strong>.", e: "Doing sports is good for your health.", a: "ممارسة الرياضة مفيدة للصحة." }
+                        ]
+                    },
+                    {
+                        id: 'w4', ger: "die Hochzeit", eng: "Wedding", ar: "حفل الزفاف", s: [
+                            { g: "Vor der <strong>Hochzeit</strong> gibt es in Deutschland oft einen Polterabend.", e: "Before the wedding, there is often a Polterabend in Germany.", a: "قبل الزفاف، غالباً ما تكون هناك حفلة توديع العزوبية في ألمانيا." },
+                            { g: "Zur <strong>Hochzeit</strong> laden sie viele Verwandte und Freunde ein.", e: "They invite many relatives and friends to the wedding.", a: "يدعون الكثير من الأقارب والأصدقاء لحفل الزفاف." },
+                            { g: "Die <strong>Hochzeit</strong> findet am Samstag im Standesamt statt.", e: "The wedding takes place on Saturday at the registry office.", a: "سيقام حفل الزفاف يوم السبت في مكتب السجل المدني." }
+                        ]
+                    },
+                    {
+                        id: 'w5', ger: "das Brautpaar", eng: "Bridal couple", ar: "العروسان", s: [
+                            { g: "Das <strong>Brautpaar</strong> schneidet die Hochzeitstorte gemeinsam an.", e: "The bridal couple cuts the wedding cake together.", a: "يقطع العروسان كعكة الزفاف معاً." },
+                            { g: "Das kaputte Geschirr soll dem <strong>Brautpaar</strong> Glück bringen.", e: "The broken dishes are supposed to bring the bridal couple luck.", a: "يُفترض أن يجلب الفخار المكسور الحظ السعيد للعروسين." },
+                            { g: "Alle Gäste gratulieren dem <strong>Brautpaar</strong>.", e: "All guests congratulate the bridal couple.", a: "جميع الضيوف يهنئون العروسين." }
+                        ]
+                    },
+                    {
+                        id: 'w6', ger: "der Heiratsantrag", eng: "Marriage proposal", ar: "طلب الزواج / الخطبة", s: [
+                            { g: "In der Regel macht der Mann der Frau einen <strong>Heiratsantrag</strong>.", e: "As a rule, the man proposes to the woman.", a: "عادة ما يتقدم الرجل لخطبة المرأة." },
+                            { g: "Sein <strong>Heiratsantrag</strong> war sehr romantisch.", e: "His marriage proposal was very romantic.", a: "كان طلب زواجه رومانسياً جداً." },
+                            { g: "Sie hat nach dem <strong>Heiratsantrag</strong> sofort Ja gesagt.", e: "She said yes immediately after the marriage proposal.", a: "لقد قالت نعم فوراً بعد طلب الزواج." }
+                        ]
+                    },
+                    {
+                        id: 'w7', ger: "die Trauung", eng: "Wedding ceremony", ar: "عقد القران / مراسم الزفاف", s: [
+                            { g: "Die <strong>Trauung</strong> erfolgt auf dem Standesamt.", e: "The wedding ceremony takes place at the registry office.", a: "تتم مراسم الزفاف في مكتب السجل المدني." },
+                            { g: "Nach der <strong>Trauung</strong> gibt es ein großes Fest.", e: "After the wedding ceremony there is a big party.", a: "بعد عقد القران سيكون هناك احتفال كبير." },
+                            { g: "Die kirchliche <strong>Trauung</strong> war sehr emotional.", e: "The church wedding ceremony was very emotional.", a: "كانت مراسم الزفاف في الكنيسة عاطفية جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w8', ger: "das Standesamt", eng: "Registry office", ar: "السجل المدني", s: [
+                            { g: "Wir heiraten morgen im <strong>Standesamt</strong>.", e: "We are getting married tomorrow at the registry office.", a: "سنتزوج غداً في السجل المدني." },
+                            { g: "Die Heirat im <strong>Standesamt</strong> ist in Deutschland Pflicht.", e: "Marriage in the registry office is mandatory in Germany.", a: "الزواج في السجل المدني إلزامي في ألمانيا." },
+                            { g: "Wo befindet sich das nächste <strong>Standesamt</strong>?", e: "Where is the nearest registry office?", a: "أين يقع أقرب مكتب سجل مدني؟" }
+                        ]
+                    },
+                    {
+                        id: 'w9', ger: "die Hochzeitstorte", eng: "Wedding cake", ar: "كعكة الزفاف", s: [
+                            { g: "Der Höhepunkt der Feier ist die <strong>Hochzeitstorte</strong>.", e: "The highlight of the celebration is the wedding cake.", a: "ذروة الاحتفال هي كعكة الزفاف." },
+                            { g: "Das Brautpaar schneidet die <strong>Hochzeitstorte</strong> an.", e: "The bridal couple cuts the wedding cake.", a: "العروسان يقطعان كعكة الزفاف." },
+                            { g: "Diese <strong>Hochzeitstorte</strong> schmeckt unglaublich gut.", e: "This wedding cake tastes incredibly good.", a: "كعكة الزفاف هذه طعمها لذيذ بشكل لا يصدق." }
+                        ]
+                    },
+                    {
+                        id: 'w10', ger: "das Geschenk", eng: "Gift / Present", ar: "هدية", s: [
+                            { g: "Als Hochzeits<strong>geschenk</strong> wird Geld immer beliebter.", e: "Money is becoming increasingly popular as a wedding gift.", a: "أصبح المال أكثر شعبية كهدية زفاف." },
+                            { g: "Hast du schon ein <strong>Geschenk</strong> für das Brautpaar?", e: "Do you already have a gift for the bridal couple?", a: "هل لديك بالفعل هدية للعروسين؟" },
+                            { g: "Ich habe mich sehr über dein <strong>Geschenk</strong> gefreut.", e: "I was very happy about your gift.", a: "لقد سعدت جداً بهديتك." }
+                        ]
+                    },
+                    {
+                        id: 'w11', ger: "der Polterabend", eng: "Wedding eve party", ar: "ليلة توديع العزوبية (تقليد ألماني)", s: [
+                            { g: "Ein sehr bekannter Brauch ist der <strong>Polterabend</strong>.", e: "A very well-known custom is the Polterabend.", a: "تقليد معروف جداً هو ليلة توديع العزوبية." },
+                            { g: "Beim <strong>Polterabend</strong> zerschlägt man altes Geschirr.", e: "At the Polterabend you smash old dishes.", a: "في ليلة توديع العزوبية يتم تكسير الأطباق القديمة." },
+                            { g: "Wir laden alle Freunde zum <strong>Polterabend</strong> ein.", e: "We invite all friends to the Polterabend.", a: "ندعو جميع الأصدقاء إلى ليلة توديع العزوبية." }
+                        ]
+                    }
+                ],
+                familienstand: [
+                    {
+                        id: 'w12', ger: "ledig", eng: "single", ar: "أعزب / عزباء", s: [
+                            { g: "Vor der Hochzeit war er noch <strong>ledig</strong>.", e: "Before the wedding he was still single.", a: "قبل الزفاف كان لا يزال أعزباً." },
+                            { g: "Sind Sie verheiratet oder <strong>ledig</strong>?", e: "Are you married or single?", a: "هل أنت متزوج أم أعزب؟" },
+                            { g: "Auf dem Formular muss ich ankreuzen, dass ich <strong>ledig</strong> bin.", e: "On the form I have to tick that I am single.", a: "في الاستمارة يجب أن أضع علامة أنني أعزب." }
+                        ]
+                    },
+                    {
+                        id: 'w13', ger: "verheiratet", eng: "married", ar: "متزوج", s: [
+                            { g: "Nach der Hochzeit sind sie offiziell <strong>verheiratet</strong>.", e: "After the wedding they are officially married.", a: "بعد الزفاف يصبحان متزوجين رسمياً." },
+                            { g: "Wir sind seit zehn Jahren glücklich <strong>verheiratet</strong>.", e: "We have been happily married for ten years.", a: "نحن متزوجان بسعادة منذ عشر سنوات." },
+                            { g: "Ist deine Schwester schon <strong>verheiratet</strong>?", e: "Is your sister already married?", a: "هل أختك متزوجة بالفعل؟" }
+                        ]
+                    },
+                    {
+                        id: 'w14', ger: "zusammenwohnend / zusammenlebend", eng: "living together", ar: "مساكنة (يعيشان معاً بدون زواج)", s: [
+                            { g: "Viele Paare sind ohne Hochzeit <strong>zusammenwohnend</strong>.", e: "Many couples are living together without a wedding.", a: "العديد من الأزواج يعيشون معاً بدون زواج." },
+                            { g: "Sie sind nicht verheiratet, sondern nur <strong>zusammenlebend</strong>.", e: "They are not married, just living together.", a: "هم ليسوا متزوجين، فقط يعيشون معاً." },
+                            { g: "Als <strong>zusammenwohnendes</strong> Paar teilen sie sich die Miete.", e: "As a cohabiting couple they share the rent.", a: "كزوجين يعيشان معاً، يتقاسمان الإيجار." }
+                        ]
+                    },
+                    {
+                        id: 'w15', ger: "geschieden", eng: "divorced", ar: "مُطلق", s: [
+                            { g: "Nach der Scheidung gilt man als <strong>geschieden</strong>.", e: "After a divorce, one is considered divorced.", a: "بعد الطلاق، يُعتبر المرء مطلقاً." },
+                            { g: "Meine Eltern sind seit zwei Jahren <strong>geschieden</strong>.", e: "My parents have been divorced for two years.", a: "والداي مطلقان منذ عامين." },
+                            { g: "Er lebt allein, weil er <strong>geschieden</strong> ist.", e: "He lives alone because he is divorced.", a: "هو يعيش بمفرده لأنه مطلق." }
+                        ]
+                    },
+                    {
+                        id: 'w16', ger: "die Scheidung", eng: "Divorce", ar: "الطلاق", s: [
+                            { g: "Die <strong>Scheidungs</strong>quote ist in den letzten Jahren gesunken.", e: "The divorce rate has declined in recent years.", a: "انخفض معدل الطلاق في السنوات الأخيرة." },
+                            { g: "Nach der <strong>Scheidung</strong> zog er in eine andere Stadt.", e: "After the divorce he moved to another city.", a: "بعد الطلاق انتقل للعيش في مدينة أخرى." },
+                            { g: "Eine <strong>Scheidung</strong> ist oft schwer für die Kinder.", e: "A divorce is often difficult for the children.", a: "الطلاق غالباً ما يكون صعباً على الأطفال." }
+                        ]
+                    },
+                    {
+                        id: 'w17', ger: "die Beziehung", eng: "Relationship", ar: "علاقة", s: [
+                            { g: "Menschen in einer dauerhaften <strong>Beziehung</strong> sind oft glücklicher.", e: "People in a lasting relationship are often happier.", a: "الناس في علاقة دائمة غالباً ما يكونون أكثر سعادة." },
+                            { g: "Sie haben eine sehr gute <strong>Beziehung</strong> zueinander.", e: "They have a very good relationship with each other.", a: "لديهم علاقة جيدة جداً مع بعضهم البعض." },
+                            { g: "Eine glückliche <strong>Beziehung</strong> erfordert Arbeit.", e: "A happy relationship requires work.", a: "العلاقة السعيدة تتطلب جهداً." }
+                        ]
+                    }
+                ],
+                einkaufen: [
+                    {
+                        id: 'w18', ger: "das Kaufhaus", eng: "Department store", ar: "متجر متعدد الأقسام", s: [
+                            { g: "Das KaDeWe ist ein sehr bekanntes <strong>Kaufhaus</strong> in Berlin.", e: "The KaDeWe is a very famous department store in Berlin.", a: "متجر KaDeWe هو متجر شهير جداً في برلين." },
+                            { g: "In einem traditionellen <strong>Kaufhaus</strong> gibt es ein großes Warenangebot.", e: "In a traditional department store there is a large range of goods.", a: "يوجد في المتجر التقليدي مجموعة كبيرة من السلع." },
+                            { g: "Wir treffen uns heute Nachmittag vor dem <strong>Kaufhaus</strong>.", e: "We are meeting this afternoon in front of the department store.", a: "سنتقابل بعد ظهر اليوم أمام المتجر." }
+                        ]
+                    },
+                    {
+                        id: 'w19', ger: "die Abteilung", eng: "Department", ar: "قسم (في متجر أو شركة)", s: [
+                            { g: "Einmalig ist die große Musik<strong>abteilung</strong> im Kaufhaus.", e: "Unique is the large music department in the department store.", a: "الفريد من نوعه هو قسم الموسيقى الكبير في المتجر." },
+                            { g: "Die Delikatessen<strong>abteilung</strong> befindet sich in der obersten Etage.", e: "The delicatessen department is located on the top floor.", a: "يقع قسم الأطعمة الشهية في الطابق العلوي." },
+                            { g: "Entschuldigung, wo ist die <strong>Abteilung</strong> für Herrenkleidung?", e: "Excuse me, where is the men's clothing department?", a: "عذراً، أين قسم الملابس الرجالية؟" }
+                        ]
+                    },
+                    {
+                        id: 'w20', ger: "das Erdgeschoss", eng: "Ground floor", ar: "الطابق الأرضي", s: [
+                            { g: "Im <strong>Erdgeschoss</strong> finden Kunden Kosmetik und Parfüm.", e: "On the ground floor customers find cosmetics and perfume.", a: "في الطابق الأرضي يجد العملاء مستحضرات التجميل والعطور." },
+                            { g: "Der Eingang zum Supermarkt ist direkt im <strong>Erdgeschoss</strong>.", e: "The entrance to the supermarket is right on the ground floor.", a: "مدخل السوبر ماركت يقع مباشرة في الطابق الأرضي." },
+                            { g: "Wir treffen uns im <strong>Erdgeschoss</strong> bei der Information.", e: "We'll meet on the ground floor at the information desk.", a: "سنتقابل في الطابق الأرضي عند مكتب الاستعلامات." }
+                        ]
+                    },
+                    {
+                        id: 'w21', ger: "der Rabatt", eng: "Discount", ar: "خصم / تخفيض", s: [
+                            { g: "Wir können Ihnen einen <strong>Rabatt</strong> von 20 Euro geben.", e: "We can give you a discount of 20 euros.", a: "يمكننا أن نعطيك خصماً بقيمة 20 يورو." },
+                            { g: "Es gibt heute 50 Prozent <strong>Rabatt</strong> auf alle Schuhe.", e: "Today there is a 50 percent discount on all shoes.", a: "يوجد اليوم خصم 50 بالمائة على جميع الأحذية." },
+                            { g: "Geben Sie mir einen <strong>Rabatt</strong>, wenn ich zwei kaufe?", e: "Will you give me a discount if I buy two?", a: "هل ستعطيني خصماً إذا اشتريت اثنين؟" }
+                        ]
+                    },
+                    {
+                        id: 'w22', ger: "das Angebot", eng: "Offer / Selection", ar: "عرض / تشكيلة", s: [
+                            { g: "Das Kaufhaus hat ein sehr großes <strong>Angebot</strong> an Kleidung.", e: "The department store has a very large selection of clothing.", a: "يحتوي المتجر على تشكيلة كبيرة جداً من الملابس." },
+                            { g: "Diese Sportschuhe sind heute im <strong>Angebot</strong>.", e: "These sports shoes are on sale today.", a: "هذه الأحذية الرياضية عليها عرض اليوم." },
+                            { g: "Besonders bekannt ist das große <strong>Angebot</strong> an Jazz-Musik.", e: "Particularly well-known is the large selection of jazz music.", a: "معروف بشكل خاص التشكيلة الكبيرة من موسيقى الجاز." }
+                        ]
+                    },
+                    {
+                        id: 'w23', ger: "die Lebensmittel", eng: "Groceries / Food", ar: "مواد غذائية", s: [
+                            { g: "<strong>Lebensmittel</strong> kaufe ich normalerweise im Supermarkt.", e: "I usually buy groceries in the supermarket.", a: "عادة ما أشتري المواد الغذائية من السوبر ماركت." },
+                            { g: "Das KaDeWe hat die größte <strong>Lebensmittel</strong>abteilung in Europa.", e: "The KaDeWe has the largest food department in Europe.", a: "يحتوي KaDeWe على أكبر قسم للمواد الغذائية في أوروبا." },
+                            { g: "Wir brauchen noch frische <strong>Lebensmittel</strong> für das Wochenende.", e: "We still need fresh groceries for the weekend.", a: "ما زلنا بحاجة إلى مواد غذائية طازجة لعطلة نهاية الأسبوع." }
+                        ]
+                    },
+                    {
+                        id: 'w24', ger: "das Einkaufszentrum", eng: "Shopping center / Mall", ar: "مركز التسوق / مول", s: [
+                            { g: "Viele Menschen kaufen heute im modernen <strong>Einkaufszentrum</strong> ein.", e: "Many people today shop in the modern shopping center.", a: "العديد من الناس يتسوقون اليوم في مركز التسوق الحديث." },
+                            { g: "Das <strong>Einkaufszentrum</strong> hat viele verschiedene Geschäfte.", e: "The shopping center has many different shops.", a: "يحتوي مركز التسوق على العديد من المتاجر المختلفة." },
+                            { g: "Wir treffen uns am Samstag im <strong>Einkaufszentrum</strong>.", e: "We'll meet at the shopping center on Saturday.", a: "سنتقابل يوم السبت في مركز التسوق." }
+                        ]
+                    },
+                    {
+                        id: 'w25', ger: "die Größe", eng: "Size", ar: "المقاس", s: [
+                            { g: "Welche <strong>Größe</strong> haben Sie?", e: "What size do you have?", a: "ما هو مقاسك؟" },
+                            { g: "Wir haben die Schuhe leider nicht mehr in <strong>Größe</strong> 43.", e: "Unfortunately we don't have the shoes in size 43 anymore.", a: "للأسف لم يعد لدينا الأحذية بمقاس 43." },
+                            { g: "Ist diese Hose auch in einer kleineren <strong>Größe</strong> da?", e: "Is these pants also available in a smaller size?", a: "هل هذا البنطلون متوفر أيضاً بمقاس أصغر؟" }
+                        ]
+                    }
+                ],
+                aktivitaeten: [
+                    {
+                        id: 'w26', ger: "Sport treiben", eng: "to do sports", ar: "ممارسة الرياضة", s: [
+                            { g: "Ich fühle mich gut, wenn ich <strong>Sport treibe</strong>.", e: "I feel good when I do sports.", a: "أشعر أنني بحالة جيدة عندما أمارس الرياضة." },
+                            { g: "<strong>Sport treiben</strong> ist wichtig für die Gesundheit.", e: "Doing sports is important for health.", a: "ممارسة الرياضة مهمة للصحة." },
+                            { g: "Am Wochenende <strong>treiben</strong> wir oft <strong>Sport</strong>.", e: "On the weekend we often do sports.", a: "في عطلة نهاية الأسبوع غالباً ما نمارس الرياضة." }
+                        ]
+                    },
+                    {
+                        id: 'w27', ger: "ein interessantes Hobby haben", eng: "to have an interesting hobby", ar: "امتلاك هواية ممتعة", s: [
+                            { g: "Man ist glücklich, wenn man <strong>ein interessantes Hobby hat</strong>.", e: "You are happy when you have an interesting hobby.", a: "يكون المرء سعيداً عندما يكون لديه هواية ممتعة." },
+                            { g: "Ich möchte <strong>ein interessantes Hobby haben</strong>.", e: "I want to have an interesting hobby.", a: "أريد أن يكون لدي هواية ممتعة." },
+                            { g: "Er <strong>hat ein interessantes Hobby</strong>, er sammelt alte Uhren.", e: "He has an interesting hobby, he collects old watches.", a: "لديه هواية ممتعة، فهو يجمع الساعات القديمة." }
+                        ]
+                    },
+                    {
+                        id: 'w28', ger: "gesund sein", eng: "to be healthy", ar: "أن يكون بصحة جيدة", s: [
+                            { g: "Das Wichtigste im Leben ist, <strong>gesund zu sein</strong>.", e: "The most important thing in life is to be healthy.", a: "أهم شيء في الحياة هو أن تكون بصحة جيدة." },
+                            { g: "Ich bin zufrieden, weil ich <strong>gesund bin</strong>.", e: "I am satisfied because I am healthy.", a: "أنا راضٍ لأنني بصحة جيدة." },
+                            { g: "Wenn man <strong>gesund ist</strong>, hat man mehr Energie.", e: "When you are healthy, you have more energy.", a: "عندما تكون بصحة جيدة، يكون لديك طاقة أكبر." }
+                        ]
+                    },
+                    {
+                        id: 'w29', ger: "ein leckeres Essen kochen", eng: "to cook a delicious meal", ar: "طبخ وجبة لذيذة", s: [
+                            { g: "Heute Abend werde ich <strong>ein leckeres Essen kochen</strong>.", e: "Tonight I will cook a delicious meal.", a: "الليلة سأطبخ وجبة لذيذة." },
+                            { g: "<strong>Ein leckeres Essen kochen</strong> macht mir Spaß.", e: "Cooking a delicious meal is fun for me.", a: "طبخ وجبة لذيذة يمتعني." },
+                            { g: "Er hat für uns <strong>ein leckeres Essen gekocht</strong>.", e: "He cooked a delicious meal for us.", a: "لقد طبخ لنا وجبة لذيذة." }
+                        ]
+                    },
+                    {
+                        id: 'w30', ger: "mit Freunden reden", eng: "to talk with friends", ar: "التحدث مع الأصدقاء", s: [
+                            { g: "Am Abend <strong>rede</strong> ich gerne <strong>mit Freunden</strong>.", e: "In the evening I like to talk with friends.", a: "في المساء أحب التحدث مع الأصدقاء." },
+                            { g: "<strong>Mit Freunden reden</strong> hilft gegen Stress.", e: "Talking with friends helps against stress.", a: "التحدث مع الأصدقاء يساعد في تخفيف التوتر." },
+                            { g: "Wir haben stundenlang <strong>mit Freunden geredet</strong>.", e: "We talked with friends for hours.", a: "تحدثنا لساعات مع الأصدقاء." }
+                        ]
+                    },
+                    {
+                        id: 'w31', ger: "mit der Familie feiern", eng: "to celebrate with family", ar: "الاحتفال مع العائلة", s: [
+                            { g: "Ich liebe es, <strong>mit der Familie zu feiern</strong>.", e: "I love celebrating with the family.", a: "أحب الاحتفال مع العائلة." },
+                            { g: "Weihnachten <strong>feiern</strong> wir immer <strong>mit der Familie</strong>.", e: "We always celebrate Christmas with the family.", a: "نحن نحتفل دائماً بعيد الميلاد مع العائلة." },
+                            { g: "<strong>Mit der Familie feiern</strong> macht mich glücklich.", e: "Celebrating with the family makes me happy.", a: "الاحتفال مع العائلة يجعلني سعيداً." }
+                        ]
+                    },
+                    {
+                        id: 'w32', ger: "jemandem helfen können", eng: "to be able to help someone", ar: "القدرة على مساعدة شخص ما", s: [
+                            { g: "Ich bin zufrieden, wenn ich meiner Familie <strong>helfen kann</strong>.", e: "I am satisfied when I can help my family.", a: "أشعر بالرضا عندما أستطيع مساعدة عائلتي." },
+                            { g: "Es ist ein schönes Gefühl, <strong>jemandem helfen zu können</strong>.", e: "It is a nice feeling to be able to help someone.", a: "إنه شعور جميل أن تكون قادراً على مساعدة شخص ما." },
+                            { g: "Er ist glücklich, weil er seinem Freund <strong>helfen konnte</strong>.", e: "He is happy because he was able to help his friend.", a: "إنه سعيد لأنه تمكن من مساعدة صديقه." }
+                        ]
+                    },
+                    {
+                        id: 'w33', ger: "die Sonne scheint", eng: "the sun is shining", ar: "الشمس تشرق", s: [
+                            { g: "Ich bin glücklich, wenn <strong>die Sonne scheint</strong>.", e: "I am happy when the sun is shining.", a: "أنا سعيد عندما تشرق الشمس." },
+                            { g: "Heute <strong>scheint die Sonne</strong> den ganzen Tag.", e: "Today the sun is shining all day.", a: "اليوم تشرق الشمس طوال اليوم." },
+                            { g: "Wenn <strong>die Sonne scheint</strong>, gehen wir spazieren.", e: "When the sun shines, we go for a walk.", a: "عندما تشرق الشمس، نذهب في نزهة." }
+                        ]
+                    },
+                    {
+                        id: 'w34', ger: "die Blumen blühen", eng: "the flowers are blooming", ar: "الزهور تتفتح", s: [
+                            { g: "Im Frühling <strong>blühen die Blumen</strong> im Garten.", e: "In spring the flowers bloom in the garden.", a: "في الربيع تتفتح الزهور في الحديقة." },
+                            { g: "Ich mag es, wenn <strong>die Blumen blühen</strong>.", e: "I like it when the flowers bloom.", a: "أحب ذلك عندما تتفتح الزهور." },
+                            { g: "Guck mal, <strong>die Blumen blühen</strong> schon!", e: "Look, the flowers are already blooming!", a: "انظر، الزهور تتفتح بالفعل!" }
+                        ]
+                    },
+                    {
+                        id: 'w35', ger: "ein gutes Buch lesen", eng: "to read a good book", ar: "قراءة كتاب جيد", s: [
+                            { g: "Abends <strong>lese</strong> ich gerne <strong>ein gutes Buch</strong>.", e: "In the evening I like to read a good book.", a: "في المساء أحب قراءة كتاب جيد." },
+                            { g: "<strong>Ein gutes Buch lesen</strong> entspannt mich.", e: "Reading a good book relaxes me.", a: "قراءة كتاب جيد تريحني." },
+                            { g: "Hast du in letzter Zeit <strong>ein gutes Buch gelesen</strong>?", e: "Have you read a good book lately?", a: "هل قرأت كتاباً جيداً في الآونة الأخيرة؟" }
+                        ]
+                    },
+                    {
+                        id: 'w36', ger: "meine Lieblingsmusik hören", eng: "to listen to my favorite music", ar: "الاستماع إلى موسيقاي المفضلة", s: [
+                            { g: "Ich bin glücklich, wenn ich <strong>meine Lieblingsmusik höre</strong>.", e: "I am happy when I listen to my favorite music.", a: "أكون سعيداً عندما أستمع إلى موسيقاي المفضلة." },
+                            { g: "<strong>Meine Lieblingsmusik hören</strong> hilft mir beim Lernen.", e: "Listening to my favorite music helps me study.", a: "الاستماع لموسيقاي المفضلة يساعدني في المذاكرة." },
+                            { g: "Er <strong>hört</strong> jeden Morgen <strong>seine Lieblingsmusik</strong>.", e: "He listens to his favorite music every morning.", a: "إنه يستمع إلى موسيقاه المفضلة كل صباح." }
+                        ]
+                    },
+                    {
+                        id: 'w37', ger: "etwas Schönes kaufen", eng: "to buy something nice", ar: "شراء شيء جميل", s: [
+                            { g: "Ich möchte mir heute <strong>etwas Schönes kaufen</strong>.", e: "I want to buy myself something nice today.", a: "أريد أن أشتري لنفسي شيئاً جميلاً اليوم." },
+                            { g: "<strong>Etwas Schönes kaufen</strong> macht manchmal glücklich.", e: "Buying something nice sometimes makes you happy.", a: "شراء شيء جميل يجعلك سعيداً أحياناً." },
+                            { g: "Sie hat sich im Kaufhaus <strong>etwas Schönes gekauft</strong>.", e: "She bought something nice in the department store.", a: "اشترت لنفسها شيئاً جميلاً من المتجر." }
+                        ]
+                    },
+                    {
+                        id: 'w38', ger: "ein Projekt erfolgreich beenden", eng: "to finish a project successfully", ar: "إنهاء مشروع بنجاح", s: [
+                            { g: "Ich fühle mich zufrieden, wenn ich <strong>ein Projekt erfolgreich beende</strong>.", e: "I feel satisfied when I successfully finish a project.", a: "أشعر بالرضا عندما أنهي مشروعاً بنجاح." },
+                            { g: "Er hat <strong>das Projekt erfolgreich beendet</strong>.", e: "He finished the project successfully.", a: "لقد أنهى المشروع بنجاح." },
+                            { g: "<strong>Ein Projekt erfolgreich beenden</strong> bringt viel Freude.", e: "Finishing a project successfully brings a lot of joy.", a: "إنهاء مشروع بنجاح يجلب الكثير من الفرح." }
+                        ]
+                    },
+                    {
+                        id: 'w39', ger: "einen interessanten Job haben", eng: "to have an interesting job", ar: "امتلاك وظيفة ممتعة", s: [
+                            { g: "<strong>Einen interessanten Job haben</strong>, ist wichtig für mich.", e: "Having an interesting job is important to me.", a: "الحصول على وظيفة ممتعة أمر مهم بالنسبة لي." },
+                            { g: "Sie ist glücklich, weil sie <strong>einen interessanten Job hat</strong>.", e: "She is happy because she has an interesting job.", a: "هي سعيدة لأن لديها وظيفة ممتعة." },
+                            { g: "Ich suche <strong>einen interessanten Job</strong>.", e: "I am looking for an interesting job.", a: "أنا أبحث عن وظيفة ممتعة." }
+                        ]
+                    },
+                    {
+                        id: 'w40', ger: "Gehalt/Geld bekommen", eng: "to receive salary/money", ar: "الحصول على الراتب/المال", s: [
+                            { g: "Ich freue mich, wenn ich mein <strong>Gehalt bekomme</strong>.", e: "I am happy when I get my salary.", a: "أفرح عندما أحصل على راتبي." },
+                            { g: "<strong>Geld bekommen</strong> macht das Leben leichter.", e: "Getting money makes life easier.", a: "الحصول على المال يجعل الحياة أسهل." },
+                            { g: "Hast du diesen Monat schon <strong>Gehalt bekommen</strong>?", e: "Have you received your salary this month yet?", a: "هل حصلت على راتبك هذا الشهر بالفعل؟" }
+                        ]
+                    },
+                    {
+                        id: 'w41', ger: "keinen Deutschunterricht haben", eng: "to not have German lessons", ar: "عدم وجود حصة ألماني", s: [
+                            { g: "Die Schüler freuen sich, wenn sie <strong>keinen Deutschunterricht haben</strong>.", e: "The students are happy when they have no German lessons.", a: "يفرح الطلاب عندما لا يكون لديهم درس لغة ألمانية." },
+                            { g: "Morgen <strong>haben</strong> wir <strong>keinen Deutschunterricht</strong>.", e: "Tomorrow we don't have German lessons.", a: "غداً ليس لدينا درس لغة ألمانية." },
+                            { g: "<strong>Keinen Deutschunterricht haben</strong> bedeutet mehr Freizeit.", e: "Having no German lessons means more free time.", a: "عدم وجود درس لغة ألمانية يعني المزيد من وقت الفراغ." }
+                        ]
+                    },
+                    {
+                        id: 'w42', ger: "bald in den Urlaub fahren", eng: "to go on vacation soon", ar: "الذهاب في إجازة قريباً", s: [
+                            { g: "Ich bin froh, weil wir <strong>bald in den Urlaub fahren</strong>.", e: "I am happy because we are going on vacation soon.", a: "أنا سعيد لأننا سنذهب في إجازة قريباً." },
+                            { g: "<strong>Bald in den Urlaub fahren</strong> ist ein tolles Gefühl.", e: "Going on vacation soon is a great feeling.", a: "الذهاب في إجازة قريباً هو شعور رائع." },
+                            { g: "Wohin werdet ihr <strong>bald in den Urlaub fahren</strong>?", e: "Where will you go on vacation soon?", a: "إلى أين ستذهبون في إجازة قريباً؟" }
+                        ]
+                    },
+                    {
+                        id: 'w43', ger: "nicht früh aufstehen müssen", eng: "not have to get up early", ar: "عدم الاضطرار للاستيقاظ مبكراً", s: [
+                            { g: "Am Wochenende <strong>muss</strong> ich <strong>nicht früh aufstehen</strong>.", e: "On the weekend I don't have to get up early.", a: "في عطلة نهاية الأسبوع لا يجب أن أستيقظ مبكراً." },
+                            { g: "<strong>Nicht früh aufstehen müssen</strong> ist toll.", e: "Not having to get up early is great.", a: "عدم الاضطرار للاستيقاظ مبكراً هو شيء رائع." },
+                            { g: "Ich bin glücklich, wenn ich <strong>nicht früh aufstehen muss</strong>.", e: "I am happy when I don't have to get up early.", a: "أنا سعيد عندما لا أضطر للاستيقاظ مبكراً." }
+                        ]
+                    },
+                    {
+                        id: 'w44', ger: "nichts tun müssen", eng: "not have to do anything", ar: "عدم الاضطرار لفعل أي شيء", s: [
+                            { g: "Im Urlaub <strong>muss</strong> man <strong>nichts tun</strong>.", e: "On vacation you don't have to do anything.", a: "في الإجازة لا يتعين على المرء فعل أي شيء." },
+                            { g: "<strong>Nichts tun müssen</strong> entspannt mich sehr.", e: "Not having to do anything relaxes me a lot.", a: "عدم الاضطرار لفعل أي شيء يريحني جداً." },
+                            { g: "Manchmal ist es schön, einfach <strong>nichts tun zu müssen</strong>.", e: "Sometimes it is nice to just not have to do anything.", a: "أحياناً يكون من الجميل ألا تضطر لفعل أي شيء." }
+                        ]
+                    }
+                ]
+            },
+            expressions: [
+                { id: 'e1', type: "Gefühle & Glück", ger: "Wann fühlen Sie sich gut?", eng: "When do you feel good?", ar: "متى تشعر أنك بحالة جيدة؟", context: "Ich fühle mich gut, wenn ich Sport treibe." },
+                { id: 'e2', type: "Gefühle & Glück", ger: "Wann sind Sie zufrieden oder glücklich?", eng: "When are you satisfied or happy?", ar: "متى تكون راضياً أو سعيداً؟", context: "Ich bin glücklich, wenn die Sonne scheint." },
+                { id: 'e3', type: "Gefühle & Glück", ger: "Ich fühle mich zufrieden, wenn ich ein Projekt erfolgreich beende.", eng: "I feel satisfied when I successfully finish a project.", ar: "أشعر بالرضا عندما أنهي مشروعاً بنجاح.", context: "Beruf und Erfolg (العمل والنجاح)" },
+                { id: 'e4', type: "Gefühle & Glück", ger: "Sich schlecht oder unglücklich fühlen.", eng: "To feel bad or unhappy.", ar: "أن تشعر بالسوء أو التعاسة.", context: "Manchmal fühlt man sich schlecht. (أحياناً يشعر المرء بالسوء.)" },
+                { id: 'e5', type: "Glückwünsche", ger: "Herzlichen Glückwunsch zur Hochzeit!", eng: "Congratulations on your wedding!", ar: "ألف مبروك على الزواج!", context: "Ich wünsche euch viel Glück für die Ehe." },
+                { id: 'e6', type: "Glückwünsche", ger: "Ich gratuliere dir zur bestandenen Prüfung.", eng: "I congratulate you on passing the exam.", ar: "أهنئك على اجتياز الامتحان.", context: "Tolle Leistung! (إنجاز رائع!)" },
+                { id: 'e7', type: "Glückwünsche", ger: "Herzlichen Glückwunsch zur Beförderung!", eng: "Congratulations on your promotion!", ar: "ألف مبروك على الترقية!", context: "Für den Beruf (في مجال العمل)" },
+                { id: 'e8', type: "Glückwünsche", ger: "Herzlichen Glückwunsch zum Geburtstag, Oma!", eng: "Happy birthday, Grandma!", ar: "عيد ميلاد سعيد يا جدتي!", context: "Geburtstagsgruß (تهنئة عيد ميلاد)" },
+                { id: 'e9', type: "Glückwünsche", ger: "Herzlichen Glückwunsch zum neuen Job, Jan!", eng: "Congratulations on your new job, Jan!", ar: "ألف مبروك على الوظيفة الجديدة يا جان!", context: "Neuer Job (وظيفة جديدة)" },
+                { id: 'e10', type: "Glückwünsche", ger: "Ich wünsche dir viel Glück und Gesundheit.", eng: "I wish you a lot of luck and health.", ar: "أتمنى لك الكثير من الحظ والصحة.", context: "Allgemeine Wünsche (أمنيات عامة)" },
+                { id: 'e11', type: "Einkaufen", ger: "Kann ich Ihnen helfen?", eng: "Can I help you?", ar: "هل يمكنني مساعدتك؟", context: "Verkäufer im Geschäft (بائع في متجر)" },
+                { id: 'e12', type: "Einkaufen", ger: "Suchen Sie Laufschuhe oder Tennisschuhe?", eng: "Are you looking for running shoes or tennis shoes?", ar: "هل تبحث عن أحذية ركض أم أحذية تنس؟", context: "Eigentlich brauche ich Tennisschuhe." },
+                { id: 'e13', type: "Einkaufen", ger: "Welche Größe haben Sie?", eng: "What size do you have?", ar: "ما هو مقاسك؟", context: "Ich habe Größe 43." },
+                { id: 'e14', type: "Einkaufen", ger: "Das überlege ich mir noch einmal. Vielen Dank.", eng: "I'll think about it again. Thank you very much.", ar: "سأفكر في الأمر مرة أخرى. شكراً جزيلاً.", context: "Wenn ein Produkt zu teuer ist (عندما يكون المنتج غالي جداً)" },
+                { id: 'e15', type: "Termine", ger: "Passt es dir am Nachmittag um 14.00 Uhr?", eng: "Does 2:00 p.m. in the afternoon suit you?", ar: "هل يناسبك الساعة 2:00 بعد الظهر؟", context: "Ja, das ist perfekt. Da habe ich Zeit." }
+            ],
+            dialogues: [
+                {
+                    id: 'd1', title: "Interview: Meine Familie (مقابلة: عائلتي)", icon: "users",
+                    lines: [
+                        { speaker: "Interviewer", text: "Wie groß ist Ihre Familie? Wie viele Tanten, Onkel, Cousins und Cousinen haben Sie?", en: "How big is your family? How many aunts, uncles, cousins (male and female) do you have?", ar: "ما حجم عائلتك؟ كم عدد العمات والأعمام وأبناء العمومة الذين لديك؟" },
+                        { speaker: "Britta", text: "Meine Familie ist ziemlich groß. Ich habe drei Tanten, vier Onkel und acht Cousins und Cousinen.", en: "My family is quite big. I have three aunts, four uncles, and eight cousins.", ar: "عائلتي كبيرة نوعاً ما. لدي ثلاث عمات، وأربعة أعمام، وثمانية أبناء وبنات عمومة." },
+                        { speaker: "Interviewer", text: "Haben Sie regelmäßig Familientreffen oder Familienfeiern?", en: "Do you have regular family gatherings or family celebrations?", ar: "هل لديكم تجمعات أو احتفالات عائلية بانتظام؟" },
+                        { speaker: "Britta", text: "Wir haben regelmäßig Familientreffen, meistens an Weihnachten und Ostern.", en: "We have regular family gatherings, mostly at Christmas and Easter.", ar: "لدينا تجمعات عائلية بانتظام، غالباً في عيد الميلاد وعيد الفصح." },
+                        { speaker: "Interviewer", text: "Was feiern Sie so alles?", en: "What do you celebrate?", ar: "ما الذي تحتفلون به؟" },
+                        { speaker: "Britta", text: "Wir feiern Geburtstage, Hochzeiten und manchmal auch Taufen.", en: "We celebrate birthdays, weddings, and sometimes baptisms.", ar: "نحتفل بأعياد الميلاد، وحفلات الزفاف، وأحياناً حفلات التعميد." },
+                        { speaker: "Interviewer", text: "Wer kommt zur Feier?", en: "Who comes to the celebration?", ar: "من يأتي إلى الاحتفال؟" },
+                        { speaker: "Britta", text: "Zur Feier kommen immer meine Großeltern, Tanten, Onkel, Cousins und Cousinen. Ich freue mich immer auf diese Treffen.", en: "My grandparents, aunts, uncles, and cousins always come to the celebration. I always look forward to these gatherings.", ar: "يأتي دائماً أجدادي، وعماتي، وأعمامي، وأبناء وبنات عمومتي. أنا أتطلع دائماً لهذه اللقاءات." }
+                    ]
+                },
+                {
+                    id: 'd2', title: "Im Schuhgeschäft (في متجر الأحذية)", icon: "shopping-bag",
+                    lines: [
+                        { speaker: "Verkäufer", text: "Kann ich Ihnen helfen?", en: "Can I help you?", ar: "هل يمكنني مساعدتك؟" },
+                        { speaker: "Kunde", text: "Ich hätte gern diese Sportschuhe.", en: "I would like these sports shoes.", ar: "أريد هذه الأحذية الرياضية." },
+                        { speaker: "Verkäufer", text: "Das sind Laufschuhe. Suchen Sie Laufschuhe?", en: "These are running shoes. Are you looking for running shoes?", ar: "هذه أحذية ركض. هل تبحث عن أحذية ركض؟" },
+                        { speaker: "Kunde", text: "Nein, eigentlich brauche ich Tennisschuhe.", en: "No, actually I need tennis shoes.", ar: "لا، في الواقع أحتاج إلى أحذية تنس." },
+                        { speaker: "Verkäufer", text: "Dann sollten Sie diese Schuhe hier nehmen. Die haben eine andere Sohle. Welche Größe haben Sie?", en: "Then you should take these shoes here. They have a different sole. What size do you have?", ar: "إذن يجب أن تأخذ هذه الأحذية هنا. لها نعل مختلف. ما هو مقاسك؟" },
+                        { speaker: "Kunde", text: "Größe 43. Ich probiere sie mal an.", en: "Size 43. I will try them on.", ar: "مقاس 43. سأجربها." },
+                        { speaker: "Verkäufer", text: "Einen Moment bitte. Wir haben die Schuhe in Größe 43 nicht mehr in Weiß, nur noch in Grau.", en: "One moment please. We no longer have the shoes in size 43 in white, only in gray.", ar: "لحظة من فضلك. لم يعد لدينا الحذاء مقاس 43 باللون الأبيض، فقط باللون الرمادي." },
+                        { speaker: "Kunde", text: "In Grau? Nein, tut mir leid, ich möchte weiße Schuhe. Was kosten die anderen weißen Schuhe dort?", en: "In gray? No, sorry, I want white shoes. How much do the other white shoes there cost?", ar: "بالرمادي؟ لا، عذراً، أريد أحذية بيضاء. كم سعر الأحذية البيضاء الأخرى هناك؟" },
+                        { speaker: "Verkäufer", text: "Die kosten 189 Euro. Wir können Ihnen aber einen Rabatt von 20 Euro geben.", en: "They cost 189 euros. But we can give you a discount of 20 euros.", ar: "سعرها 189 يورو. لكن يمكننا أن نعطيك خصماً بقيمة 20 يورو." },
+                        { speaker: "Kunde", text: "Das ist immer noch sehr viel Geld. Ich überlege es mir noch einmal. Vielen Dank.", en: "That is still a lot of money. I'll think about it again. Thank you very much.", ar: "هذا لا يزال مبلغاً كبيراً جداً. سأفكر في الأمر مرة أخرى. شكراً جزيلاً." }
+                    ]
+                },
+                {
+                    id: 'd3', title: "Einkaufen: Fragen und Antworten (أسئلة وأجوبة حول التسوق)", icon: "store",
+                    lines: [
+                        { speaker: "Frage 1", text: "Kaufen Sie gern ein? Wenn ja, was kaufen Sie gern/am liebsten?", en: "Do you like shopping? If so, what do you like buying the most?", ar: "هل تحب التسوق؟ إذا كان نعم، ماذا تفضل أن تشتري؟" },
+                        { speaker: "Antwort ①", text: "Ja, ich kaufe gern Kleidung.", en: "Yes, I like shopping for clothes.", ar: "نعم، أحب شراء الملابس." },
+                        { speaker: "Antwort ②", text: "Am liebsten kaufe ich Bücher.", en: "I like buying books the most.", ar: "أفضل شراء الكتب." },
+                        { speaker: "Antwort ③", text: "Nein, ich gehe nicht gern einkaufen.", en: "No, I don’t like shopping.", ar: "لا، لا أحب الذهاب للتسوق." },
+                        { speaker: "Frage 2", text: "Wo kaufen Sie gern ein? Können Sie ein Geschäft empfehlen?", en: "Where do you like buying things? Can you recommend a shop?", ar: "أين تحب التسوق؟ هل يمكنك التوصية بمتجر؟" },
+                        { speaker: "Antwort ①", text: "Lebensmittel kaufe ich gern im Supermarkt.", en: "I like buying groceries in the supermarket.", ar: "أحب شراء مواد البقالة في السوبر ماركت." },
+                        { speaker: "Antwort ②", text: "Kleidung kaufe ich meistens im Einkaufszentrum.", en: "I usually buy clothes in the shopping center.", ar: "أشتري الملابس عادة من مركز التسوق." },
+                        { speaker: "Antwort ③", text: "Ich empfehle den Laden „BioMarkt“ für Gemüse.", en: "I recommend the shop “BioMarkt” for vegetables.", ar: "أوصي بمتجر 'BioMarkt' للخضروات." },
+                        { speaker: "Frage 3", text: "Wann gehen Sie normalerweise einkaufen?", en: "When do you usually go shopping?", ar: "متى تتسوق عادة؟" },
+                        { speaker: "Antwort ①", text: "Ich gehe meistens am Samstag einkaufen.", en: "I usually go shopping on Saturdays.", ar: "أذهب للتسوق غالباً يوم السبت." },
+                        { speaker: "Antwort ②", text: "Unter der Woche gehe ich abends einkaufen.", en: "During the week I go shopping in the evenings.", ar: "خلال الأسبوع أذهب للتسوق في المساء." },
+                        { speaker: "Antwort ③", text: "Ich kaufe oft online ein.", en: "I often shop online.", ar: "أنا أتسوق كثيراً عبر الإنترنت." }
+                    ]
+                }
+            ],
+            culture: [
+                {
+                    id: 'c1', title: "Faktoren für Glück und Zufriedenheit (عوامل السعادة والرضا)",
+                    lines: [
+                        { g: "Viele Studien zum Thema Glück zeigen, dass die Gesundheit einen sehr großen Einfluss auf die Zufriedenheit der Menschen hat.", e: "Many studies on the topic of happiness show that health has a very big influence on people’s satisfaction.", a: "تُظهر العديد من الدراسات حول موضوع السعادة أن الصحة لها تأثير كبير جداً على رضا الناس." },
+                        { g: "Sie zählt zu den wichtigsten Glücksfaktoren.", e: "It is one of the most important factors for happiness.", a: "وتُعد من أهم عوامل السعادة." },
+                        { g: "Aber auch die materielle Seite des Lebens spielt eine Rolle. Das Sprichwort „Geld macht nicht glücklich“ stimmt nur zum Teil, denn die materielle Sicherheit ist eine Voraussetzung für Zufriedenheit.", e: "But the material side of life also plays a role. The saying 'Money does not make you happy' is only partly true, because material security is a prerequisite for satisfaction.", a: "لكن الجانب المادي من الحياة يلعب دوراً أيضاً. المقولة 'المال لا يجلب السعادة' صحيحة جزئياً فقط، لأن الأمان المادي شرط أساسي للرضا." },
+                        { g: "Nach Meinung der Wissenschaftler liegt „das materielle Glückslimit“ bei rund 60.000 Euro. Wer mehr Geld verdient, wird man nicht glücklicher.", e: "According to scientists, the 'material happiness limit' is around 60,000 euros. Those who earn more money do not become happier.", a: "وبحسب العلماء، فإن 'الحد المادي للسعادة' يبلغ حوالي 60 ألف يورو. من يكسب مالاً أكثر لا يصبح بالضرورة أكثر سعادة." },
+                        { g: "Außerdem brauchen wir für ein glückliches Leben einen festen Partner, eine liebevolle Familie und gute Freunde. Am glücklichsten fühlen sich die Menschen in einer dauerhaften Beziehung, sagen die Glücksforscher.", e: "In addition, for a happy life we need a steady partner, a loving family, and good friends. People feel happiest in a lasting relationship, say happiness researchers.", a: "بالإضافة إلى ذلك، نحتاج لحياة سعيدة إلى شريك دائم، وعائلة محبة، وأصدقاء جيدين. يشعر الناس بالسعادة القصوى في علاقة دائمة، كما يقول باحثو السعادة." },
+                        { g: "Zu Gesundheit, materieller Sicherheit, Partnerschaft und Familie kommt noch ein weiterer Faktor: eine sinnvolle Tätigkeit. Das kann der Beruf sein, eine ehrenamtliche Tätigkeit oder ein Hobby.", e: "In addition to health, material security, partnership, and family, there is another factor: meaningful activity. This can be a job, volunteer work, or a hobby.", a: "إلى جانب الصحة والأمان المادي والشراكة والعائلة، يأتي عامل آخر: نشاط هادف. يمكن أن يكون هذا وظيفة، أو عملاً تطوعياً، أو هواية." },
+                        { g: "Insgesamt bestimmen diese und andere Glücksfaktoren 50 Prozent des Glücksgefühls, die anderen 50 Prozent bestimmen unsere Gene.", e: "Altogether, these and other factors of happiness determine 50 percent of the feeling of happiness, the other 50 percent are determined by our genes.", a: "بشكل عام، تحدد هذه العوامل وغيرها من عوامل السعادة 50 في المائة من الشعور بالسعادة، بينما تحدد جيناتنا الـ 50 في المائة الأخرى." }
+                    ]
+                },
+                {
+                    id: 'c2', title: "Der schönste Tag im Leben (أجمل يوم في الحياة - الزفاف)",
+                    lines: [
+                        { g: "Vor der Hochzeit sind die Paare in Deutschland im Durchschnitt 4,7 Jahre zusammen. In der Regel macht der Mann der Frau einen Heiratsantrag, manchmal ist es umgekehrt.", e: "Before the wedding, couples in Germany are together on average for 4.7 years. As a rule, the man proposes to the woman, sometimes it is the other way around.", a: "قبل الزواج، يبقى الأزواج في ألمانيا معاً في المتوسط لمدة 4.7 سنوات. عادة ما يتقدم الرجل لخطبة المرأة، وأحياناً العكس." },
+                        { g: "Ein sehr alter und bekannter Brauch ist der Polterabend. Am Abend vor der Hochzeit feiert das zukünftige Brautpaar zusammen mit Verwandten, Freunden und Kollegen.", e: "A very old and well-known custom is the Polterabend. On the evening before the wedding, the future bridal couple celebrates together with relatives, friends, and colleagues.", a: "عرف قديم ومشهور جداً هو 'Polterabend' (ليلة تكسير الأطباق). في الليلة التي تسبق الزفاف، يحتفل العروسان المستقبليان مع الأقارب والأصدقاء والزملاء." },
+                        { g: "Die Gäste bringen altes Geschirr mit und zerschlagen es vor der Tür. Der Lärm soll die bösen Geister vertreiben und das kaputte Geschirr soll dem Brautpaar Glück bringen.", e: "The guests bring old dishes and smash them in front of the door. The noise is supposed to drive away evil spirits, and the broken dishes are supposed to bring the bridal couple luck.", a: "يحضر الضيوف أطباقاً قديمة ويكسرونها أمام الباب. يُفترض أن يطرد الضجيج الأرواح الشريرة، وأن يجلب الفخار المكسور الحظ السعيد للعروسين." },
+                        { g: "Die Trauung erfolgt auf dem Standesamt. Viele Paare heiraten danach noch einmal in der Kirche. Seit dem 1. Oktober 2017 dürfen in Deutschland auch gleichgeschlechtliche Paare heiraten.", e: "The wedding ceremony takes place at the registry office. Many couples then marry again in the church. Since October 1, 2017, same-sex couples are also allowed to marry in Germany.", a: "يتم الزواج رسمياً في مكتب السجل المدني. يتزوج العديد من الأزواج بعد ذلك مرة أخرى في الكنيسة. منذ 1 أكتوبر 2017، يُسمح أيضاً بزواج المثليين في ألمانيا." },
+                        { g: "Bei der standesamtlichen Trauung sind normalerweise zwei Trauzeugen dabei, einer/eine für die Braut, einer/eine für den Bräutigam. Das Heiratsalter ist in den letzten Jahren gestiegen.", e: "At the civil wedding ceremony there are usually two witnesses, one for the bride, one for the groom. The age of marriage has increased in recent years.", a: "في حفل الزفاف المدني، يتواجد عادة شاهدان، واحد للعروس وواحد للعريس. ارتفع سن الزواج في السنوات الأخيرة." },
+                        { g: "64 Prozent der Deutschen heiraten, weil sie die Partnerin/den Partner lieben. Etwa 40 Prozent heiraten eher aus finanziellen Gründen.", e: "64 percent of Germans marry because they love their partner. About 40 percent marry more for financial reasons.", a: "64 بالمائة من الألمان يتزوجون لأنهم يحبون الشريك. يتزوج حوالي 40 في المائة لأسباب مالية أكثر." },
+                        { g: "Für die Hochzeitsfeier werden durchschnittlich 10.000 Euro ausgegeben. Der Höhepunkt der meisten Hochzeitsfeiern ist die Hochzeitstorte. Das Brautpaar schneidet die Hochzeitstorte gemeinsam mit einem Messer an.", e: "An average of 10,000 euros is spent on the wedding celebration. The highlight of most wedding celebrations is the wedding cake. The bridal couple cuts the wedding cake together with a knife.", a: "يتم إنفاق 10 آلاف يورو في المتوسط على حفل الزفاف. ذروة معظم حفلات الزفاف هي كعكة الزفاف. يقطع العروسان كعكة الزفاف معاً بسكين." },
+                        { g: "Als Hochzeitsgeschenk wird Geld immer beliebter. Weil viele Paare schon vor der Hochzeit zusammenleben, brauchen Sie kein Geschirr oder Besteck mehr.", e: "Money is becoming increasingly popular as a wedding gift. Because many couples already live together before the wedding, they no longer need dishes or cutlery.", a: "أصبح المال أكثر شيوعاً كهدية زفاف. نظراً لأن العديد من الأزواج يعيشون معاً بالفعل قبل الزفاف، فلم يعودوا بحاجة إلى أطباق أو أدوات مائدة." },
+                        { g: "Jetzt kommen die schlechten Nachrichten: Ehepaare bleiben in Deutschland im Durchschnitt nur 14 Jahre zusammen. Etwa 45 Prozent der Ehen halten nicht.", e: "Now come the bad news: Married couples in Germany stay together for an average of only 14 years. About 45 percent of marriages do not last.", a: "والآن الأخبار السيئة: يبقى المتزوجون في ألمانيا معاً في المتوسط 14 عاماً فقط. حوالي 45 في المائة من الزيجات لا تستمر." }
+                    ]
+                },
+                {
+                    id: 'c3', title: "Heiraten in meinem Heimatland (الزفاف في مصر)",
+                    lines: [
+                        { g: "In Ägypten macht der Mann normalerweise den Heiratsantrag, meistens mit der Familie dabei.", e: "In Egypt, the man usually makes the marriage proposal, mostly with the family present.", a: "في مصر، عادة ما يتقدم الرجل لطلب الزواج، وفي الغالب بحضور العائلة." },
+                        { g: "Die Trauung findet meistens in einer Moschee oder im Standesamt statt.", e: "The wedding ceremony usually takes place in a mosque or at the registry office.", a: "يقام عقد القران عادة في المسجد أو في مكتب السجل المدني." },
+                        { g: "Die Hochzeitsfeier ist sehr groß, oft mit 200 bis 500 Gästen.", e: "The wedding celebration is very big, often with 200 to 500 guests.", a: "يكون حفل الزفاف كبيراً جداً، وغالباً ما يحضره 200 إلى 500 ضيف." },
+                        { g: "Die Gäste schenken meistens Geld, damit das Brautpaar das neue Leben beginnen kann.", e: "The guests usually give money so that the couple can start their new life.", a: "عادة ما يهدي الضيوف أموالاً حتى يتمكن العروسان من بدء حياتهما الجديدة." },
+                        { g: "Es gibt viele Bräuche: Vor der Hochzeit gibt es eine Feier, die „Henna-Nacht“ heißt, wo die Braut Henna auf die Hände bekommt.", e: "There are many customs: Before the wedding, there is a party called the 'Henna night,' where the bride gets henna on her hands.", a: "هناك العديد من العادات: قبل الزفاف، هناك حفلة تسمى 'ليلة الحناء'، حيث تضع العروس الحناء على يديها." },
+                        { g: "Bei der Hochzeit gibt es viel Musik, Tanz und ein großes Hochzeitsessen.", e: "At the wedding, there is lots of music, dancing, and a big wedding meal.", a: "في حفل الزفاف، توجد الكثير من الموسيقى والرقص ووجبة زفاف كبيرة." }
+                    ]
+                },
+                {
+                    id: 'c4', title: "Die bekanntesten Kaufhäuser in Deutschland (أشهر المتاجر في ألمانيا)",
+                    lines: [
+                        { g: "Viele Menschen in Deutschland kaufen heute in modernen Einkaufszentren ein. Traditionelle Kaufhäuser mit einem großen Warenangebot werden immer seltener. Aber ein paar berühmte Kaufhäuser gibt es immer noch.", e: "Many people in Germany shop today in modern shopping centers. Traditional department stores with a large range of goods are becoming rarer and rarer. But a few famous department stores still exist.", a: "يتسوق الكثير من الناس في ألمانيا اليوم في مراكز التسوق الحديثة. أصبحت المتاجر الكبرى التقليدية التي تقدم مجموعة واسعة من السلع نادرة بشكل متزايد. لكن لا يزال هناك عدد قليل من المتاجر الكبرى الشهيرة." },
+                        { g: "Das KaDeWe in Berlin ist ein wahres Paradies für Gourmets. Es liegt im Herzen von Berlin und ist nach Harrods in London das zweitgrößte Kaufhaus Europas.", e: "The KaDeWe in Berlin is a true paradise for gourmets. It is located in the heart of Berlin and is, after Harrods in London, the second largest department store in Europe.", a: "متجر KaDeWe في برلين هو جنة حقيقية للذواقة. يقع في قلب برلين وهو ثاني أكبر متجر متعدد الأقسام في أوروبا بعد متجر هارودز في لندن." },
+                        { g: "Heute können Besucher auf 70.000 Quadratmetern Waren aus den Bereichen Mode, Delikatessen, Haushaltswaren, Bücher und Kosmetik kaufen. Allein die Feinschmeckeretage im sechsten Stock ist mit ihren 7.000 Quadratmetern einen Besuch wert.", e: "Today visitors can buy goods on 70,000 square meters in the areas of fashion, delicatessen, household goods, books and cosmetics. The gourmet floor alone on the sixth floor with its 7,000 square meters is worth a visit.", a: "اليوم، يمكن للزوار شراء السلع على مساحة 70 ألف متر مربع في مجالات الموضة والأطعمة المعلبة والأدوات المنزلية والكتب ومستحضرات التجميل. طابق الذواقة وحده في الطابق السادس بمساحته البالغة 7000 متر مربع يستحق الزيارة." },
+                        { g: "Direkt am Marienplatz in München liegt das Warenhaus Ludwig Beck. Das Warenhaus blickt auf eine mehr als 150-jährige Geschichte zurück.", e: "Directly at Marienplatz in Munich lies the department store Ludwig Beck. The department store looks back on a history of more than 150 years.", a: "يقع متجر لودفيج بيك مباشرة في ساحة مارين بلاتز في ميونيخ. يمتد تاريخ المتجر لأكثر من 150 عاماً." },
+                        { g: "Einmalig in Deutschland ist die mehrfach mit dem „Echo“ ausgezeichnete Musikabteilung. Musikfreunde können hier aus über 120.000 CDs und DVDs auswählen.", e: "Unique in Germany is the music department, which has been awarded several times with the “Echo.” Music lovers can choose here from over 120,000 CDs and DVDs.", a: "الفريد من نوعه في ألمانيا هو قسم الموسيقى، الذي حصل على جائزة 'إيكو' عدة مرات. يمكن لعشاق الموسيقى الاختيار هنا من بين أكثر من 120 ألف قرص مضغوط وأقراص DVD." },
+                        { g: "Im Jahre 1912 eröffnete der Kaufmann Oscar Tietz ein Warenhaus in Hamburg. Heute zählt das Haus an der Alster zu den schönsten Kaufhäusern Deutschlands.", e: "In the year 1912 the merchant Oscar Tietz opened a department store in Hamburg. Today the store on the Alster counts as one of the most beautiful department stores in Germany.", a: "في عام 1912، افتتح التاجر أوسكار تيتز متجراً متعدد الأقسام في هامبورغ. اليوم، يُعد المتجر الموجود على نهر الألستر أحد أجمل المتاجر الكبرى في ألمانيا." },
+                        { g: "Das 24.000 Quadratmeter große Alsterhaus gehört zur Karstadt-Gruppe und bietet auch preisgünstige Kleidung an. In der obersten Etage befinden sich unter anderem eine Champagnerbar, ein Sushi-Restaurant und eine Delikatessenabteilung.", e: "The Alsterhaus, with 24,000 square meters, belongs to the Karstadt group and also offers inexpensive clothing. On the top floor there are, among other things, a champagne bar, a sushi restaurant, and a delicatessen department.", a: "ينتمي متجر ألاسترهاوس الذي تبلغ مساحته 24 ألف متر مربع إلى مجموعة كارشتات ويقدم أيضاً ملابس بأسعار معقولة. يوجد في الطابق العلوي، من بين أشياء أخرى، بار للشمبانيا ومطعم سوشي وقسم للأطعمة الشهية." }
+                    ]
+                }
+            ],
+            letters: [
+                {
+                    id: 'l1', title: "Einladung zur Hochzeit (دعوة حفل زفاف)",
+                    lines: [
+                        { g: "Wir sagen Ja und das wollen wir gerne mit euch feiern.", e: "We say yes and we would like to celebrate it with you.", a: "سنقول 'نعم' ونود أن نحتفل بذلك معكم." },
+                        { g: "Unsere Trauung findet am 22. Mai um 10.00 Uhr auf dem Standesamt „Mitte von Berlin“ statt.", e: "Our wedding ceremony will take place on May 22 at 10:00 a.m. at the registry office 'Berlin Mitte'.", a: "سيقام حفل زفافنا يوم 22 مايو الساعة 10:00 صباحاً في مكتب التسجيل المدني 'برلين مِتّه'." },
+                        { g: "Anschließend laden wir euch zu einem festlichen Essen im Restaurant Hackethals ein.", e: "Afterwards we invite you to a festive meal at the restaurant Hackethals.", a: "بعد ذلك ندعوكم لتناول وجبة احتفالية في مطعم هاكيتالز." },
+                        { g: "Bitte schreibt uns bis zum 22. April, ob ihr kommt.", e: "Please write to us by April 22 whether you are coming.", a: "يرجى مراسلتنا بحلول 22 أبريل لإخبارنا إذا كنتم ستأتون." },
+                        { g: "Wir freuen uns auf diesen Tag und auf euch. Katharina und Sebastian", e: "We look forward to this day and to you. Katharina and Sebastian", a: "نحن نتطلع لهذا اليوم ولرؤيتكم. كاتارينا و سيباستيان" }
+                    ]
+                },
+                {
+                    id: 'l2', title: "Zusage & Absage zur Hochzeit (قبول ورفض الدعوة للزفاف)",
+                    lines: [
+                        { g: "--- Zusage (قبول الدعوة) ---", e: "--- Acceptance ---", a: "--- قبول الدعوة ---" },
+                        { g: "Vielen Dank für die Einladung. Was für eine Freude!", e: "Thank you very much for the invitation. What a joy!", a: "شكراً جزيلاً على الدعوة. يا لها من فرحة!" },
+                        { g: "Ich komme sehr gern zur Hochzeit. Habt ihr einen besonderen Wunsch für das Geschenk?", e: "I will gladly come to the wedding. Do you have a special wish for the gift?", a: "سآتي بكل سرور إلى حفل الزفاف. هل لديكم أمنية خاصة بالنسبة للهدية؟" },
+                        { g: "--- Absage (الاعتذار/رفض الدعوة) ---", e: "--- Decline ---", a: "--- الاعتذار/رفض الدعوة ---" },
+                        { g: "Es tut mir so leid, aber ich kann am 22. Mai nicht kommen, weil ich auf einer Geschäftsreise bin.", e: "I am so sorry, but I cannot come on May 22 because I will be on a business trip.", a: "أنا آسف جداً، لكن لا يمكنني الحضور في 22 مايو لأنني سأكون في رحلة عمل." },
+                        { g: "Ich wünsche euch trotzdem einen wunderschönen Tag und alles Gute für eure Ehe.", e: "I still wish you a wonderful day and all the best for your marriage.", a: "مع ذلك، أتمنى لكم يوماً رائعاً وكل التوفيق في زواجكم." }
+                    ]
+                },
+                {
+                    id: 'l3', title: "Einladung zum Geburtstag (دعوة لعيد الميلاد)",
+                    lines: [
+                        { g: "Liebe Anna,", e: "Dear Anna,", a: "عزيزتي آنا،" },
+                        { g: "am 15. September werde ich wieder ein Jahr älter. Das ist ein Grund zum Feiern!", e: "on September 15 I will be one year older. That is a reason to celebrate!", a: "في 15 سبتمبر سأكبر عاماً آخر. هذا سبب للاحتفال!" },
+                        { g: "Kommst du zu meiner Geburtstagsfeier?", e: "Will you come to my birthday party?", a: "هل ستأتين إلى حفلة عيد ميلادي؟" },
+                        { g: "Es gibt Kuchen, Pizza und Musik.", e: "There will be cake, pizza and music.", a: "سيكون هناك كعك وبيتزا وموسيقى." },
+                        { g: "Ich freue mich sehr auf dich. Liebe Grüße, Ahmed", e: "I am really looking forward to seeing you. Best regards, Ahmed", a: "أنا أتطلع حقاً لرؤيتك. أطيب التحيات، أحمد" }
+                    ]
+                }
+            ],
+            grammar: [
+                {
+                    title: "1. dass-Sätze (الجمل الجانبية مع dass)",
+                    desc: "تُستخدم كلمة (dass) بمعنى 'أن' لربط جملتين. الجملة التي تبدأ بـ dass هي جملة جانبية (Nebensatz)، وبالتالي الفعل المُصرّف يجب أن يأتي في نهاية الجملة.",
+                    structure: "Hauptsatz + dass + Subjekt + ... + [Verb am Ende].",
+                    examples: [
+                        { category: "dass-Satz", g: "Wissenschaftler haben herausgefunden, <span class='text-purple-600 font-bold'>dass</span> die materielle Sicherheit wichtig <span class='text-purple-600 font-bold'>ist</span>.", e: "Scientists have found that material security is important.", a: "اكتشف العلماء أن الأمان المادي مهم." },
+                        { category: "dass-Satz", g: "Glücksforscher meinen, <span class='text-purple-600 font-bold'>dass</span> das materielle Glückslimit bei rund 60.000 Euro <span class='text-purple-600 font-bold'>liegt</span>.", e: "Happiness researchers think that the material happiness limit is around 60,000 euros.", a: "يعتقد باحثو السعادة أن الحد المادي للسعادة يبلغ حوالي 60 ألف يورو." },
+                        { category: "dass-Satz", g: "Studien haben gezeigt, <span class='text-purple-600 font-bold'>dass</span> wir gute Freunde <span class='text-purple-600 font-bold'>brauchen</span>.", e: "Studies have shown that we need good friends.", a: "أظهرت الدراسات أننا بحاجة إلى أصدقاء جيدين." },
+                        { category: "dass-Satz", g: "Forscher sind der Meinung, <span class='text-purple-600 font-bold'>dass</span> ein weiterer Glücksfaktor eine sinnvolle Tätigkeit <span class='text-purple-600 font-bold'>ist</span>.", e: "Researchers are of the opinion that another happiness factor is meaningful activity.", a: "يرى الباحثون أن من عوامل السعادة الأخرى هو وجود نشاط هادف." },
+                        { category: "dass-Satz", g: "Forscher haben herausgefunden, <span class='text-purple-600 font-bold'>dass</span> äußere Faktoren 50 Prozent unseres Glücksgefühls <span class='text-purple-600 font-bold'>bestimmen</span>.", e: "Researchers have found that external factors determine 50 percent of our feeling of happiness.", a: "اكتشف الباحثون أن العوامل الخارجية تحدد 50 بالمائة من شعورنا بالسعادة." }
+                    ]
+                },
+                {
+                    title: "2. weil vs. denn (الروابط لأن: weil و denn)",
+                    desc: "كلتا الكلمتين تعنيان 'لأن' وتستخدمان لذكر السبب. جميع الـ 15 مثال المذكورة في الدرس هنا بالأسفل لمقارنة موقع الفعل (Position des Verbs).",
+                    structure: "... denn + Subjekt + [Verb in Position 2] + ... \n... weil + Subjekt + ... + [Verb am Ende].",
+                    examples: [
+                        { category: "Beispiel 1", g: "Ich bleibe heute zu Hause, <span class='text-purple-600 font-bold'>weil</span> es <span class='text-purple-600 font-bold'>regnet</span>.<br>Ich bleibe heute zu Hause, <span class='text-purple-600 font-bold'>denn</span> es <span class='text-purple-600 font-bold'>regnet</span>.", e: "I'm staying home today because it's raining.", a: "سأبقى في المنزل اليوم لأنها تمطر." },
+                        { category: "Beispiel 2", g: "Sie kann nicht kommen, <span class='text-purple-600 font-bold'>weil</span> sie krank <span class='text-purple-600 font-bold'>ist</span>.<br>Sie kann nicht kommen, <span class='text-purple-600 font-bold'>denn</span> sie <span class='text-purple-600 font-bold'>ist</span> krank.", e: "She can't come because she is sick.", a: "لا تستطيع المجيء لأنها مريضة." },
+                        { category: "Beispiel 3", g: "Ich gehe früh ins Bett, <span class='text-purple-600 font-bold'>weil</span> ich morgen arbeiten <span class='text-purple-600 font-bold'>muss</span>.<br>Ich gehe früh ins Bett, <span class='text-purple-600 font-bold'>denn</span> ich <span class='text-purple-600 font-bold'>muss</span> morgen arbeiten.", e: "I'm going to bed early because I have to work tomorrow.", a: "سأذهب للسرير مبكراً لأنني يجب أن أعمل غداً." },
+                        { category: "Beispiel 4", g: "Wir machen ein Picknick, <span class='text-purple-600 font-bold'>weil</span> das Wetter schön <span class='text-purple-600 font-bold'>ist</span>.<br>Wir machen ein Picknick, <span class='text-purple-600 font-bold'>denn</span> das Wetter <span class='text-purple-600 font-bold'>ist</span> schön.", e: "We’re having a picnic because the weather is nice.", a: "نقوم بنزهة لأن الطقس جميل." },
+                        { category: "Beispiel 5", g: "Ich esse nichts, <span class='text-purple-600 font-bold'>weil</span> ich keinen Hunger <span class='text-purple-600 font-bold'>habe</span>.<br>Ich esse nichts, <span class='text-purple-600 font-bold'>denn</span> ich <span class='text-purple-600 font-bold'>habe</span> keinen Hunger.", e: "I'm not eating anything because I'm not hungry.", a: "أنا لا آكل شيئاً لأنني لست جائعاً." },
+                        { category: "Beispiel 6", g: "Sie fährt nach Berlin, <span class='text-purple-600 font-bold'>weil</span> sie dort <span class='text-purple-600 font-bold'>studiert</span>.<br>Sie fährt nach Berlin, <span class='text-purple-600 font-bold'>denn</span> sie <span class='text-purple-600 font-bold'>studiert</span> dort.", e: "She's going to Berlin because she studies there.", a: "تسافر إلى برلين لأنها تدرس هناك." },
+                        { category: "Beispiel 7", g: "Ich rufe dich an, <span class='text-purple-600 font-bold'>weil</span> ich dir etwas Wichtiges sagen <span class='text-purple-600 font-bold'>muss</span>.<br>Ich rufe dich an, <span class='text-purple-600 font-bold'>denn</span> ich <span class='text-purple-600 font-bold'>muss</span> dir etwas Wichtiges sagen.", e: "I'm calling you because I have something important to tell you.", a: "أتصل بك لأنني يجب أن أخبرك بشيء مهم." },
+                        { category: "Beispiel 8", g: "Wir bleiben zu Hause, <span class='text-purple-600 font-bold'>weil</span> es zu kalt draußen <span class='text-purple-600 font-bold'>ist</span>.<br>Wir bleiben zu Hause, <span class='text-purple-600 font-bold'>denn</span> es <span class='text-purple-600 font-bold'>ist</span> zu kalt draußen.", e: "We're staying home because it's too cold outside.", a: "سنبقى في المنزل لأن الجو بارد جداً في الخارج." },
+                        { category: "Beispiel 9", g: "Er lernt viel, <span class='text-purple-600 font-bold'>weil</span> er die Prüfung bestehen <span class='text-purple-600 font-bold'>will</span>.<br>Er lernt viel, <span class='text-purple-600 font-bold'>denn</span> er <span class='text-purple-600 font-bold'>will</span> die Prüfung bestehen.", e: "He studies a lot because he wants to pass the exam.", a: "هو يذاكر كثيراً لأنه يريد اجتياز الامتحان." },
+                        { category: "Beispiel 10", g: "Ich trinke Wasser, <span class='text-purple-600 font-bold'>weil</span> ich durstig <span class='text-purple-600 font-bold'>bin</span>.<br>Ich trinke Wasser, <span class='text-purple-600 font-bold'>denn</span> ich <span class='text-purple-600 font-bold'>bin</span> durstig.", e: "I'm drinking water because I'm thirsty.", a: "أشرب الماء لأنني عطشان." },
+                        { category: "Beispiel 11", g: "Wir fahren nicht weg, <span class='text-purple-600 font-bold'>weil</span> wir kein Geld <span class='text-purple-600 font-bold'>haben</span>.<br>Wir fahren nicht weg, <span class='text-purple-600 font-bold'>denn</span> wir <span class='text-purple-600 font-bold'>haben</span> kein Geld.", e: "We're not going away because we don't have money.", a: "لن نسافر بعيداً لأننا لا نملك المال." },
+                        { category: "Beispiel 12", g: "Ich gehe spazieren, <span class='text-purple-600 font-bold'>weil</span> ich frische Luft <span class='text-purple-600 font-bold'>brauche</span>.<br>Ich gehe spazieren, <span class='text-purple-600 font-bold'>denn</span> ich <span class='text-purple-600 font-bold'>brauche</span> frische Luft.", e: "I'm going for a walk because I need fresh air.", a: "سأذهب في نزهة لأنني أحتاج هواءً نقياً." },
+                        { category: "Beispiel 13", g: "Sie freut sich, <span class='text-purple-600 font-bold'>weil</span> sie ein Geschenk bekommen <span class='text-purple-600 font-bold'>hat</span>.<br>Sie freut sich, <span class='text-purple-600 font-bold'>denn</span> sie <span class='text-purple-600 font-bold'>hat</span> ein Geschenk bekommen.", e: "She is happy because she got a gift.", a: "هي سعيدة لأنها حصلت على هدية." },
+                        { category: "Beispiel 14", g: "Ich bleibe im Bett, <span class='text-purple-600 font-bold'>weil</span> ich müde <span class='text-purple-600 font-bold'>bin</span>.<br>Ich bleibe im Bett, <span class='text-purple-600 font-bold'>denn</span> ich <span class='text-purple-600 font-bold'>bin</span> müde.", e: "I'm staying in bed because I'm tired.", a: "سأبقى في السرير لأنني متعب." },
+                        { category: "Beispiel 15", g: "Wir fahren mit dem Bus, <span class='text-purple-600 font-bold'>weil</span> das Auto kaputt <span class='text-purple-600 font-bold'>ist</span>.<br>Wir fahren mit dem Bus, <span class='text-purple-600 font-bold'>denn</span> das Auto <span class='text-purple-600 font-bold'>ist</span> kaputt.", e: "We're taking the bus because the car is broken.", a: "سنستقل الحافلة لأن السيارة معطلة." }
+                    ]
+                }
+            ],
+            verbs: [
+                {
+                    id: 'v1', ger: "sich fühlen", eng: "to feel", ar: "يشعر", type: "Reflexiv (Akk)", praeteritum: "fühlte sich", perfekt: "hat sich gefühlt", s: [
+                        { g: "Ich <strong>fühle mich</strong> heute sehr gut.", e: "I feel very good today.", a: "أشعر أنني بحالة جيدة جداً اليوم." },
+                        { g: "Am glücklichsten <strong>fühlen sich</strong> die Menschen in einer Beziehung.", e: "People feel happiest in a relationship.", a: "يشعر الناس بأقصى درجات السعادة عندما يكونون في علاقة." },
+                        { g: "Gestern hat sie <strong>sich</strong> unglücklich <strong>gefühlt</strong>.", e: "Yesterday she felt unhappy.", a: "بالأمس شعرت بالتعاسة." }
+                    ]
+                },
+                {
+                    id: 'v2', ger: "sich freuen auf", eng: "to look forward to", ar: "يتطلع إلى (للمستقبل)", type: "Reflexiv + Präposition (Akk)", praeteritum: "freute sich auf", perfekt: "hat sich gefreut", s: [
+                        { g: "Ich <strong>freue mich auf</strong> diesen Tag.", e: "I look forward to this day.", a: "أنا أتطلع إلى هذا اليوم." },
+                        { g: "Wir <strong>freuen uns auf</strong> euch.", e: "We look forward to seeing you.", a: "نحن نتطلع لرؤيتكم." },
+                        { g: "Sie hat <strong>sich</strong> schon lange <strong>auf</strong> die Hochzeit <strong>gefreut</strong>.", e: "She has been looking forward to the wedding for a long time.", a: "لقد كانت تتطلع إلى حفل الزفاف منذ فترة طويلة." }
+                    ]
+                },
+                {
+                    id: 'v3', ger: "heiraten", eng: "to marry", ar: "يتزوج", type: "Regelmäßig", praeteritum: "heiratete", perfekt: "hat geheiratet", s: [
+                        { g: "Viele Paare <strong>heiraten</strong> in der Kirche.", e: "Many couples marry in the church.", a: "يتزوج العديد من الأزواج في الكنيسة." },
+                        { g: "Sie haben letztes Jahr <strong>geheiratet</strong>.", e: "They got married last year.", a: "تزوجا العام الماضي." },
+                        { g: "Seit 2017 dürfen in Deutschland auch gleichgeschlechtliche Paare <strong>heiraten</strong>.", e: "Since 2017, same-sex couples are also allowed to marry in Germany.", a: "منذ عام 2017، يُسمح للمثليين أيضاً بالزواج في ألمانيا." }
+                    ]
+                },
+                {
+                    id: 'v4', ger: "sich scheiden lassen", eng: "to get divorced", ar: "يتطلق", type: "Reflexiv (Akk)", praeteritum: "ließ sich scheiden", perfekt: "hat sich scheiden lassen", s: [
+                        { g: "Sie wollen <strong>sich scheiden lassen</strong>.", e: "They want to get divorced.", a: "يريدان الطلاق." },
+                        { g: "Nach zehn Jahren hat er <strong>sich scheiden lassen</strong>.", e: "After ten years, he got divorced.", a: "تطلق بعد عشر سنوات." },
+                        { g: "Es ist traurig, wenn Eltern <strong>sich scheiden lassen</strong>.", e: "It is sad when parents get divorced.", a: "من المحزن أن يتطلق الوالدان." }
+                    ]
+                },
+                {
+                    id: 'v5', ger: "gratulieren (Dat)", eng: "to congratulate", ar: "يُهنئ", type: "Regelmäßig (Dativ)", praeteritum: "gratulierte", perfekt: "hat gratuliert", s: [
+                        { g: "Ich <strong>gratuliere</strong> dir zur bestandenen Prüfung.", e: "I congratulate you on passing the exam.", a: "أهنئك على اجتياز الامتحان." },
+                        { g: "Wir haben ihm zur Hochzeit <strong>gratuliert</strong>.", e: "We congratulated him on his wedding.", a: "لقد هنأناه بمناسبة زفافه." },
+                        { g: "Bitte <strong>gratulieren</strong> Sie der Braut von mir.", e: "Please congratulate the bride for me.", a: "من فضلك هنئ العروس بالنيابة عني." }
+                    ]
+                },
+                {
+                    id: 'v6', ger: "feiern", eng: "to celebrate", ar: "يحتفل", type: "Regelmäßig", praeteritum: "feierte", perfekt: "hat gefeiert", s: [
+                        { g: "Wir <strong>feiern</strong> Weihnachten mit der Familie.", e: "We celebrate Christmas with the family.", a: "نحتفل بعيد الميلاد مع العائلة." },
+                        { g: "Am Abend vor der Hochzeit <strong>feiert</strong> das Brautpaar.", e: "On the evening before the wedding, the bridal couple celebrates.", a: "يحتفل العروسان في الليلة التي تسبق حفل الزفاف." },
+                        { g: "Wir haben seinen Geburtstag groß <strong>gefeiert</strong>.", e: "We celebrated his birthday in a big way.", a: "احتفلنا بعيد ميلاده بشكل كبير." }
+                    ]
+                },
+                {
+                    id: 'v7', ger: "stattfinden", eng: "to take place", ar: "يقام / يعقد", type: "Trennbare Verben", praeteritum: "fand statt", perfekt: "hat stattgefunden", s: [
+                        { g: "Unsere Trauung <strong>findet</strong> auf dem Standesamt <strong>statt</strong>.", e: "Our wedding ceremony takes place at the registry office.", a: "يقام حفل زفافنا في مكتب السجل المدني." },
+                        { g: "Die Besprechung hat gestern <strong>stattgefunden</strong>.", e: "The meeting took place yesterday.", a: "انعقد الاجتماع بالأمس." },
+                        { g: "Wann <strong>findet</strong> das nächste Familientreffen <strong>statt</strong>?", e: "When does the next family gathering take place?", a: "متى سيقام التجمع العائلي القادم؟" }
+                    ]
+                },
+                {
+                    id: 'v8', ger: "ausgeben (für)", eng: "to spend (money on)", ar: "ينفق (المال على)", type: "Unregelmäßig", praeteritum: "gab aus", perfekt: "hat ausgegeben", s: [
+                        { g: "Für die Hochzeitsfeier werden durchschnittlich 10.000 Euro <strong>ausgegeben</strong>.", e: "An average of 10,000 euros is spent on the wedding celebration.", a: "يتم إنفاق حوالي 10,000 يورو على حفل الزفاف." },
+                        { g: "Er <strong>gibt</strong> viel Geld für seine Hobbys <strong>aus</strong>.", e: "He spends a lot of money on his hobbies.", a: "إنه ينفق الكثير من المال على هواياته." },
+                        { g: "Ich habe gestern zu viel Geld im Kaufhaus <strong>ausgegeben</strong>.", e: "I spent too much money in the department store yesterday.", a: "أنفقت أموالاً كثيرة جداً في المتجر بالأمس." }
+                    ]
+                },
+                {
+                    id: 'v9', ger: "verdienen", eng: "to earn", ar: "يكسب (المال)", type: "Regelmäßig", praeteritum: "verdiente", perfekt: "hat verdient", s: [
+                        { g: "Wer mehr Geld <strong>verdient</strong>, wird man nicht glücklicher.", e: "Those who earn more money do not become happier.", a: "من يكسب المزيد من المال لا يصبح أكثر سعادة." },
+                        { g: "In meinem neuen Job <strong>verdiene</strong> ich gut.", e: "I earn well in my new job.", a: "أنا أكسب جيداً في وظيفتي الجديدة." },
+                        { g: "Wie viel hast du letzten Monat <strong>verdient</strong>?", e: "How much did you earn last month?", a: "كم كسبت في الشهر الماضي؟" }
+                    ]
+                },
+                {
+                    id: 'v10', ger: "helfen (Dat)", eng: "to help", ar: "يساعد", type: "Unregelmäßig (Dativ)", praeteritum: "half", perfekt: "hat geholfen", s: [
+                        { g: "Ich bin zufrieden, wenn ich meiner Familie <strong>helfen</strong> kann.", e: "I am satisfied when I can help my family.", a: "أكون راضياً عندما أستطيع مساعدة عائلتي." },
+                        { g: "Er <strong>hilft</strong> mir oft bei den Hausaufgaben.", e: "He often helps me with my homework.", a: "هو يساعدني غالباً في الواجبات المنزلية." },
+                        { g: "Der Verkäufer hat dem Kunden <strong>geholfen</strong>.", e: "The seller helped the customer.", a: "البائع ساعد الزبون." }
+                    ]
+                },
+                {
+                    id: 'v11', ger: "bestimmen", eng: "to determine", ar: "يحدد", type: "Regelmäßig", praeteritum: "bestimmte", perfekt: "hat bestimmt", s: [
+                        { g: "Äußere Faktoren <strong>bestimmen</strong> 50 Prozent unseres Glücksgefühls.", e: "External factors determine 50 percent of our feeling of happiness.", a: "تحدد العوامل الخارجية 50 بالمائة من شعورنا بالسعادة." },
+                        { g: "Die Gene <strong>bestimmen</strong> die anderen 50 Prozent.", e: "Genes determine the other 50 percent.", a: "الجينات تحدد الـ 50 بالمائة الأخرى." },
+                        { g: "Wer <strong>bestimmt</strong> hier die Regeln?", e: "Who determines the rules here?", a: "من يحدد القواعد هنا؟" }
+                    ]
+                },
+                {
+                    id: 'v12', ger: "passen (Dat)", eng: "to fit / to suit", ar: "يناسب", type: "Regelmäßig (Dativ)", praeteritum: "passte", perfekt: "hat gepasst", s: [
+                        { g: "<strong>Passt</strong> es dir am Nachmittag um 14.00 Uhr?", e: "Does 2:00 p.m. in the afternoon suit you?", a: "هل يناسبك الساعة 2 بعد الظهر؟" },
+                        { g: "Die Schuhe in Größe 43 <strong>passen</strong> mir perfekt.", e: "The shoes in size 43 fit me perfectly.", a: "الأحذية مقاس 43 تناسبني تماماً." },
+                        { g: "Der Termin hat ihm leider nicht <strong>gepasst</strong>.", e: "Unfortunately the appointment did not suit him.", a: "للأسف لم يناسبه الموعد." }
+                    ]
+                },
+                {
+                    id: 'v13', ger: "anprobieren", eng: "to try on", ar: "يُجرب (يقيس الملابس أو الأحذية)", type: "Trennbare Verben", praeteritum: "probierte an", perfekt: "hat anprobiert", s: [
+                        { g: "Gut, die Schuhe <strong>probiere</strong> ich mal <strong>an</strong>.", e: "Good, I will try the shoes on.", a: "حسناً، سأجرب هذه الأحذية." },
+                        { g: "Hast du die weiße Hose <strong>anprobiert</strong>?", e: "Did you try on the white pants?", a: "هل جربت (قست) السروال الأبيض؟" },
+                        { g: "Ich möchte dieses Kleid gerne <strong>anprobieren</strong>.", e: "I would like to try on this dress.", a: "أود أن أقيس هذا الفستان." }
+                    ]
+                },
+                {
+                    id: 'v14', ger: "empfehlen", eng: "to recommend", ar: "يوصي بـ", type: "Unregelmäßig", praeteritum: "empfahl", perfekt: "hat empfohlen", s: [
+                        { g: "Können Sie ein gutes Geschäft <strong>empfehlen</strong>?", e: "Can you recommend a good shop?", a: "هل يمكنك التوصية بمتجر جيد؟" },
+                        { g: "Ich <strong>empfehle</strong> den Laden „BioMarkt“ für Gemüse.", e: "I recommend the shop 'BioMarkt' for vegetables.", a: "أوصي بمتجر 'BioMarkt' للخضروات." },
+                        { g: "Der Verkäufer hat mir diese Laufschuhe <strong>empfohlen</strong>.", e: "The seller recommended these running shoes to me.", a: "نصحني البائع بأحذية الركض هذه." }
+                    ]
+                },
+                {
+                    id: 'v15', ger: "zerschlagen", eng: "to smash / break into pieces", ar: "يُحطم / يكسر", type: "Unregelmäßig", praeteritum: "zerschlug", perfekt: "hat zerschlagen", s: [
+                        { g: "Die Gäste bringen altes Geschirr mit und <strong>zerschlagen</strong> es vor der Tür.", e: "The guests bring old dishes and smash them in front of the door.", a: "يحضر الضيوف أطباقاً قديمة ويكسرونها أمام الباب." },
+                        { g: "Beim Polterabend haben wir viel Porzellan <strong>zerschlagen</strong>.", e: "At the Polterabend we smashed a lot of porcelain.", a: "في ليلة توديع العزوبية حطمنا الكثير من الخزف الصيني." },
+                        { g: "Das Kind hat aus Versehen den Teller <strong>zerschlagen</strong>.", e: "The child accidentally smashed the plate.", a: "حطم الطفل الطبق عن طريق الخطأ." }
+                    ]
+                }
+            ]
+        };
+
+        const { useState, useEffect } = React;
+
+        // --- HELPER FOR ARTICLES COLORING ---
+        const colorizeArticles = (text) => {
+            if (!text) return text;
+            const regex = /(der |die |das )/gi;
+            const parts = text.split(regex);
+            return parts.map((part, i) => {
+                const lower = part.toLowerCase();
+                if (lower === 'der ') return <span key={i} className="text-blue-500 font-extrabold">{part}</span>;
+                if (lower === 'die ') return <span key={i} className="text-rose-500 font-extrabold">{part}</span>;
+                if (lower === 'das ') return <span key={i} className="text-emerald-500 font-extrabold">{part}</span>;
+                return <span key={i}>{part}</span>;
+            });
+        };
+
+        // --- COMPONENTS ---
+        const ProgressBar = ({ total, learned, colorClass }) => {
+            const percentage = total === 0 ? 0 : Math.round((learned / total) * 100);
+            return (
+                <div className="glass-panel p-5 rounded-2xl mb-8 flex items-center justify-between transition-all" dir="rtl">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider ar-text mb-1">مستوى التقدم</h3>
+                        <p className="text-3xl font-extrabold text-slate-800">{learned} <span className="text-sm font-medium text-slate-400">/ {total} أتقنتهم</span></p>
+                    </div>
+                    <div className="relative w-20 h-20 drop-shadow-md">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path className="text-slate-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                            <path className={`${colorClass} transition-all duration-1000 ease-out`} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold text-slate-700">
+                            {percentage}%
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const WordCard = ({ item, isLearned, toggleLearned }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+            return (
+                <div className="relative group perspective-1000 w-full h-[24rem]">
+                    <div className={`w-full h-full transition-all duration-700 transform-style-3d shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl ${isFlipped ? 'rotate-y-180' : ''}`}>
+
+                        {/* FRONT */}
+                        <div className="absolute w-full h-full backface-hidden bg-white border border-slate-100 rounded-2xl p-5 flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
+                            onClick={() => setIsFlipped(true)}>
+                            <div className="flex justify-between items-start shrink-0" dir="rtl">
+                                <span className="bg-orange-50 text-orange-600 text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider ar-text border border-orange-100">مفردات</span>
+                                <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <div className="text-center mt-2 flex-grow flex flex-col justify-center overflow-y-auto front-scroll px-1 py-3">
+                                <div className="flex flex-col justify-center items-center gap-3 mb-1">
+                                    <h3 className="text-xl lg:text-2xl font-bold text-slate-800 leading-tight">{colorizeArticles(item.ger)}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={(e) => playAudio(item.ger, e)} className="p-2 rounded-full bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors shadow-sm"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                        <SpeechTester targetText={item.ger} />
+                                    </div>
+                                </div>
+                                <div className="mt-4 space-y-1">
+                                    <p className="text-slate-500 font-medium text-sm">{item.eng}</p>
+                                    <p className="text-orange-600 font-bold ar-text text-lg" dir="rtl">{item.ar}</p>
+                                </div>
+                            </div>
+
+                            <div className="text-center text-xs text-slate-400 font-medium flex items-center justify-center gap-1 ar-text mt-2 shrink-0">
+                                <i data-lucide="rotate-cw" className="w-3 h-3"></i> اضغط للأمثلة
+                            </div>
+                        </div>
+
+                        {/* BACK */}
+                        <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-2xl p-5 shadow-lg flex flex-col cursor-pointer overflow-hidden"
+                            onClick={() => setIsFlipped(false)} style={{ transform: 'rotateY(180deg)' }}>
+                            <div className="mb-3 border-b border-white/20 pb-2 flex justify-between items-center shrink-0" dir="rtl">
+                                <h4 className="font-bold text-white/90 text-sm tracking-wider ar-text">أمثلة سياقية</h4>
+                                <i data-lucide="rotate-ccw" className="w-4 h-4 text-white/60"></i>
+                            </div>
+                            <div className="overflow-y-auto card-scroll flex-grow pr-2 pb-2">
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="text-sm bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/5">
+                                            <div className="flex items-start gap-2 mb-1.5">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className="p-1 text-orange-200 hover:text-white shrink-0 mt-0.5"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <span className="leading-relaxed" dangerouslySetInnerHTML={{ __html: sentence.g }}></span>
+                                            </div>
+                                            <div className="text-orange-200 text-xs italic ml-8 mb-1.5">{sentence.e}</div>
+                                            <div className="text-amber-100 text-sm font-bold ar-text border-t border-white/10 pt-1.5 mt-1" dir="rtl">{sentence.a}</div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const VerbRow = ({ item, isLearned, toggleLearned }) => {
+            const [expanded, setExpanded] = useState(false);
+
+            return (
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md" dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors shrink-0 ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex flex-wrap items-center gap-2">
+                                    {item.ger}
+                                    <button onClick={(e) => playAudio(item.ger, e)} className="text-emerald-600 opacity-70 hover:opacity-100 transition-opacity"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                    <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded uppercase tracking-wider">{item.type}</span>
+                                </h3>
+                                <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className="text-emerald-600 font-bold ar-text" dir="rtl">{item.ar}</span></p>
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            {/* PRÄTERITUM & PERFEKT BLOCKS */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präteritum (ماضي بسيط)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praeteritum, e)} className="text-amber-600 bg-amber-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.praeteritum}</p>
+                                    </div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Perfekt (ماضي تام)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.perfekt, e)} className="text-purple-600 bg-purple-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.perfekt}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <h4 className="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider ar-text">أمثلة سياقية (Beispiele)</h4>
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm group flex flex-col sm:flex-row gap-4 justify-between items-start">
+                                            <div className="flex-1">
+                                                <div className="flex items-start gap-3 mb-2">
+                                                    <button onClick={(e) => playAudio(sentence.g, e)} className="mt-0.5 text-emerald-600 bg-emerald-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                    <p className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: sentence.g }}></p>
+                                                </div>
+                                                <p className="text-slate-500 text-sm ml-10 mb-2">{sentence.e}</p>
+                                                <div className="ml-10 text-emerald-600 text-base font-bold ar-text border-t border-slate-100 pt-2" dir="rtl">{sentence.a}</div>
+                                            </div>
+                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-slate-50 p-1.5 rounded-full" dir="ltr">
+                                                <SpeechTester targetText={sentence.g} />
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const DialogueRow = ({ dialogue }) => {
+            const [expanded, setExpanded] = useState(false);
+            return (
+                <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden mb-6 transition-all duration-300 hover:shadow-lg" dir="ltr">
+                    <button
+                        className="w-full p-6 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white"
+                        onClick={() => setExpanded(!expanded)}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl">
+                                <i data-lucide={dialogue.icon} className="w-6 h-6"></i>
+                            </div>
+                            <h3 className="text-xl md:text-2xl font-bold text-slate-800 ar-text">{dialogue.title}</h3>
+                        </div>
+                        <i data-lucide="chevron-down" className={`w-6 h-6 text-slate-400 transform transition-transform duration-300 ${expanded ? 'rotate-180 text-blue-600' : ''}`}></i>
+                    </button>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="p-6 bg-white space-y-4">
+                            {dialogue.lines.map((line, idx) => {
+                                const isFirstSpeaker = idx === 0 || line.speaker === dialogue.lines[0].speaker;
+                                return (
+                                    <div key={idx} className={`flex flex-col p-4 rounded-2xl border ${isFirstSpeaker ? 'bg-blue-50/50 border-blue-100 ml-8' : 'bg-slate-50 border-slate-100 mr-8'}`}>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${isFirstSpeaker ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-700'}`}>
+                                                {line.speaker}
+                                            </span>
+                                            <div className="flex gap-2">
+                                                <button onClick={(e) => playAudio(line.text, e)} className="text-slate-400 hover:text-blue-600 transition-colors"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <SpeechTester targetText={line.text} />
+                                            </div>
+                                        </div>
+                                        <p className="text-lg font-medium text-slate-800 mb-1">{line.text}</p>
+                                        <p className="text-sm text-slate-500 mb-2 italic">{line.en}</p>
+                                        <p className="text-blue-700 font-bold ar-text border-t border-slate-200/50 pt-2 text-right" dir="rtl">{line.ar}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- MAIN APP ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('words');
+            const [learnedItems, setLearnedItems] = useState(new Set());
+            const [searchTerm, setSearchTerm] = useState('');
+
+            // Load saved progress
+            useEffect(() => {
+                const saved = localStorage.getItem('a2_glueck_progress');
+                if (saved) setLearnedItems(new Set(JSON.parse(saved)));
+            }, []);
+
+            // Save progress
+            useEffect(() => {
+                localStorage.setItem('a2_glueck_progress', JSON.stringify(Array.from(learnedItems)));
+            }, [learnedItems]);
+
+            useEffect(() => { lucide.createIcons(); });
+
+            const toggleLearned = (id) => {
+                const newLearned = new Set(learnedItems);
+                if (newLearned.has(id)) newLearned.delete(id);
+                else newLearned.add(id);
+                setLearnedItems(newLearned);
+            };
+
+            // Calculate total words dynamically from all categories
+            const totalWords = Object.values(LEARNING_DATA.words).reduce((acc, arr) => acc + arr.length, 0);
+            const totalVerbs = LEARNING_DATA.verbs.length;
+            const totalExp = LEARNING_DATA.expressions.length;
+            const grandTotal = totalWords + totalVerbs + totalExp;
+
+            const tabConfig = {
+                words: { labelEn: 'Vocabulary', labelAr: 'مفردات هامة', icon: 'briefcase', color: 'orange' },
+                expressions: { labelEn: 'Phrases', labelAr: 'عبارات المحادثة', icon: 'message-circle', color: 'amber' },
+                dialogues: { labelEn: 'Dialogues', labelAr: 'حوارات', icon: 'phone-call', color: 'blue' },
+                verbs: { labelEn: 'Verbs', labelAr: 'الأفعال الهامة', icon: 'list-checks', color: 'emerald' },
+                grammar: { labelEn: 'Grammar', labelAr: 'القواعد (dass/weil)', icon: 'book-open', color: 'purple' },
+                letters: { labelEn: 'Emails', labelAr: 'إيميلات ورسائل', icon: 'mail', color: 'cyan' },
+                culture: { labelEn: 'Culture', labelAr: 'نصوص القراءة', icon: 'globe', color: 'rose' }
+            };
+
+            const activeColor = tabConfig[activeTab].color;
+
+            return (
+                <div className="h-screen flex flex-col bg-slate-50" dir="rtl">
+                    {/* TOP NAVIGATION HEADER */}
+                    <header className="w-full bg-slate-900 text-white shadow-xl z-50 shrink-0 relative overflow-hidden">
+                        <div className={`absolute top-0 left-0 w-full h-1 bg-${activeColor}-500 transition-colors duration-500`}></div>
+
+                        <div className="flex justify-between items-center px-4 md:px-8 py-3 border-b border-slate-800">
+                            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-3 ar-text">
+                                <span className={`bg-${activeColor}-500 p-2 rounded-xl transition-colors duration-500 shadow-lg`}>
+                                    <i data-lucide="book" className="w-5 h-5 md:w-6 md:h-6 text-white"></i>
+                                </span>
+                                A2: Was uns glücklich macht
+                            </h1>
+
+                            <div className="flex items-center gap-3" dir="ltr">
+                                <div className="text-right hidden sm:block">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Progress</div>
+                                    <div className={`text-sm font-extrabold text-${activeColor}-400 transition-colors`}>{grandTotal === 0 ? 0 : Math.round((learnedItems.size / grandTotal) * 100)}%</div>
+                                </div>
+                                <div className="relative w-10 h-10">
+                                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                        <path className="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                                        <path className={`text-${activeColor}-500 transition-all duration-1000 ease-out`} strokeDasharray={`${grandTotal === 0 ? 0 : (learnedItems.size / grandTotal) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Horizontal Navigation Tabs */}
+                        <nav className="flex overflow-x-auto scrollbar-hide px-4 py-2 gap-2 snap-x">
+                            {Object.entries(tabConfig).map(([key, tab]) => (
+                                <button
+                                    key={key}
+                                    onClick={() => { setActiveTab(key); setSearchTerm(''); }}
+                                    className={`snap-center shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold ar-text group relative overflow-hidden ${activeTab === key ? `bg-${tab.color}-600 text-white shadow-md` : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <i data-lucide={tab.icon} className={`w-5 h-5 ${activeTab === key ? 'text-white' : `text-${tab.color}-400 group-hover:text-${tab.color}-300`} transition-colors`}></i>
+                                    <span className="text-sm whitespace-nowrap">{tab.labelAr}</span>
+                                    {activeTab === key && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-white/50 rounded-t-full"></div>}
+                                </button>
+                            ))}
+                        </nav>
+                    </header>
+
+                    {/* MAIN CONTENT AREA */}
+                    <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 relative" dir="ltr">
+                        <div className={`fixed top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-${activeColor}-200/20 blur-3xl -z-10 transition-colors duration-1000 pointer-events-none`}></div>
+
+                        <div className="max-w-7xl mx-auto">
+
+                            {/* LIVE SEARCH BAR */}
+                            {activeTab !== 'grammar' && activeTab !== 'culture' && activeTab !== 'dialogues' && activeTab !== 'letters' && (
+                                <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                    <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                        <div className={`absolute -inset-0.5 bg-gradient-to-r from-${activeColor}-400 to-${activeColor}-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                        <div className="relative">
+                                            <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                            <input
+                                                type="text"
+                                                placeholder="ابحث بالعربي أو الألماني..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className={`w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-${activeColor}-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium`}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* PROGRESS BARS */}
+                            {activeTab === 'words' && <ProgressBar total={totalWords} learned={Array.from(learnedItems).filter(id => id.startsWith('w')).length} colorClass="text-orange-500" />}
+                            {activeTab === 'verbs' && <ProgressBar total={totalVerbs} learned={Array.from(learnedItems).filter(id => id.startsWith('v')).length} colorClass="text-emerald-500" />}
+                            {activeTab === 'expressions' && <ProgressBar total={totalExp} learned={Array.from(learnedItems).filter(id => id.startsWith('e')).length} colorClass="text-amber-500" />}
+
+                            {/* TAB: WORDS */}
+                            {activeTab === 'words' && (
+                                <div className="space-y-12">
+                                    {Object.entries(LEARNING_DATA.words).map(([category, wordsArr]) => {
+                                        const titles = {
+                                            glueck_und_feste: { text: "السعادة وحفلات الزفاف (Glück & Feste)", icon: "heart", color: "orange" },
+                                            familienstand: { text: "الحالة الاجتماعية والزفاف (Familienstand)", icon: "users", color: "blue" },
+                                            einkaufen: { text: "التسوق والمتاجر (Einkaufen)", icon: "shopping-bag", color: "red" },
+                                            aktivitaeten: { text: "الأنشطة اليومية (Aktivitäten)", icon: "activity", color: "amber" }
+                                        };
+                                        const catInfo = titles[category] || { text: category, icon: "book", color: "slate" };
+                                        return (
+                                            <section key={category}>
+                                                <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl">
+                                                    <span className={`bg-${catInfo.color}-100 p-2 rounded-xl text-${catInfo.color}-600`}>
+                                                        <i data-lucide={catInfo.icon} className="w-6 h-6"></i>
+                                                    </span>
+                                                    {catInfo.text}
+                                                </h2>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                                    {wordsArr.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                        <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                                    ))}
+                                                </div>
+                                            </section>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {/* TAB: EXPRESSIONS */}
+                            {activeTab === 'expressions' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-amber-100 p-2 rounded-xl text-amber-600"><i data-lucide="message-circle" className="w-6 h-6"></i></span>
+                                        عبارات المحادثة (Ausdrücke)
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {LEARNING_DATA.expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                            <div key={exp.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative group hover:shadow-xl hover:border-amber-200 transition-all duration-300">
+                                                <button onClick={() => toggleLearned(exp.id)} className={`absolute top-5 left-5 p-2 rounded-full transition-colors z-10 ${learnedItems.has(exp.id) ? 'bg-amber-100 text-amber-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                                </button>
+                                                <span className="inline-block bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-xs font-bold mb-4 ar-text border border-amber-100">{exp.type}</span>
+                                                <div className="flex items-start gap-3 mb-3" dir="ltr">
+                                                    <div className="flex flex-col gap-2 shrink-0">
+                                                        <button onClick={(e) => playAudio(exp.ger, e)} className="text-amber-500 bg-amber-50 p-2 rounded-xl hover:bg-amber-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                        <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={exp.ger} /></div>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-lg font-extrabold text-slate-800 leading-tight mt-1">"{exp.ger}"</h3>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
+                                                    <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
+                                                    <p className="text-amber-700 font-extrabold text-lg mb-4 ar-text">{exp.ar}</p>
+                                                    <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
+                                                        <i data-lucide="info" className="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>
+                                                        <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: DIALOGUES */}
+                            {activeTab === 'dialogues' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="mic" className="w-6 h-6"></i></span>
+                                        مقابلات وحوارات (Interviews)
+                                    </h2>
+                                    <div className="max-w-4xl mx-auto space-y-6">
+                                        {LEARNING_DATA.dialogues.map(dialogue => (
+                                            <DialogueRow key={dialogue.id} dialogue={dialogue} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: VERBS */}
+                            {activeTab === 'verbs' && (
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="list-checks" className="w-6 h-6"></i></span>
+                                        الأفعال الهامة (Verben)
+                                    </h2>
+                                    <div className="space-y-4 max-w-4xl mx-auto">
+                                        {LEARNING_DATA.verbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <VerbRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: GRAMMAR */}
+                            {activeTab === 'grammar' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-purple-700 to-indigo-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="book-open" className="absolute -right-4 -bottom-4 w-48 h-48 text-white opacity-10 transform rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">القواعد النحوية (Grammatik)</h2>
+                                            <p className="text-purple-200 ar-text text-lg max-w-2xl">تكوين الجمل الجانبية باستخدام (dass) والفرق بين الروابط (weil / denn).</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-8">
+                                        {LEARNING_DATA.grammar.map((gram, idx) => (
+                                            <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                    <div className="bg-purple-100 p-3 rounded-2xl text-purple-600 shrink-0 mt-1">
+                                                        <i data-lucide="braces" className="w-6 h-6"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                        <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-8">
+                                                    {gram.structure && (
+                                                        <div className="bg-slate-900 text-purple-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
+                                                            <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i>
+                                                            <span className="whitespace-pre-line">{gram.structure}</span>
+                                                        </div>
+                                                    )}
+
+                                                    {gram.examples && (
+                                                        <>
+                                                            <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                            <ul className="space-y-4">
+                                                                {gram.examples.map((ex, i) => (
+                                                                    <li key={i} className="bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
+                                                                        <span className="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold mb-3 ar-text">{ex.category}</span>
+                                                                        <div className="flex gap-4 items-start mb-3" dir="ltr">
+                                                                            <button onClick={(e) => playAudio(ex.g, e)} className="text-purple-500 bg-white p-2 rounded-xl shadow-sm hover:bg-purple-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                            <div className="flex flex-col gap-1">
+                                                                                <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                                {ex.e && <span className="text-slate-500 text-sm italic">{ex.e}</span>}
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="text-purple-700 font-bold ar-text border-t border-purple-200/50 pt-3 mt-3">{ex.a}</div>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: LETTERS */}
+                            {activeTab === 'letters' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-cyan-600 to-teal-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="mail" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">رسائل وإيميلات (E-Mails & SMS)</h2>
+                                            <p className="text-cyan-100 ar-text text-lg max-w-2xl">طريقة كتابة الدعوات، الإيميلات والرسائل القصيرة في المواقف المختلفة.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.letters.map((letter) => (
+                                            <div key={letter.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-cyan-100 text-cyan-700 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    Text
+                                                </div>
+                                                <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-6 mt-2 flex items-center gap-3">
+                                                    <i data-lucide="message-square" className="w-6 h-6 text-cyan-500"></i> {letter.title}
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {letter.lines.map((line, idx) => {
+                                                        const isHeader = line.g.includes("---");
+                                                        return (
+                                                            <div key={idx} className={`${isHeader ? 'bg-cyan-600 text-white font-bold text-center py-2 rounded-xl my-4' : 'bg-slate-50/50 p-4 rounded-2xl border border-cyan-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group'}`}>
+                                                                {isHeader ? (
+                                                                    <span className="ar-text">{line.a}</span>
+                                                                ) : (
+                                                                    <>
+                                                                        <div className="flex-1">
+                                                                            <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                                <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-cyan-600 bg-white p-2 rounded-xl shadow-sm hover:bg-cyan-50 transition-colors shrink-0">
+                                                                                    <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                                </button>
+                                                                                <p className="text-slate-800 text-lg font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                            </div>
+                                                                            {line.e && <p className="sm:ml-14 text-slate-500 text-sm italic mb-2" dir="ltr">{line.e}</p>}
+                                                                            <div className="sm:ml-14 text-cyan-800 text-base font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                            <SpeechTester targetText={line.g} />
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: CULTURE */}
+                            {activeTab === 'culture' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-rose-600 to-red-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="book-open" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">نصوص القراءة (Lesetexte)</h2>
+                                            <p className="text-rose-200 ar-text text-lg max-w-2xl">نصوص قراءة عن السعادة، الزفاف في ألمانيا ومصر، والمتاجر الألمانية.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.culture.map((item) => (
+                                            <div key={item.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-rose-100 text-rose-600 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    Lesetext
+                                                </div>
+                                                <h3 className="text-3xl font-extrabold text-slate-800 ar-text mb-6 mt-2">{item.title}</h3>
+                                                <div className="space-y-4">
+                                                    {item.lines.map((line, idx) => (
+                                                        <div key={idx} className="bg-slate-50/50 p-4 rounded-2xl border border-rose-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                    <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-rose-500 bg-white p-2 rounded-xl shadow-sm hover:bg-rose-50 transition-colors shrink-0">
+                                                                        <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                    </button>
+                                                                    <p className="text-slate-800 text-xl font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                </div>
+                                                                {line.e && <p className="sm:ml-14 text-slate-500 text-sm italic mb-2" dir="ltr">{line.e}</p>}
+                                                                <div className="sm:ml-14 text-rose-700 text-lg font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                </div>
+                                                            </div>
+                                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                <SpeechTester targetText={line.g} />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

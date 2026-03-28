@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch A2: Städte und Wohnungen</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            overflow: hidden;
+        }
+
+        .ar-text {
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.6;
+        }
+
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .card-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .front-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .front-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const playAudio = (text, e) => {
+            if (e) e.stopPropagation();
+            const cleanText = text.replace(/<[^>]+>/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'de-DE';
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const SpeechTester = ({ targetText }) => {
+            const [status, setStatus] = React.useState('idle');
+            const [heard, setHeard] = React.useState('');
+
+            const listen = (e) => {
+                if (e) e.stopPropagation();
+                if (!('webkitSpeechRecognition' in window)) {
+                    alert('المتصفح ده مش بيدعم تسجيل الصوت، جرب Google Chrome.');
+                    return;
+                }
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+
+                recognition.onstart = () => setStatus('listening');
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    setHeard(speechResult);
+
+                    const clean = (str) => str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,!?:]/g, '').trim();
+                    const targetClean = clean(targetText);
+                    const heardClean = clean(speechResult);
+
+                    if (heardClean.includes(targetClean) || targetClean.includes(heardClean) || heardClean === targetClean) {
+                        setStatus('success');
+                    } else {
+                        setStatus('fail');
+                    }
+                };
+                recognition.onerror = () => setStatus('fail');
+                recognition.onend = () => { if (status === 'listening') setStatus('idle'); };
+                recognition.start();
+            };
+
+            return (
+                <div className="inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={listen} title="جرب تنطقها" className={`p-2 rounded-full transition-all duration-300 shadow-sm ${status === 'listening' ? 'bg-red-500 text-white animate-pulse scale-110' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'}`}>
+                        <i data-lucide="mic" className="w-4 h-4"></i>
+                    </button>
+                    {status === 'success' && <span className="text-emerald-500 text-xs font-bold ar-text animate-bounce">✅ ممتاز!</span>}
+                    {status === 'fail' && <span className="text-red-500 text-xs ar-text font-bold" title={`سمعت: ${heard}`}>❌ جرب تاني</span>}
+                </div>
+            );
+        };
+
+        // --- FULL A2 LEARNING DATA (Städte und Wohnungen) ---
+        const LEARNING_DATA = {
+            words: {
+                staedte: [
+                    { id: 'w1', ger: "die Sehenswürdigkeit", eng: "sight / attraction", ar: "المعلم السياحي", s: [{ g: "Viele Touristen besichtigen <strong>Sehenswürdigkeiten</strong>.", e: "Many tourists visit sights.", a: "الكثير من السياح يزورون المعالم السياحية." }] },
+                    { id: 'w2', ger: "die Stadtrundfahrt", eng: "city tour", ar: "جولة في المدينة", s: [{ g: "Wir machen eine <strong>Stadtrundfahrt</strong> mit dem Bus.", e: "We are doing a city tour by bus.", a: "نحن نقوم بجولة في المدينة بالأتوبيس." }] },
+                    { id: 'w3', ger: "das Andenken", eng: "souvenir", ar: "هدية تذكارية", s: [{ g: "Ich kaufe <strong>Andenken</strong> für meine Familie.", e: "I buy souvenirs for my family.", a: "أنا أشتري هدايا تذكارية لعائلتي." }] },
+                    { id: 'w4', ger: "die Innenstadt", eng: "city center", ar: "وسط البلد", s: [{ g: "Ich laufe gern durch die <strong>Innenstadt</strong>.", e: "I like walking through the city center.", a: "أحب المشي في وسط البلد." }] },
+                    { id: 'w5', ger: "die Altstadt", eng: "old town", ar: "المدينة القديمة", s: [{ g: "Die Grazer <strong>Altstadt</strong> zählt zum Weltkulturerbe.", e: "The Graz Old Town counts as a World Cultural Heritage site.", a: "المدينة القديمة في جراتس تُعتبر من التراث الثقافي العالمي." }] },
+                    { id: 'w6', ger: "das Museum", eng: "museum", ar: "المتحف", s: [{ g: "Ich würde am liebsten ein <strong>Museum</strong> besuchen.", e: "I would most like to visit a museum.", a: "أكثر شيء أود فعله هو زيارة متحف." }] },
+                    { id: 'w7', ger: "lokale Gerichte", eng: "local dishes", ar: "أطباق محلية", s: [{ g: "Wir essen in einem Restaurant <strong>lokale Gerichte</strong>.", e: "We eat local dishes in a restaurant.", a: "نحن نأكل أطباقاً محلية في مطعم." }] },
+                    { id: 'w8', ger: "die Fremdsprache", eng: "foreign language", ar: "لغة أجنبية", s: [{ g: "Ich möchte eine <strong>Fremdsprache</strong> üben.", e: "I want to practice a foreign language.", a: "أريد ممارسة لغة أجنبية." }] },
+                    { id: 'w9', ger: "die Postkarte", eng: "postcard", ar: "كارت بوستال", s: [{ g: "Ich schreibe <strong>Postkarten</strong> an Freunde.", e: "I write postcards to friends.", a: "أكتب كروت بوستال للأصدقاء." }] },
+                    { id: 'w10', ger: "das Hotel", eng: "hotel", ar: "الفندق", s: [{ g: "Ich übernachte meistens in einem <strong>Hotel</strong>.", e: "I usually stay in a hotel.", a: "في الغالب أقضي الليلة في فندق." }] },
+                    { id: 'w11', ger: "die Disco / die Bar", eng: "club / bar", ar: "ديسكو / بار", s: [{ g: "Abends gehe ich in eine <strong>Disco</strong> oder <strong>Bar</strong>.", e: "In the evening I go to a club or bar.", a: "في المساء أذهب إلى ديسكو أو بار." }] },
+                    { id: 'w12', ger: "das Erlebnis", eng: "experience", ar: "تجربة / حدث", s: [{ g: "Durch Fotos werden schöne <strong>Erlebnisse</strong> noch schöner.", e: "Photos make beautiful experiences even more beautiful.", a: "بالصور تصبح التجارب الجميلة أجمل." }] },
+                    { id: 'w13', ger: "das Wahrzeichen", eng: "landmark", ar: "رمز / معلم مميز", s: [{ g: "Ein <strong>Wahrzeichen</strong> der Stadt ist die Krämerbrücke.", e: "A landmark of the city is the Krämerbrücke.", a: "من الرموز المميزة للمدينة جسر كريمر." }] },
+                    { id: 'w36', ger: "der Zoo", eng: "zoo", ar: "حديقة الحيوان", s: [{ g: "Ich gehe oft in den <strong>Zoo</strong>.", e: "I often go to the zoo.", a: "أذهب غالباً إلى حديقة الحيوان." }] },
+                    { id: 'w37', ger: "das Konzert / die Oper", eng: "concert / opera", ar: "حفلة موسيقية / أوبرا", s: [{ g: "Abends gehe ich gern in ein <strong>Konzert</strong>.", e: "In the evening I like to go to a concert.", a: "في المساء أحب الذهاب إلى حفلة موسيقية." }] },
+                    { id: 'w38', ger: "der Einwohner", eng: "inhabitant", ar: "الساكن / المواطن", s: [{ g: "Die Stadt hat 210.000 <strong>Einwohner</strong>.", e: "The city has 210,000 inhabitants.", a: "المدينة بها 210 ألف نسمة." }] },
+                    { id: 'w39', ger: "das Gebäude", eng: "building", ar: "المبنى", s: [{ g: "Es gibt in Graz viele historische <strong>Gebäude</strong>.", e: "There are many historical buildings in Graz.", a: "يوجد في جراتس العديد من المباني التاريخية." }] },
+                    { id: 'w40', ger: "der Ausblick", eng: "view", ar: "الإطلالة / المنظر", s: [{ g: "Man hat einen fantastischen <strong>Ausblick</strong> über die Altstadt.", e: "You have a fantastic view over the old town.", a: "لديك إطلالة رائعة على المدينة القديمة." }] },
+                    { id: 'w41_s', ger: "das Theater", eng: "theater", ar: "المسرح", s: [{ g: "Wir gehen abends ins <strong>Theater</strong>.", e: "We go to the theater in the evening.", a: "نذهب إلى المسرح في المساء." }] },
+                    { id: 'w42_s', ger: "die Geschichte", eng: "history", ar: "التاريخ", s: [{ g: "Basel kann auf eine lange <strong>Geschichte</strong> zurückblicken.", e: "Basel can look back on a long history.", a: "بازل تمتلك تاريخاً طويلاً." }] },
+                    { id: 'w43_s', ger: "die Architektur", eng: "architecture", ar: "الهندسة المعمارية", s: [{ g: "Das Kunsthaus ist ein Beispiel für moderne <strong>Architektur</strong>.", e: "The Kunsthaus is an example of modern architecture.", a: "متحف الفن مثال على العمارة الحديثة." }] },
+                    { id: 'w44_s', ger: "das Bundesland", eng: "federal state", ar: "الولاية", s: [{ g: "Erfurt liegt im <strong>Bundesland</strong> Thüringen.", e: "Erfurt is located in the federal state of Thuringia.", a: "تقع إرفورت في ولاية تورينجن." }] }
+                ],
+                wohnen: [
+                    { id: 'w14', ger: "der Umzug", eng: "moving (house)", ar: "النقل / العزال", s: [{ g: "Was nervt Sie bei einem <strong>Umzug</strong> besonders?", e: "What annoys you most about a move?", a: "إيه أكتر حاجة بتضايقك في العزال؟" }] },
+                    { id: 'w15', ger: "die Kaltmiete", eng: "base rent", ar: "الإيجار الأساسي", s: [{ g: "Die <strong>Kaltmiete</strong> beträgt 504 Euro.", e: "The base rent amounts to 504 Euros.", a: "الإيجار الأساسي يبلغ 504 يورو." }] },
+                    { id: 'w16', ger: "die Nebenkosten", eng: "utilities", ar: "المصاريف الإضافية (مرافق)", s: [{ g: "Man muss noch 103 Euro <strong>Nebenkosten</strong> bezahlen.", e: "One must also pay 103 Euros for utilities.", a: "لازم الواحد يدفع كمان 103 يورو مصاريف مرافق." }] },
+                    { id: 'w17', ger: "die Kaution", eng: "deposit", ar: "التأمين (للسكن)", s: [{ g: "Die <strong>Kaution</strong> ist auch niedriger.", e: "The deposit is also lower.", a: "مبلغ التأمين أيضاً أقل." }] },
+                    { id: 'w18', ger: "das Dachgeschoss", eng: "top floor / attic", ar: "الدور الأخير", s: [{ g: "Die Wohnung liegt im <strong>Dachgeschoss</strong>.", e: "The apartment is located on the top floor.", a: "الشقة موجودة في الدور الأخير." }] },
+                    { id: 'w19', ger: "der Stadtrand", eng: "outskirts", ar: "أطراف المدينة", s: [{ g: "Wir wohnen jetzt in einem Haus am <strong>Stadtrand</strong>.", e: "We live in a house on the outskirts now.", a: "إحنا ساكنين دلوقتي في بيت على أطراف المدينة." }] },
+                    { id: 'w20', ger: "die Einbauküche", eng: "fitted kitchen", ar: "مطبخ جاهز", s: [{ g: "Die Wohnung hat eine <strong>Einbauküche</strong>.", e: "The apartment has a fitted kitchen.", a: "الشقة فيها مطبخ جاهز." }] },
+                    { id: 'w21', ger: "der Balkon", eng: "balcony", ar: "البلكونة", s: [{ g: "Die Wohnung hat einen großen <strong>Balkon</strong>.", e: "The apartment has a large balcony.", a: "الشقة بها بلكونة كبيرة." }] },
+                    { id: 'w22', ger: "die Wohnungsgröße", eng: "apartment size", ar: "مساحة الشقة", s: [{ g: "Für mich ist die <strong>Wohnungsgröße</strong> entscheidend.", e: "For me, the apartment size is crucial.", a: "بالنسبة لي مساحة الشقة حاسمة (أهم شيء)." }] },
+                    { id: 'w23', ger: "die Möbel (Pl.)", eng: "furniture", ar: "الأثاث / العفش", s: [{ g: "Man muss alle <strong>Möbel</strong> wieder aufbauen.", e: "You have to reassemble all the furniture.", a: "لازم الواحد يركب العفش كله تاني." }] },
+                    { id: 'w24', ger: "die Grünfläche", eng: "green space", ar: "المساحة الخضراء", s: [{ g: "Es gibt wenig <strong>Grünflächen</strong> oder Parks.", e: "There are few green spaces or parks.", a: "يوجد مساحات خضراء أو حدائق قليلة." }] },
+                    { id: 'w25', ger: "das Baujahr", eng: "year of construction", ar: "سنة البناء", s: [{ g: "Es gibt keine Angaben zum <strong>Baujahr</strong>.", e: "There is no information about the year built.", a: "لا توجد بيانات عن سنة البناء." }] },
+                    { id: 'w41', ger: "die Etage / der Stock", eng: "floor / story", ar: "الطابق / الدور", s: [{ g: "Die Wohnung liegt in der zweiten <strong>Etage</strong>.", e: "The apartment is on the second floor.", a: "الشقة تقع في الدور الثاني." }] },
+                    { id: 'w42', ger: "die Einkaufsmöglichkeit", eng: "shopping facility", ar: "أماكن التسوق", s: [{ g: "Ich möchte gute <strong>Einkaufsmöglichkeiten</strong> in der Nähe haben.", e: "I want to have good shopping facilities nearby.", a: "أريد أن يكون هناك أماكن تسوق جيدة قريبة." }] },
+                    { id: 'w43', ger: "der Vorteil / der Nachteil", eng: "advantage / disadvantage", ar: "الميزة / العيب", s: [{ g: "Die neue Wohnung hat viele <strong>Vorteile</strong>.", e: "The new apartment has many advantages.", a: "الشقة الجديدة بها مميزات كثيرة." }, { g: "Der lange Weg ist ein <strong>Nachteil</strong>.", e: "The long way is a disadvantage.", a: "الطريق الطويل هو عيب." }] },
+                    { id: 'w44', ger: "die Garage / der Stellplatz", eng: "garage / parking space", ar: "الجراج / موقف السيارات", s: [{ g: "Die Wohnung hat leider keine <strong>Garage</strong>.", e: "The apartment unfortunately has no garage.", a: "للأسف الشقة ليس بها جراج." }] },
+                    { id: 'w45', ger: "das Zentrum", eng: "city center", ar: "المركز / وسط المدينة", s: [{ g: "Ich wohne lieber im <strong>Zentrum</strong>.", e: "I prefer to live in the center.", a: "أفضل السكن في وسط المدينة." }] },
+                    { id: 'w45_w', ger: "der Aufzug", eng: "elevator", ar: "المصعد / الأسانسير", s: [{ g: "Man führt Smalltalk im <strong>Aufzug</strong>.", e: "One makes small talk in the elevator.", a: "الواحد بيعمل دردشة في الأسانسير." }] },
+                    { id: 'w46_w', ger: "die Miete", eng: "rent", ar: "الإيجار", s: [{ g: "Die <strong>Miete</strong> ist hier viel günstiger.", e: "The rent is much cheaper here.", a: "الإيجار هنا أرخص بكتير." }] }
+                ],
+                alltag: [
+                    { id: 'w26', ger: "der Heimwerker", eng: "DIYer", ar: "شخص يصلح الأشياء بنفسه", s: [{ g: "Bist du ein <strong>Heimwerker</strong>?", e: "Are you a DIYer?", a: "هل بتعرف تصلح حاجات بنفسك؟" }] },
+                    { id: 'w27', ger: "die Glühbirne", eng: "lightbulb", ar: "اللمبة", s: [{ g: "Ich kann die <strong>Glühbirne</strong> wechseln.", e: "I can change the lightbulb.", a: "أقدر أغير اللمبة." }] },
+                    { id: 'w28', ger: "der Klempner", eng: "plumber", ar: "السباك", s: [{ g: "Ich lasse das Waschbecken von einem <strong>Klempner</strong> reparieren.", e: "I have the sink repaired by a plumber.", a: "بخلي السباك يصلحلي الحوض." }] },
+                    { id: 'w29', ger: "der Elektriker", eng: "electrician", ar: "الكهربائي", s: [{ g: "Ich lasse den Herd von einem <strong>Elektriker</strong> anschließen.", e: "I have the stove connected by an electrician.", a: "بخلي الكهربائي يوصل البوتاجاز." }] },
+                    { id: 'w30', ger: "der Nachbar", eng: "neighbor", ar: "الجار", s: [{ g: "Kennen Sie Ihre <strong>Nachbarn</strong>?", e: "Do you know your neighbors?", a: "هل تعرف جيرانك؟" }] },
+                    { id: 'w31', ger: "das Bücherregal", eng: "bookshelf", ar: "رف الكتب", s: [{ g: "Ich kann ein <strong>Bücherregal</strong> bauen.", e: "I can build a bookshelf.", a: "أقدر أعمل رف كتب." }] },
+                    { id: 'w32', ger: "der Herd", eng: "stove", ar: "البوتاجاز", s: [{ g: "Den <strong>Herd</strong> kann ich nicht anschließen.", e: "I can't connect the stove.", a: "مقدرش أوصل البوتاجاز." }] },
+                    { id: 'w33', ger: "der Rasen", eng: "lawn", ar: "النجيلة / العشب", s: [{ g: "Ich muss den <strong>Rasen</strong> mähen.", e: "I have to mow the lawn.", a: "لازم أقص حشائش الجنينة." }] },
+                    { id: 'w34', ger: "der Gegenstand", eng: "item / object", ar: "الغرض / الشيء", s: [{ g: "Leihst du deinen Nachbarn manchmal <strong>Gegenstände</strong>?", e: "Do you sometimes lend items to your neighbors?", a: "هل بتسلف جيرانك حاجات أحياناً؟" }] },
+                    { id: 'w35', ger: "die Kinderbetreuung", eng: "childcare", ar: "رعاية الأطفال", s: [{ g: "Auch bei der <strong>Kinderbetreuung</strong> ist die Hilfsbereitschaft gestiegen.", e: "The willingness to help has also increased in childcare.", a: "الاستعداد للمساعدة زاد كمان في رعاية الأطفال." }] },
+                    { id: 'w46', ger: "die Wand (Wände)", eng: "wall", ar: "الحائط (الحوائط)", s: [{ g: "Ich lasse meine <strong>Wände</strong> streichen.", e: "I am having my walls painted.", a: "أجعل أحداً يدهن حوائطي." }] },
+                    { id: 'w47', ger: "das Waschbecken", eng: "sink", ar: "حوض الغسيل", s: [{ g: "Ich lasse das <strong>Waschbecken</strong> vom Klempner reparieren.", e: "I have the sink repaired by the plumber.", a: "أجعل السباك يصلح الحوض." }] },
+                    { id: 'w48', ger: "der Maler / der Tischler", eng: "painter / carpenter", ar: "النقاش (الدهان) / النجار", s: [{ g: "Der <strong>Maler</strong> streicht das Haus.", e: "The painter paints the house.", a: "النقاش يدهن البيت." }] },
+                    { id: 'w49', ger: "die Wäsche", eng: "laundry", ar: "الغسيل", s: [{ g: "Ich muss heute <strong>Wäsche</strong> bügeln.", e: "I have to iron laundry today.", a: "لازم أكوي الغسيل النهاردة." }] },
+                    { id: 'w50', ger: "die Blume (Blumen)", eng: "flower", ar: "الزهرة / الورد", s: [{ g: "Ich kann <strong>Blumen</strong> im Garten pflanzen.", e: "I can plant flowers in the garden.", a: "أقدر أزرع ورد في الجنينة." }] },
+                    { id: 'w47_a', ger: "der Single-Haushalt", eng: "single-person household", ar: "سكن الفرد الواحد", s: [{ g: "Jeder fünfte Deutsche lebt in einem <strong>Single-Haushalt</strong>.", e: "Every fifth German lives in a single-person household.", a: "واحد من كل خمسة ألمان يعيش بمفرده." }] },
+                    { id: 'w48_a', ger: "der Maurer", eng: "bricklayer", ar: "البنّاء", s: [{ g: "Der <strong>Maurer</strong> baut die Wand.", e: "The bricklayer builds the wall.", a: "البنّاء يبني الحائط." }] },
+                    { id: 'w49_a', ger: "der Gärtner", eng: "gardener", ar: "الجنايني", s: [{ g: "Der <strong>Gärtner</strong> pflegt die Blumen.", e: "The gardener cares for the flowers.", a: "الجنايني يعتني بالورد." }] }
+                ]
+            },
+            expressions: [
+                { id: 'e1', type: "Reaktion", ger: "Das mache ich auch immer / nur selten.", eng: "I always / only rarely do that too.", ar: "أنا كمان دايماً / نادراً بعمل كده.", context: "لإظهار التشابه في العادات أثناء السفر." },
+                { id: 'e2', type: "Reaktion", ger: "Dafür habe ich meistens keine Zeit.", eng: "I usually don't have time for that.", ar: "غالباً معنديش وقت لده.", context: "للرد بعدم الاستطاعة أو الانشغال." },
+                { id: 'e3', type: "Meinung", ger: "Interessant. Das mache ich nie.", eng: "Interesting. I never do that.", ar: "مثير للاهتمام. عمري ما بعمل كده.", context: "للتعليق على شيء مختلف يفعله شخص آخر." },
+                { id: 'e4', type: "Vorliebe", ger: "Ich würde am liebsten ein Museum besuchen.", eng: "I would most like to visit a museum.", ar: "أكتر حاجة حابب أعملها هي زيارة متحف.", context: "للتعبير عن تفضيلك لشيء بوضوح." },
+                { id: 'e5', type: "Vorliebe", ger: "Ich möchte lieber den Rundgang machen.", eng: "I would prefer to do the tour.", ar: "أفضل أعمل الجولة.", context: "عند المقارنة وتفضيل خيار على آخر." },
+                { id: 'e6', type: "Vorschlag", ger: "Wir könnten doch ins Museum gehen.", eng: "We could go to the museum, couldn't we?", ar: "إحنا ممكن نروح المتحف.", context: "لتقديم اقتراح مهذب لمجموعة." },
+                { id: 'e7', type: "Vorschlag", ger: "Wie wäre es, wenn wir eine Stadtrundfahrt machen?", eng: "How about if we do a city tour?", ar: "إيه رأيك لو نعمل جولة في المدينة؟", context: "طريقة أخرى شائعة لاقتراح فكرة." },
+                { id: 'e8', type: "Zustimmung", ger: "Das ist eine gute Idee. / Das finde ich gut.", eng: "That's a good idea. / I think that's good.", ar: "دي فكرة كويسة / شايف ده كويس.", context: "للموافقة على اقتراح." },
+                { id: 'e9', type: "Ablehnung", ger: "Das wäre nicht so gut. / Oh nein, kein Museum!", eng: "That wouldn't be so good. / Oh no, not a museum!", ar: "ده مش هيكون كويس / أوه لا، بلاش متحف!", context: "لرفض اقتراح بلطف أو بوضوح." },
+                { id: 'e10', type: "Wohnung", ger: "Die Wohnung ist 60 m² groß und hat 2 Zimmer.", eng: "The apartment is 60 m² large and has 2 rooms.", ar: "الشقة مساحتها 60 متر وفيها أوضتين.", context: "لوصف مساحة وحجم الشقة." },
+                { id: 'e11', type: "Miete", ger: "Die Kaltmiete beträgt 504 Euro.", eng: "The base rent amounts to 504 Euros.", ar: "الإيجار الأساسي يبلغ 504 يورو.", context: "للتحدث عن تكلفة الإيجار." },
+                { id: 'e12', type: "Einladung", ger: "Ihr könnt mich gern besuchen.", eng: "You are welcome to visit me.", ar: "ممكن تبقوا تزوروني.", context: "لدعوة الأصدقاء لزيارتك." }
+            ],
+            dialogues: [
+                {
+                    id: 'd1', title: "Was machen Sie in einer fremden Stadt?", icon: "map",
+                    lines: [
+                        { speaker: "Person A", text: "Was machen Sie gern, wenn Sie in einer fremden Stadt sind?", en: "What do you like to do when you are in a foreign city?", ar: "بتحب تعمل إيه لما بتكون في مدينة غريبة؟" },
+                        { speaker: "Person B", text: "Ich gehe oft in ein Museum oder in den Zoo. Ich interessiere mich sehr für Kultur.", en: "I often go to a museum or to the zoo. I am very interested in culture.", ar: "غالباً بروح متحف أو حديقة الحيوان. أنا مهتم جداً بالثقافة." },
+                        { speaker: "Person A", text: "Interessant. Das mache ich nie. Ich finde Museen langweilig.", en: "Interesting. I never do that. I find museums boring.", ar: "مثير للاهتمام. عمري ما بعمل كده. أنا بشوف المتاحف مملة." },
+                        { speaker: "Person B", text: "Was machen Sie denn meistens?", en: "What do you usually do then?", ar: "أومال في الغالب بتعمل إيه؟" },
+                        { speaker: "Person A", text: "Ich laufe gern durch die Innenstadt oder die Altstadt. Und ich gehe immer einkaufen.", en: "I like walking through the city center or the old town. And I always go shopping.", ar: "بحب أتمشى في وسط البلد أو المدينة القديمة. ودايماً بروح أعمل شوبينج." },
+                        { speaker: "Person B", text: "Das mache ich auch oft. Kaufen Sie auch Andenken für Freunde?", en: "I do that often too. Do you also buy souvenirs for friends?", ar: "أنا كمان بعمل كده كتير. بتشتري كمان هدايا تذكارية لأصحابك؟" },
+                        { speaker: "Person A", text: "Ja, ich kaufe immer Andenken für Familienmitglieder. Und ich schreibe Postkarten.", en: "Yes, I always buy souvenirs for family members. And I write postcards.", ar: "أيوة، دايماً بشتري هدايا تذكارية لعيلتي. وبكتب كروت بوستال." },
+                        { speaker: "Person B", text: "Postkarten schreibe ich selten. Ich poste lieber Fotos oder verschicke sie an Freunde.", en: "I rarely write postcards. I prefer to post photos or send them to friends.", ar: "نادراً لما بكتب كروت بوستال. بفضل أنشر الصور أو أبعتها لأصحابي." },
+                        { speaker: "Person A", text: "Fotografieren Sie auch Sehenswürdigkeiten?", en: "Do you also photograph sights?", ar: "بتصور المعالم السياحية كمان؟" },
+                        { speaker: "Person B", text: "Ja, natürlich. Und abends gehe ich gern in ein Konzert oder in die Oper.", en: "Yes, of course. And in the evening I like to go to a concert or to the opera.", ar: "أيوة طبعاً. وبالليل بحب أروح حفلة موسيقية أو الأوبرا." },
+                        { speaker: "Person A", text: "Dafür habe ich meistens keine Zeit. Ich gehe abends lieber in eine Disco oder eine Bar.", en: "I usually don't have time for that. I prefer going to a disco or a bar in the evening.", ar: "غالباً معنديش وقت لده. بفضل أروح بالليل ديسكو أو بار." },
+                        { speaker: "Person B", text: "Und wo schlafen Sie?", en: "And where do you sleep?", ar: "وبتنام فين؟" },
+                        { speaker: "Person A", text: "Ich übernachte meistens in einem Hotel.", en: "I usually stay in a hotel.", ar: "غالباً ببات في فندق." }
+                    ]
+                },
+                {
+                    id: 'd2', title: "Interview: Fotografieren auf Reisen", icon: "camera",
+                    lines: [
+                        { speaker: "Anna", text: "Hallo Ben. Fotografierst du oft, wenn du reist?", en: "Hello Ben. Do you take photos often when you travel?", ar: "أهلاً بن. بتصور كتير وأنت مسافر؟" },
+                        { speaker: "Ben", text: "Hallo Anna. Ja, ich fotografiere sehr oft. Fast ständig!", en: "Hello Anna. Yes, I take photos very often. Almost constantly!", ar: "أهلاً آنا. أيوة، بصور كتير جداً. تقريباً طول الوقت!" },
+                        { speaker: "Anna", text: "Womit fotografierst du? Mit deinem Smartphone?", en: "What do you take photos with? With your smartphone?", ar: "بتصور بإيه؟ بموبايلك؟" },
+                        { speaker: "Ben", text: "Meistens ja. Es ist einfach und schnell. Und du?", en: "Mostly, yes. It's easy and fast. And you?", ar: "في الغالب أيوة. أسهل وأسرع. وأنتي؟" },
+                        { speaker: "Anna", text: "Ich auch. Manchmal nehme ich meinen Fotoapparat mit, aber das Smartphone ist praktischer.", en: "Me too. Sometimes I take my camera, but the smartphone is more practical.", ar: "وأنا كمان. أحياناً باخد كاميرتي معايا، بس الموبايل عملي أكتر." },
+                        { speaker: "Ben", text: "Und was fotografierst am liebsten?", en: "And what do you like to photograph the most?", ar: "وأكتر حاجة بتحبي تصوريها إيه؟" },
+                        { speaker: "Anna", text: "Ich fotografiere am liebsten Landschaften und Sehenswürdigkeiten. Mich selbst fotografiere ich nicht so oft.", en: "I most like to photograph landscapes and sights. I don't photograph myself very often.", ar: "أكتر حاجة بحب أصورها المناظر الطبيعية والمعالم السياحية. مبصورش نفسي كتير." },
+                        { speaker: "Ben", text: "Das ist bei mir genauso. Letzte Frage: Was machst du mit all den Fotos?", en: "It's the same for me. Last question: What do you do with all the photos?", ar: "وأنا كمان كده بالظبط. آخر سؤال: بتعملي إيه بكل الصور دي؟" },
+                        { speaker: "Anna", text: "Ich zeige sie meiner Familie und die besten poste ich online.", en: "I show them to my family and I post the best ones online.", ar: "بوريها لعيلتي وأحسن صور بنشرها أونلاين." }
+                    ]
+                },
+                {
+                    id: 'd3', title: "Ein Tag in Graz (التخطيط ليوم سياحي)", icon: "clock",
+                    lines: [
+                        { speaker: "Person A", text: "Also, ich finde den kulinarischen Rundgang interessant. Der fängt um 10.30 Uhr an.", en: "So, I find the culinary tour interesting. It starts at 10:30 AM.", ar: "بصراحة أنا شايف الجولة الخاصة بالأكل مثيرة للاهتمام. بتبدأ الساعة 10:30." },
+                        { speaker: "Person B", text: "Ich nicht. Ich finde das langweilig. Ich würde am liebsten ein Museum besuchen. Das Kunsthaus Graz öffnet um 10 Uhr.", en: "Not me. I find that boring. I would most like to visit a museum. The Kunsthaus Graz opens at 10 AM.", ar: "أنا لأ. شايف ده ممل. أكتر حاجة حابب أعملها هي زيارة متحف. متحف الفن بيفتح الساعة 10." },
+                        { speaker: "Person C", text: "Mir auch! Das Kunsthaus gefällt mir am besten. Wie wäre es, wenn wir um 10 Uhr ins Museum gehen?", en: "Me too! I like the Kunsthaus the best. How about if we go to the museum at 10 AM?", ar: "وأنا كمان! ده أكتر حاجة عجباني. إيه رأيكم لو نروح المتحف الساعة 10؟" },
+                        { speaker: "Person A", text: "Das ist eine gute Idee. Und was machen wir am Nachmittag? Ich möchte lieber den Rundgang durch die Altstadt machen als eine Wanderung.", en: "That's a good idea. And what do we do in the afternoon? I would prefer to do the tour of the Old Town rather than a hike.", ar: "دي فكرة كويسة. وهنعمل إيه بعد الظهر؟ أنا أفضل أعمل جولة في المدينة القديمة أحسن من المشي الطويل." },
+                        { speaker: "Person B", text: "Ja, das wäre gut. Der Rundgang beginnt um 14.30 Uhr.", en: "Yes, that would be good. The tour starts at 2:30 PM.", ar: "أيوة ده هيكون كويس. الجولة بتبدأ الساعة 2:30." },
+                        { speaker: "Person C", text: "Perfekt! Dann gehen wir um 10 Uhr ins Museum und um 14.30 Uhr machen wir den Rundgang. Dazwischen haben wir Zeit für einen Einkaufsbummel und zum Mittagessen.", en: "Perfect! Then we'll go to the museum at 10 AM and at 2:30 PM we'll do the tour. In between, we have time for a shopping trip and for lunch.", ar: "ممتاز! يبقى هنروح المتحف الساعة 10 والساعة 2:30 هنعمل الجولة. وفي النص عندنا وقت للشوبينج والغدا." }
+                    ]
+                },
+                {
+                    id: 'd4', title: "Höfliche Vorschläge (اقتراحات مهذبة)", icon: "coffee",
+                    lines: [
+                        { speaker: "Person A", text: "Ich würde gern jetzt etwas essen gehen. Ich habe Hunger.", en: "I would like to go eat something now. I'm hungry.", ar: "حابب أروح أكل حاجة دلوقتي. أنا جعان." },
+                        { speaker: "Person B", text: "Super Idee. Ich kenne ein gutes Restaurant hier in der Nähe.", en: "Great idea. I know a good restaurant near here.", ar: "فكرة ممتازة. أنا عارف مطعم كويس قريب من هنا." },
+                        { speaker: "Person A", text: "Wie wäre es, wenn wir eine Stadtrundfahrt machen?", en: "How about if we do a city tour?", ar: "إيه رأيك لو نعمل جولة في المدينة؟" },
+                        { speaker: "Person B", text: "Ach nein, ich laufe lieber zu Fuß durch die Stadt.", en: "Oh no, I'd rather walk through the city on foot.", ar: "أوه لا، أنا بفضل أتمشى في المدينة على رجلي أحسن." },
+                        { speaker: "Person A", text: "Wir könnten doch das Basler Münster besichtigen. Es soll sehr schön sein.", en: "We could visit the Basel Minster. It's supposed to be very beautiful.", ar: "ممكن نزور كاتدرائية بازل. بيقولوا إنها جميلة جداً." },
+                        { speaker: "Person B", text: "Ja, das ist eine gute Idee. Das wollte ich schon immer sehen.", en: "Yes, that's a good idea. I've always wanted to see that.", ar: "أيوة دي فكرة كويسة. كان نفسي أشوفها من زمان." },
+                        { speaker: "Person A", text: "Ich würde am liebsten in die Berge fahren und dort zwei Stunden wandern.", en: "I would most like to drive to the mountains and hike there for two hours.", ar: "أكتر حاجة حابب أعملها أروح الجبال وأتمشى هناك ساعتين." },
+                        { speaker: "Person B", text: "Zwei Stunden? Das ist mir zu lang. Ich möchte mich lieber erholen.", en: "Two hours? That's too long for me. I'd rather relax.", ar: "ساعتين؟ ده طويل جداً عليا. أنا أفضل أستريح." },
+                        { speaker: "Person A", text: "Wie wäre es, wenn wir in eine Disco gehen und die ganze Nacht tanzen?", en: "How about if we go to a club and dance all night?", ar: "إيه رأيك لو نروح ديسكو ونرقص طول الليل؟" },
+                        { speaker: "Person B", text: "Oh nein, kein Tanzen! Ich bin viel zu müde.", en: "Oh no, no dancing! I am way too tired.", ar: "أوه لأ، بلاش رقص! أنا تعبان جداً." }
+                    ]
+                },
+                {
+                    id: 'd5', title: "Wohnungen vergleichen (مقارنة بين شقتين)", icon: "bar-chart-2",
+                    lines: [
+                        { speaker: "Person A", text: "Welche Wohnung gefällt dir besser?", en: "Which apartment do you like better?", ar: "أنهي شقة عاجباك أكتر؟" },
+                        { speaker: "Person B", text: "Ich finde die zweite Wohnung besser, denn sie ist viel billiger und hat eine Einbauküche.", en: "I find the second apartment better because it is much cheaper and has a fitted kitchen.", ar: "أنا شايف الشقة التانية أحسن، لأنها أرخص بكتير وفيها مطبخ جاهز." },
+                        { speaker: "Person A", text: "Ja, das stimmt, aber sie liegt im Dachgeschoss und hat nur ein Zimmer. Das ist mir zu klein.", en: "Yes, that's true, but it's on the top floor and only has one room. That is too small for me.", ar: "أيوة ده حقيقي، بس هي في الدور الأخير ومفيهاش غير أوضة واحدة. دي صغيرة جداً عليا." },
+                        { speaker: "Person B", text: "Du hast recht. Die erste Wohnung ist größer.", en: "You are right. The first apartment is bigger.", ar: "عندك حق. الشقة الأولى أكبر." },
+                        { speaker: "Person A", text: "Ich würde die erste Wohnung nehmen, weil sie zwei Zimmer hat. Das ist besser, wenn man Besuch bekommt.", en: "I would take the first apartment because it has two rooms. That is better when you have visitors.", ar: "أنا هاخد الشقة الأولى عشان فيها أوضتين. ده أحسن لو جالك ضيوف." },
+                        { speaker: "Person B", text: "Ich bin damit einverstanden. Und die Kaution ist auch niedriger.", en: "I agree with that. And the deposit is also lower.", ar: "أنا متفق معاك. ومبلغ التأمين كمان أقل." }
+                    ]
+                },
+                {
+                    id: 'd6', title: "Ein Treffen auf der Straße (لقاء في الشارع)", icon: "map-pin",
+                    lines: [
+                        { speaker: "Kerstin", text: "Hallo Christine, dich habe ich aber lange nicht mehr gesehen.", en: "Hello Christine, I haven't seen you in a long time.", ar: "أهلاً كريستين، مشوفتكيش من زمان جداً." },
+                        { speaker: "Christine", text: "Ja, wir wohnen nicht mehr hier in der Gegend. Ich besuche nur eine Freundin, die noch hier wohnt.", en: "Yes, we don't live here in the area anymore. I'm just visiting a friend who still lives here.", ar: "أيوة، إحنا مبقيناش ساكنين في المنطقة دي. أنا بس بزور واحدة صاحبتي لسة ساكنة هنا." },
+                        { speaker: "Kerstin", text: "Wo wohnst du denn jetzt?", en: "So where do you live now?", ar: "أنتي ساكنة فين دلوقتي؟" },
+                        { speaker: "Christine", text: "Wir wohnen jetzt in einem kleinen Haus am Stadtrand. In Sonnenfeld.", en: "We live in a small house on the outskirts now. In Sonnenfeld.", ar: "إحنا ساكنين دلوقتي في بيت صغير على أطراف المدينة. في منطقة زوننفيلد." },
+                        { speaker: "Kerstin", text: "Oh, Sonnenfeld, da gibt es doch so viele neue Häuser. Nach Sonnenfeld kommt man doch mit dem Bus, oder?", en: "Oh, Sonnenfeld, there are so many new houses there. You can get to Sonnenfeld by bus, right?", ar: "أوه، زوننفيلد فيها بيوت جديدة كتير. منطقة زوننفيلد بيوصلها الباص، صح؟" },
+                        { speaker: "Christine", text: "Ja, man kann den Bus nehmen oder die Straßenbahn, Linie 10. Mit der Straßenbahn fährt man vom Bahnhof 40 Minuten, mit dem Bus 45 Minuten.", en: "Yes, you can take the bus or the tram, line 10. It's a 40-minute ride from the train station with the tram, 45 minutes with the bus.", ar: "أيوة ممكن تركبي الباص أو الترام خط 10. بالترام المشوار بياخد 40 دقيقة من المحطة، وبالباص 45 دقيقة." },
+                        { speaker: "Kerstin", text: "Das ist ziemlich weit.", en: "That's quite far.", ar: "ده بعيد شوية." },
+                        { speaker: "Christine", text: "Ach, das ist kein Problem, ich lese in der Straßenbahn.", en: "Oh, that's no problem, I read on the tram.", ar: "دي مش مشكلة، أنا بقرأ في الترام." },
+                        { speaker: "Kerstin", text: "Und, habt ihr auch neu gebaut?", en: "And, did you build a new house?", ar: "وبانيتوا بيت جديد؟" },
+                        { speaker: "Christine", text: "Ja, unser Haus ist neu, es hat vier Zimmer und einen großen Garten. Im Moment müssen wir im Garten noch viel machen, aber wir hoffen, dass er später sehr schön wird.", en: "Yes, our house is new, it has four rooms and a large garden. At the moment we still have to do a lot in the garden, but we hope it will be very beautiful later.", ar: "أيوة، بيتنا جديد، فيه 4 أوض وجنينة كبيرة. دلوقتي لسة ورانا شغل كتير في الجنينة، بس نتمنى تبقى جميلة بعدين." },
+                        { speaker: "Kerstin", text: "Also, ein Garten – das ist nichts für mich. Zu viel Arbeit! Ich wohne lieber im Zentrum, da habe ich alles zusammen: gute Einkaufsmöglichkeiten, viele Restaurants und einen kurzen Arbeitsweg.", en: "Well, a garden – that's not for me. Too much work! I prefer to live in the center, I have everything together there: good shopping, many restaurants, and a short commute to work.", ar: "بصراحة الجنينة دي مش سكتي. شغلها كتير! أنا بفضل أسكن في وسط البلد، هناك عندي كل حاجة: محلات شوبينج كويسة، مطاعم كتير، وطريق شغلي قصير." },
+                        { speaker: "Christine", text: "Ja, das sind natürlich Pluspunkte, wenn man im Zentrum wohnt. Der lange Weg nach Hause, das ist ein Nachteil vom Häuschen im Grünen.", en: "Yes, those are of course plus points when you live in the center. The long way home, that's a disadvantage of a little house in the countryside.", ar: "أيوة دي طبعاً مميزات لو ساكن في السنتر. طريق البيت الطويل ده عيب البيت اللي في الخضرة." },
+                        { speaker: "Christine", text: "Es gibt aber auch Vorteile: Es ist ruhig, die Luft ist sauber, man hat schnell Kontakt zu den Nachbarn und man kann in der Sonne im Garten liegen und sich entspannen. Besuch uns doch mal.", en: "But there are also advantages: It's quiet, the air is clean, you quickly make contact with the neighbors, and you can lie in the sun in the garden and relax. Why don't you come visit us?", ar: "بس في مميزات كمان: المكان هادي، الهوا نقي، الواحد بيعمل علاقات بسرعة مع الجيران وممكن ترتاح في الجنينة في الشمس. ابقي زورينا." },
+                        { speaker: "Kerstin", text: "Gern, aber im Moment muss ich viel arbeiten. Ich rufe dich an, wenn ich Zeit habe.", en: "Gladly, but at the moment I have to work a lot. I'll call you when I have time.", ar: "ياريت، بس دلوقتي أنا بشتغل كتير. هكلمك لما أكون فاضية." },
+                        { speaker: "Christine", text: "Na dann, tschüss ...", en: "Well then, bye ..", ar: "طيب، مع السلامة..." }
+                    ]
+                },
+                {
+                    id: 'd7', title: "Wohnung und Umgebung (محيط السكن)", icon: "home",
+                    lines: [
+                        { speaker: "Anna", text: "Was ist für euch am wichtigsten? Für mich sind die Mietkosten am wichtigsten.", en: "What is most important for you all? For me, the rent costs are the most important.", ar: "إيه أهم حاجة بالنسبالكم؟ بالنسبة لي سعر الإيجار هو الأهم." },
+                        { speaker: "Ben", text: "Wirklich? Ich finde die Lage viel wichtiger. Ich möchte gute Einkaufsmöglichkeiten und einen Park in der Nähe haben.", en: "Really? I find the location much more important. I want to have good shopping facilities and a park nearby.", ar: "بجد؟ أنا شايف الموقع أهم بكتير. عايز أماكن شوبينج كويسة وحديقة قريبة." },
+                        { speaker: "Clara", text: "Das stimmt, die Lage ist wichtig, aber für mich ist die Wohnungsgröße entscheidend. Ich brauche mindestens drei Zimmer und einen Balkon.", en: "That's true, the location is important, but for me, the apartment size is crucial. I need at least three rooms and a balcony.", ar: "ده حقيقي الموقع مهم، بس بالنسبة لي مساحة الشقة هي الحاسمة. محتاجة على الأقل 3 أوض وبلكونة." },
+                        { speaker: "Anna", text: "Ein Garten wäre auch schön, aber das ist in der Stadt oft zu teuer.", en: "A garden would also be nice, but that's often too expensive in the city.", ar: "جنينة كمان هتبقى حاجة حلوة، بس ده غالباً غالي جداً في المدينة." }
+                    ]
+                },
+                {
+                    id: 'd8', title: "Sind Sie ein Heimwerker? (هل تصلح الأشياء بنفسك؟)", icon: "wrench",
+                    lines: [
+                        { speaker: "Anna", text: "Sag mal, bist du ein Heimwerker? Was kannst du selbst machen?", en: "Tell me, are you a DIYer? What can you do yourself?", ar: "قولي، هل أنت بتعرف تصلح حاجات بنفسك؟ إيه اللي تقدر تعمله لوحدك؟" },
+                        { speaker: "Ben", text: "Also, ich bin ganz praktisch. Ich kann die Glühbirne wechseln, Blumen pflanzen und die Wohnung sauber machen. Ich kann auch ein Bücherregal bauen.", en: "Well, I'm quite practical. I can change the lightbulb, plant flowers, and clean the apartment. I can also build a bookshelf.", ar: "بص، أنا عملي جداً. أقدر أغير اللمبة، أزرع ورد، وأنظف الشقة. وأقدر كمان أعمل رف كتب." },
+                        { speaker: "Anna", text: "Und was lässt du machen?", en: "And what do you have done (by someone else)?", ar: "وإيه اللي بتخلي حد يعملهولك؟" },
+                        { speaker: "Ben", text: "Den Herd kann ich nicht anschließen. Ich lasse den Herd von einem Elektriker anschließen.", en: "I can't connect the stove. I have the stove connected by an electrician.", ar: "مقدرش أوصل البوتاجاز. بخلي كهربائي هو اللي يوصله." },
+                        { speaker: "Ben", text: "Und das Waschbecken repariere ich auch nicht selbst. Das lasse ich von einem Klempner reparieren.", en: "And I don't repair the sink myself either. I have it repaired by a plumber.", ar: "والحوض كمان بصلحوش بنفسي. بخلي سباك يصلحهولي." }
+                    ]
+                },
+                {
+                    id: 'd9', title: "Nachbarschaftshilfe (مساعدة الجيران)", icon: "heart",
+                    lines: [
+                        { speaker: "Anna", text: "Haben Sie schon mal für Ihre Nachbarn etwas eingekauft?", en: "Have you ever bought something for your neighbors?", ar: "هل اشتريت حاجة لجيرانك قبل كده؟" },
+                        { speaker: "Ben", text: "Ja, das habe ich schon mal gemacht. / Ja, ich mache das manchmal/regelmäßig.", en: "Yes, I've done that before. / Yes, I do that sometimes/regularly.", ar: "أيوة عملت كده قبل كده. / أيوة بعمل كده أحياناً/بانتظام." },
+                        { speaker: "Anna", text: "Hast du schon mal die Kinder der Nachbarn betreut?", en: "Have you ever looked after the neighbors' children?", ar: "هل راعيت أطفال الجيران قبل كده؟" },
+                        { speaker: "Ben", text: "Nein, das habe ich noch nie gemacht.", en: "No, I've never done that.", ar: "لأ عمري ما عملت كده." },
+                        { speaker: "Anna", text: "Haben Sie schon mal die Nachbarn zum Geburtstag eingeladen?", en: "Have you ever invited the neighbors to a birthday?", ar: "عزمت جيرانك على عيد ميلادك قبل كده؟" },
+                        { speaker: "Ben", text: "Ja, das habe ich schon mal gemacht. Letztes Jahr zu meinem runden Geburtstag.", en: "Yes, I've done that before. Last year for my big milestone birthday.", ar: "أيوة عملتها قبل كده. السنة اللي فاتت في عيد ميلادي." },
+                        { speaker: "Anna", text: "Leihst du deinen Nachbarn manchmal Gegenstände?", en: "Do you sometimes lend items to your neighbors?", ar: "بتسلف جيرانك حاجات أحياناً؟" },
+                        { speaker: "Ben", text: "Ja, ich mache das regelmäßig. Gestern habe ich Mehl geliehen.", en: "Yes, I do that regularly. Yesterday I lent (someone) flour.", ar: "أيوة بعمل كده بانتظام. إمبارح سلفت حد دقيق." },
+                        { speaker: "Anna", text: "Sprechen Sie manchmal mit den Nachbarn über private Themen?", en: "Do you sometimes talk with the neighbors about private topics?", ar: "بتتكلم أحياناً مع الجيران في مواضيع شخصية؟" },
+                        { speaker: "Ben", text: "Nein, das mache ich nicht. Wir sprechen nur über das Wetter.", en: "No, I don't do that. We only talk about the weather.", ar: "لأ، مبعملش كده. إحنا بنتكلم عن الجو وبس." }
+                    ]
+                },
+                {
+                    id: 'd10', title: "Interview: Umziehen (مقابلة عن العزال)", icon: "truck",
+                    lines: [
+                        { speaker: "Interviewer", text: "Wie oft sind Sie schon umgezogen?", en: "How often have you moved?", ar: "عزلت كام مرة قبل كده؟" },
+                        { speaker: "KI", text: "Als künstliche Intelligenz ziehe ich nicht physisch um. Ich 'wohne' in Rechenzentren.", en: "As an artificial intelligence, I do not physically move. I 'live' in data centers.", ar: "كذكاء اصطناعي، أنا مش بعزل بشكل فيزيائي. أنا 'ساكن' في مراكز البيانات." },
+                        { speaker: "Interviewer", text: "Was nervt die Menschen bei einem Umzug besonders?", en: "What annoys people most about a move?", ar: "إيه أكتر حاجة بتضايق الناس في العزال؟" },
+                        { speaker: "KI", text: "Das Einpacken, das Auspacken und das Abbauen der Möbel. Die ganze Organisation nervt am meisten.", en: "Packing, unpacking, and dismantling furniture. The whole organization is the most annoying.", ar: "تعبئة الكراتين، وتفريغها، وفك العفش. الترتيبات دي كلها هي أكتر حاجة بتضايق." },
+                        { speaker: "Interviewer", text: "Ja, und dass man nach dem Umzug nichts mehr findet!", en: "Yes, and that you can't find anything after the move!", ar: "أيوة، وإن الواحد مبيلاقيش حاجة بعد العزال!" },
+                        { speaker: "KI", text: "Genau! Es ist stressig, dass man alle Möbel wieder aufbauen muss.", en: "Exactly! It is stressful that you have to reassemble all the furniture.", ar: "بالظبط! مجهد جداً إنك لازم تركب العفش كله تاني." }
+                    ]
+                }
+            ],
+            culture: [
+                {
+                    id: 'c1', title: "Fotos im Urlaub (الصور في الإجازة)",
+                    lines: [
+                        { g: "Durch Fotos werden schöne Erlebnisse noch schöner – das haben amerikanische Wissenschaftler jetzt herausgefunden.", e: "Photos make beautiful experiences even more beautiful – American scientists have now discovered this.", a: "الصور بتخلي التجارب الحلوة أحلى كمان - ده اللي اكتشفه علماء أمريكان دلوقتي." },
+                        { g: "Bei dem Experiment haben mehr als 2.000 Probanden an einer Stadtrundfahrt teilgenommen, ein Museum besucht und in einer Markthalle zu Mittag gegessen.", e: "In the experiment, more than 2,000 test subjects took part in a city tour, visited a museum, and had lunch in a market hall.", a: "في التجربة دي، أكتر من 2000 شخص شاركوا في جولة بالمدينة، زاروا متحف واتغدوا في صالة سوق." },
+                        { g: "Die Hälfte der Teilnehmer durfte fotografieren, die andere Hälfte nicht.", e: "Half of the participants were allowed to take photos, the other half were not.", a: "نص المشاركين كان مسموح لهم يصوروا، والنص التاني لأ." },
+                        { g: "Danach beschrieben die Teilnehmer ihre Erlebnisse in einem Fragebogen.", e: "Afterwards, the participants described their experiences in a questionnaire.", a: "بعدين، المشاركين وصفوا تجربتهم في استبيان." },
+                        { g: "Die Ergebnisse haben selbst die Wissenschaftler überrascht: Die Teilnehmer mit dem Fotoapparat hatten mehr Spaß und erlebten ihre Aktivitäten intensiver.", e: "The results surprised even the scientists themselves: The participants with the camera had more fun and experienced their activities more intensely.", a: "النتائج فاجأت العلماء نفسهم: المشاركين اللي معاهم كاميرا استمتعوا أكتر وعاشوا التجربة بشكل أعمق." },
+                        { g: "Selbst im Museum betrachteten „die Fotografen“ die Objekte länger.", e: "Even in the museum, 'the photographers' looked at the objects longer.", a: "حتى في المتحف، 'المصورين' بصوا على المعروضات لفترة أطول." },
+                        { g: "Dieser positive Effekt hielt außerdem eine ganze Woche an.", e: "This positive effect also lasted for a whole week.", a: "والتأثير الإيجابي ده استمر كمان لمدة أسبوع كامل." },
+                        { g: "Interessant ist auch ein weiteres Studienergebnis: Wenn man bereits während der Reise mit dem Betrachten und dem Löschen der Fotos beginnt, verringert sich der positive Effekt.", e: "Another study result is also interesting: If one already begins looking at and deleting the photos during the trip, the positive effect is reduced.", a: "ونتيجة دراسة تانية مثيرة للاهتمام: لو الواحد بدأ يتفرج ويمسح الصور وهو لسة في الرحلة، التأثير الإيجابي ده بيقل." }
+                    ]
+                },
+                {
+                    id: 'c2', title: "Städte-Porträts: Erfurt",
+                    lines: [
+                        { g: "Die Stadt <strong>Erfurt</strong> hat 210.000 Einwohner und liegt im Bundesland Thüringen in der Mitte von Deutschland.", e: "The city of Erfurt has 210,000 inhabitants and is located in the federal state of Thuringia in the middle of Germany.", a: "مدينة إرفورت بها 210 ألف نسمة وتقع في ولاية تورينجن في وسط ألمانيا." },
+                        { g: "Die ersten schriftlichen Dokumente stammen aus dem Jahr 742. Bereits im 13. Jahrhundert war die Stadt ein bedeutendes Bildungszentrum.", e: "The first written documents date from the year 742. Already in the 13th century, the city was an important center of education.", a: "أول وثائق مكتوبة بترجع لسنة 742. وفي القرن الـ 13 كانت المدينة مركز تعليمي مهم." },
+                        { g: "Im Jahre 1379 wurde die Universität Erfurt gegründet. Nach dem Gründungsdatum ist sie die älteste Universität in Deutschland.", e: "In the year 1379, the University of Erfurt was founded. According to the founding date, it is the oldest university in Germany.", a: "سنة 1379 تأسست جامعة إرفورت. وبناءً على تاريخ التأسيس هي أقدم جامعة في ألمانيا." },
+                        { g: "Ihr bekanntester Student war der Reformator Martin Luther, der hier von 1501 bis 1505 studierte.", e: "Its most famous student was the reformer Martin Luther, who studied here from 1501 to 1505.", a: "أشهر طالب فيها كان المُصلح مارتن لوثر، اللي درس هنا من 1501 لـ 1505." },
+                        { g: "Das Zentrum von Erfurt ist die Altstadt. Man kann dort über 20 gotische Kirchen und viele alte Fachwerk- und Handelshäuser sehen.", e: "The center of Erfurt is the old town. One can see over 20 Gothic churches and many old half-timbered and trading houses there.", a: "مركز إرفورت هو المدينة القديمة. الواحد ممكن يشوف هناك أكتر من 20 كنيسة قوطية وبيوت تجارية وخشبية قديمة." },
+                        { g: "Ein Wahrzeichen der Stadt ist die Krämerbrücke, die bereits 1117 gebaut wurde. Auf der 120 Meter langen Brücke stehen 32 Häuser.", e: "A landmark of the city is the Krämerbrücke, which was built back in 1117. On the 120-meter-long bridge, there are 32 houses.", a: "من رموز المدينة جسر كريمر، اللي اتبنى سنة 1117. على الجسر اللي طوله 120 متر فيه 32 بيت." },
+                        { g: "Besucher können dort Kunst, Keramik, Glas, Schmuck oder Weine aus der Gegend kaufen.", e: "Visitors can buy art, ceramics, glass, jewelry, or wines from the region there.", a: "الزوار ممكن يشتروا من هناك فن، سيراميك، زجاج، مجوهرات أو نبيذ من المنطقة." }
+                    ]
+                },
+                {
+                    id: 'c3', title: "Städte-Porträts: Basel",
+                    lines: [
+                        { g: "Die Stadt <strong>Basel</strong> hat 175.000 Einwohner und liegt im Nordwesten der Schweiz, im Dreiländereck Deutschland–Frankreich–Schweiz.", e: "The city of Basel has 175,000 inhabitants and is located in the northwest of Switzerland, in the border triangle of Germany–France–Switzerland.", a: "مدينة بازل بها 175 ألف نسمة وتقع في شمال غرب سويسرا، في نقطة التقاء ألمانيا وفرنسا وسويسرا." },
+                        { g: "Basel kann auf eine mehr als 1600-jährige Geschichte zurückblicken.", e: "Basel can look back on a history of more than 1600 years.", a: "بازل ليها تاريخ بيرجع لأكتر من 1600 سنة." },
+                        { g: "Wichtig für die Entwicklung der Stadt war die Gründung der Universität im Jahre 1460. Dadurch kamen viele Gelehrte nach Basel.", e: "Important for the development of the city was the founding of the university in the year 1460. As a result, many scholars came to Basel.", a: "المهم لتطور المدينة كان تأسيس الجامعة سنة 1460. وبسبب ده علماء كتير جم لبازل." },
+                        { g: "Im 16. Jahrhundert lebte und arbeitete der berühmte niederländische Humanist Erasmus von Rotterdam in Basel.", e: "In the 16th century, the famous Dutch humanist Erasmus of Rotterdam lived and worked in Basel.", a: "في القرن الـ 16 عاش واشتغل الإنساني الهولندي المشهور إيراسموس في بازل." },
+                        { g: "Nach seinem Tod 1536 wurde er im Basler Münster beigesetzt, das sich in der Altstadt befindet und ein Wahrzeichen der Stadt ist.", e: "After his death in 1536, he was buried in the Basel Minster, which is located in the old town and is a landmark of the city.", a: "بعد وفاته سنة 1536 اتدفن في كاتدرائية بازل اللي موجودة في المدينة القديمة وبتعتبر رمز للمدينة." },
+                        { g: "Durch Veranstaltungen wie die Kunstmesse Art Basel ist die Stadt heute zu einer internationalen Kunstmetropole geworden.", e: "Through events like the Art Basel art fair, the city has become an international art metropolis today.", a: "بسبب فعاليات زي معرض آرت بازل، المدينة بقت النهاردة عاصمة عالمية للفن." },
+                        { g: "Außerdem gilt Basel als wichtiger Standort der chemischen und pharmazeutischen Industrie.", e: "Furthermore, Basel is considered an important location for the chemical and pharmaceutical industry.", a: "بالإضافة لده، بازل بتعتبر موقع مهم للصناعات الكيماوية والدوائية." }
+                    ]
+                },
+                {
+                    id: 'c4', title: "Städte-Porträts: Graz",
+                    lines: [
+                        { g: "Die Stadt <strong>Graz</strong> liegt im Bundesland Steiermark in Österreich.", e: "The city of Graz is located in the federal state of Styria in Austria.", a: "مدينة جراتس تقع في ولاية شتايرمارك في النمسا." },
+                        { g: "Von den 280.000 Einwohnern in Graz sind 45.000 Studenten, das sind ungefähr 16 Prozent der Bevölkerung.", e: "Of the 280,000 inhabitants in Graz, 45,000 are students, which is approximately 16 percent of the population.", a: "من الـ 280 ألف ساكن في جراتس فيه 45 ألف طالب، وده حوالي 16% من السكان." },
+                        { g: "Der Name Graz leitet sich vom slawischen Wort gradec (kleine Burg) ab.", e: "The name Graz is derived from the Slavic word gradec (small castle).", a: "اسم جراتس مشتق من الكلمة السلافية gradec (قلعة صغيرة)." },
+                        { g: "Besonders sehenswert ist die Grazer Altstadt, die seit 1999 zum UNESCO-Weltkulturerbe zählt. Hier befinden sich auch die meisten Sehenswürdigkeiten.", e: "The Graz Old Town, which has been a UNESCO World Cultural Heritage site since 1999, is particularly worth seeing. Most of the sights are also located here.", a: "المدينة القديمة في جراتس تستحق الزيارة بشكل خاص، وهي من التراث العالمي لليونسكو من سنة 1999. وفيها كمان معظم المعالم السياحية." },
+                        { g: "Wenn man mit einem Lift auf den Schlossberg fährt, hat man einen fantastischen Ausblick über die Altstadt.", e: "When you take a lift up the Schlossberg, you have a fantastic view over the Old Town.", a: "لو طلعت بالأسانسير لجبل القلعة، هتشوف منظر رائع للمدينة القديمة." },
+                        { g: "Die Auszeichnung UNESCO-Weltkulturerbe verpflichtet die Stadt, das Erbe zu erhalten und neue Architektur harmonisch einzufügen.", e: "The UNESCO World Cultural Heritage award obligates the city to preserve the heritage and to integrate new architecture harmoniously.", a: "جائزة اليونسكو بتلزم المدينة تحافظ على التراث وتدمج العمارة الجديدة بشكل متناسق." },
+                        { g: "Ein gutes Beispiel für moderne Architektur ist das Kunsthaus Graz. Das Gebäude aus Stahl und Glas passt perfekt in die traditionelle Stadtstruktur.", e: "A good example of modern architecture is the Kunsthaus Graz. The building, made of steel and glass, fits perfectly into the traditional city structure.", a: "مثال جيد للعمارة الحديثة هو متحف الفن. المبنى المصنوع من الصلب والزجاج متناسق جداً مع شكل المدينة التقليدي." }
+                    ]
+                },
+                {
+                    id: 'c5', title: "Präsentation: Alexandria (الإسكندرية)",
+                    lines: [
+                        { g: "Alexandria hat über 5 Millionen Einwohner. Die Stadt liegt im Norden von Ägypten, direkt am Mittelmeer.", e: "Alexandria has over 5 million inhabitants. The city is located in the north of Egypt, directly on the Mediterranean Sea.", a: "الإسكندرية بها أكثر من 5 مليون نسمة. المدينة تقع في شمال مصر، مباشرة على البحر المتوسط." },
+                        { g: "Sie wurde 331 v. Chr. von Alexander dem Großen gegründet.", e: "It was founded in 331 BC by Alexander the Great.", a: "تأسست عام 331 قبل الميلاد على يد الإسكندر الأكبر." },
+                        { g: "Wichtig für die Entwicklung der Stadt war die antike Bibliothek, die größte der antiken Welt.", e: "Important for the development of the city was the ancient library, the largest in the ancient world.", a: "من المهم لتطور المدينة كانت المكتبة القديمة، الأكبر في العالم القديم." },
+                        { g: "Besonders sehenswert ist die moderne Bibliotheca Alexandrina. Ein Wahrzeichen der Stadt ist die Qaitbay-Zitadelle.", e: "Especially worth seeing is the modern Bibliotheca Alexandrina. A landmark of the city is the Qaitbay Citadel.", a: "مكتبة الإسكندرية الحديثة تستحق الزيارة بشكل خاص. وقلعة قايتباي هي رمز للمدينة." },
+                        { g: "Heute gilt Alexandria als wichtigstes Industriezentrum und als beliebtes Sommer-Reiseziel für Ägypter.", e: "Today, Alexandria is considered the most important industrial center and a popular summer travel destination for Egyptians.", a: "اليوم تُعتبر الإسكندرية أهم مركز صناعي ووجهة سفر صيفية مفضلة للمصريين." }
+                    ]
+                },
+                {
+                    id: 'c6', title: "Nachbarschaft in Deutschland (الجيرة في ألمانيا)",
+                    lines: [
+                        { g: "Jeder fünfte Deutsche lebt heute in einem Single-Haushalt, Tendenz steigend.", e: "Every fifth German lives in a single-person household today, tendency rising.", a: "كل ألماني خامس عايش لوحده في بيت دلوقتي، والنسبة بتزيد." },
+                        { g: "In Großstädten wie Berlin wohnt fast jeder Dritte allein.", e: "In large cities like Berlin, almost every third person lives alone.", a: "في المدن الكبيرة زي برلين، تقريباً واحد من كل تلاتة عايش لوحده." },
+                        { g: "Etwa 80 Prozent der Deutschen kennen ihre Nachbarn.", e: "About 80 percent of Germans know their neighbors.", a: "حوالي 80% من الألمان يعرفوا جيرانهم." },
+                        { g: "Wenn man einer neuen Studie glauben darf, hat sich das Verhältnis zwischen den Nachbarn in den letzten Jahrzehnten verbessert.", e: "If one can believe a new study, the relationship between neighbors has improved in recent decades.", a: "لو صدقنا دراسة جديدة، فالعلاقة بين الجيران اتحسنت في العقود الأخيرة." },
+                        { g: "Das Meinungsforschungsinstitut Allensbach untersucht seit Jahrzehnten, welche Bedeutung Nachbarn haben.", e: "The Allensbach opinion research institute has been studying for decades what significance neighbors have.", a: "معهد أبحاث الرأي ألينسباخ بيدرس بقاله عقود أهمية الجيران." },
+                        { g: "1953 haben nur 22 Prozent ihren Nachbarn Gegenstände geliehen, heute sind es schon 51 Prozent.", e: "In 1953, only 22 percent lent items to their neighbors; today it is already 51 percent.", a: "سنة 1953 كان 22% بس بيسلفوا حاجات لجيرانهم، النهاردة بقوا 51%." },
+                        { g: "43 Prozent der Deutschen haben ihre Nachbarn schon einmal eingeladen, z. B. zum Kaffeetrinken oder zu einer Party, früher waren das nur 13 Prozent.", e: "43 percent of Germans have invited their neighbors over at least once, e.g., for coffee or to a party; in the past, that was only 13 percent.", a: "43% من الألمان عزموا جيرانهم قبل كده، مثلاً على شرب قهوة أو حفلة، زمان كانوا 13% بس." },
+                        { g: "In den 1950er-Jahren half nur jeder Fünfte dem Nachbarn beim Einkaufen, jetzt macht das jeder Dritte.", e: "In the 1950s, only every fifth person helped their neighbor with shopping; now every third person does.", a: "في الخمسينات واحد بس من كل خمسة كان بيساعد جاره في التسوق، دلوقتي واحد من كل تلاتة بيعمل ده." },
+                        { g: "Auch bei der Kinderbetreuung ist die Hilfsbereitschaft gestiegen.", e: "The willingness to help has also increased in childcare.", a: "الاستعداد للمساعدة زاد كمان في رعاية الأطفال." },
+                        { g: "In meinem Heimatland Ägypten ist eine gute Nachbarschaft extrem wichtig. Es ist ein sehr starker sozialer Wert.", e: "In my home country, Egypt, a good neighborhood is extremely important. It is a very strong social value.", a: "في بلدي مصر، الجيرة الكويسة مهمة جداً. هي قيمة اجتماعية قوية جداً." }
+                    ]
+                }
+            ],
+            letters: [
+                {
+                    id: 'l1', title: "Postkarte aus dem Urlaub (كارت بوستال)",
+                    lines: [
+                        { g: "Liebe Anna,", e: "Dear Anna,", a: "عزيزتي آنا،" },
+                        { g: "viele sonnige Grüße aus Zürich! Die Stadt ist wunderschön. Ich habe schon so viel gemacht.", e: "Many sunny greetings from Zurich! The city is beautiful. I have already done so much.", a: "تحياتي المشمسة من زيورخ! المدينة جميلة جداً. أنا عملت حاجات كتير أوي." },
+                        { g: "Gestern habe ich eine Stadtrundfahrt gemacht und viele Sehenswürdigkeiten besichtigt.", e: "Yesterday I took a city tour and visited many sights.", a: "إمبارح عملت جولة في المدينة وزرت معالم سياحية كتير." },
+                        { g: "Ich habe auch ein Museum besucht, das war sehr interessant.", e: "I also visited a museum, which was very interesting.", a: "وزرت كمان متحف، ده كان ممتع جداً." },
+                        { g: "Am Abend bin ich durch die Altstadt gelaufen und habe in einem tollen Restaurant lokale Gerichte gegessen.", e: "In the evening, I walked through the old town and ate local dishes in a great restaurant.", a: "بالليل اتمشيت في المدينة القديمة وأكلت أطباق محلية في مطعم رائع." },
+                        { g: "Ich habe auch viele Fotos gemacht! Bis bald,", e: "I also took many photos! See you soon,", a: "وأخدت كمان صور كتير! أشوفك قريب،" },
+                        { g: "Dein Gemini", e: "Your Gemini", a: "جيميني" }
+                    ]
+                },
+                {
+                    id: 'l2', title: "Einladung in die Stadt (دعوة لزيارة المدينة)",
+                    lines: [
+                        { g: "Betreff: Einladung nach Alexandria!", e: "Subject: Invitation to Alexandria!", a: "الموضوع: دعوة لزيارة الإسكندرية!" },
+                        { g: "Liebe Freunde,", e: "Dear friends,", a: "أصدقائي الأعزاء،" },
+                        { g: "wie geht es euch? Ich wohne jetzt in Alexandria in Ägypten!", e: "How are you? I live in Alexandria in Egypt now!", a: "عاملين إيه؟ أنا ساكن دلوقتي في الإسكندرية في مصر!" },
+                        { g: "Ich möchte euch gern einladen, mich hier zu besuchen.", e: "I would like to invite you to visit me here.", a: "حابب أعزمكم تزوروني هنا." },
+                        { g: "Ihr könnt natürlich in meiner Wohnung übernachten, ich habe ein Gästezimmer.", e: "You can, of course, stay overnight in my apartment; I have a guest room.", a: "تقدروا طبعاً تباتوا في شقتي، عندي أوضة ضيوف." },
+                        { g: "In meiner Gegend gibt es auch viele Hotels. Die sind nicht so teuer.", e: "In my area, there are also many hotels. They are not so expensive.", a: "في منطقتي كمان فيه فنادق كتير. مش غالية أوي." },
+                        { g: "Wenn ihr hier seid, könnten wir so viele tolle Dinge machen.", e: "When you are here, we could do so many great things.", a: "لما تبقوا هنا، ممكن نعمل حاجات حلوة كتير." },
+                        { g: "Wir könnten die berühmte Bibliothek besichtigen, an der Corniche spazieren gehen und abends frischen Fisch essen.", e: "We could visit the famous library, walk along the Corniche, and eat fresh fish in the evening.", a: "ممكن نزور المكتبة المشهورة، ونتمشى على الكورنيش، وناكل سمك طازة بالليل." },
+                        { g: "Ich würde mich sehr freuen, von euch zu hören!", e: "I would be very happy to hear from you!", a: "هكون مبسوط جداً لو سمعت منكم!" },
+                        { g: "Liebe Grüße, euer Freund", e: "Best regards, your friend", a: "مع أطيب التحيات، صديقكم" }
+                    ]
+                },
+                {
+                    id: 'l3', title: "Ich bin umgezogen! (انتقلت لمسكن جديد!)",
+                    lines: [
+                        { g: "Betreff: Ich bin umgezogen!", e: "Subject: I've moved!", a: "الموضوع: أنا عزلت!" },
+                        { g: "Hallo Anna,", e: "Hello Anna,", a: "أهلاً آنا،" },
+                        { g: "wie geht es dir? Mir geht es gut. Ich habe eine neue Wohnung!", e: "How are you? I'm doing well. I have a new apartment!", a: "عاملة إيه؟ أنا بخير. أنا جبت شقة جديدة!" },
+                        { g: "Ich bin umgezogen und wohne jetzt in einer kleineren Wohnung am Stadtrand, in der Nähe vom Park.", e: "I've moved and now live in a smaller apartment on the outskirts, near the park.", a: "أنا عزلت وساكن دلوقتي في شقة أصغر على أطراف المدينة، قريبة من الحديقة." },
+                        { g: "Die neue Wohnung hat viele Vorteile: Sie ist sehr ruhig und hat einen großen Balkon.", e: "The new apartment has many advantages: It is very quiet and has a large balcony.", a: "الشقة الجديدة فيها مميزات كتير: هادية جداً وفيها بلكونة كبيرة." },
+                        { g: "Außerdem ist die Miete viel günstiger als im Zentrum.", e: "Besides, the rent is much cheaper than in the center.", a: "بالإضافة لكده، الإيجار أرخص بكتير من وسط البلد." },
+                        { g: "Natürlich hat sie auch einige Nachteile, aber das ist normal.", e: "Of course, it also has some disadvantages, but that's normal.", a: "طبعاً فيها شوية عيوب، بس ده طبيعي." },
+                        { g: "Zum Beispiel gibt es keine guten Einkaufsmöglichkeiten in der Nähe.", e: "For example, there are no good shopping facilities nearby.", a: "مثلاً مفيش أماكن شوبينج كويسة قريبة." },
+                        { g: "Ich muss jetzt immer mit dem Bus fahren, um einzukaufen, und der Bus kommt nur einmal pro Stunde.", e: "I always have to take the bus to shop now, and the bus only comes once an hour.", a: "لازم دايماً أركب الباص عشان أتسوق، والباص بييجي مرة واحدة في الساعة." },
+                        { g: "Aber insgesamt gefällt es mir hier sehr gut. Besuch mich doch mal, wenn du Zeit hast.", e: "But overall, I like it here a lot. Why don't you come visit me when you have time.", a: "بس في المجمل المكان عاجبني جداً هنا. ابقي تعالي زوريني لما يكون عندك وقت." },
+                        { g: "Liebe Grüße", e: "Best regards", a: "مع خالص تحياتي" }
+                    ]
+                }
+            ],
+            grammar: [
+                {
+                    title: "1. Indefinitpronomen (الضمائر غير المحددة)",
+                    desc: "تُستخدم للحديث عن أشخاص أو كميات بشكل عام دون تحديد هويتهم بدقة. أهم نقطة هنا هي الانتباه لتصريف الفعل: (niemand) تأخذ فعل مفرد، بينما البقية تأخذ فعل جمع.",
+                    type: "generic_examples",
+                    examples: [
+                        { category: "الكل / المعظم (تأخذ فعل جمع)", g: "<span class='text-purple-600 font-bold'>Alle / Die meisten</span> Touristen <span class='text-rose-500 font-bold'>besichtigen</span> Sehenswürdigkeiten.", e: "All / Most tourists visit sights.", a: "جميع / معظم السياح يزورون المعالم. (الفعل جمع: besichtigen)" },
+                        { category: "الكثير / البعض / القليل (تأخذ فعل جمع)", g: "<span class='text-purple-600 font-bold'>Viele / Einige / Wenige</span> <span class='text-rose-500 font-bold'>schreiben</span> Postkarten.", e: "Many / Some / Few write postcards.", a: "الكثيرون / البعض / القليلون يكتبون كروت بوستال. (الفعل جمع: schreiben)" },
+                        { category: "النفي / لا أحد (تأخذ فعل مفرد!)", g: "<span class='text-purple-600 font-bold'>Niemand</span> <span class='text-rose-500 font-bold'>kauft</span> Andenken.", e: "Nobody buys souvenirs.", a: "لا أحد يشتري هدايا تذكارية. (الفعل مفرد يصرف مثل er/sie/es: kauft)" }
+                    ]
+                },
+                {
+                    title: "2. Das Verb 'lassen' (يترك / يجعل شخص يفعل الشيء)",
+                    desc: "يُستخدم الفعل 'lassen' عندما لا تقوم بالشيء بنفسك، بل تجعل شخصاً آخر (مثل فني أو متخصص) يقوم به نيابة عنك. يتم تصريف 'lassen' والفعل الأساسي يأتي في المصدر آخر الجملة.",
+                    type: "generic_examples",
+                    examples: [
+                        { category: "بناء الجملة", g: "Ich <span class='text-purple-600 font-bold'>lasse</span> den Herd von einem Elektriker <span class='text-purple-600 font-bold'>anschließen</span>.", e: "I have the stove connected by an electrician.", a: "أجعل الكهربائي يوصل البوتاجاز." },
+                        { category: "بناء الجملة", g: "Wir <span class='text-purple-600 font-bold'>lassen</span> unsere Wohnung <span class='text-purple-600 font-bold'>streichen</span>.", e: "We are having our apartment painted.", a: "نحن نجعل أحداً يدهن شقتنا." }
+                    ]
+                },
+                {
+                    title: "3. Wechselpräpositionen (حروف الجر المكانية المزدوجة)",
+                    desc: "حروف الجر (in, an, auf, über, unter, vor, hinter, neben, zwischen) تأخذ حالة الـ Dativ إذا كنا نسأل بـ Wo (أين - سكون/مكان)، وتأخذ حالة الـ Akkusativ إذا كنا نسأل بـ Wohin (إلى أين - حركة/اتجاه).",
+                    type: "wechsel_praepositionen"
+                },
+                {
+                    title: "4. Verben mit lokalen Ergänzungen (أفعال المكان)",
+                    desc: "أفعال توضح (الحالة/السكون) وتأخذ Dativ مثل: liegen, stehen, sitzen, hängen. وأفعال توضح (الحركة/الوضع) وتأخذ Akkusativ مثل: legen, stellen, setzen, hängen.",
+                    type: "lokale_verben"
+                },
+                {
+                    title: "5. Relativsätze (الجمل الموصولة)",
+                    desc: "تُستخدم لإعطاء معلومات إضافية عن اسم في الجملة الرئيسية. الضمير الموصول (der, die, das) يعتمد على نوع الاسم في الجملة الأولى، وحالته الإعرابية (Nom, Akk, Dat) تعتمد على موقعه في الجملة الثانية.",
+                    type: "generic_examples",
+                    examples: [
+                        { category: "Nominativ (حالة الرفع)", g: "Der Student, <span class='text-purple-600 font-bold'>der</span> hier studiert, heißt Martin Luther.", e: "The student who studies here is named Martin Luther.", a: "الطالب الذي يدرس هنا اسمه مارتن لوثر." },
+                        { category: "Akkusativ (حالة النصب)", g: "Die Stadt, <span class='text-purple-600 font-bold'>die</span> ich besuche, ist schön.", e: "The city that I am visiting is beautiful.", a: "المدينة التي أزورها جميلة." },
+                        { category: "Dativ (حالة الجر مع حرف جر)", g: "Das Münster, <span class='text-purple-600 font-bold'>in dem</span> das Grab ist, liegt in Basel.", e: "The Minster in which the grave is, is located in Basel.", a: "الكاتدرائية التي يوجد بها القبر تقع في بازل." },
+                        { category: "Dativ (حالة الجر مع حرف جر)", g: "Die Altstadt, <span class='text-purple-600 font-bold'>in der</span> es viele Sehenswürdigkeiten gibt, ist toll.", e: "The old town, in which there are many sights, is great.", a: "المدينة القديمة، التي يوجد بها العديد من المعالم السياحية، رائعة." }
+                    ]
+                }
+            ],
+            verbs: [
+                { id: 'v1', ger: "besuchen", eng: "to visit", ar: "يزور", praeteritum: "besuchte", perfekt: "hat besucht", s: [{ g: "Ich <strong>besuche</strong> ein Museum.", e: "I am visiting a museum.", a: "أنا أزور متحفاً." }] },
+                { id: 'v2', ger: "besichtigen", eng: "to visit (sights)", ar: "يزور (معالم)", praeteritum: "besichtigte", perfekt: "hat besichtigt", s: [{ g: "Wir haben viele Sehenswürdigkeiten <strong>besichtigt</strong>.", e: "We visited many sights.", a: "لقد زرنا الكثير من المعالم السياحية." }] },
+                { id: 'v3', ger: "fotografieren", eng: "to take photos", ar: "يصور", praeteritum: "fotografierte", perfekt: "hat fotografiert", s: [{ g: "<strong>Fotografieren</strong> Sie auch Sehenswürdigkeiten?", e: "Do you also photograph sights?", a: "هل تصور المعالم السياحية أيضاً؟" }] },
+                { id: 'v4', ger: "posten", eng: "to post", ar: "ينشر (على الإنترنت)", praeteritum: "postete", perfekt: "hat gepostet", s: [{ g: "Ich <strong>poste</strong> lieber Fotos.", e: "I prefer to post photos.", a: "أفضل نشر الصور." }] },
+                { id: 'v5', ger: "verschicken", eng: "to send", ar: "يُرسل", praeteritum: "verschickte", perfekt: "hat verschickt", s: [{ g: "Ich <strong>verschicke</strong> sie an Freunde.", e: "I send them to friends.", a: "أرسلها إلى الأصدقاء." }] },
+                { id: 'v6', ger: "übernachten", eng: "to stay overnight", ar: "يبيت", praeteritum: "übernachtete", perfekt: "hat übernachtet", s: [{ g: "Ich <strong>übernachte</strong> meistens in einem Hotel.", e: "I usually stay in a hotel.", a: "في الغالب أبيت في فندق." }] },
+                { id: 'v7', ger: "herausfinden", eng: "to find out", ar: "يكتشف / يتوصل لـ", praeteritum: "fand heraus", perfekt: "hat herausgefunden", s: [{ g: "Das haben amerikanische Wissenschaftler jetzt <strong>herausgefunden</strong>.", e: "American scientists have now discovered this.", a: "هذا ما اكتشفه العلماء الأمريكيون الآن." }] },
+                { id: 'v8', ger: "teilnehmen", eng: "to participate", ar: "يشارك", praeteritum: "nahm teil", perfekt: "hat teilgenommen", s: [{ g: "Mehr als 2.000 Probanden haben an einer Stadtrundfahrt <strong>teilgenommen</strong>.", e: "More than 2,000 test subjects took part in a city tour.", a: "شارك أكثر من 2000 متطوع في جولة بالمدينة." }] },
+                { id: 'v9', ger: "betrachten", eng: "to look at / view", ar: "ينظر بتمعن", praeteritum: "betrachtete", perfekt: "hat betrachtet", s: [{ g: "Selbst im Museum <strong>betrachteten</strong> die Fotografen die Objekte länger.", e: "Even in the museum, the photographers looked at the objects longer.", a: "حتى في المتحف، نظر المصورون إلى المعروضات لفترة أطول." }] },
+                { id: 'v10', ger: "liegen", eng: "to lie (be situated)", ar: "يرقد / يقع (للمكان)", praeteritum: "lag", perfekt: "hat gelegen", s: [{ g: "Das Handtuch <strong>liegt</strong> im Schrank.", e: "The towel is lying in the closet.", a: "الفوطة موضوعة (ترقد) في الدولاب." }] },
+                { id: 'v11', ger: "legen", eng: "to lay / put", ar: "يضع (بشكل أفقي)", praeteritum: "legte", perfekt: "hat gelegt", s: [{ g: "Ich <strong>lege</strong> das Buch unter das Kopfkissen.", e: "I am putting the book under the pillow.", a: "أنا أضع الكتاب تحت المخدة." }] },
+                { id: 'v12', ger: "stehen", eng: "to stand (be located)", ar: "يقف / يقع (بشكل رأسي)", praeteritum: "stand", perfekt: "hat gestanden", s: [{ g: "Der Sessel <strong>steht</strong> im Wohnzimmer.", e: "The armchair is standing in the living room.", a: "الكرسي موجود في غرفة المعيشة." }] },
+                { id: 'v13', ger: "stellen", eng: "to stand / put upright", ar: "يضع (بشكل رأسي)", praeteritum: "stellte", perfekt: "hat gestellt", s: [{ g: "Ich <strong>stelle</strong> die Vase neben den Laptop.", e: "I am putting the vase next to the laptop.", a: "أنا أضع الفازة بجانب اللابتوب." }] },
+                { id: 'v14', ger: "sitzen", eng: "to sit", ar: "يجلس", praeteritum: "saß", perfekt: "hat gesessen", s: [{ g: "Ich <strong>sitze</strong> auf dem Stuhl.", e: "I sit on the chair.", a: "أنا أجلس على الكرسي." }] },
+                { id: 'v15', ger: "setzen", eng: "to set / seat oneself", ar: "يُجلس / يجلس (حركة)", praeteritum: "setzte", perfekt: "hat gesetzt", s: [{ g: "Ich <strong>setze</strong> mich nicht auf diesen Stuhl.", e: "I am not sitting down on this chair.", a: "لن أجلس على هذا الكرسي." }] },
+                { id: 'v16', ger: "hängen", eng: "to hang", ar: "يُعلق / مُعلق", praeteritum: "hing / hängte", perfekt: "hat gehangen / gehängt", s: [{ g: "Das Bild <strong>hängt</strong> über dem Bett.", e: "The picture is hanging above the bed.", a: "الصورة معلقة فوق السرير." }, { g: "Ich <strong>hänge</strong> das Bild über das Sofa.", e: "I am hanging the picture above the sofa.", a: "أنا أُعلق الصورة فوق الكنبة." }] },
+                { id: 'v17', ger: "lassen", eng: "to let / have something done", ar: "يترك / يجعل (شخص آخر يفعل)", praeteritum: "ließ", perfekt: "hat gelassen", s: [{ g: "Ich <strong>lasse</strong> den Herd von einem Elektriker anschließen.", e: "I have the stove connected by an electrician.", a: "أجعل الكهربائي يوصل البوتاجاز." }] },
+                { id: 'v18', ger: "umziehen", eng: "to move house", ar: "يعزل / ينتقل", praeteritum: "zog um", perfekt: "ist umgezogen", s: [{ g: "Wie oft sind Sie schon <strong>umgezogen</strong>?", e: "How often have you moved?", a: "عزلت كام مرة قبل كده؟" }] },
+                { id: 'v19', ger: "leihen", eng: "to lend / borrow", ar: "يستعير / يُسلف", praeteritum: "lieh", perfekt: "hat geliehen", s: [{ g: "Leihst du deinen Nachbarn manchmal Gegenstände?", e: "Do you sometimes lend items to your neighbors?", a: "هل بتسلف جيرانك حاجات أحياناً؟" }] },
+                { id: 'v20', ger: "streichen", eng: "to paint (walls)", ar: "يدهن", praeteritum: "strich", perfekt: "hat gestrichen", s: [{ g: "Ich lasse die Wände <strong>streichen</strong>.", e: "I am having the walls painted.", a: "أجعل أحداً يدهن الحوائط." }] },
+                { id: 'v21', ger: "reparieren", eng: "to repair", ar: "يُصلّح", praeteritum: "reparierte", perfekt: "hat repariert", s: [{ g: "Ich lasse das Waschbecken <strong>reparieren</strong>.", e: "I have the sink repaired.", a: "أجعل أحداً يصلح الحوض." }] },
+                { id: 'v22', ger: "bügeln", eng: "to iron", ar: "يكوي", praeteritum: "bügelte", perfekt: "hat gebügelt", s: [{ g: "Ich muss Wäsche <strong>bügeln</strong>.", e: "I have to iron laundry.", a: "يجب أن أكوي الغسيل." }] },
+                { id: 'v23', ger: "anschließen", eng: "to connect", ar: "يُوصّل (أجهزة)", praeteritum: "schloss an", perfekt: "hat angeschlossen", s: [{ g: "Ich lasse den Herd <strong>anschließen</strong>.", e: "I am having the stove connected.", a: "أجعل أحداً يوصل البوتاجاز." }] },
+                { id: 'v24', ger: "pflanzen", eng: "to plant", ar: "يزرع", praeteritum: "pflanzte", perfekt: "hat gepflanzt", s: [{ g: "Ich kann Blumen <strong>pflanzen</strong>.", e: "I can plant flowers.", a: "أقدر أزرع ورد." }] },
+                { id: 'v25', ger: "mähen", eng: "to mow", ar: "يقص (العشب)", praeteritum: "mähte", perfekt: "hat gemäht", s: [{ g: "Ich muss den Rasen <strong>mähen</strong>.", e: "I have to mow the lawn.", a: "لازم أقص حشائش الجنينة." }] },
+                { id: 'v26', ger: "betreuen", eng: "to look after / care for", ar: "يرعى", praeteritum: "betreute", perfekt: "hat betreut", s: [{ g: "Hast du schon mal die Kinder der Nachbarn <strong>betreut</strong>?", e: "Have you ever looked after the neighbors' children?", a: "هل راعيت أطفال الجيران قبل كده؟" }] },
+                { id: 'v27', ger: "einladen", eng: "to invite", ar: "يدعو", praeteritum: "lud ein", perfekt: "hat eingeladen", s: [{ g: "Haben Sie schon mal die Nachbarn zum Geburtstag <strong>eingeladen</strong>?", e: "Have you ever invited the neighbors to a birthday?", a: "عزمت جيرانك على عيد ميلادك قبل كده؟" }] },
+                { id: 'v28', ger: "aufbauen", eng: "to assemble / build up", ar: "يُركب / يجمّع", praeteritum: "baute auf", perfekt: "hat aufgebaut", s: [{ g: "Ich muss alle Möbel wieder <strong>aufbauen</strong>.", e: "I have to reassemble all the furniture.", a: "يجب أن أركب كل الأثاث مرة أخرى." }] },
+                { id: 'v29', ger: "abbauen", eng: "to dismantle", ar: "يفكك", praeteritum: "baute ab", perfekt: "hat abgebaut", s: [{ g: "Wir haben den Schrank <strong>abgebaut</strong>.", e: "We dismantled the closet.", a: "لقد فككنا الدولاب." }] },
+                { id: 'v30', ger: "einpacken", eng: "to pack", ar: "يعبئ / يغلف", praeteritum: "packte ein", perfekt: "hat eingepackt", s: [{ g: "Wir müssen die Kartons <strong>einpacken</strong>.", e: "We have to pack the boxes.", a: "يجب أن نعبئ الصناديق." }] },
+                { id: 'v31', ger: "auspacken", eng: "to unpack", ar: "يفرغ", praeteritum: "packte aus", perfekt: "hat ausgepackt", s: [{ g: "Wann wirst du die Koffer <strong>auspacken</strong>?", e: "When will you unpack the suitcases?", a: "متى ستفرغ الحقائب؟" }] },
+                { id: 'v32', ger: "sich erinnern", eng: "to remember", ar: "يتذكر", praeteritum: "erinnerte sich", perfekt: "hat sich erinnert", s: [{ g: "Woran <strong>erinnern</strong> Sie sich am längsten?", e: "What do you remember the longest?", a: "ما الذي تتذكره لأطول فترة؟" }] },
+                { id: 'v33', ger: "sich entspannen", eng: "to relax", ar: "يسترخي", praeteritum: "entspannte sich", perfekt: "hat sich entspannt", s: [{ g: "Man kann sich im Garten <strong>entspannen</strong>.", e: "One can relax in the garden.", a: "المرء يمكنه الاسترخاء في الحديقة." }] },
+                { id: 'v34', ger: "gründen", eng: "to found / establish", ar: "يؤسس", praeteritum: "gründete", perfekt: "hat gegründet", s: [{ g: "Die Universität wurde 1379 <strong>gegründet</strong>.", e: "The university was founded in 1379.", a: "تأسست الجامعة عام 1379." }] }
+            ],
+            tips: [
+                {
+                    id: 't1', title: "liegen vs. legen | stehen vs. stellen", desc: "Verstehe den Unterschied zwischen Wo? und Wohin?",
+                    arDesc: "سر الأفعال المكانية! الفرق بين الحالة (Wo) والحركة (Wohin):",
+                    rules: [
+                        { text: "<strong>Segen/الحالة (Wo? + Dativ)</strong>: أفعال تصف السكون (liegen, stehen, sitzen). يعني الشيء موجود في مكانه ومبيتحركش.", ex: "Das Buch <strong>liegt</strong> auf dem Tisch." },
+                        { text: "<strong>Bewegung/الحركة (Wohin? + Akkusativ)</strong>: أفعال تصف الحركة والوضع (legen, stellen, setzen). يعني شخص بيحرك الشيء من مكان لمكان.", ex: "Ich <strong>lege</strong> das Buch auf den Tisch." }
+                    ]
+                },
+                {
+                    id: 't2', title: "Das Verb 'lassen' (يترك / يجعل)", desc: "Wenn man etwas nicht selbst macht.",
+                    arDesc: "بنستخدم الفعل lassen في الحياة اليومية كتير جداً لما نخلي حد يعملنا حاجة (زي الصيانة):",
+                    rules: [
+                        { text: "يُصرف الفعل <strong>lassen</strong> حسب الفاعل، ويوضع الفعل الأساسي (اللي هيتعمل) في نهاية الجملة في حالة المصدر (Infinitiv).", ex: "Ich kann das nicht. Ich <strong>lasse</strong> das Auto reparieren." },
+                        { text: "يمكن ذكر الفاعل الحقيقي باستخدام حرف الجر <strong>von + Dativ</strong>.", ex: "Ich lasse die Wände <strong>von</strong> einem Maler streichen." }
+                    ]
+                },
+                {
+                    id: 't3', title: "kennen vs. wissen", desc: "Beides bedeutet 'to know', aber die Anwendung ist anders.",
+                    arDesc: "الفعلين معناهم 'يعرف' بس استخدامهم مختلف تماماً في الألمانية:",
+                    rules: [
+                        { text: "<strong>kennen</strong>: يُستخدم مع الأشخاص، الأماكن، والمدن (أن تكون على دراية بالشيء/الشخص). لا يأتي بعده جملة كاملة.", ex: "Ich <strong>kenne</strong> diese Stadt sehr gut. (أنا أعرف هذه المدينة جيداً)" },
+                        { text: "<strong>wissen</strong>: يُستخدم لمعرفة الحقائق والمعلومات (to know a fact). غالباً يأتي بعده جملة فرعية (wie, wo, dass).", ex: "Ich <strong>weiß</strong> nicht, wo die Wohnung liegt. (أنا لا أعرف أين تقع الشقة)" }
+                    ]
+                },
+                {
+                    id: 't4', title: "Die gesetzliche Ruhezeit", desc: "A very important cultural and legal aspect of living in Germany:",
+                    arDesc: "قاعدة ذهبية للسكن في ألمانيا (أوقات الهدوء) عشان تتجنب مشاكل الجيران:",
+                    rules: [
+                        { text: "<strong>Ruhezeiten (أوقات الهدوء)</strong>: في ألمانيا يُمنع عمل أي ضوضاء (تشغيل غسالة، موسيقى عالية، حفر بالدريل) من الساعة 22:00 ليلاً حتى 06:00 صباحاً وفي فترة الظهيرة (Mittagsruhe) أحياناً.", ex: "Es ist 22 Uhr. Denk an die <strong>Ruhezeit</strong>!" },
+                        { text: "<strong>Sonntagsruhe (هدوء الأحد)</strong>: يوم الأحد هو يوم راحة كامل (Ruhetag)، يُمنع فيه أي أعمال مزعجة طوال اليوم لجميع السكان.", ex: "Am Sonntag darfst du den Rasen nicht mähen." }
+                    ]
+                }
+            ]
+        };
+
+        const CATEGORY_CONFIG = {
+            staedte: { title: "المدن والسفر (Städte)", icon: "map-pin", color: "orange" },
+            wohnen: { title: "السكن والعزال (Wohnen & Umzug)", icon: "home", color: "red" },
+            alltag: { title: "الجيران والأعمال (Nachbarn & Heimwerker)", icon: "hammer", color: "yellow" }
+        };
+
+        const { useState, useEffect } = React;
+
+        const colorizeArticles = (text) => {
+            if (!text) return text;
+            const regex = /(der |die |das )/gi;
+            const parts = text.split(regex);
+            return parts.map((part, i) => {
+                const lower = part.toLowerCase();
+                if (lower === 'der ') return <span key={i} className="text-blue-500 font-extrabold">{part}</span>;
+                if (lower === 'die ') return <span key={i} className="text-rose-500 font-extrabold">{part}</span>;
+                if (lower === 'das ') return <span key={i} className="text-emerald-500 font-extrabold">{part}</span>;
+                return <span key={i}>{part}</span>;
+            });
+        };
+
+        // --- COMPONENTS ---
+        const ProgressBar = ({ total, learned, colorClass }) => {
+            const percentage = total === 0 ? 0 : Math.round((learned / total) * 100);
+            return (
+                <div className="glass-panel p-5 rounded-2xl mb-8 flex items-center justify-between transition-all" dir="rtl">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider ar-text mb-1">مستوى التقدم</h3>
+                        <p className="text-3xl font-extrabold text-slate-800">{learned} <span className="text-sm font-medium text-slate-400">/ {total} أتقنتهم</span></p>
+                    </div>
+                    <div className="relative w-20 h-20 drop-shadow-md">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path className="text-slate-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                            <path className={`${colorClass} transition-all duration-1000 ease-out`} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold text-slate-700">
+                            {percentage}%
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const WordCard = ({ item, isLearned, toggleLearned }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            return (
+                <div className="relative group perspective-1000 w-full h-[24rem]">
+                    <div className={`w-full h-full transition-all duration-700 transform-style-3d shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl ${isFlipped ? 'rotate-y-180' : ''}`}>
+
+                        <div className="absolute w-full h-full backface-hidden bg-white border border-slate-100 rounded-2xl p-5 flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
+                            onClick={() => setIsFlipped(true)}>
+                            <div className="flex justify-between items-start shrink-0" dir="rtl">
+                                <span className="bg-slate-50 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider ar-text border border-slate-100">مفردات</span>
+                                <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <div className="text-center mt-2 flex-grow flex flex-col justify-center overflow-y-auto front-scroll px-1 py-3">
+                                <div className="flex flex-col justify-center items-center gap-3 mb-1">
+                                    <h3 className="text-2xl font-bold text-slate-800 leading-tight">{colorizeArticles(item.ger)}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={(e) => playAudio(item.ger, e)} className="p-2 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors shadow-sm"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                        <SpeechTester targetText={item.ger} />
+                                    </div>
+                                </div>
+                                <div className="mt-4 space-y-1">
+                                    <p className="text-slate-500 font-medium text-sm">{item.eng}</p>
+                                    <p className="text-slate-700 font-bold ar-text text-lg" dir="rtl">{item.ar}</p>
+                                </div>
+                            </div>
+
+                            <div className="text-center text-xs text-slate-400 font-medium flex items-center justify-center gap-1 ar-text mt-2 shrink-0">
+                                <i data-lucide="rotate-cw" className="w-3 h-3"></i> اضغط للأمثلة
+                            </div>
+                        </div>
+
+                        <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-slate-700 to-slate-900 text-white rounded-2xl p-5 shadow-lg flex flex-col cursor-pointer overflow-hidden"
+                            onClick={() => setIsFlipped(false)} style={{ transform: 'rotateY(180deg)' }}>
+                            <div className="mb-3 border-b border-white/20 pb-2 flex justify-between items-center shrink-0" dir="rtl">
+                                <h4 className="font-bold text-white/90 text-sm tracking-wider ar-text">أمثلة سياقية</h4>
+                                <i data-lucide="rotate-ccw" className="w-4 h-4 text-white/60"></i>
+                            </div>
+                            <div className="overflow-y-auto card-scroll flex-grow pr-2 pb-2">
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="text-sm bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/5">
+                                            <div className="flex items-start gap-2 mb-1.5">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className="p-1 text-slate-300 hover:text-white shrink-0 mt-0.5"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <span className="leading-relaxed" dangerouslySetInnerHTML={{ __html: sentence.g }}></span>
+                                            </div>
+                                            <div className="text-slate-300 text-xs italic ml-8 mb-1.5">{sentence.e}</div>
+                                            <div className="text-white text-sm font-bold ar-text border-t border-white/10 pt-1.5 mt-1" dir="rtl">{sentence.a}</div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const IrregularVerbRow = ({ item, isLearned, toggleLearned }) => {
+            const [expanded, setExpanded] = useState(false);
+
+            return (
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md" dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                    {item.ger}
+                                    <button onClick={(e) => playAudio(item.ger, e)} className="text-emerald-600 opacity-70 hover:opacity-100 transition-opacity"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                </h3>
+                                <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className="text-emerald-600 font-bold ar-text" dir="rtl">{item.ar}</span></p>
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präteritum (ماضي بسيط)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praeteritum, e)} className="text-amber-600 bg-amber-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.praeteritum}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.praeteritum} /></div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Perfekt (ماضي تام)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.perfekt, e)} className="text-purple-600 bg-purple-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.perfekt}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.perfekt} /></div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <h4 className="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider ar-text">مثال سياقي (Beispiel)</h4>
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm group flex flex-col sm:flex-row gap-4 justify-between items-start">
+                                            <div className="flex-1">
+                                                <div className="flex items-start gap-3 mb-2">
+                                                    <button onClick={(e) => playAudio(sentence.g, e)} className="mt-0.5 text-emerald-600 bg-emerald-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                    <p className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: sentence.g }}></p>
+                                                </div>
+                                                <p className="text-slate-500 text-sm ml-10 mb-2">{sentence.e}</p>
+                                                <div className="ml-10 text-emerald-600 text-base font-bold ar-text border-t border-slate-100 pt-2" dir="rtl">{sentence.a}</div>
+                                            </div>
+                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-slate-50 p-1.5 rounded-full" dir="ltr">
+                                                <SpeechTester targetText={sentence.g} />
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const DialogueRow = ({ dialogue }) => {
+            const [expanded, setExpanded] = useState(false);
+            return (
+                <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden mb-6 transition-all duration-300 hover:shadow-lg" dir="ltr">
+                    <button
+                        className="w-full p-6 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white"
+                        onClick={() => setExpanded(!expanded)}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl">
+                                <i data-lucide={dialogue.icon} className="w-6 h-6"></i>
+                            </div>
+                            <h3 className="text-2xl font-bold text-slate-800 ar-text">{dialogue.title}</h3>
+                        </div>
+                        <i data-lucide="chevron-down" className={`w-6 h-6 text-slate-400 transform transition-transform duration-300 ${expanded ? 'rotate-180 text-blue-600' : ''}`}></i>
+                    </button>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="p-6 bg-white space-y-4">
+                            {dialogue.lines.map((line, idx) => {
+                                const isFirstSpeaker = idx === 0 || line.speaker === dialogue.lines[0].speaker;
+                                return (
+                                    <div key={idx} className={`flex flex-col p-4 rounded-2xl border ${isFirstSpeaker ? 'bg-blue-50/50 border-blue-100 ml-8' : 'bg-slate-50 border-slate-100 mr-8'}`}>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${isFirstSpeaker ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-700'}`}>
+                                                {line.speaker}
+                                            </span>
+                                            <div className="flex gap-2">
+                                                <button onClick={(e) => playAudio(line.text, e)} className="text-slate-400 hover:text-blue-600 transition-colors"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <SpeechTester targetText={line.text} />
+                                            </div>
+                                        </div>
+                                        <p className="text-lg font-medium text-slate-800 mb-1">{line.text}</p>
+                                        <p className="text-sm text-slate-500 mb-2 italic">{line.en}</p>
+                                        <p className="text-blue-700 font-bold ar-text border-t border-slate-200/50 pt-2 text-right" dir="rtl">{line.ar}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Custom UI for Grammar: Wechselpräpositionen Table
+        const WechselPraepositionen = () => {
+            const thClass = "border border-slate-200 p-3 bg-purple-50 font-bold text-purple-800 text-sm tracking-wider";
+            const tdClass = "border border-slate-200 p-3 text-slate-700 font-medium";
+            return (
+                <div className="space-y-8" dir="ltr">
+                    <div className="overflow-x-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                        <h4 className="font-bold text-purple-600 text-xl mb-4 ar-text" dir="rtl">📍 السكون / المكان (Wo? + Dativ)</h4>
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th className={thClass}>Präposition</th>
+                                    <th className={thClass}>Deutsch (Beispiel)</th>
+                                    <th className={thClass}>Englisch / Arabic</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td className={tdClass}>in</td><td className={tdClass}>Das Handtuch liegt im (in dem) Schrank.</td><td className={tdClass}>The towel is lying in the closet. / الفوطة في الدولاب.</td></tr>
+                                <tr><td className={tdClass}>an</td><td className={tdClass}>Das Bett steht an der Wand.</td><td className={tdClass}>The bed is standing against the wall. / السرير عند الحائط.</td></tr>
+                                <tr><td className={tdClass}>auf</td><td className={tdClass}>Der Fernseher steht auf der TV-Kommode.</td><td className={tdClass}>The TV is standing on the TV console. / التلفزيون على الترابيزة.</td></tr>
+                                <tr><td className={tdClass}>über</td><td className={tdClass}>Das Bild hängt über dem Bett.</td><td className={tdClass}>The picture is hanging above the bed. / الصورة معلقة فوق السرير.</td></tr>
+                                <tr><td className={tdClass}>unter</td><td className={tdClass}>Der Teppich liegt unter dem Sofa.</td><td className={tdClass}>The rug is lying under the sofa. / السجادة تحت الكنبة.</td></tr>
+                                <tr><td className={tdClass}>neben</td><td className={tdClass}>Das Sofa steht neben der Stehlampe.</td><td className={tdClass}>The sofa is standing next to the floor lamp. / الكنبة بجانب الأباجورة.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="overflow-x-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                        <h4 className="font-bold text-purple-600 text-xl mb-4 ar-text" dir="rtl">🏃 الحركة / الاتجاه (Wohin? + Akkusativ)</h4>
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th className={thClass}>Präposition</th>
+                                    <th className={thClass}>Deutsch (Beispiel)</th>
+                                    <th className={thClass}>Englisch / Arabic</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td className={tdClass}>in</td><td className={tdClass}>Ich lege das Handtuch in den Schrank.</td><td className={tdClass}>I put the towel in the closet. / أضع الفوطة في الدولاب.</td></tr>
+                                <tr><td className={tdClass}>an</td><td className={tdClass}>Ich stelle das Bett an die Wand.</td><td className={tdClass}>I stand the bed against the wall. / أضع السرير عند الحائط.</td></tr>
+                                <tr><td className={tdClass}>auf</td><td className={tdClass}>Ich stelle den Fernseher auf die TV-Kommode.</td><td className={tdClass}>I stand the TV on the TV console. / أضع التلفزيون على الترابيزة.</td></tr>
+                                <tr><td className={tdClass}>über</td><td className={tdClass}>Ich hänge das Bild über das Bett.</td><td className={tdClass}>I hang the picture above the bed. / أُعلق الصورة فوق السرير.</td></tr>
+                                <tr><td className={tdClass}>unter</td><td className={tdClass}>Ich lege den Teppich unter das Sofa.</td><td className={tdClass}>I put the rug under the sofa. / أضع السجادة تحت الكنبة.</td></tr>
+                                <tr><td className={tdClass}>neben</td><td className={tdClass}>Ich stelle das Sofa neben die Stehlampe.</td><td className={tdClass}>I put the sofa next to the floor lamp. / أضع الكنبة بجانب الأباجورة.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        };
+
+        // Custom UI for Grammar: Lokale Verben
+        const LokaleVerben = () => {
+            const staticVerbs = [
+                { g: "liegen", a: "يرقد/موضوع (أفقي)", en: "to lie", ex: "Das Buch liegt unter dem Kopfkissen." },
+                { g: "stehen", a: "يقف/موضوع (رأسي)", en: "to stand", ex: "Die Vase steht neben dem Laptop." },
+                { g: "sitzen", a: "يجلس", en: "to sit", ex: "Ich sitze auf dem Stuhl." },
+                { g: "hängen", a: "مُعلق (سكون)", en: "to hang", ex: "Das Bild hängt über dem Sofa." }
+            ];
+
+            const dynamicVerbs = [
+                { g: "legen", a: "يضع (بشكل أفقي)", en: "to lay/put", ex: "Ich lege das Buch unter das Kopfkissen." },
+                { g: "stellen", a: "يضع (بشكل رأسي)", en: "to stand/put", ex: "Ich stelle die Vase neben den Laptop." },
+                { g: "setzen", a: "يُجلس / يجلس (حركة)", en: "to set/seat", ex: "Ich setze mich auf den Stuhl." },
+                { g: "hängen", a: "يُعلق (حركة)", en: "to hang", ex: "Ich hänge das Bild über das Sofa." }
+            ];
+
+            return (
+                <div className="space-y-8" dir="ltr">
+                    <div>
+                        <h4 className="font-bold text-purple-700 text-xl mb-4 ar-text bg-purple-100 p-3 rounded-xl inline-block" dir="rtl">1. أفعال السكون (Wo? + Dativ)</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {staticVerbs.map((v, i) => (
+                                <div key={i} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="font-bold text-lg text-slate-800">{v.g} <span className="text-slate-400 text-sm font-normal ml-2">({v.en})</span></span>
+                                        <span className="ar-text font-bold text-purple-600" dir="rtl">{v.a}</span>
+                                    </div>
+                                    <div className="bg-slate-50 p-3 rounded-lg"><p className="text-sm font-medium text-slate-700">{v.ex}</p></div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-blue-700 text-xl mb-4 ar-text bg-blue-100 p-3 rounded-xl inline-block mt-6" dir="rtl">2. أفعال الحركة (Wohin? + Akkusativ)</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {dynamicVerbs.map((v, i) => (
+                                <div key={i} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="font-bold text-lg text-slate-800">{v.g} <span className="text-slate-400 text-sm font-normal ml-2">({v.en})</span></span>
+                                        <span className="ar-text font-bold text-blue-600" dir="rtl">{v.a}</span>
+                                    </div>
+                                    <div className="bg-slate-50 p-3 rounded-lg"><p className="text-sm font-medium text-slate-700">{v.ex}</p></div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- MAIN APP ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('words');
+            const [learnedItems, setLearnedItems] = useState(new Set());
+            const [searchTerm, setSearchTerm] = useState('');
+
+            // Load saved progress 
+            useEffect(() => {
+                const saved = localStorage.getItem('a2_staedte_progress_only');
+                if (saved) {
+                    setLearnedItems(new Set(JSON.parse(saved)));
+                } else {
+                    setLearnedItems(new Set());
+                }
+            }, []);
+
+            // Save progress
+            useEffect(() => {
+                localStorage.setItem('a2_staedte_progress_only', JSON.stringify(Array.from(learnedItems)));
+            }, [learnedItems]);
+
+            useEffect(() => {
+                lucide.createIcons();
+            });
+
+            const toggleLearned = (id) => {
+                const newLearned = new Set(learnedItems);
+                if (newLearned.has(id)) newLearned.delete(id);
+                else newLearned.add(id);
+                setLearnedItems(newLearned);
+            };
+
+            const totalWords = Object.values(LEARNING_DATA.words).flat().length;
+            const totalVerbs = LEARNING_DATA.verbs.length;
+            const totalExp = LEARNING_DATA.expressions.length;
+            const grandTotal = totalWords + totalVerbs + totalExp;
+
+            const tabConfig = {
+                words: { labelEn: 'Vocabulary', labelAr: 'مفردات الدرس', icon: 'book', color: 'orange' },
+                expressions: { labelEn: 'Phrases', labelAr: 'عبارات وتعبيرات', icon: 'message-circle', color: 'amber' },
+                dialogues: { labelEn: 'Dialogues', labelAr: 'محادثات', icon: 'phone-call', color: 'blue' },
+                verbs: { labelEn: 'Verbs', labelAr: 'أفعال هامة', icon: 'list-checks', color: 'emerald' },
+                grammar: { labelEn: 'Grammar', labelAr: 'القواعد', icon: 'book-open', color: 'purple' },
+                letters: { labelEn: 'Emails', labelAr: 'إيميلات ورسائل', icon: 'mail', color: 'cyan' },
+                culture: { labelEn: 'Culture', labelAr: 'ثقافة وقراءة', icon: 'globe', color: 'rose' },
+                tips: { labelEn: 'Tips', labelAr: 'نصائح لغوية', icon: 'lightbulb', color: 'yellow' }
+            };
+
+            const activeColor = tabConfig[activeTab]?.color || 'slate';
+
+            return (
+                <div className="h-screen flex flex-col bg-slate-50" dir="rtl">
+                    {/* TOP NAVIGATION HEADER */}
+                    <header className="w-full bg-slate-900 text-white shadow-xl z-50 shrink-0 relative overflow-hidden">
+                        <div className={`absolute top-0 left-0 w-full h-1 bg-${activeColor}-500 transition-colors duration-500`}></div>
+
+                        <div className="flex justify-between items-center px-4 md:px-8 py-3 border-b border-slate-800">
+                            <div className="flex items-center gap-4">
+                                <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-3 ar-text">
+                                    <span className={`bg-${activeColor}-500 p-2 rounded-xl transition-colors duration-500 shadow-lg`}>
+                                        <i data-lucide="building" className="w-5 h-5 md:w-6 md:h-6 text-white"></i>
+                                    </span>
+                                    A2: Städte und Wohnungen
+                                </h1>
+                            </div>
+
+                            <div className="flex items-center gap-3" dir="ltr">
+                                <div className="text-right hidden sm:block">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Progress</div>
+                                    <div className={`text-sm font-extrabold text-${activeColor}-400 transition-colors`}>{grandTotal === 0 ? 0 : Math.round((learnedItems.size / grandTotal) * 100)}%</div>
+                                </div>
+                                <div className="relative w-10 h-10">
+                                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                        <path className="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                                        <path className={`text-${activeColor}-500 transition-all duration-1000 ease-out`} strokeDasharray={`${grandTotal === 0 ? 0 : (learnedItems.size / grandTotal) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Horizontal Navigation Tabs */}
+                        <nav className="flex overflow-x-auto scrollbar-hide px-4 py-2 gap-2 snap-x">
+                            {Object.keys(tabConfig).map((key) => {
+                                const tab = tabConfig[key];
+                                return (
+                                    <button
+                                        key={key}
+                                        onClick={() => { setActiveTab(key); setSearchTerm(''); }}
+                                        className={`snap-center shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold ar-text group relative overflow-hidden ${activeTab === key ? `bg-${tab.color}-600 text-white shadow-md` : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                    >
+                                        <i data-lucide={tab.icon} className={`w-5 h-5 ${activeTab === key ? 'text-white' : `text-${tab.color}-400 group-hover:text-${tab.color}-300`} transition-colors`}></i>
+                                        <span className="text-sm whitespace-nowrap">{tab.labelAr}</span>
+                                        {activeTab === key && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-white/50 rounded-t-full"></div>}
+                                    </button>
+                                );
+                            })}
+                        </nav>
+                    </header>
+
+                    {/* MAIN CONTENT AREA */}
+                    <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 relative" dir="ltr">
+                        <div className={`fixed top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-${activeColor}-200/20 blur-3xl -z-10 transition-colors duration-1000 pointer-events-none`}></div>
+
+                        <div className="max-w-7xl mx-auto">
+
+                            {/* LIVE SEARCH BAR */}
+                            {activeTab !== 'grammar' && activeTab !== 'culture' && activeTab !== 'dialogues' && activeTab !== 'letters' && activeTab !== 'tips' && (
+                                <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                    <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                        <div className={`absolute -inset-0.5 bg-gradient-to-r from-${activeColor}-400 to-${activeColor}-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                        <div className="relative">
+                                            <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                            <input
+                                                type="text"
+                                                placeholder="ابحث بالعربي أو الألماني..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className={`w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-${activeColor}-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium`}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* PROGRESS BARS */}
+                            {activeTab === 'words' && <ProgressBar total={totalWords} learned={Array.from(learnedItems).filter(id => Object.values(LEARNING_DATA.words).flat().some(w => w.id === id)).length} colorClass="text-orange-500" />}
+                            {activeTab === 'verbs' && <ProgressBar total={totalVerbs} learned={Array.from(learnedItems).filter(id => LEARNING_DATA.verbs.some(v => v.id === id)).length} colorClass="text-emerald-500" />}
+                            {activeTab === 'expressions' && <ProgressBar total={totalExp} learned={Array.from(learnedItems).filter(id => LEARNING_DATA.expressions.some(e => e.id === id)).length} colorClass="text-amber-500" />}
+
+                            {/* TAB: WORDS */}
+                            {activeTab === 'words' && (
+                                <div className="space-y-12">
+                                    {Object.entries(LEARNING_DATA.words).map(([catKey, wordsArray]) => {
+                                        const config = CATEGORY_CONFIG[catKey] || { title: catKey, icon: "list", color: "slate" };
+                                        const filteredWords = wordsArray.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm));
+
+                                        if (filteredWords.length === 0) return null;
+
+                                        return (
+                                            <section key={catKey}>
+                                                <h2 className={`text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text`} dir="rtl">
+                                                    <span className={`bg-${config.color}-100 p-2 rounded-xl text-${config.color}-600`}>
+                                                        <i data-lucide={config.icon} className="w-6 h-6"></i>
+                                                    </span>
+                                                    {config.title}
+                                                </h2>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                                    {filteredWords.map(word => (
+                                                        <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                                    ))}
+                                                </div>
+                                            </section>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {/* TAB: EXPRESSIONS */}
+                            {activeTab === 'expressions' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-amber-100 p-2 rounded-xl text-amber-600"><i data-lucide="message-circle" className="w-6 h-6"></i></span>
+                                        أهم التعبيرات (Redemittel)
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {LEARNING_DATA.expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                            <div key={exp.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative group hover:shadow-xl hover:border-amber-200 transition-all duration-300">
+                                                <button onClick={() => toggleLearned(exp.id)} className={`absolute top-5 left-5 p-2 rounded-full transition-colors z-10 ${learnedItems.has(exp.id) ? 'bg-amber-100 text-amber-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                                </button>
+                                                <span className="inline-block bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-xs font-bold mb-4 ar-text border border-amber-100">{exp.type}</span>
+                                                <div className="flex items-start gap-3 mb-3" dir="ltr">
+                                                    <div className="flex flex-col gap-2 shrink-0">
+                                                        <button onClick={(e) => playAudio(exp.ger, e)} className="text-amber-500 bg-amber-50 p-2 rounded-xl hover:bg-amber-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                        <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={exp.ger} /></div>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight mt-1">"{exp.ger}"</h3>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
+                                                    <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
+                                                    <p className="text-amber-700 font-extrabold text-xl mb-4 ar-text">{exp.ar}</p>
+                                                    <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
+                                                        <i data-lucide="info" className="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>
+                                                        <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: DIALOGUES */}
+                            {activeTab === 'dialogues' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="users" className="w-6 h-6"></i></span>
+                                        محادثات تفاعلية (Dialoge)
+                                    </h2>
+                                    <div className="max-w-4xl mx-auto space-y-6">
+                                        {LEARNING_DATA.dialogues.map(dialogue => (
+                                            <DialogueRow key={dialogue.id} dialogue={dialogue} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: VERBS */}
+                            {activeTab === 'verbs' && (
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="list-checks" className="w-6 h-6"></i></span>
+                                        أفعال هامة وتصريفاتها (Verben)
+                                    </h2>
+                                    <div className="space-y-4 max-w-4xl mx-auto">
+                                        {LEARNING_DATA.verbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <IrregularVerbRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: GRAMMAR */}
+                            {activeTab === 'grammar' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-purple-700 to-indigo-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="book-open" className="absolute -right-4 -bottom-4 w-48 h-48 text-white opacity-10 transform rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">القواعد النحوية (Grammatik)</h2>
+                                            <p className="text-purple-200 ar-text text-lg max-w-2xl">شرح مبسط لقواعد الدرس مع أمثلة سياقية.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-8">
+                                        {LEARNING_DATA.grammar.map((gram, idx) => (
+                                            <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                    <div className="bg-purple-100 p-3 rounded-2xl text-purple-600 shrink-0 mt-1">
+                                                        <i data-lucide="braces" className="w-6 h-6"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                        <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-8">
+                                                    {gram.examples && (
+                                                        <>
+                                                            <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                            <ul className="space-y-4">
+                                                                {gram.examples.map((ex, i) => (
+                                                                    <li key={i} className="bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
+                                                                        <span className="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold mb-3 ar-text">{ex.category}</span>
+                                                                        <div className="flex gap-4 items-start mb-3" dir="ltr">
+                                                                            <button onClick={(e) => playAudio(ex.g, e)} className="text-purple-500 bg-white p-2 rounded-xl shadow-sm hover:bg-purple-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                            <div className="flex flex-col gap-1">
+                                                                                <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                                {ex.e && <span className="text-slate-500 text-sm italic">{ex.e}</span>}
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="text-purple-700 font-bold ar-text border-t border-purple-200/50 pt-3 mt-3">{ex.a}</div>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </>
+                                                    )}
+
+                                                    {gram.type === 'wechsel_praepositionen' && <WechselPraepositionen />}
+                                                    {gram.type === 'lokale_verben' && <LokaleVerben />}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: LETTERS */}
+                            {activeTab === 'letters' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-cyan-600 to-teal-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="mail" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">الإيميلات والرسائل (E-Mails & Briefe)</h2>
+                                            <p className="text-cyan-100 ar-text text-lg max-w-2xl">أمثلة ونماذج لكتابة إيميلات رسمية وشخصية.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.letters.map((letter) => (
+                                            <div key={letter.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-cyan-100 text-cyan-700 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    Text
+                                                </div>
+                                                <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-6 mt-2 flex items-center gap-3">
+                                                    <i data-lucide="mail-open" className="w-6 h-6 text-cyan-500"></i> {letter.title}
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {letter.lines.map((line, idx) => {
+                                                        const isSubject = line.g.includes("Betreff:") || line.g.includes("---");
+                                                        return (
+                                                            <div key={idx} className={`${isSubject ? 'bg-cyan-600 text-white font-bold py-3 px-4 rounded-xl mb-4 text-center' : 'bg-slate-50/50 p-4 rounded-2xl border border-cyan-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group'}`}>
+                                                                {isSubject ? (
+                                                                    <div className="flex flex-col gap-1 ar-text w-full">
+                                                                        <div dir="ltr" className="text-center w-full">{line.g}</div>
+                                                                        {line.a && <div className="text-cyan-100 text-sm text-center">{line.a}</div>}
+                                                                    </div>
+                                                                ) : (
+                                                                    <>
+                                                                        <div className="flex-1">
+                                                                            <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                                <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-cyan-600 bg-white p-2 rounded-xl shadow-sm hover:bg-cyan-50 transition-colors shrink-0">
+                                                                                    <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                                </button>
+                                                                                <p className="text-slate-800 text-lg font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                            </div>
+                                                                            {line.e && <p className="sm:ml-14 text-slate-500 text-sm italic mb-2" dir="ltr">{line.e}</p>}
+                                                                            <div className="sm:ml-14 text-cyan-800 text-base font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                            <SpeechTester targetText={line.g} />
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: CULTURE */}
+                            {activeTab === 'culture' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-rose-600 to-red-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="globe" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">الثقافة والقراءة (Kultur & Lesen)</h2>
+                                            <p className="text-rose-200 ar-text text-lg max-w-2xl">نصوص قرائية ومعلومات ثقافية متعلقة بموضوعات الدرس.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.culture.map((item) => (
+                                            <div key={item.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-rose-100 text-rose-600 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    Lesetext
+                                                </div>
+                                                <h3 className="text-3xl font-extrabold text-slate-800 ar-text mb-6 mt-2">{item.title}</h3>
+                                                <div className="space-y-4">
+                                                    {item.lines.map((line, idx) => (
+                                                        <div key={idx} className="bg-slate-50/50 p-4 rounded-2xl border border-rose-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                    <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-rose-500 bg-white p-2 rounded-xl shadow-sm hover:bg-rose-50 transition-colors shrink-0">
+                                                                        <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                    </button>
+                                                                    <p className="text-slate-800 text-xl font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                </div>
+                                                                {line.e && <p className="sm:ml-14 text-slate-500 text-sm italic mb-2" dir="ltr">{line.e}</p>}
+                                                                <div className="sm:ml-14 text-rose-700 text-lg font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                </div>
+                                                            </div>
+                                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                <SpeechTester targetText={line.g} />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: TIPS */}
+                            {activeTab === 'tips' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-yellow-500 to-orange-600 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="lightbulb" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-20 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">نصائح لغوية وثقافية (Sprachtipps)</h2>
+                                            <p className="text-yellow-100 ar-text text-lg max-w-2xl">أهم التركات اللغوية اللي بتلخبط، والقواعد اللي لازم تعرفها في ألمانيا.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.tips.map((tip, idx) => (
+                                            <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                <div className="p-6 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                    <div className="bg-yellow-100 p-3 rounded-2xl text-yellow-600 shrink-0">
+                                                        <i data-lucide="zap" className="w-6 h-6"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-1" dir="ltr">{tip.title}</h3>
+                                                        <p className="text-base text-slate-600 ar-text leading-relaxed">{tip.arDesc}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="p-6 space-y-4">
+                                                    {tip.rules.map((rule, i) => (
+                                                        <div key={i} className="bg-yellow-50/30 p-5 rounded-2xl border border-yellow-100/50">
+                                                            <p className="text-slate-700 text-lg ar-text mb-3 leading-relaxed" dangerouslySetInnerHTML={{ __html: rule.text }}></p>
+                                                            <div className="flex gap-3 items-start bg-white p-3 rounded-xl shadow-sm border border-slate-100" dir="ltr">
+                                                                <button onClick={(e) => playAudio(rule.ex, e)} className="text-yellow-600 bg-yellow-50 p-2 rounded-lg hover:bg-yellow-100 transition-colors shrink-0">
+                                                                    <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                </button>
+                                                                <span className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: rule.ex }}></span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

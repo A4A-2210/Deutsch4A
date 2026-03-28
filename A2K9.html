@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch A2: Ideen und Produkte</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            overflow: hidden;
+        }
+
+        .ar-text {
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Refined Card Flips */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Glassmorphism subtle effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Custom Scrollbars for Cards */
+        .card-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .card-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .front-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .front-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- HELPERS FOR AUDIO & SPEECH ---
+        const playAudio = (text, e) => {
+            if (e) e.stopPropagation();
+            const cleanText = text.replace(/<[^>]+>/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'de-DE';
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const SpeechTester = ({ targetText }) => {
+            const [status, setStatus] = React.useState('idle');
+            const [heard, setHeard] = React.useState('');
+
+            const listen = (e) => {
+                if (e) e.stopPropagation();
+                if (!('webkitSpeechRecognition' in window)) {
+                    alert('المتصفح ده مش بيدعم تسجيل الصوت، جرب Google Chrome.');
+                    return;
+                }
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+
+                recognition.onstart = () => setStatus('listening');
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    setHeard(speechResult);
+
+                    const clean = (str) => str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,!?:]/g, '').trim();
+                    const targetClean = clean(targetText);
+                    const heardClean = clean(speechResult);
+
+                    if (heardClean.includes(targetClean) || targetClean.includes(heardClean) || heardClean === targetClean) {
+                        setStatus('success');
+                    } else {
+                        setStatus('fail');
+                    }
+                };
+                recognition.onerror = () => setStatus('fail');
+                recognition.onend = () => { if (status === 'listening') setStatus('idle'); };
+                recognition.start();
+            };
+
+            return (
+                <div className="inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={listen} title="جرب تنطقها" className={`p-2 rounded-full transition-all duration-300 shadow-sm ${status === 'listening' ? 'bg-red-500 text-white animate-pulse scale-110' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'}`}>
+                        <i data-lucide="mic" className="w-4 h-4"></i>
+                    </button>
+                    {status === 'success' && <span className="text-emerald-500 text-xs font-bold ar-text animate-bounce">✅ ممتاز!</span>}
+                    {status === 'fail' && <span className="text-red-500 text-xs ar-text font-bold" title={`سمعت: ${heard}`}>❌ جرب تاني</span>}
+                </div>
+            );
+        };
+
+        // --- FULL A2 LEARNING DATA (Ideen und Produkte) ---
+        const LEARNING_DATA = {
+            words: {
+                erfindungen: [
+                    {
+                        id: 'w1', ger: "die Erfindung", eng: "invention", ar: "الاختراع", s: [
+                            { g: "Die <strong>Erfindung</strong> revolutionierte den Zahlungsverkehr.", e: "The invention revolutionized payment transactions.", a: "الاختراع أحدث ثورة في المعاملات المالية." },
+                            { g: "Was ist für dich die wichtigste <strong>Erfindung</strong>?", e: "What is the most important invention for you?", a: "ما هو أهم اختراع بالنسبة لك؟" }
+                        ]
+                    },
+                    {
+                        id: 'w2', ger: "der Airbag", eng: "airbag", ar: "الوسادة الهوائية (إيرباج)", s: [
+                            { g: "Er wurde 1971 entwickelt und rettete schon viele Leben.", e: "It was developed in 1971 and has already saved many lives.", a: "تم تطويره عام 1971 وأنقذ بالفعل حيوات كثيرة." }
+                        ]
+                    },
+                    {
+                        id: 'w3', ger: "die Chipkarte", eng: "chip card", ar: "البطاقة الذكية (الشريحة)", s: [
+                            { g: "Die <strong>Chipkarte</strong> spielt eine wichtige Rolle im Alltag.", e: "The chip card plays an important role in everyday life.", a: "تلعب البطاقة الذكية دوراً مهماً في الحياة اليومية." }
+                        ]
+                    },
+                    {
+                        id: 'w4', ger: "das Brettspiel", eng: "board game", ar: "لعبة الطاولة (لوحية)", s: [
+                            { g: "„Mensch ärgere Dich nicht“ ist ein sehr beliebtes <strong>Brettspiel</strong>.", e: "'Ludo' is a very popular board game.", a: "'لودو' هي لعبة طاولة محبوبة جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w5', ger: "das Schmerzmittel", eng: "painkiller", ar: "مسكن الألم", s: [
+                            { g: "Aspirin ist das erste <strong>Schmerzmittel</strong> mit minimalen Nebenwirkungen.", e: "Aspirin is the first painkiller with minimal side effects.", a: "الأسبرين هو أول مسكن ألم بأعراض جانبية بسيطة." }
+                        ]
+                    },
+                    {
+                        id: 'w6', ger: "die Zahnpasta", eng: "toothpaste", ar: "معجون الأسنان", s: [
+                            { g: "Sie macht die Zähne schön sauber.", e: "It makes teeth nice and clean.", a: "تترك الأسنان نظيفة وجميلة." }
+                        ]
+                    },
+                    {
+                        id: 'w7', ger: "der Fußball", eng: "soccer ball", ar: "كرة القدم", s: [
+                            { g: "Mit diesen Schuhen wurde Deutschland <strong>Fußball</strong>weltmeister.", e: "With these shoes, Germany became the soccer world champion.", a: "بهذه الأحذية أصبحت ألمانيا بطلة العالم في كرة القدم." }
+                        ]
+                    },
+                    {
+                        id: 'w8', ger: "die Wirkung", eng: "effect / impact", ar: "التأثير / المفعول", s: [
+                            { g: "Kleine Erfindungen mit großer <strong>Wirkung</strong>.", e: "Small inventions with a big impact.", a: "اختراعات صغيرة بتأثير كبير." },
+                            { g: "Forscher untersuchen verschiedene <strong>Wirkungen</strong>.", e: "Researchers investigate various effects.", a: "الباحثون يدرسون تأثيرات مختلفة." }
+                        ]
+                    },
+                    {
+                        id: 'w25', ger: "die Nebenwirkung", eng: "side effect", ar: "أعراض جانبية", s: [
+                            { g: "Aspirin hat minimale <strong>Nebenwirkungen</strong>.", e: "Aspirin has minimal side effects.", a: "الأسبرين له أعراض جانبية بسيطة." }
+                        ]
+                    },
+                    {
+                        id: 'w26', ger: "der Zahlungsverkehr", eng: "payment transactions", ar: "المعاملات المالية", s: [
+                            { g: "Die Chipkarte revolutionierte den <strong>Zahlungsverkehr</strong>.", e: "The chip card revolutionized payment transactions.", a: "أحدثت البطاقة الذكية ثورة في المعاملات المالية." }
+                        ]
+                    },
+                    {
+                        id: 'w27', ger: "das Resultat", eng: "result", ar: "النتيجة", s: [
+                            { g: "1936 präsentierte er das <strong>Resultat</strong>.", e: "In 1936, he presented the result.", a: "في عام 1936، عرض النتيجة." }
+                        ]
+                    },
+                    {
+                        id: 'w34', ger: "das Bier (Gerste, Hopfen)", eng: "beer (barley, hops)", ar: "البيرة (شعير، جنجل)", s: [
+                            { g: "Das Getränk darf nur aus Gerste, Hopfen und Weizen hergestellt werden.", e: "The beverage may only be produced from barley, hops, and wheat.", a: "المشروب يُسمح بصناعته فقط من الشعير، الجنجل، والقمح." }
+                        ]
+                    },
+                    {
+                        id: 'w35', ger: "löslicher Kaffee", eng: "instant coffee", ar: "قهوة سريعة الذوبان", s: [
+                            { g: "Die Firma sollte ein Getränk in Pulverform herstellen.", e: "The company was supposed to produce a beverage in powder form.", a: "كان على الشركة إنتاج مشروب على شكل مسحوق." }
+                        ]
+                    },
+                    {
+                        id: 'w36', ger: "das Papyrus", eng: "papyrus", ar: "ورق البردي", s: [
+                            { g: "Papyrus wurde von den alten Ägyptern entwickelt.", e: "Papyrus was developed by the ancient Egyptians.", a: "تم تطوير البردي بواسطة المصريين القدماء." }
+                        ]
+                    }
+                ],
+                geraete: [
+                    {
+                        id: 'w9', ger: "der Kühlschrank", eng: "refrigerator", ar: "الثلاجة", s: [
+                            { g: "Damit kann man Lebensmittel kühl halten.", e: "With it, you can keep food cool.", a: "به يمكنك الحفاظ على الطعام بارداً." }
+                        ]
+                    },
+                    {
+                        id: 'w10', ger: "der Herd", eng: "stove", ar: "البوتاجاز / الموقد", s: [
+                            { g: "Darauf kocht man Essen.", e: "You cook food on it.", a: "عليه يتم طبخ الطعام." }
+                        ]
+                    },
+                    {
+                        id: 'w11', ger: "die Waschmaschine", eng: "washing machine", ar: "الغسالة", s: [
+                            { g: "Damit kann man Wäsche sauber machen.", e: "With it, you can make laundry clean.", a: "بها يمكنك تنظيف الغسيل." },
+                            { g: "Wir brauchen eine neue <strong>Waschmaschine</strong>.", e: "We need a new washing machine.", a: "نحتاج غسالة جديدة." }
+                        ]
+                    },
+                    {
+                        id: 'w12', ger: "die Mikrowelle", eng: "microwave", ar: "الميكروويف", s: [
+                            { g: "Damit kann man Gerichte warm machen.", e: "With it, you can make dishes warm.", a: "به يمكنك تسخين الأطباق." }
+                        ]
+                    },
+                    {
+                        id: 'w13', ger: "der Drucker", eng: "printer", ar: "الطابعة", s: [
+                            { g: "Damit kann man etwas Geschriebenes auf Papier bringen.", e: "With it, you can put something written onto paper.", a: "بها يمكنك نقل ما هو مكتوب للورق." }
+                        ]
+                    },
+                    {
+                        id: 'w14', ger: "das Smartphone", eng: "smartphone", ar: "الهاتف الذكي", s: [
+                            { g: "Neu ist nicht immer besser beim <strong>Smartphone</strong>.", e: "New is not always better for a smartphone.", a: "الجديد ليس دائماً الأفضل في الهواتف الذكية." }
+                        ]
+                    },
+                    {
+                        id: 'w15', ger: "die Geschirrspülmaschine", eng: "dishwasher", ar: "غسالة الأطباق", s: [
+                            { g: "Die <strong>Geschirrspülmaschine</strong> ist sehr praktisch.", e: "The dishwasher is very practical.", a: "غسالة الأطباق عملية جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w16', ger: "der Akku", eng: "battery", ar: "البطارية", s: [
+                            { g: "Der <strong>Akku</strong> hat eine kürzere Laufzeit.", e: "The battery has a shorter runtime.", a: "البطارية لها وقت تشغيل أقصر." }
+                        ]
+                    },
+                    {
+                        id: 'w28', ger: "das Bügeleisen", eng: "iron", ar: "المكواة", s: [
+                            { g: "Ich nutze das <strong>Bügeleisen</strong> fast jeden Tag.", e: "I use the iron almost every day.", a: "أستخدم المكواة تقريباً كل يوم." }
+                        ]
+                    },
+                    {
+                        id: 'w29', ger: "die Kaffeemaschine", eng: "coffee machine", ar: "ماكينة القهوة", s: [
+                            { g: "Die <strong>Kaffeemaschine</strong> ist mein wichtigstes Gerät.", e: "The coffee machine is my most important device.", a: "ماكينة القهوة هي أهم جهاز عندي." }
+                        ]
+                    },
+                    {
+                        id: 'w37', ger: "der Laptop", eng: "laptop", ar: "الحاسوب المحمول", s: [
+                            { g: "Den <strong>Laptop</strong> brauche ich fast täglich für die Arbeit.", e: "I need the laptop almost daily for work.", a: "أحتاج اللابتوب يومياً تقريباً للعمل." }
+                        ]
+                    },
+                    {
+                        id: 'w38', ger: "der Fernseher", eng: "television", ar: "التلفاز", s: [
+                            { g: "Wir haben einen großen <strong>Fernseher</strong> im Wohnzimmer.", e: "We have a large television in the living room.", a: "لدينا تلفاز كبير في غرفة المعيشة." }
+                        ]
+                    },
+                    {
+                        id: 'w39', ger: "das Fahrrad", eng: "bicycle", ar: "الدراجة", s: [
+                            { g: "Damit kann man fahren und gleichzeitig Sport machen.", e: "With it, you can travel and do sports at the same time.", a: "بها يمكنك التنقل وعمل رياضة في نفس الوقت." }
+                        ]
+                    },
+                    {
+                        id: 'w40', ger: "das Radio", eng: "radio", ar: "المذياع (الراديو)", s: [
+                            { g: "Damit kann man Nachrichten oder Musik hören.", e: "With it, you can listen to news or music.", a: "به يمكنك الاستماع للأخبار أو الموسيقى." }
+                        ]
+                    }
+                ],
+                reklamation: [
+                    {
+                        id: 'w17', ger: "der Kundenservice", eng: "customer service", ar: "خدمة العملاء", s: [
+                            { g: "Rufen Sie den <strong>Kundenservice</strong> an.", e: "Call customer service.", a: "اتصل بخدمة العملاء." }
+                        ]
+                    },
+                    {
+                        id: 'w18', ger: "der Kassenzettel", eng: "receipt", ar: "الإيصال / الفاتورة", s: [
+                            { g: "Haben Sie den <strong>Kassenzettel</strong> mit?", e: "Do you have the receipt with you?", a: "هل معك إيصال الدفع؟" }
+                        ]
+                    },
+                    {
+                        id: 'w19', ger: "die Garantie", eng: "warranty", ar: "الضمان", s: [
+                            { g: "Ich habe noch <strong>Garantie</strong> auf das Gerät.", e: "I still have a warranty on the device.", a: "لا يزال لدي ضمان على الجهاز." }
+                        ]
+                    },
+                    {
+                        id: 'w20', ger: "der Papierstau", eng: "paper jam", ar: "انحشار الورق", s: [
+                            { g: "Es kommt regelmäßig zum <strong>Papierstau</strong>.", e: "It regularly has a paper jam.", a: "يحدث انحشار للورق بانتظام." }
+                        ]
+                    },
+                    {
+                        id: 'w21', ger: "das Modell", eng: "model", ar: "الموديل / الطراز", s: [
+                            { g: "Die alten <strong>Modelle</strong> sind oft besser.", e: "The old models are often better.", a: "الموديلات القديمة غالباً أفضل." }
+                        ]
+                    },
+                    {
+                        id: 'w22', ger: "der Rabatt (im Angebot)", eng: "discount / on sale", ar: "الخصم / في العرض", s: [
+                            { g: "Die Maschine ist im Moment im Angebot.", e: "The machine is currently on offer.", a: "الماكينة حالياً في عرض (عليها خصم)." }
+                        ]
+                    },
+                    {
+                        id: 'w23', ger: "die Bedienungsanleitung", eng: "instruction manual", ar: "كتيب التعليمات", s: [
+                            { g: "Lesen Sie bei einem neuen Gerät die <strong>Bedienungsanleitung</strong>?", e: "Do you read the instruction manual for a new device?", a: "هل تقرأ كتيب التعليمات عند شراء جهاز جديد؟" }
+                        ]
+                    },
+                    {
+                        id: 'w30', ger: "die Auftragsnummer", eng: "order number", ar: "رقم الطلب", s: [
+                            { g: "Könnten Sie mir bitte die <strong>Auftragsnummer</strong> durchgeben?", e: "Could you please give me the order number?", a: "هل يمكنك إعطائي رقم الطلب؟" }
+                        ]
+                    },
+                    {
+                        id: 'w31', ger: "das Waschmittel", eng: "detergent", ar: "مسحوق الغسيل", s: [
+                            { g: "Füllen Sie das <strong>Waschmittel</strong> in das Fach ein.", e: "Fill the detergent into the compartment.", a: "ضع مسحوق الغسيل في الدرج." }
+                        ]
+                    },
+                    {
+                        id: 'w32', ger: "der Knopf", eng: "button / knob", ar: "الزر / المفتاح", s: [
+                            { g: "Danach drehen Sie diesen <strong>Knopf</strong>.", e: "After that, you turn this knob.", a: "بعد ذلك تلف هذا المفتاح." }
+                        ]
+                    },
+                    {
+                        id: 'w33', ger: "Preis-Leistungs-Verhältnis", eng: "price-performance ratio", ar: "نسبة السعر للأداء", s: [
+                            { g: "Das <strong>Preis-Leistungs-Verhältnis</strong> ist sehr gut.", e: "The price-performance ratio is very good.", a: "القيمة مقابل السعر ممتازة جداً." }
+                        ]
+                    }
+                ],
+                firmen: [
+                    {
+                        id: 'w41', ger: "das Unternehmen / die Firma", eng: "company / firm", ar: "الشركة / المؤسسة", s: [
+                            { g: "Wir sind ein mittelständisches <strong>Unternehmen</strong>.", e: "We are a medium-sized company.", a: "نحن شركة متوسطة الحجم." }
+                        ]
+                    },
+                    {
+                        id: 'w42', ger: "die Firmenzentrale", eng: "headquarters", ar: "المقر الرئيسي", s: [
+                            { g: "Die <strong>Firmenzentrale</strong> ist in Alexandria.", e: "The company headquarters is in Alexandria.", a: "المقر الرئيسي للشركة في الإسكندرية." }
+                        ]
+                    },
+                    {
+                        id: 'w43', ger: "der Mitarbeiter", eng: "employee", ar: "الموظف", s: [
+                            { g: "Unsere <strong>Mitarbeiter</strong> sind sehr motiviert.", e: "Our employees are very motivated.", a: "موظفونا متحمسون جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w44', ger: "der Hersteller", eng: "manufacturer", ar: "الشركة المُصنعة", s: [
+                            { g: "Welche Sportartikel<strong>hersteller</strong> kennen Sie?", e: "Which sporting goods manufacturers do you know?", a: "ما هي الشركات المصنعة للأدوات الرياضية التي تعرفها؟" }
+                        ]
+                    },
+                    {
+                        id: 'w45', ger: "die Qualität", eng: "quality", ar: "الجودة", s: [
+                            { g: "Unsere Produkte bieten beste <strong>Qualität</strong>.", e: "Our products offer the best quality.", a: "منتجاتنا تقدم أفضل جودة." }
+                        ]
+                    },
+                    {
+                        id: 'w24', ger: "der Konkurrent", eng: "competitor", ar: "المنافس", s: [
+                            { g: "Adidas und Puma wurden zu <strong>Konkurrenten</strong>.", e: "Adidas and Puma became competitors.", a: "أصبح أديداس وبوما متنافسين." }
+                        ]
+                    }
+                ]
+            },
+            expressions: [
+                { id: 'e1', type: "Meinung äußern", ger: "Die wichtigste Erfindung ist für mich...", eng: "The most important invention for me is...", ar: "أهم اختراع بالنسبة لي هو...", context: "للتعبير عن رأيك في الاختراعات." },
+                { id: 'e2', type: "Vergleichen", ger: "Ich halte (den Airbag) für viel wichtiger als...", eng: "I consider (the airbag) to be much more important than...", ar: "أعتبر (الوسادة الهوائية) أهم بكثير من...", context: "للمقارنة بين شيئين وتفضيل أحدهما." },
+                { id: 'e3', type: "Bedeutung", ger: "Das spielt eine wichtige Rolle im Alltag.", eng: "That plays an important role in everyday life.", ar: "هذا يلعب دوراً مهماً في الحياة اليومية.", context: "لوصف أهمية شيء نستخدمه يومياً." },
+                { id: 'e10', type: "Bedeutung", ger: "Ohne ... ist das Leben viel schwerer.", eng: "Without ... life is much harder.", ar: "بدون ... الحياة أصعب بكثير.", context: "للتعبير عن أهمية شيء ما في حياتك." },
+                { id: 'e4', type: "Reklamation (Kunde)", ger: "Das Gerät ist kaputt / funktioniert nicht.", eng: "The device is broken / doesn't work.", ar: "الجهاز معطل / لا يعمل.", context: "عند الإبلاغ عن عطل في منتج اشتريته." },
+                { id: 'e5', type: "Reklamation (Forderung)", ger: "Kann ich das Gerät umtauschen?", eng: "Can I exchange the device?", ar: "هل يمكنني استبدال الجهاز؟", context: "لطلب استبدال منتج بآخر جديد." },
+                { id: 'e6', type: "Reklamation (Geld)", ger: "Bekomme ich mein Geld zurück?", eng: "Will I get my money back?", ar: "هل سأسترد أموالي؟", context: "لطلب استرجاع المبلغ المدفوع." },
+                { id: 'e7', type: "Ablehnung", ger: "Damit bin ich (nicht) einverstanden.", eng: "I do (not) agree with that.", ar: "أنا (لست) موافقاً على ذلك.", context: "لرفض اقتراح الموظف (مثل التصليح بدلاً من الاستبدال)." },
+                { id: 'e11', type: "Problemlösung", ger: "Ich lasse es reparieren.", eng: "I have it repaired.", ar: "سأقوم بإصلاحه (سأعطيه لفني ليصلحه).", context: "عندما يتعطل جهاز وتقرر عدم رميه." },
+                { id: 'e12', type: "Verkaufsargument", ger: "Qualität hat ihren Preis.", eng: "Quality has its price.", ar: "الجودة لها ثمنها.", context: "لتبرير السعر المرتفع لمنتج جيد." },
+                { id: 'e13', type: "Kaufentscheidung", ger: "Das Preis-Leistungs-Verhältnis ist gut.", eng: "The price-performance ratio is good.", ar: "القيمة (الأداء) مقابل السعر جيدة.", context: "عند تقييم منتج قبل شرائه." },
+                { id: 'e14', type: "Präsentation", ger: "Wir sind ein mittelständisches Unternehmen.", eng: "We are a medium-sized company.", ar: "نحن شركة متوسطة الحجم.", context: "عند تقديم شركتك ووصف حجمها." },
+                { id: 'e15', type: "Präsentation", ger: "Die Firmenzentrale ist in...", eng: "The company headquarters is in...", ar: "المقر الرئيسي للشركة في...", context: "للحديث عن مقر الشركة الرئيسي." },
+                { id: 'e16', type: "Telefon", ger: "Können Sie mich mit (Frau Schwarz) verbinden?", eng: "Can you connect me with (Mrs. Schwarz)?", ar: "هل يمكنك تحويلي إلى (السيدة شفارتس)؟", context: "لطلب التحويل الداخلي عبر الهاتف." },
+                { id: 'e8', type: "Telefon", ger: "Bitte richten Sie Frau Klein aus, dass...", eng: "Please tell Mrs. Klein that...", ar: "من فضلك أبلغ السيدة كلاين أن...", context: "لترك رسالة لشخص غير موجود عبر الهاتف." },
+                { id: 'e9', type: "Telefon", ger: "Könnten Sie ihr sagen, dass sie mich zurückrufen soll?", eng: "Could you tell her that she should call me back?", ar: "هل يمكنك إخبارها أن تعاود الاتصال بي؟", context: "لطلب معاودة الاتصال." }
+            ],
+            dialogues: [
+                {
+                    id: 'd4', title: "Diskussion: Erfindungen (نقاش: أهم الاختراعات)", icon: "message-circle",
+                    lines: [
+                        { speaker: "Clara", text: "Also, welche der Erfindungen ist die wichtigste? Die wichtigste Erfindung ist für mich Aspirin.", en: "So, which of the inventions is the most important? The most important invention for me is Aspirin.", ar: "إذن، أي الاختراعات هو الأهم؟ أهم اختراع بالنسبة لي هو الأسبرين." },
+                        { speaker: "David", text: "Ja, Aspirin finde ich auch wichtig. Aber ich halte den Airbag für viel wichtiger als zum Beispiel Zahnpasta.", en: "Yes, I also find Aspirin important. But I consider the airbag to be much more important than toothpaste, for example.", ar: "نعم، أجد الأسبرين مهماً أيضاً. لكني أعتبر الوسادة الهوائية أهم بكثير من معجون الأسنان مثلاً." },
+                        { speaker: "Clara", text: "Das stimmt, Sicherheit ist sehr wichtig. Aber die Chipkarte spielt eine wichtige Rolle im Alltag, vielleicht mehr als der Airbag, den man hoffentlich nie braucht.", en: "That's true, safety is very important. But the chip card plays an important role in everyday life, maybe more than the airbag, which you hopefully never need.", ar: "هذا صحيح، الأمان مهم جداً. لكن البطاقة الذكية تلعب دوراً مهماً في الحياة اليومية، ربما أكثر من الوسادة الهوائية التي نأمل ألا نحتاجها أبداً." },
+                        { speaker: "David", text: "Guter Punkt. Das Brettspiel „Mensch ärgere Dich nicht“ halte ich für nicht so wichtig, auch wenn es Spaß macht.", en: "Good point. I consider the board game 'Ludo' to be not so important, even if it is fun.", ar: "نقطة جيدة. لعبة 'لودو' اللوحية لا أعتبرها مهمة جداً، حتى لو كانت ممتعة." },
+                        { speaker: "Clara", text: "Ja, da stimme ich zu. Ohne Aspirin oder die Chipkarte ist das Leben viel schwerer als ohne ein Brettspiel.", en: "Yes, I agree with that. Without Aspirin or the chip card, life is much harder than without a board game.", ar: "نعم، أتفق معك. بدون الأسبرين أو البطاقة الذكية الحياة أصعب بكثير من الحياة بدون لعبة طاولة." }
+                    ]
+                },
+                {
+                    id: 'd5', title: "Interview: Technik im Alltag (مقابلة: التكنولوجيا في حياتنا)", icon: "mic",
+                    lines: [
+                        { speaker: "Jonas", text: "Hallo Sophie. Fangen wir mal an. Welche technischen Geräte nutzt du denn oft?", en: "Hello Sophie. Let's start. Which technical devices do you use often?", ar: "أهلاً صوفي. دعينا نبدأ. ما هي الأجهزة التقنية التي تستخدمينها بكثرة؟" },
+                        { speaker: "Sophie", text: "Puh, einige! Natürlich jeden Tag den Kühlschrank, die Kaffeemaschine und mein Smartphone. Den Laptop brauche ich auch fast täglich für die Arbeit.", en: "Phew, quite a few! Of course the refrigerator, the coffee machine, and my smartphone every day. I also need the laptop almost daily for work.", ar: "أوف، الكثير! بالطبع الثلاجة، ماكينة القهوة، وهاتفي الذكي كل يوم. وأحتاج اللابتوب أيضاً للعمل بشكل شبه يومي." },
+                        { speaker: "Jonas", text: "Das ist bei mir ähnlich. Kannst du denn alle Geräte in deinem Haushalt problemlos bedienen?", en: "It's similar for me. Can you operate all the devices in your household without problems?", ar: "الوضع مشابه عندي. هل يمكنك تشغيل كل الأجهزة في منزلك بدون مشاكل؟" },
+                        { speaker: "Sophie", text: "Ja, ich denke schon. Die meisten sind ja selbsterklärend. Und du?", en: "Yes, I think so. Most of them are self-explanatory, after all. And you?", ar: "نعم، أعتقد ذلك. معظمها يشرح نفسه بنفسه. وأنت؟" },
+                        { speaker: "Jonas", text: "Meistens ja. Nur bei der neuen Waschmaschine muss ich manchmal nachschauen. Liest du denn bei einem neuen Gerät die Bedienungsanleitung?", en: "Mostly, yes. Only with the new washing machine do I sometimes have to look things up. Do you read the instruction manual for a new device?", ar: "غالباً نعم. فقط مع الغسالة الجديدة أضطر أحياناً للبحث. هل تقرأين كتيب التعليمات لجهاز جديد؟" },
+                        { speaker: "Sophie", text: "Ehrlich gesagt, nur wenn etwas nicht funktioniert. Meistens probiere ich es einfach aus.", en: "Honestly, only when something doesn't work. I usually just try it out.", ar: "بصراحة، فقط لو كان هناك شيء لا يعمل. في الغالب أقوم فقط بتجربته." },
+                        { speaker: "Jonas", text: "Letzte Frage: Was machst du, wenn ein Gerät kaputt ist?", en: "Last question: What do you do when a device is broken?", ar: "آخر سؤال: ماذا تفعلين عندما يتعطل جهاز؟" },
+                        { speaker: "Sophie", text: "Das kommt darauf an. Wenn es teuer war, lasse ich es reparieren. Wenn es alt und billig ist, kaufe ich ein neues Gerät.", en: "That depends. If it was expensive, I have it repaired. If it's old and cheap, I buy a new device.", ar: "هذا يعتمد. لو كان غالي الثمن، أرسله للإصلاح. لو كان قديماً ورخيصاً، أشتري جهازاً جديداً." }
+                    ]
+                },
+                {
+                    id: 'd1', title: "Einkaufsgespräch (شراء غسالة جديدة)", icon: "shopping-cart",
+                    lines: [
+                        { speaker: "Sofie", text: "Guten Tag. Wir brauchen eine neue Waschmaschine. Unsere alte ist kaputt.", en: "Good day. We need a new washing machine. Our old one is broken.", ar: "يوم سعيد. محتاجين غسالة جديدة. غسالتنا القديمة باظت." },
+                        { speaker: "Verkäufer", text: "Wie oft waschen Sie, wenn ich fragen darf?", en: "How often do you do laundry, if I may ask?", ar: "بتغسلوا كام مرة، لو تسمحيلي أسأل؟" },
+                        { speaker: "Sofie", text: "Wir haben Kinder, wir waschen jeden Tag.", en: "We have children, we do laundry every day.", ar: "عندنا أطفال، بنغسل كل يوم." },
+                        { speaker: "Verkäufer", text: "Dann empfehle ich Ihnen diese hier von Cleanfix. Sie kann bis zu 10 kg waschen und alles wird elektronisch gesteuert.", en: "Then I recommend this one from Cleanfix. It washes up to 10 kg and is electronically controlled.", ar: "يبقى أرشحلك دي من كلينفيكس. بتشيل لحد 10 كيلو وكل حاجة فيها بتشتغل إلكتروني." },
+                        { speaker: "Anton", text: "Wie viel kostet die Waschmaschine?", en: "How much does the washing machine cost?", ar: "سعر الغسالة كام؟" },
+                        { speaker: "Verkäufer", text: "2199 Euro. Qualität hat ihren Preis.", en: "2,199 Euros. Quality has its price.", ar: "2199 يورو. الجودة ليها تمنها." },
+                        { speaker: "Sofie", text: "Also, ich möchte lieber eine einfache Waschmaschine.", en: "Well, I would prefer a simple washing machine.", ar: "بصراحة، أنا بفضل غسالة تكون بسيطة." },
+                        { speaker: "Verkäufer", text: "Hier steht die RX 3000. Sie ist im Angebot und kostet nur 599 Euro. Man kann sie einfach bedienen.", en: "Here is the RX 3000. It is on sale for 599 Euros. It's easy to operate.", ar: "هنا عندنا موديل RX 3000. عليها عرض وسعرها 599 يورو بس. واستخدامها سهل جداً." },
+                        { speaker: "Anton", text: "Gut, dann nehmen wir diese Waschmaschine.", en: "Good, then we'll take this washing machine.", ar: "تمام، هناخد الغسالة دي." }
+                    ]
+                },
+                {
+                    id: 'd2', title: "Kundenservice (مشكلة في الجهاز)", icon: "headphones-call",
+                    lines: [
+                        { speaker: "Kundenservice", text: "Kundenservice, guten Tag. Was kann ich für Sie tun?", en: "Customer service, good day. What can I do for you?", ar: "خدمة العملاء، يوم سعيد. أقدر أساعدك إزاي؟" },
+                        { speaker: "Sofie", text: "Sofie Marx hier. Ich habe bei Ihnen eine Waschmaschine gekauft, aber sie funktioniert nicht.", en: "Sofie Marx here. I bought a washing machine from you, but it doesn't work.", ar: "صوفي ماركس معاك. أنا اشتريت من عندكم غسالة، بس مش شغالة." },
+                        { speaker: "Kundenservice", text: "Könnten Sie mir bitte die Auftragsnummer durchgeben? Die Nummer steht auf Ihrer Rechnung.", en: "Could you please give me the order number? The number is on your invoice.", ar: "ممكن تديني رقم الطلب؟ الرقم موجود على الفاتورة." },
+                        { speaker: "Sofie", text: "Die Auftragsnummer ist 47 62 98 864.", en: "The order number is 47 62 98 864.", ar: "رقم الطلب هو 47 62 98 864." },
+                        { speaker: "Kundenservice", text: "Haben Sie die Tür richtig geschlossen und die Starttaste gedrückt?", en: "Did you close the door correctly and press the start button?", ar: "قفلتوا الباب كويس ودوستوا على زرار التشغيل؟" },
+                        { speaker: "Sofie", text: "Ja. Aber es passiert nichts.", en: "Yes. But nothing happens.", ar: "أيوة. بس مفيش حاجة بتحصل." },
+                        { speaker: "Kundenservice", text: "Gut. Dann schicken wir Ihnen einen Monteur. Passt es Ihnen am Donnerstag?", en: "Good. Then we will send you a technician. Does Thursday work for you?", ar: "تمام. هنبعتلك فني. يوم الخميس مناسب؟" },
+                        { speaker: "Sofie", text: "Das ist schlecht. Der Freitag passt mir besser, morgens um 9.00 Uhr.", en: "That's not good. Friday works better for me, in the morning at 9:00 AM.", ar: "الخميس صعب. الجمعة أنسب ليا، الصبح الساعة 9." },
+                        { speaker: "Kundenservice", text: "Das geht. Sie bekommen die Bestätigung sofort per E-Mail.", en: "That works. You will receive the confirmation immediately via email.", ar: "ينفع. هتوصلك رسالة تأكيد فوراً على الإيميل." }
+                    ]
+                },
+                {
+                    id: 'd3', title: "Etwas reklamieren (استرجاع منتج بالمحل)", icon: "rotate-ccw",
+                    lines: [
+                        { speaker: "Kunde", text: "Guten Tag. Ich habe bei Ihnen letzte Woche einen Drucker gekauft. Leider funktioniert er nicht richtig.", en: "Good day. I bought a printer from you last week. Unfortunately, it isn't working correctly.", ar: "يوم سعيد. اشتريت منكم طابعة الأسبوع اللي فات. للأسف مش شغالة كويس." },
+                        { speaker: "Mitarbeiter", text: "Haben Sie den Kassenzettel mit?", en: "Do you have the receipt with you?", ar: "معاك الإيصال (الفاتورة)؟" },
+                        { speaker: "Kunde", text: "Ja, hier ist der Kassenzettel. Ich habe noch Garantie. Es kommt regelmäßig zum Papierstau.", en: "Yes, here is the receipt. I still have a warranty. It regularly has a paper jam.", ar: "أيوة، اتفضل. أنا لسة في الضمان. الورق بيتحشر فيها على طول." },
+                        { speaker: "Mitarbeiter", text: "Ich verstehe. Ich denke, wir können das reparieren. Das dauert etwa eine Woche.", en: "I understand. I think we can repair it. That will take about a week.", ar: "فهمت. أعتقد نقدر نصلحها. الموضوع هياخد حوالي أسبوع." },
+                        { speaker: "Kunde", text: "Damit bin ich nicht einverstanden. Kann ich das Gerät umtauschen und ein neues bekommen?", en: "I don't agree with that. Can I exchange the device and get a new one?", ar: "أنا مش موافق على كده. ينفع أستبدل الجهاز واخد واحد جديد؟" },
+                        { speaker: "Mitarbeiter", text: "Einen Moment... Gut. Ich schlage vor, dass wir Ihnen direkt ein neues, gleiches Modell geben.", en: "One moment... Good. I suggest that we give you a new, identical model directly.", ar: "لحظة واحدة... تمام. أقترح إننا نديلك موديل جديد زيه بالظبط فوراً." },
+                        { speaker: "Kunde", text: "Ja, das ist super. Vielen Dank.", en: "Yes, that is great. Thank you very much.", ar: "أيوة، ده ممتاز. شكراً جداً." }
+                    ]
+                }
+            ],
+            verbs: [
+                {
+                    id: 'v1', ger: "erfinden", eng: "to invent", ar: "يخترع", praeteritum: "erfand", perfekt: "hat erfunden", s: [
+                        { g: "Wer <strong>erfand</strong> das erste Brettspiel?", e: "Who invented the first board game?", a: "من اخترع أول لعبة طاولة؟" },
+                        { g: "Die Chipkarte wurde 1969 <strong>erfunden</strong>.", e: "The chip card was invented in 1969.", a: "تم اختراع البطاقة الذكية عام 1969." }
+                    ]
+                },
+                {
+                    id: 'v2', ger: "herstellen", eng: "to produce", ar: "يُنتج / يصنع", praeteritum: "stellte her", perfekt: "hat hergestellt", s: [
+                        { g: "Die Firma <strong>stellte</strong> Getränke <strong>her</strong>.", e: "The company produced beverages.", a: "الشركة أنتجت مشروبات." },
+                        { g: "Bier wird aus Gerste <strong>hergestellt</strong>.", e: "Beer is produced from barley.", a: "يتم إنتاج البيرة من الشعير." }
+                    ]
+                },
+                {
+                    id: 'v3', ger: "entwickeln", eng: "to develop", ar: "يُطوّر", praeteritum: "entwickelte", perfekt: "hat entwickelt", s: [
+                        { g: "Er <strong>entwickelte</strong> das erste Schmerzmittel.", e: "He developed the first painkiller.", a: "هو طوّر أول مسكن للألم." }
+                    ]
+                },
+                {
+                    id: 'v4', ger: "verkaufen", eng: "to sell", ar: "يبيع", praeteritum: "verkaufte", perfekt: "hat verkauft", s: [
+                        { g: "Das Spiel wurde 70 Millionen Mal <strong>verkauft</strong>.", e: "The game was sold 70 million times.", a: "تم بيع اللعبة 70 مليون مرة." }
+                    ]
+                },
+                {
+                    id: 'v5', ger: "gründen", eng: "to found (a company)", ar: "يؤسس", praeteritum: "gründete", perfekt: "hat gegründet", s: [
+                        { g: "Die Brüder <strong>gründeten</strong> eine Schuhfabrik.", e: "The brothers founded a shoe factory.", a: "الأخوان أسسوا مصنع أحذية." }
+                    ]
+                },
+                {
+                    id: 'v6', ger: "anschließen", eng: "to connect", ar: "يوصل (بالكهرباء/الماء)", praeteritum: "schloss an", perfekt: "hat angeschlossen", s: [
+                        { g: "Haben Sie das Gerät richtig <strong>angeschlossen</strong>?", e: "Did you connect the device correctly?", a: "هل قمت بتوصيل الجهاز بشكل صحيح؟" }
+                    ]
+                },
+                {
+                    id: 'v7', ger: "bedienen", eng: "to operate", ar: "يُشغل (جهاز)", praeteritum: "bediente", perfekt: "hat bedient", s: [
+                        { g: "Man kann die Maschine einfach <strong>bedienen</strong>.", e: "The machine is easy to operate.", a: "يمكن تشغيل الماكينة بسهولة." }
+                    ]
+                },
+                {
+                    id: 'v8', ger: "umtauschen", eng: "to exchange", ar: "يستبدل (منتج)", praeteritum: "tauschte um", perfekt: "hat umgetauscht", s: [
+                        { g: "Kann ich das Gerät <strong>umtauschen</strong>?", e: "Can I exchange the device?", a: "هل يمكنني استبدال الجهاز؟" }
+                    ]
+                },
+                {
+                    id: 'v9', ger: "drücken", eng: "to press", ar: "يضغط", praeteritum: "drückte", perfekt: "hat gedrückt", s: [
+                        { g: "Sie müssen die Starttaste <strong>drücken</strong>.", e: "You have to press the start button.", a: "يجب أن تضغط على زر التشغيل." }
+                    ]
+                },
+                {
+                    id: 'v10', ger: "retten", eng: "to save (lives)", ar: "ينقذ", praeteritum: "rettete", perfekt: "hat gerettet", s: [
+                        { g: "Der Airbag <strong>rettete</strong> schon viele Leben.", e: "The airbag has already saved many lives.", a: "أنقذت الوسادة الهوائية بالفعل حيوات كثيرة." }
+                    ]
+                },
+                {
+                    id: 'v11', ger: "untersuchen", eng: "to investigate", ar: "يفحص / يدرس", praeteritum: "untersuchte", perfekt: "hat untersucht", s: [
+                        { g: "Forscher <strong>untersuchen</strong> die Wirkungen von Aspirin.", e: "Researchers investigate the effects of Aspirin.", a: "الباحثون يدرسون تأثيرات الأسبرين." }
+                    ]
+                },
+                {
+                    id: 'v12', ger: "einstellen", eng: "to set / adjust", ar: "يضبط (إعدادات)", praeteritum: "stellte ein", perfekt: "hat eingestellt", s: [
+                        { g: "Damit können Sie das Waschprogramm <strong>einstellen</strong>.", e: "With this, you can set the washing program.", a: "بهذا يمكنك ضبط برنامج الغسيل." }
+                    ]
+                },
+                {
+                    id: 'v13', ger: "reparieren", eng: "to repair", ar: "يُصلح", praeteritum: "reparierte", perfekt: "hat repariert", s: [
+                        { g: "Wir können den Drucker <strong>reparieren</strong>.", e: "We can repair the printer.", a: "نستطيع تصليح الطابعة." }
+                    ]
+                },
+                {
+                    id: 'v14', ger: "teilen", eng: "to divide / share", ar: "يُقسم / يقسم", praeteritum: "teilte", perfekt: "hat geteilt", s: [
+                        { g: "Die Brüder <strong>teilten</strong> die Firma.", e: "The brothers divided the company.", a: "الأخوان قسما الشركة." }
+                    ]
+                },
+                {
+                    id: 'v15', ger: "steuern", eng: "to control", ar: "يتحكم في", praeteritum: "steuerte", perfekt: "hat gesteuert", s: [
+                        { g: "Alles wird elektronisch <strong>gesteuert</strong>.", e: "Everything is controlled electronically.", a: "كل شيء يتم التحكم فيه إلكترونياً." }
+                    ]
+                },
+                {
+                    id: 'v16', ger: "drehen", eng: "to turn", ar: "يلف / يدير", praeteritum: "drehte", perfekt: "hat gedreht", s: [
+                        { g: "Danach <strong>drehen</strong> Sie diesen Knopf.", e: "After that, you turn this knob.", a: "بعد ذلك، قم بلف هذا الزر." }
+                    ]
+                },
+                {
+                    id: 'v17', ger: "präsentieren", eng: "to present", ar: "يعرض / يقدم", praeteritum: "präsentierte", perfekt: "hat präsentiert", s: [
+                        { g: "1936 <strong>präsentierte</strong> er das Resultat.", e: "In 1936, he presented the result.", a: "في عام 1936، قدم النتيجة." }
+                    ]
+                },
+                {
+                    id: 'v18', ger: "bestehen", eng: "to consist (of)", ar: "يتكون من", praeteritum: "bestand", perfekt: "hat bestanden", s: [
+                        { g: "Bier <strong>besteht</strong> aus Gerste, Hopfen und Wasser.", e: "Beer consists of barley, hops, and water.", a: "تتكون البيرة من الشعير، الجنجل، والماء." }
+                    ]
+                }
+            ],
+            grammar: [
+                {
+                    title: "1. Passiv Präteritum (المبني للمجهول في الماضي البسيط)",
+                    desc: "نستخدم المبني للمجهول عندما يكون الفاعل (من قام بالفعل) غير مهم، والمهم هو الحدث نفسه. في الماضي البسيط، يتكون من (wurde + Partizip II في آخر الجملة).",
+                    type: "passiv_table" // Custom UI trigger
+                },
+                {
+                    title: "2. Temporalsätze mit 'als' und 'wenn' (الجمل الزمنية)",
+                    desc: "متى نستخدم als ومتى نستخدم wenn للحديث عن الماضي أو الحاضر؟",
+                    structure: "Als / Wenn ... Subjekt ... Verb (am Ende), Verb ... Subjekt ...",
+                    examples: [
+                        { category: "Als (حدث لمرة واحدة في الماضي - Single past event)", g: "<span class='text-purple-600 font-bold'>Als</span> der Krieg <span class='text-purple-600 font-bold'>begann</span>, musste Rudolf zur Armee.", e: "When the war began, Rudolf had to join the army.", a: "عندما بدأت الحرب (حدث مرة واحدة)، اضطر رودولف للانضمام للجيش." },
+                        { category: "Als (حالة أو فترة في الماضي)", g: "<span class='text-purple-600 font-bold'>Als</span> ich zehn Jahre alt <span class='text-purple-600 font-bold'>war</span>, spielte ich gern Fußball.", e: "When I was ten years old, I liked to play soccer.", a: "عندما كنت في العاشرة من عمري، كنت أحب لعب كرة القدم." },
+                        { category: "Wenn (حدث متكرر في الماضي - Repeated past event)", g: "Immer <span class='text-purple-600 font-bold'>wenn</span> ich ihn <span class='text-purple-600 font-bold'>besuchte</span>, gab es Streit.", e: "Whenever I visited him, there was an argument.", a: "كلما كنت أزوره (حدث متكرر)، كان هناك شجار." },
+                        { category: "Wenn (للمستقبل والحاضر - Present/Future)", g: "<span class='text-purple-600 font-bold'>Wenn</span> ich in München <span class='text-purple-600 font-bold'>bin</span>, komme ich vorbei.", e: "When I am in Munich, I will stop by.", a: "عندما أكون في ميونيخ (في الحاضر/المستقبل)، سأمر عليك." }
+                    ]
+                }
+            ],
+            culture: [
+                {
+                    id: 'c1', title: "Das Duell der Brüder: Adidas vs. Puma",
+                    lines: [
+                        { g: "Adi und Rudolf Dassler produzierten nach dem Ersten Weltkrieg Sportschuhe in der Waschküche ihrer Mutter.", e: "Adi and Rudolf Dassler produced sports shoes in their mother's laundry room after the First World War.", a: "أنتج آدي ورودولف داسلر أحذية رياضية في غرفة الغسيل الخاصة بوالدتهم بعد الحرب العالمية الأولى." },
+                        { g: "Adi war der Erfinder, Rudolf war ein sehr guter Verkäufer.", e: "Adi was the inventor, Rudolf was a very good salesman.", a: "كان آدي هو المخترع، وكان رودولف بائعاً جيداً جداً." },
+                        { g: "Die Probleme begannen bei den Olympischen Spielen 1936. Adi gab seine Schuhe dem Amerikaner Jesse Owens.", e: "The problems began at the 1936 Olympic Games. Adi gave his shoes to the American Jesse Owens.", a: "بدأت المشاكل في الألعاب الأولمبية عام 1936. أعطى آدي أحذيته للأمريكي جيسي أوينز." },
+                        { g: "Politische Konflikte und private Probleme führten 1948 zur Teilung der Firma.", e: "Political conflicts and private problems led to the division of the company in 1948.", a: "أدت الصراعات السياسية والمشاكل الشخصية إلى تقسيم الشركة عام 1948." },
+                        { g: "Adi gab seiner neuen Firma den Namen Adidas. Rudolf nannte seine Firma Puma.", e: "Adi gave his new company the name Adidas. Rudolf named his company Puma.", a: "أطلق آدي على شركته الجديدة اسم أديداس. وسمى رودولف شركته بوما." },
+                        { g: "Der kleine Ort Herzogenaurach wurde durch diese Rivalität der Familien komplett geteilt.", e: "The small town of Herzogenaurach was completely divided by this rivalry of the families.", a: "البلدة الصغيرة 'هيرتسوجيناوراخ' انقسمت بالكامل بسبب هذه الخصومة بين العائلتين." },
+                        { g: "1954 wurde Deutschland in Adidas-Schuhen Fußballweltmeister. Heute sind beide Firmen weltweit berühmt.", e: "In 1954, Germany became the soccer world champion in Adidas shoes. Today, both companies are famous worldwide.", a: "عام 1954 أصبحت ألمانيا بطلة العالم في كرة القدم بأحذية أديداس. اليوم الشركتان مشهورتان عالمياً." }
+                    ]
+                },
+                {
+                    id: 'c2', title: "Neu ist nicht immer besser (الهواتف الذكية)",
+                    lines: [
+                        { g: "Ein Bericht von 'Stiftung Warentest' zeigt: Alte Smartphone-Modelle sind oft besser als die neuen.", e: "A report by 'Stiftung Warentest' shows: Old smartphone models are often better than the new ones.", a: "تقرير من 'Stiftung Warentest' (مؤسسة اختبار المستهلك الألمانية) يوضح: موديلات الهواتف القديمة غالباً أفضل من الجديدة." },
+                        { g: "Das Beste an den neuen Handys ist meistens nur das Design.", e: "The best thing about the new phones is usually just the design.", a: "أفضل شيء في الهواتف الجديدة يكون غالباً هو التصميم فقط." },
+                        { g: "Technische Aspekte wie der Akku sind bei neuen Modellen oft schlechter.", e: "Technical aspects like the battery are often worse in new models.", a: "الجوانب التقنية مثل البطارية غالباً ما تكون أسوأ في الموديلات الجديدة." },
+                        { g: "Manchmal kann der Nutzer den Akku nicht mehr selbst wechseln oder er hat eine kürzere Laufzeit.", e: "Sometimes the user can no longer change the battery themselves or it has a shorter runtime.", a: "أحياناً لا يستطيع المستخدم تغيير البطارية بنفسه بعد الآن، أو يكون لها وقت تشغيل أقصر." }
+                    ]
+                },
+                {
+                    id: 'c3', title: "Kulturvergleich: Große Firmen (Deutschland vs. Ägypten)",
+                    lines: [
+                        { g: "In Deutschland sind Automobilfirmen (VW, BMW), Technologie (Siemens, SAP) und Sport (Adidas) weltbekannt.", e: "In Germany, automotive companies (VW, BMW), technology (Siemens, SAP), and sports (Adidas) are world-famous.", a: "في ألمانيا، شركات السيارات (فولكس فاجن، بي إم دبليو) والتكنولوجيا (سيمنز، ساب) والرياضة (أديداس) مشهورة عالمياً." },
+                        { g: "In der Schweiz denkt man oft an Uhren, Schokolade, Käse und Firmen wie Nestlé.", e: "In Switzerland, people often think of watches, chocolate, cheese, and companies like Nestlé.", a: "في سويسرا، نفكر غالباً في الساعات، الشوكولاتة، الجبن، وشركات مثل نستله." },
+                        { g: "In Ägypten dominieren oft große Bau- und Telekommunikationsfirmen wie Orascom, El Sewedy Electric oder große Banken (CIB).", e: "In Egypt, large construction and telecommunications companies like Orascom, El Sewedy Electric, or major banks (CIB) often dominate.", a: "في مصر، تهيمن غالباً شركات البناء والاتصالات الكبيرة مثل أوراسكوم، السويدي إلكتريك، أو البنوك الكبرى مثل CIB." }
+                    ]
+                },
+                {
+                    id: 'c4', title: "Eine wichtige Erfindung aus Ägypten: Papyrus",
+                    lines: [
+                        { g: "Papyrus wurde von den alten Ägyptern vor Tausenden von Jahren entwickelt.", e: "Papyrus was developed by the ancient Egyptians thousands of years ago.", a: "تم تطوير ورق البردي من قبل المصريين القدماء منذ آلاف السنين." },
+                        { g: "Die Erfindung kommt aus dem alten Ägypten und wurde aus der Papyruspflanze hergestellt, die am Nil wuchs.", e: "The invention comes from ancient Egypt and was made from the papyrus plant, which grew on the Nile.", a: "هذا الاختراع يأتي من مصر القديمة وصُنع من نبات البردي الذي نما على ضفاف النيل." },
+                        { g: "Die Erfindung war sehr nützlich, wenn man wichtige Informationen, Gesetze oder Geschichten aufschreiben und aufbewahren wollte.", e: "The invention was very useful when one wanted to write down and preserve important information, laws, or stories.", a: "كان الاختراع مفيداً جداً عندما كان المرء يريد كتابة وحفظ معلومات مهمة، قوانين أو قصص." },
+                        { g: "Mit dieser Erfindung konnte man Wissen über Generationen hinweg weitergeben und große Bibliotheken wie die in Alexandria aufbauen.", e: "With this invention, one could pass on knowledge across generations and build great libraries like the one in Alexandria.", a: "بهذا الاختراع، أمكن تمرير المعرفة عبر الأجيال وبناء مكتبات عظيمة مثل تلك التي في الإسكندرية." },
+                        { g: "Das Prinzip des Schreibens auf Papier ist eine direkte Weiterentwicklung dieser genialen Idee.", e: "The principle of writing on paper is a direct development of this ingenious idea.", a: "مبدأ الكتابة على الورق هو تطور مباشر لهذه الفكرة العبقرية." }
+                    ]
+                },
+                {
+                    id: 'c5', title: "Firmenpräsentation: Alex Pack",
+                    lines: [
+                        { g: "Wir sind eine mittelständische Firma. Unser Name kommt von Alexandria, unserem Gründungsort.", e: "We are a medium-sized firm. Our name comes from Alexandria, our founding location.", a: "نحن شركة متوسطة الحجم. اسمنا يأتي من الإسكندرية، مكان تأسيسنا." },
+                        { g: "Unser Unternehmen wurde im Jahre 2020 von Maria Soliman in Alexandria gegründet.", e: "Our company was founded in the year 2020 by Maria Soliman in Alexandria.", a: "تم تأسيس شركتنا في عام 2020 بواسطة ماريا سليمان في الإسكندرية." },
+                        { g: "Die Firmenzentrale ist in Alexandria. Wir produzieren nachhaltige Rucksäcke.", e: "The company headquarters is in Alexandria. We produce sustainable backpacks.", a: "المقر الرئيسي للشركة في الإسكندرية. نحن ننتج حقائب ظهر مستدامة." },
+                        { g: "Unsere Produkte bieten beste Qualität und sind sehr langlebig. Wir haben 50 motivierte Mitarbeiter.", e: "Our products offer the best quality and are very durable. We have 50 motivated employees.", a: "منتجاتنا تقدم أفضل جودة وتدوم طويلاً. لدينا 50 موظفاً متحمساً." },
+                        { g: "Wir möchten unser Unternehmen weiter vergrößern und suchen neue Kunden in Europa.", e: "We would like to further expand our company and are looking for new customers in Europe.", a: "نريد توسيع شركتنا أكثر ونبحث عن عملاء جدد في أوروبا." }
+                    ]
+                }
+            ],
+            letters: [
+                {
+                    id: 'l1', title: "Kaufberatung: Ein neues Smartphone (إيميل لصديق)",
+                    lines: [
+                        { g: "Lieber Alex,", e: "Dear Alex,", a: "عزيزي أليكس،" },
+                        { g: "danke für deine Mail. Du willst dir also ein neues Smartphone kaufen und hast mich um Rat gefragt.", e: "thanks for your email. So you want to buy yourself a new smartphone and asked me for advice.", a: "شكراً على إيميلك. إذن أنت تريد شراء هاتف ذكي جديد وتطلب نصيحتي." },
+                        { g: "Ja, natürlich habe ich selbst ein Smartphone. Ich benutze es jeden Tag.", e: "Yes, of course I have a smartphone myself. I use it every day.", a: "نعم، بالطبع لدي هاتف ذكي. أستخدمه كل يوم." },
+                        { g: "Man kann damit nicht nur telefonieren, sondern auch im Internet surfen und tolle Fotos machen.", e: "You can not only make calls with it, but also surf the internet and take great photos.", a: "لا يمكنك فقط إجراء المكالمات به، بل يمكنك أيضاً تصفح الإنترنت والتقاط صور رائعة." },
+                        { g: "Ich kann dir die Geräte von Samsung oder das iPhone von Apple empfehlen.", e: "I can recommend devices from Samsung or the iPhone from Apple.", a: "يمكنني أن أوصيك بأجهزة سامسونج أو آيفون من أبل." },
+                        { g: "Ein gutes neues Gerät kostet zwischen 500 und 1000 Euro, aber es gibt auch günstigere Modelle.", e: "A good new device costs between 500 and 1000 Euros, but there are also cheaper models.", a: "الجهاز الجديد الجيد يكلف بين 500 و 1000 يورو، ولكن هناك أيضاً موديلات أرخص." },
+                        { g: "Man kann ein Smartphone am besten online oder in einem großen Elektronikgeschäft kaufen.", e: "The best place to buy a smartphone is online or in a large electronics store.", a: "أفضل مكان لشراء هاتف ذكي هو عبر الإنترنت أو في متجر إلكترونيات كبير." },
+                        { g: "Ich hoffe, das hilft dir bei deiner Entscheidung!", e: "I hope this helps you with your decision!", a: "أتمنى أن يساعدك هذا في قرارك!" },
+                        { g: "Liebe Grüße, \nDein Freund", e: "Best regards, \nYour friend", a: "مع خالص تحياتي، \nصديقك" }
+                    ]
+                }
+            ]
+        };
+
+        const { useState, useEffect } = React;
+
+        // --- HELPER FOR ARTICLES COLORING ---
+        const colorizeArticles = (text) => {
+            if (!text) return text;
+            const regex = /(der |die |das )/gi;
+            const parts = text.split(regex);
+            return parts.map((part, i) => {
+                const lower = part.toLowerCase();
+                if (lower === 'der ') return <span key={i} className="text-blue-500 font-extrabold">{part}</span>;
+                if (lower === 'die ') return <span key={i} className="text-rose-500 font-extrabold">{part}</span>;
+                if (lower === 'das ') return <span key={i} className="text-emerald-500 font-extrabold">{part}</span>;
+                return <span key={i}>{part}</span>;
+            });
+        };
+
+        // --- COMPONENTS ---
+        const ProgressBar = ({ total, learned, colorClass }) => {
+            const percentage = total === 0 ? 0 : Math.round((learned / total) * 100);
+            return (
+                <div className="glass-panel p-5 rounded-2xl mb-8 flex items-center justify-between transition-all" dir="rtl">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider ar-text mb-1">مستوى التقدم</h3>
+                        <p className="text-3xl font-extrabold text-slate-800">{learned} <span className="text-sm font-medium text-slate-400">/ {total} أتقنتهم</span></p>
+                    </div>
+                    <div className="relative w-20 h-20 drop-shadow-md">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path className="text-slate-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                            <path className={`${colorClass} transition-all duration-1000 ease-out`} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold text-slate-700">
+                            {percentage}%
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const WordCard = ({ item, isLearned, toggleLearned }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            return (
+                <div className="relative group perspective-1000 w-full h-[24rem]">
+                    <div className={`w-full h-full transition-all duration-700 transform-style-3d shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl ${isFlipped ? 'rotate-y-180' : ''}`}>
+
+                        {/* FRONT */}
+                        <div className="absolute w-full h-full backface-hidden bg-white border border-slate-100 rounded-2xl p-5 flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
+                            onClick={() => setIsFlipped(true)}>
+                            <div className="flex justify-between items-start shrink-0" dir="rtl">
+                                <span className="bg-orange-50 text-orange-600 text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider ar-text border border-orange-100">مفردات</span>
+                                <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <div className="text-center mt-2 flex-grow flex flex-col justify-center overflow-y-auto front-scroll px-1 py-3">
+                                <div className="flex flex-col justify-center items-center gap-3 mb-1">
+                                    <h3 className="text-2xl font-bold text-slate-800 leading-tight">{colorizeArticles(item.ger)}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={(e) => playAudio(item.ger, e)} className="p-2 rounded-full bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors shadow-sm"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                        <SpeechTester targetText={item.ger} />
+                                    </div>
+                                </div>
+                                <div className="mt-4 space-y-1">
+                                    <p className="text-slate-500 font-medium text-sm">{item.eng}</p>
+                                    <p className="text-orange-600 font-bold ar-text text-lg" dir="rtl">{item.ar}</p>
+                                </div>
+                            </div>
+
+                            <div className="text-center text-xs text-slate-400 font-medium flex items-center justify-center gap-1 ar-text mt-2 shrink-0">
+                                <i data-lucide="rotate-cw" className="w-3 h-3"></i> اضغط للأمثلة
+                            </div>
+                        </div>
+
+                        {/* BACK */}
+                        <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-2xl p-5 shadow-lg flex flex-col cursor-pointer overflow-hidden"
+                            onClick={() => setIsFlipped(false)} style={{ transform: 'rotateY(180deg)' }}>
+                            <div className="mb-3 border-b border-white/20 pb-2 flex justify-between items-center shrink-0" dir="rtl">
+                                <h4 className="font-bold text-white/90 text-sm tracking-wider ar-text">أمثلة سياقية</h4>
+                                <i data-lucide="rotate-ccw" className="w-4 h-4 text-white/60"></i>
+                            </div>
+                            <div className="overflow-y-auto card-scroll flex-grow pr-2 pb-2">
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="text-sm bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/5">
+                                            <div className="flex items-start gap-2 mb-1.5">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className="p-1 text-orange-200 hover:text-white shrink-0 mt-0.5"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <span className="leading-relaxed" dangerouslySetInnerHTML={{ __html: sentence.g }}></span>
+                                            </div>
+                                            <div className="text-orange-200 text-xs italic ml-8 mb-1.5">{sentence.e}</div>
+                                            <div className="text-amber-100 text-sm font-bold ar-text border-t border-white/10 pt-1.5 mt-1" dir="rtl">{sentence.a}</div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const IrregularVerbRow = ({ item, isLearned, toggleLearned }) => {
+            const [expanded, setExpanded] = useState(false);
+
+            return (
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md" dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                    {item.ger}
+                                    <button onClick={(e) => playAudio(item.ger, e)} className="text-emerald-600 opacity-70 hover:opacity-100 transition-opacity"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                </h3>
+                                <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className="text-emerald-600 font-bold ar-text" dir="rtl">{item.ar}</span></p>
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präteritum (ماضي بسيط)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praeteritum, e)} className="text-amber-600 bg-amber-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.praeteritum}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.praeteritum} /></div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Perfekt (ماضي تام)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.perfekt, e)} className="text-purple-600 bg-purple-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.perfekt}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.perfekt} /></div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <h4 className="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider ar-text">مثال سياقي (Beispiel)</h4>
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm group flex flex-col sm:flex-row gap-4 justify-between items-start">
+                                            <div className="flex-1">
+                                                <div className="flex items-start gap-3 mb-2">
+                                                    <button onClick={(e) => playAudio(sentence.g, e)} className="mt-0.5 text-emerald-600 bg-emerald-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                    <p className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: sentence.g }}></p>
+                                                </div>
+                                                <p className="text-slate-500 text-sm ml-10 mb-2">{sentence.e}</p>
+                                                <div className="ml-10 text-emerald-600 text-base font-bold ar-text border-t border-slate-100 pt-2" dir="rtl">{sentence.a}</div>
+                                            </div>
+                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-slate-50 p-1.5 rounded-full" dir="ltr">
+                                                <SpeechTester targetText={sentence.g} />
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const DialogueRow = ({ dialogue }) => {
+            const [expanded, setExpanded] = useState(false);
+            return (
+                <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden mb-6 transition-all duration-300 hover:shadow-lg" dir="ltr">
+                    <button
+                        className="w-full p-6 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white"
+                        onClick={() => setExpanded(!expanded)}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl">
+                                <i data-lucide={dialogue.icon} className="w-6 h-6"></i>
+                            </div>
+                            <h3 className="text-2xl font-bold text-slate-800 ar-text">{dialogue.title}</h3>
+                        </div>
+                        <i data-lucide="chevron-down" className={`w-6 h-6 text-slate-400 transform transition-transform duration-300 ${expanded ? 'rotate-180 text-blue-600' : ''}`}></i>
+                    </button>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="p-6 bg-white space-y-4">
+                            {dialogue.lines.map((line, idx) => {
+                                const isFirstSpeaker = idx === 0 || line.speaker === dialogue.lines[0].speaker;
+                                return (
+                                    <div key={idx} className={`flex flex-col p-4 rounded-2xl border ${isFirstSpeaker ? 'bg-blue-50/50 border-blue-100 ml-8' : 'bg-slate-50 border-slate-100 mr-8'}`}>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${isFirstSpeaker ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-700'}`}>
+                                                {line.speaker}
+                                            </span>
+                                            <div className="flex gap-2">
+                                                <button onClick={(e) => playAudio(line.text, e)} className="text-slate-400 hover:text-blue-600 transition-colors"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <SpeechTester targetText={line.text} />
+                                            </div>
+                                        </div>
+                                        <p className="text-lg font-medium text-slate-800 mb-1">{line.text}</p>
+                                        <p className="text-sm text-slate-500 mb-2 italic">{line.en}</p>
+                                        <p className="text-blue-700 font-bold ar-text border-t border-slate-200/50 pt-2 text-right" dir="rtl">{line.ar}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Custom UI for Grammar: Passiv Table
+        const PassivTable = () => {
+            const thClass = "border border-slate-200 p-3 bg-purple-50 font-bold text-purple-800 text-sm tracking-wider";
+            const tdClass = "border border-slate-200 p-3 text-slate-700 font-medium";
+            return (
+                <div className="space-y-8" dir="ltr">
+                    <div className="overflow-x-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                        <h4 className="font-bold text-purple-600 text-xl mb-4 ar-text" dir="rtl">🛠️ أمثلة للمبني للمجهول (Passiv Präteritum)</h4>
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th className={thClass}>Aktiv (مبني للمعلوم)</th>
+                                    <th className={thClass}>Passiv (مبني للمجهول)</th>
+                                    <th className={thClass}>English / Arabic</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td className={tdClass}>Man <span className="font-bold text-amber-500">benutzte</span> die Zahnpasta 1907.</td>
+                                    <td className={tdClass}>Die Zahnpasta <span className="font-bold text-purple-600">wurde</span> 1907 <span className="font-bold text-purple-600">benutzt</span>.</td>
+                                    <td className={tdClass}>Toothpaste was used in 1907. / اُستخدم معجون الأسنان عام 1907.</td>
+                                </tr>
+                                <tr>
+                                    <td className={tdClass}>Man <span className="font-bold text-amber-500">verkaufte</span> das Spiel 70 Millionen Mal.</td>
+                                    <td className={tdClass}>Das Spiel <span className="font-bold text-purple-600">wurde</span> 70 Millionen Mal <span className="font-bold text-purple-600">verkauft</span>.</td>
+                                    <td className={tdClass}>The game was sold 70 million times. / بِيعت اللعبة 70 مليون مرة.</td>
+                                </tr>
+                                <tr>
+                                    <td className={tdClass}>Man <span className="font-bold text-amber-500">untersuchte</span> die Wirkung.</td>
+                                    <td className={tdClass}>Die Wirkung <span className="font-bold text-purple-600">wurde</span> <span className="font-bold text-purple-600">untersucht</span>.</td>
+                                    <td className={tdClass}>The effect was investigated. / تم فحص التأثير.</td>
+                                </tr>
+                                <tr>
+                                    <td className={tdClass}>Max <span className="font-bold text-amber-500">präsentierte</span> das Ergebnis 1936.</td>
+                                    <td className={tdClass}>Das Ergebnis <span className="font-bold text-purple-600">wurde</span> 1936 <span className="font-bold text-purple-600">präsentiert</span>.</td>
+                                    <td className={tdClass}>The result was presented in 1936. / عُرضت النتيجة عام 1936.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        };
+
+
+        // --- MAIN APP ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('words');
+            const [learnedItems, setLearnedItems] = useState(new Set());
+            const [searchTerm, setSearchTerm] = useState('');
+
+            // Load saved progress
+            useEffect(() => {
+                const saved = localStorage.getItem('a2_ideen_progress');
+                if (saved) {
+                    setLearnedItems(new Set(JSON.parse(saved)));
+                }
+            }, []);
+
+            // Save progress
+            useEffect(() => {
+                localStorage.setItem('a2_ideen_progress', JSON.stringify(Array.from(learnedItems)));
+            }, [learnedItems]);
+
+            useEffect(() => {
+                lucide.createIcons();
+            });
+
+            const toggleLearned = (id) => {
+                const newLearned = new Set(learnedItems);
+                if (newLearned.has(id)) newLearned.delete(id);
+                else newLearned.add(id);
+                setLearnedItems(newLearned);
+            };
+
+            const totalWords = LEARNING_DATA.words.erfindungen.length + LEARNING_DATA.words.geraete.length + LEARNING_DATA.words.reklamation.length + LEARNING_DATA.words.firmen.length;
+            const totalVerbs = LEARNING_DATA.verbs.length;
+            const totalExp = LEARNING_DATA.expressions.length;
+            const grandTotal = totalWords + totalVerbs + totalExp;
+
+            const tabConfig = {
+                words: { labelEn: 'Vocabulary', labelAr: 'أجهزة واختراعات', icon: 'lightbulb', color: 'orange' },
+                expressions: { labelEn: 'Phrases', labelAr: 'عبارات التسوق', icon: 'message-square', color: 'amber' },
+                dialogues: { labelEn: 'Dialogues', labelAr: 'محادثات العملاء', icon: 'headphones', color: 'blue' },
+                verbs: { labelEn: 'Verbs', labelAr: 'أفعال هامة', icon: 'list-checks', color: 'emerald' },
+                grammar: { labelEn: 'Grammar', labelAr: 'القواعد', icon: 'book-open', color: 'purple' },
+                letters: { labelEn: 'Emails', labelAr: 'نصائح الشراء', icon: 'mail', color: 'cyan' },
+                culture: { labelEn: 'Culture', labelAr: 'ثقافة وشركات', icon: 'globe', color: 'rose' }
+            };
+
+            const activeColor = tabConfig[activeTab].color;
+
+            return (
+                <div className="h-screen flex flex-col bg-slate-50" dir="rtl">
+                    {/* TOP NAVIGATION HEADER */}
+                    <header className="w-full bg-slate-900 text-white shadow-xl z-50 shrink-0 relative overflow-hidden">
+                        <div className={`absolute top-0 left-0 w-full h-1 bg-${activeColor}-500 transition-colors duration-500`}></div>
+
+                        <div className="flex justify-between items-center px-4 md:px-8 py-3 border-b border-slate-800">
+                            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-3 ar-text">
+                                <span className={`bg-${activeColor}-500 p-2 rounded-xl transition-colors duration-500 shadow-lg`}>
+                                    <i data-lucide="lightbulb" className="w-5 h-5 md:w-6 md:h-6 text-white"></i>
+                                </span>
+                                A2: Ideen & Produkte
+                            </h1>
+
+                            <div className="flex items-center gap-3" dir="ltr">
+                                <div className="text-right hidden sm:block">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Progress</div>
+                                    <div className={`text-sm font-extrabold text-${activeColor}-400 transition-colors`}>{grandTotal === 0 ? 0 : Math.round((learnedItems.size / grandTotal) * 100)}%</div>
+                                </div>
+                                <div className="relative w-10 h-10">
+                                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                        <path className="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                                        <path className={`text-${activeColor}-500 transition-all duration-1000 ease-out`} strokeDasharray={`${grandTotal === 0 ? 0 : (learnedItems.size / grandTotal) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Horizontal Navigation Tabs */}
+                        <nav className="flex overflow-x-auto scrollbar-hide px-4 py-2 gap-2 snap-x">
+                            {Object.entries(tabConfig).map(([key, tab]) => (
+                                <button
+                                    key={key}
+                                    onClick={() => { setActiveTab(key); setSearchTerm(''); }}
+                                    className={`snap-center shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold ar-text group relative overflow-hidden ${activeTab === key ? `bg-${tab.color}-600 text-white shadow-md` : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <i data-lucide={tab.icon} className={`w-5 h-5 ${activeTab === key ? 'text-white' : `text-${tab.color}-400 group-hover:text-${tab.color}-300`} transition-colors`}></i>
+                                    <span className="text-sm whitespace-nowrap">{tab.labelAr}</span>
+                                    {activeTab === key && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-white/50 rounded-t-full"></div>}
+                                </button>
+                            ))}
+                        </nav>
+                    </header>
+
+                    {/* MAIN CONTENT AREA */}
+                    <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 relative" dir="ltr">
+                        <div className={`fixed top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-${activeColor}-200/20 blur-3xl -z-10 transition-colors duration-1000 pointer-events-none`}></div>
+
+                        <div className="max-w-7xl mx-auto">
+
+                            {/* LIVE SEARCH BAR */}
+                            {activeTab !== 'grammar' && activeTab !== 'culture' && activeTab !== 'dialogues' && activeTab !== 'letters' && (
+                                <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                    <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                        <div className={`absolute -inset-0.5 bg-gradient-to-r from-${activeColor}-400 to-${activeColor}-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                        <div className="relative">
+                                            <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                            <input
+                                                type="text"
+                                                placeholder="ابحث بالعربي أو الألماني..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className={`w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-${activeColor}-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium`}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* PROGRESS BARS */}
+                            {activeTab === 'words' && <ProgressBar total={totalWords} learned={Array.from(learnedItems).filter(id => id.startsWith('w')).length} colorClass="text-orange-500" />}
+                            {activeTab === 'verbs' && <ProgressBar total={totalVerbs} learned={Array.from(learnedItems).filter(id => id.startsWith('v')).length} colorClass="text-emerald-500" />}
+                            {activeTab === 'expressions' && <ProgressBar total={totalExp} learned={Array.from(learnedItems).filter(id => id.startsWith('e')).length} colorClass="text-amber-500" />}
+
+                            {/* TAB: WORDS */}
+                            {activeTab === 'words' && (
+                                <div className="space-y-12">
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-orange-100 p-2 rounded-xl text-orange-600"><i data-lucide="zap" className="w-6 h-6"></i></span> اختراعات (Erfindungen)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.erfindungen.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-cyan-100 p-2 rounded-xl text-cyan-600"><i data-lucide="tv" className="w-6 h-6"></i></span> الأجهزة التقنية (Technische Geräte)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.geraete.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-rose-100 p-2 rounded-xl text-rose-600"><i data-lucide="alert-triangle" className="w-6 h-6"></i></span> شكاوى وعملاء (Reklamation)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.reklamation.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="building" className="w-6 h-6"></i></span> الشركات والأعمال (Firmen)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.firmen.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
+
+                            {/* TAB: EXPRESSIONS */}
+                            {activeTab === 'expressions' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-amber-100 p-2 rounded-xl text-amber-600"><i data-lucide="message-square" className="w-6 h-6"></i></span>
+                                        عبارات التسوق والشكاوى والعمل
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {LEARNING_DATA.expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                            <div key={exp.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative group hover:shadow-xl hover:border-amber-200 transition-all duration-300">
+                                                <button onClick={() => toggleLearned(exp.id)} className={`absolute top-5 left-5 p-2 rounded-full transition-colors z-10 ${learnedItems.has(exp.id) ? 'bg-amber-100 text-amber-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                                </button>
+                                                <span className="inline-block bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-xs font-bold mb-4 ar-text border border-amber-100">{exp.type}</span>
+                                                <div className="flex items-start gap-3 mb-3" dir="ltr">
+                                                    <div className="flex flex-col gap-2 shrink-0">
+                                                        <button onClick={(e) => playAudio(exp.ger, e)} className="text-amber-500 bg-amber-50 p-2 rounded-xl hover:bg-amber-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                        <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={exp.ger} /></div>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight mt-1">"{exp.ger}"</h3>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
+                                                    <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
+                                                    <p className="text-amber-700 font-extrabold text-xl mb-4 ar-text">{exp.ar}</p>
+                                                    <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
+                                                        <i data-lucide="info" className="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>
+                                                        <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: DIALOGUES */}
+                            {activeTab === 'dialogues' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="headphones" className="w-6 h-6"></i></span>
+                                        محادثات (Dialoge)
+                                    </h2>
+                                    <div className="max-w-4xl mx-auto space-y-6">
+                                        {LEARNING_DATA.dialogues.map(dialogue => (
+                                            <DialogueRow key={dialogue.id} dialogue={dialogue} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: VERBS */}
+                            {activeTab === 'verbs' && (
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="list-checks" className="w-6 h-6"></i></span>
+                                        أفعال الصناعة والتكنولوجيا
+                                    </h2>
+                                    <div className="space-y-4 max-w-4xl mx-auto">
+                                        {LEARNING_DATA.verbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <IrregularVerbRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: GRAMMAR */}
+                            {activeTab === 'grammar' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-purple-700 to-indigo-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="book-open" className="absolute -right-4 -bottom-4 w-48 h-48 text-white opacity-10 transform rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">القواعد النحوية (Grammatik)</h2>
+                                            <p className="text-purple-200 ar-text text-lg max-w-2xl">المبني للمجهول في الماضي البسيط (Passiv Präteritum) والروابط الزمنية (Als / Wenn).</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-8">
+                                        {LEARNING_DATA.grammar.map((gram, idx) => (
+                                            <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                    <div className="bg-purple-100 p-3 rounded-2xl text-purple-600 shrink-0 mt-1">
+                                                        <i data-lucide="braces" className="w-6 h-6"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                        <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-8">
+                                                    {gram.structure && (
+                                                        <div className="bg-slate-900 text-purple-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
+                                                            <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i> {gram.structure}
+                                                        </div>
+                                                    )}
+
+                                                    {gram.examples && (
+                                                        <>
+                                                            <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                            <ul className="space-y-4">
+                                                                {gram.examples.map((ex, i) => (
+                                                                    <li key={i} className="bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
+                                                                        <span className="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold mb-3 ar-text">{ex.category}</span>
+                                                                        <div className="flex gap-4 items-start mb-3" dir="ltr">
+                                                                            <button onClick={(e) => playAudio(ex.g, e)} className="text-purple-500 bg-white p-2 rounded-xl shadow-sm hover:bg-purple-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                            <div className="flex flex-col gap-1">
+                                                                                <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                                {ex.e && <span className="text-slate-500 text-sm italic">{ex.e}</span>}
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="text-purple-700 font-bold ar-text border-t border-purple-200/50 pt-3 mt-3">{ex.a}</div>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </>
+                                                    )}
+
+                                                    {gram.type === 'passiv_table' && <PassivTable />}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: LETTERS */}
+                            {activeTab === 'letters' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-cyan-600 to-teal-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="mail" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">كتابة إيميل (E-Mail schreiben)</h2>
+                                            <p className="text-cyan-100 ar-text text-lg max-w-2xl">كيف تنصح صديقك بشراء هاتف ذكي جديد.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.letters.map((letter) => (
+                                            <div key={letter.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-cyan-100 text-cyan-700 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    E-Mail
+                                                </div>
+                                                <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-6 mt-2 flex items-center gap-3">
+                                                    <i data-lucide="mail-open" className="w-6 h-6 text-cyan-500"></i> {letter.title}
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {letter.lines.map((line, idx) => {
+                                                        const isReply = line.g.includes("---");
+                                                        return (
+                                                            <div key={idx} className={`${isReply ? 'bg-cyan-600 text-white font-bold text-center py-2 rounded-xl my-4' : 'bg-slate-50/50 p-4 rounded-2xl border border-cyan-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group'}`}>
+                                                                {isReply ? (
+                                                                    <span className="ar-text">{line.a}</span>
+                                                                ) : (
+                                                                    <>
+                                                                        <div className="flex-1">
+                                                                            <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                                <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-cyan-600 bg-white p-2 rounded-xl shadow-sm hover:bg-cyan-50 transition-colors shrink-0">
+                                                                                    <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                                </button>
+                                                                                <p className="text-slate-800 text-lg font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                            </div>
+                                                                            {line.e && <p className="sm:ml-14 text-slate-500 text-sm italic mb-2" dir="ltr">{line.e}</p>}
+                                                                            <div className="sm:ml-14 text-cyan-800 text-base font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                            <SpeechTester targetText={line.g} />
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: CULTURE */}
+                            {activeTab === 'culture' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-rose-600 to-red-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="globe" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">قصص وتاريخ الشركات (Firmen)</h2>
+                                            <p className="text-rose-200 ar-text text-lg max-w-2xl">قصة الأخوين داسلر (أديداس وبوما) والشركات في ألمانيا ومصر.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.culture.map((item) => (
+                                            <div key={item.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-rose-100 text-rose-600 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    Lesetext
+                                                </div>
+                                                <h3 className="text-3xl font-extrabold text-slate-800 ar-text mb-6 mt-2">{item.title}</h3>
+                                                <div className="space-y-4">
+                                                    {item.lines.map((line, idx) => (
+                                                        <div key={idx} className="bg-slate-50/50 p-4 rounded-2xl border border-rose-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                    <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-rose-500 bg-white p-2 rounded-xl shadow-sm hover:bg-rose-50 transition-colors shrink-0">
+                                                                        <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                    </button>
+                                                                    <p className="text-slate-800 text-xl font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                </div>
+                                                                {line.e && <p className="sm:ml-14 text-slate-500 text-sm italic mb-2" dir="ltr">{line.e}</p>}
+                                                                <div className="sm:ml-14 text-rose-700 text-lg font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                </div>
+                                                            </div>
+                                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                <SpeechTester targetText={line.g} />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

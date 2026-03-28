@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch A2: Im Büro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            overflow: hidden;
+        }
+
+        .ar-text {
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Refined Card Flips */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Glassmorphism subtle effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Custom Scrollbars for Cards */
+        .card-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .card-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .front-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .front-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- HELPERS FOR AUDIO & SPEECH ---
+        const playAudio = (text, e) => {
+            if (e) e.stopPropagation();
+            const cleanText = text.replace(/<[^>]+>/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'de-DE';
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const SpeechTester = ({ targetText }) => {
+            const [status, setStatus] = React.useState('idle');
+            const [heard, setHeard] = React.useState('');
+
+            const listen = (e) => {
+                if (e) e.stopPropagation();
+                if (!('webkitSpeechRecognition' in window)) {
+                    alert('المتصفح ده مش بيدعم تسجيل الصوت، جرب Google Chrome.');
+                    return;
+                }
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+
+                recognition.onstart = () => setStatus('listening');
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    setHeard(speechResult);
+
+                    const clean = (str) => str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,!?:]/g, '').trim();
+                    const targetClean = clean(targetText);
+                    const heardClean = clean(speechResult);
+
+                    if (heardClean.includes(targetClean) || targetClean.includes(heardClean) || heardClean === targetClean) {
+                        setStatus('success');
+                    } else {
+                        setStatus('fail');
+                    }
+                };
+                recognition.onerror = () => setStatus('fail');
+                recognition.onend = () => { if (status === 'listening') setStatus('idle'); };
+                recognition.start();
+            };
+
+            return (
+                <div className="inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={listen} title="جرب تنطقها" className={`p-2 rounded-full transition-all duration-300 shadow-sm ${status === 'listening' ? 'bg-red-500 text-white animate-pulse scale-110' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'}`}>
+                        <i data-lucide="mic" className="w-4 h-4"></i>
+                    </button>
+                    {status === 'success' && <span className="text-emerald-500 text-xs font-bold ar-text animate-bounce">✅ ممتاز!</span>}
+                    {status === 'fail' && <span className="text-red-500 text-xs ar-text font-bold" title={`سمعت: ${heard}`}>❌ جرب تاني</span>}
+                </div>
+            );
+        };
+
+        // --- FULL A2 LEARNING DATA (Im Büro) ---
+        const LEARNING_DATA = {
+            words: {
+                immerOft: [
+                    {
+                        id: 'w1', ger: "öffnen", eng: "to open", ar: "يفتح", s: [
+                            { g: "Ich muss meine E-Mails <strong>öffnen</strong>.", e: "I have to open my emails.", a: "لازم أفتح إيميلاتي." },
+                            { g: "Können Sie bitte das Fenster <strong>öffnen</strong>?", e: "Can you please open the window?", a: "ممكن تفتح الشباك لو سمحت؟" }
+                        ]
+                    },
+                    {
+                        id: 'w2', ger: "beantworten", eng: "to answer", ar: "يرد على", s: [
+                            { g: "Er muss die E-Mail <strong>beantworten</strong>.", e: "He has to answer the email.", a: "لازم يرد على الإيميل." },
+                            { g: "Ich <strong>beantworte</strong> die Fragen der Kunden.", e: "I answer the customers' questions.", a: "أنا برد على أسئلة العملاء." }
+                        ]
+                    },
+                    {
+                        id: 'w3', ger: "löschen", eng: "to delete", ar: "يحذف", s: [
+                            { g: "Ich <strong>lösche</strong> alte E-Mails.", e: "I delete old emails.", a: "بمسح الإيميلات القديمة." },
+                            { g: "Bitte <strong>löschen</strong> Sie dieses Dokument nicht.", e: "Please do not delete this document.", a: "من فضلك ماتمسحش الوثيقة دي." }
+                        ]
+                    },
+                    {
+                        id: 'w4', ger: "weiterleiten", eng: "to forward", ar: "يعيد توجيه", s: [
+                            { g: "Bitte <strong>leiten</strong> Sie die E-Mail <strong>weiter</strong>.", e: "Please forward the email.", a: "لو سمحت اعمل إعادة توجيه للإيميل." },
+                            { g: "Ich habe die Nachricht an den Chef <strong>weitergeleitet</strong>.", e: "I forwarded the message to the boss.", a: "عملت إعادة توجيه للرسالة للمدير." }
+                        ]
+                    },
+                    {
+                        id: 'w5', ger: "ausdrucken", eng: "to print out", ar: "يطبع", s: [
+                            { g: "Können Sie das Dokument <strong>ausdrucken</strong>?", e: "Can you print out the document?", a: "ممكن تطبع الوثيقة دي؟" },
+                            { g: "Der Drucker ist kaputt, ich kann nichts <strong>ausdrucken</strong>.", e: "The printer is broken, I can't print anything.", a: "الطابعة بايظة، مش قادر أطبع حاجة." }
+                        ]
+                    },
+                    {
+                        id: 'w6', ger: "der Bericht", eng: "report", ar: "التقرير", s: [
+                            { g: "Wir lesen jeden Tag <strong>Berichte</strong>.", e: "We read reports every day.", a: "إحنا بنقرأ تقارير كل يوم." },
+                            { g: "Der <strong>Bericht</strong> für den Chef ist fertig.", e: "The report for the boss is ready.", a: "التقرير الخاص بالمدير جاهز." }
+                        ]
+                    },
+                    {
+                        id: 'w7', ger: "das Gespräch", eng: "conversation", ar: "المحادثة", s: [
+                            { g: "Der Chef muss viele <strong>Gespräche</strong> führen.", e: "The boss has to have many conversations.", a: "المدير لازم يعمل محادثات كتير." },
+                            { g: "Das <strong>Gespräch</strong> mit dem Kunden war sehr gut.", e: "The conversation with the customer was very good.", a: "المحادثة مع العميل كانت ممتازة." }
+                        ]
+                    },
+                    {
+                        id: 'w8', ger: "vereinbaren", eng: "to arrange", ar: "يحدد", s: [
+                            { g: "Ich möchte einen Termin <strong>vereinbaren</strong>.", e: "I would like to arrange an appointment.", a: "عايز أحدد ميعاد." },
+                            { g: "Wir haben einen neuen Preis <strong>vereinbart</strong>.", e: "We agreed on a new price.", a: "اتفقنا على سعر جديد." }
+                        ]
+                    },
+                    {
+                        id: 'w9', ger: "kopieren", eng: "to copy", ar: "ينسخ", s: [
+                            { g: "Er steht am Kopierer und <strong>kopiert</strong>.", e: "He stands at the copier and makes copies.", a: "هو واقف على ماكينة التصوير وبينسخ." },
+                            { g: "Kannst du diese Seite für mich <strong>kopieren</strong>?", e: "Can you copy this page for me?", a: "ممكن تنسخلي (تصورلي) الصفحة دي؟" }
+                        ]
+                    },
+                    {
+                        id: 'w10', ger: "die Tabelle", eng: "table", ar: "الجدول", s: [
+                            { g: "Ich muss eine <strong>Tabelle</strong> erstellen.", e: "I have to create a table.", a: "لازم أعمل جدول." },
+                            { g: "Die Zahlen stehen in der <strong>Tabelle</strong>.", e: "The numbers are in the table.", a: "الأرقام موجودة في الجدول." }
+                        ]
+                    },
+                    {
+                        id: 'w11', ger: "übersetzen", eng: "to translate", ar: "يترجم", s: [
+                            { g: "Können Sie diese Dokumente <strong>übersetzen</strong>?", e: "Can you translate these documents?", a: "ممكن تترجم الوثائق دي؟" },
+                            { g: "Er <strong>übersetzt</strong> den Text ins Englische.", e: "He translates the text into English.", a: "هو بيترجم النص للإنجليزي." }
+                        ]
+                    },
+                    {
+                        id: 'w12', ger: "beraten", eng: "to advise", ar: "ينصح", s: [
+                            { g: "Wir empfangen und <strong>beraten</strong> Kunden.", e: "We receive and advise customers.", a: "إحنا بنستقبل العملاء وبنقدم لهم استشارات." },
+                            { g: "Der Verkäufer <strong>berät</strong> mich sehr gut.", e: "The salesperson advises me very well.", a: "البائع بينصحني كويس جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w13', ger: "empfangen", eng: "to receive", ar: "يستقبل", s: [
+                            { g: "Sie <strong>empfängt</strong> die Gäste im Büro.", e: "She receives the guests in the office.", a: "هي بتستقبل الضيوف في المكتب." },
+                            { g: "Wir haben Ihre E-Mail gestern <strong>empfangen</strong>.", e: "We received your email yesterday.", a: "استقبلنا إيميلك إمبارح." }
+                        ]
+                    },
+                    {
+                        id: 'w14', ger: "teilnehmen", eng: "to participate", ar: "يشارك", s: [
+                            { g: "Ich muss an Meetings <strong>teilnehmen</strong>.", e: "I have to take part in meetings.", a: "لازم أشارك في الاجتماعات." },
+                            { g: "Nimmst du an dem Kurs <strong>teil</strong>?", e: "Are you participating in the course?", a: "أنت مشارك في الكورس؟" }
+                        ]
+                    },
+                    {
+                        id: 'w1a', ger: "planen", eng: "to plan / schedule", ar: "يخطط / يحدد", s: [
+                            { g: "Wir müssen Termine <strong>planen</strong>.", e: "We have to schedule appointments.", a: "لازم نخطط مواعيد." },
+                            { g: "Er <strong>plant</strong> das nächste Meeting.", e: "He is planning the next meeting.", a: "هو بيخطط للاجتماع الجاي." }
+                        ]
+                    },
+                    {
+                        id: 'w1b', ger: "feiern", eng: "to celebrate", ar: "يحتفل", s: [
+                            { g: "Wir <strong>feiern</strong> Geburtstage im Büro.", e: "We celebrate birthdays in the office.", a: "بنحتفل بأعياد الميلاد في المكتب." },
+                            { g: "Wir haben seinen Abschied <strong>gefeiert</strong>.", e: "We celebrated his farewell.", a: "احتفلنا بوداعه." }
+                        ]
+                    },
+                    {
+                        id: 'w1c', ger: "kalkulieren", eng: "to calculate", ar: "يحسب", s: [
+                            { g: "Ich muss die Kosten <strong>kalkulieren</strong>.", e: "I have to calculate the costs.", a: "لازم أحسب التكاليف." },
+                            { g: "Der Preis ist gut <strong>kalkuliert</strong>.", e: "The price is well calculated.", a: "السعر محسوب كويس." }
+                        ]
+                    }
+                ],
+                seltenNie: [
+                    {
+                        id: 'w15', ger: "privat", eng: "private", ar: "شخصي", s: [
+                            { g: "Manche telefonieren oft <strong>privat</strong>.", e: "Some often make private phone calls.", a: "البعض بيعمل مكالمات شخصية كتير." },
+                            { g: "Das ist meine <strong>private</strong> Telefonnummer.", e: "That is my private phone number.", a: "ده رقم تليفوني الشخصي." }
+                        ]
+                    },
+                    {
+                        id: 'w16', ger: "die Kantine", eng: "cafeteria", ar: "الكافيتريا", s: [
+                            { g: "Ich esse in der <strong>Kantine</strong>.", e: "I eat in the cafeteria.", a: "أنا باكل في الكافيتريا." },
+                            { g: "Das Essen in der <strong>Kantine</strong> ist heute sehr lecker.", e: "The food in the cafeteria is very delicious today.", a: "الأكل في الكافيتريا لذيذ جداً النهاردة." }
+                        ]
+                    },
+                    {
+                        id: 'w17', ger: "der Schreibtisch", eng: "desk", ar: "المكتب", s: [
+                            { g: "Ich esse nie am <strong>Schreibtisch</strong>.", e: "I never eat at the desk.", a: "عمري ما باكل على المكتب." },
+                            { g: "Mein <strong>Schreibtisch</strong> ist immer sauber.", e: "My desk is always clean.", a: "مكتبي دايماً نظيف." }
+                        ]
+                    },
+                    {
+                        id: 'w18', ger: "das Netzwerk", eng: "network", ar: "الشبكة", s: [
+                            { g: "Er liest Nachrichten in Online-<strong>Netzwerken</strong>.", e: "He reads messages in online networks.", a: "بيقرأ الرسايل على الشبكات." },
+                            { g: "Unser Computer-<strong>Netzwerk</strong> ist sehr sicher.", e: "Our computer network is very secure.", a: "شبكة الكمبيوتر بتاعتنا آمنة جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w19', ger: "die Dienstreise", eng: "business trip", ar: "رحلة عمل", s: [
+                            { g: "Wir müssen <strong>Dienstreisen</strong> organisieren.", e: "We have to organize business trips.", a: "لازم ننظم رحلات عمل." },
+                            { g: "Er ist oft auf <strong>Dienstreise</strong> in Berlin.", e: "He is often on a business trip in Berlin.", a: "هو كتير بيكون في رحلة عمل في برلين." }
+                        ]
+                    },
+                    {
+                        id: 'w20', ger: "organisieren", eng: "to organize", ar: "ينظم", s: [
+                            { g: "Er <strong>organisiert</strong> das Meeting.", e: "He organizes the meeting.", a: "هو بينظم الاجتماع." },
+                            { g: "Wer <strong>organisiert</strong> die Party für den Kollegen?", e: "Who is organizing the party for the colleague?", a: "مين بينظم الحفلة للزميل؟" }
+                        ]
+                    },
+                    {
+                        id: 'w21', ger: "buchen", eng: "to book", ar: "يحجز", s: [
+                            { g: "Er <strong>bucht</strong> Reisen im Büro.", e: "He books trips in the office.", a: "بيحجز رحلات وهو في المكتب." },
+                            { g: "Ich habe ein Hotelzimmer <strong>gebucht</strong>.", e: "I have booked a hotel room.", a: "أنا حجزت أوضة في فندق." }
+                        ]
+                    },
+                    {
+                        id: 'w22', ger: "das Protokoll", eng: "minutes", ar: "محضر", s: [
+                            { g: "Ich muss das <strong>Protokoll</strong> schreiben.", e: "I have to write the minutes.", a: "لازم أكتب محضر الجلسة." },
+                            { g: "Das <strong>Protokoll</strong> vom letzten Meeting ist hier.", e: "The minutes from the last meeting are here.", a: "محضر الاجتماع اللي فات موجود هنا." }
+                        ]
+                    },
+                    {
+                        id: 'w23', ger: "die Rechnung", eng: "invoice", ar: "الفاتورة", s: [
+                            { g: "Bitte bezahlen Sie die <strong>Rechnung</strong>.", e: "Please pay the invoice.", a: "من فضلك ادفع الفاتورة." },
+                            { g: "Die <strong>Rechnung</strong> für den Drucker ist zu hoch.", e: "The invoice for the printer is too high.", a: "فاتورة الطابعة عالية جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w15a', ger: "reden", eng: "to talk", ar: "يتحدث", s: [
+                            { g: "Wir <strong>reden</strong> über Privates.", e: "We talk about private matters.", a: "بنتكلم في أمور شخصية." },
+                            { g: "Sie <strong>reden</strong> mit den Kollegen.", e: "They talk with the colleagues.", a: "بيتكلموا مع الزملاء." }
+                        ]
+                    },
+                    {
+                        id: 'w15b', ger: "essen", eng: "to eat", ar: "يأكل", s: [
+                            { g: "Ich <strong>esse</strong> am Schreibtisch.", e: "I eat at the desk.", a: "أنا باكل على المكتب." },
+                            { g: "Wir <strong>essen</strong> in der Kantine.", e: "We eat in the cafeteria.", a: "إحنا بناكل في الكافيتريا." }
+                        ]
+                    },
+                    {
+                        id: 'w15c', ger: "einkaufen", eng: "to shop", ar: "يتسوق", s: [
+                            { g: "Sie <strong>kaufen</strong> online <strong>ein</strong>.", e: "They shop online.", a: "بيتسوقوا على النت." },
+                            { g: "Ich muss im Supermarkt <strong>einkaufen</strong>.", e: "I have to shop at the supermarket.", a: "لازم أتسوق في السوبر ماركت." }
+                        ]
+                    }
+                ],
+                bueroalltag: [
+                    {
+                        id: 'w24', ger: "der Angestellte", eng: "employee", ar: "الموظف", s: [
+                            { g: "Der <strong>Angestellte</strong> kommt pünktlich.", e: "The employee arrives on time.", a: "الموظف بيوصل في ميعاده." },
+                            { g: "Die Firma hat 50 <strong>Angestellte</strong>.", e: "The company has 50 employees.", a: "الشركة فيها 50 موظف." }
+                        ]
+                    },
+                    {
+                        id: 'w25', ger: "die Arbeitszeit", eng: "working hours", ar: "وقت العمل", s: [
+                            { g: "Während der <strong>Arbeitszeit</strong> arbeite ich.", e: "During working hours I work.", a: "بشتغل أثناء وقت الشغل." },
+                            { g: "Meine <strong>Arbeitszeit</strong> beginnt um 8 Uhr.", e: "My working hours begin at 8 o'clock.", a: "مواعيد عملي بتبدأ الساعة 8." }
+                        ]
+                    },
+                    {
+                        id: 'w26', ger: "die Mittagspause", eng: "lunch break", ar: "استراحة الغداء", s: [
+                            { g: "Wir machen eine <strong>Mittagspause</strong>.", e: "We take a lunch break.", a: "بناخد استراحة غدا." },
+                            { g: "In der <strong>Mittagspause</strong> gehe ich spazieren.", e: "During the lunch break I go for a walk.", a: "في استراحة الغداء بروح أتمشى." }
+                        ]
+                    },
+                    {
+                        id: 'w27', ger: "die Überstunde", eng: "overtime", ar: "وقت إضافي", s: [
+                            { g: "Er macht viele <strong>Überstunden</strong>.", e: "He works a lot of overtime.", a: "بيعمل ساعات إضافية كتير." },
+                            { g: "<strong>Überstunden</strong> werden gut bezahlt.", e: "Overtime is paid well.", a: "العمل الإضافي مدفوع كويس." }
+                        ]
+                    },
+                    {
+                        id: 'w28', ger: "die Liste", eng: "list", ar: "القائمة", s: [
+                            { g: "Ich arbeite meine <strong>Liste</strong> ab.", e: "I work through my list.", a: "بخلص القايمة بتاعتي." },
+                            { g: "Schreiben Sie Ihren Namen auf die <strong>Liste</strong>.", e: "Write your name on the list.", a: "اكتب اسمك في القايمة." }
+                        ]
+                    },
+                    {
+                        id: 'w29', ger: "das Handy", eng: "mobile phone", ar: "الموبايل", s: [
+                            { g: "Er schaut oft auf sein <strong>Handy</strong>.", e: "He often looks at his phone.", a: "بيبص في موبايله كتير." },
+                            { g: "Darf ich mein <strong>Handy</strong> im Büro benutzen?", e: "May I use my mobile phone in the office?", a: "مسموح أستخدم موبايلي في المكتب؟" }
+                        ]
+                    },
+                    {
+                        id: 'w30', ger: "die Süßigkeit", eng: "sweet", ar: "الحلوى", s: [
+                            { g: "Er isst viele <strong>Süßigkeiten</strong>.", e: "He eats a lot of sweets.", a: "بياكل حلويات كتير." },
+                            { g: "Kinder lieben <strong>Süßigkeiten</strong>.", e: "Children love sweets.", a: "الأطفال بيحبوا الحلويات." }
+                        ]
+                    },
+                    {
+                        id: 'w31', ger: "die Agentur", eng: "agency", ar: "الوكالة", s: [
+                            { g: "Jan arbeitet in einer <strong>Agentur</strong>.", e: "Jan works in an agency.", a: "يان بيشتغل في وكالة." },
+                            { g: "Die Werbe-<strong>Agentur</strong> ist sehr bekannt.", e: "The advertising agency is very well known.", a: "وكالة الإعلانات دي مشهورة جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w32', ger: "der Monteur", eng: "technician", ar: "الفني", s: [
+                            { g: "Wir müssen einen <strong>Monteur</strong> rufen.", e: "We have to call a technician.", a: "لازم نكلم فني." },
+                            { g: "Der <strong>Monteur</strong> repariert den Kopierer.", e: "The technician repairs the copier.", a: "الفني بيصلح ماكينة التصوير." }
+                        ]
+                    },
+                    {
+                        id: 'w33', ger: "der Drucker", eng: "printer", ar: "الطابعة", s: [
+                            { g: "Der <strong>Drucker</strong> ist kaputt.", e: "The printer is broken.", a: "الطابعة بايظة." },
+                            { g: "Wir brauchen Papier für den <strong>Drucker</strong>.", e: "We need paper for the printer.", a: "محتاجين ورق للطابعة." }
+                        ]
+                    }
+                ]
+            },
+            expressions: [
+                { id: 'e1', type: "Jemanden sprechen", ger: "Kann ich bitte mit Frau Winkler sprechen?", eng: "May I please speak with Ms. Winkler?", ar: "ممكن أكلم أستاذة فينكلر لو سمحت؟", context: "عند الرغبة في التحدث لشخص معين." },
+                { id: 'e2', type: "Grund des Anrufs", ger: "Worum geht es?", eng: "What is it about?", ar: "الموضوع بخصوص إيه؟", context: "للسؤال عن سبب الاتصال." },
+                { id: 'e3', type: "Termin vereinbaren", ger: "Können wir bitte einen Termin für eine Reparatur vereinbaren?", eng: "Could we please arrange an appointment for a repair?", ar: "ممكن نحدد ميعاد للتصليح؟", context: "لطلب تحديد موعد." },
+                { id: 'e4', type: "Zeitpunkt angeben", ger: "Am Freitag, dem 8. März, um 17 Uhr.", eng: "On Friday, March 8, at 5 p.m.", ar: "يوم الجمعة 8 مارس الساعة 5.", context: "لتحديد الوقت بالضبط." },
+                { id: 'e5', type: "Negativ reagieren", ger: "Das ist leider viel zu spät.", eng: "That is unfortunately much too late.", ar: "للأسف ده متأخر جداً.", context: "لرفض الموعد." },
+                { id: 'e6', type: "Positiv reagieren", ger: "Gut, das passt. Vielen Dank.", eng: "Good, that works. Thank you very much.", ar: "تمام، الميعاد مناسب. شكراً جزيلاً.", context: "لقبول الموعد." },
+                { id: 'e7', type: "Gespräch beenden", ger: "Vielen Dank, auf Wiederhören.", eng: "Thank you very much, goodbye.", ar: "شكراً جزيلاً، مع السلامة.", context: "لإنهاء المكالمة التليفونية." },
+                { id: 'e8', type: "Termin absagen", ger: "Einen Termin absagen.", eng: "Cancel an appointment.", ar: "إلغاء الموعد.", context: "عند عدم الاستطاعة." },
+                { id: 'e9', type: "Termin verschieben", ger: "Einen Termin verschieben.", eng: "Postpone an appointment.", ar: "تأجيل الموعد.", context: "لتغيير الموعد لوقت آخر." },
+                { id: 'e10', type: "Synonyme", ger: "eher = früher", eng: "sooner = earlier", ar: "أبكر / في وقت أقرب", context: "مرادفات في الوقت." },
+                { id: 'e11', type: "Termine", ger: "Einen Termin machen / haben", eng: "To make / have an appointment", ar: "يحدد / يكون لديه موعد", context: "طرق مختلفة للتعبير عن المواعيد." }
+            ],
+            dialogues: [
+                {
+                    id: 'd1', title: "Termine, Termine (مواعيد وتصليح)", icon: "phone-call",
+                    lines: [
+                        { speaker: "Proprint", text: "Proprint, guten Tag. Was kann ich für Sie tun?", en: "Proprint, good day. What can I do for you?", ar: "شركة بروبرينت، يوم سعيد. أقدر أساعدك إزاي؟" },
+                        { speaker: "Jan Fischer", text: "Ja, guten Tag, Jan Fischer hier. Kann ich bitte Frau Winkler sprechen?", en: "Yes, good day, this is Jan Fischer. May I please speak with Mrs. Winkler?", ar: "أهلاً، معاك يان فيشر. ممكن أكلم أستاذة فينكلر؟" },
+                        { speaker: "Proprint", text: "Frau Winkler von der Marketingabteilung oder von der Serviceabteilung?", en: "Mrs. Winkler from the marketing department or Mrs. Winkler from the service department?", ar: "فينكلر اللي في التسويق ولا اللي في خدمة العملاء؟" },
+                        { speaker: "Jan Fischer", text: "Annette Winkler, sie arbeitet in der Serviceabteilung.", en: "Annette Winkler, she works in the service department.", ar: "أنيت فينكلر، هي شغالة في خدمة العملاء." },
+                        { speaker: "Proprint", text: "Einen Moment, ich verbinde. Wie war Ihr Name?", en: "One moment, I’ll connect you. What was your name?", ar: "لحظة، هوصلك. الاسم كان إيه؟" },
+                        { speaker: "Jan Fischer", text: "Jan Fischer.", en: "Jan Fischer.", ar: "يان فيشر." },
+                        { speaker: "Frau Winkler", text: "Ja, guten Tag, Frau Winkler. Jan Fischer hier, von der Werbeagentur H&P.", en: "Yes, good day, Mrs. Winkler. This is Jan Fischer, from the advertising agency H&P.", ar: "أهلاً أستاذة فينكلر. معاكي يان فيشر، من وكالة H&P للإعلانات." },
+                        { speaker: "Jan Fischer", text: "Wir arbeiten seit zwei Monaten mit dem 3D-Drucker XY200354 von Ihrer Firma. Seit drei Tagen funktioniert der Drucker nicht mehr richtig. Können wir einen Termin für eine Reparatur vereinbaren?", en: "We have been working with the 3D printer XY200354 from your company for two months. For three days the printer has not been working properly. Can we arrange an appointment for a repair?", ar: "شغالين بطابعة الـ 3D بتاعتكم بقالنا شهرين، ومن 3 أيام مش شغالة كويس. ممكن نحدد ميعاد للتصليح؟" },
+                        { speaker: "Frau Winkler", text: "Wo liegt das Problem, Herr Fischer?", en: "Where is the problem, Mr. Fischer?", ar: "المشكلة في إيه يا أستاذ فيشر؟" },
+                        { speaker: "Jan Fischer", text: "Es gibt Probleme mit der Druckplatte.", en: "There are problems with the print bed.", ar: "فيه مشكلة في لوحة الطباعة." },
+                        { speaker: "Frau Winkler", text: "Ich sehe mal in unseren Terminkalender. Wir können am Mittwoch, dem 13. März, einen Monteur schicken.", en: "I’ll take a look in our appointment calendar. We can send a technician on Wednesday, March 13.", ar: "هبص في النتيجة عندنا. ممكن نبعت فني يوم الأربعاء 13 مارس." },
+                        { speaker: "Jan Fischer", text: "Das ist viel zu spät. Wir brauchen den 3D-Drucker für unsere Arbeit. Geht es nicht etwas eher, vielleicht heute oder morgen?", en: "That’s much too late. We need the 3D printer for our work. Isn’t it possible any earlier, maybe today or tomorrow?", ar: "ده متأخر جداً. محتاجين الطابعة في الشغل. ماينفعش بدري شوية، احتمال النهاردة أو بكرة؟" },
+                        { speaker: "Frau Winkler", text: "Tut mir leid, alle Monteure sind im Einsatz. Warten Sie, ich sehe gerade, dass es am Freitag, dem 8. März, auch möglich ist, aber erst um 17.00 Uhr.", en: "I’m sorry, all technicians are busy. Wait, I just see that Friday, March 8, is also possible, but only at 5:00 p.m.", ar: "للأسف كل الفنيين مشغولين. استنى، لسة شايفة إن يوم الجمعة 8 مارس متاح، بس الساعة 5 العصر." },
+                        { speaker: "Jan Fischer", text: "Gut, dann erwarten wir den Monteur am Freitag. Vielen Dank.", en: "Good, then we’ll expect the technician on Friday. Thank you very much.", ar: "تمام، هنستنى الفني يوم الجمعة. شكراً جداً." },
+                        { speaker: "Frau Winkler", text: "Gern geschehen. Auf Wiederhören.", en: "You’re welcome. Goodbye.", ar: "العفو. مع السلامة." }
+                    ]
+                },
+                {
+                    id: 'd2', title: "Bürokommunikation (التواصل في المكتب)", icon: "users",
+                    lines: [
+                        { speaker: "Niklas", text: "Hallo Lina. Hast du viel zu tun oder wollen wir mal einen Kaffee trinken?", en: "Hello Lina. Do you have a lot to do, or shall we go have a coffee?", ar: "أهلاً لينا. مشغولة ولا تيجي نشرب قهوة؟" },
+                        { speaker: "Lina", text: "Es tut mir leid, vielleicht später. Ich habe im Moment wirklich viel zu tun.", en: "I’m sorry, maybe later. Right now, I really have a lot to do.", ar: "أسفة، ممكن بعدين. أنا بجد مشغولة جداً دلوقتي." },
+                        { speaker: "Lina", text: "Ich muss eine dringende Anfrage beantworten, dem Hausmeister eine E-Mail schreiben, dem Chef das Protokoll der letzten Besprechung geben...", en: "I need to answer an urgent request, write an email to the janitor, give the boss the minutes of the last meeting...", ar: "لازم أرد على طلب عاجل، وأكتب إيميل لعامل النظافة، وأدي المدير محضر آخر اجتماع..." },
+                        { speaker: "Lina", text: "den Informatiker anrufen, den Jahresbericht lesen, der Firma Birne ein Angebot schicken und der neuen Praktikantin das Haus zeigen.", en: "call the IT specialist, read the annual report, send an offer to the company Birne, and show the new intern around the building.", ar: "وأكلم بتاع الـ IT، وأقرأ التقرير السنوي، وأبعت عرض لشركة بيرنه، وأوري المتدربة الجديدة المبنى." },
+                        { speaker: "Niklas", text: "Ach, du Arme! Kann ich dir irgendwie helfen?", en: "Oh, poor you! Can I help you somehow?", ar: "يا عيني! أقدر أساعدك بأي حاجة؟" },
+                        { speaker: "Lina", text: "Ja, gerne. Was möchtest du machen?", en: "Yes, gladly. What would you like to do?", ar: "ياريت. تحب تعمل إيه؟" },
+                        { speaker: "Niklas", text: "Na, der Praktikantin das Haus zeigen.", en: "Well, show the intern around the building.", ar: "يعني.. أوري المتدربة الجديدة المبنى." },
+                        { speaker: "Lina", text: "Das habe ich vermutet …", en: "I suspected that …", ar: "كنت متوقعة..." }
+                    ]
+                },
+                {
+                    id: 'd9', title: "Hilfe im Supermarkt (مساعدة في السوبر ماركت - مختصر)", icon: "shopping-cart",
+                    lines: [
+                        { speaker: "Niklas", text: "Hallo … Hast du viel zu tun oder wollen wir mal einen Kaffee trinken?", en: "Hello … Do you have a lot to do or shall we go have a coffee?", ar: "أهلاً... مشغولة ولا نيجي نشرب قهوة؟" },
+                        { speaker: "Lina", text: "Es tut mir leid, vielleicht später. Ich habe im Moment wirklich viel zu tun. Ich muss drei wichtige Dinge erledigen:", en: "I’m sorry, maybe later. Right now, I really have a lot to do. I have to do three important things:", ar: "أسفة، يمكن بعدين. أنا بجد مشغولة دلوقتي. لازم أخلص 3 حاجات مهمة:" },
+                        { speaker: "Lina", text: "eine E-Mail an den Chef schreiben, die Präsentation für das Meeting vorbereiten, und im Supermarkt einkaufen.", en: "write an email to the boss, prepare the presentation for the meeting, and do the shopping at the supermarket.", ar: "أكتب إيميل للمدير، أحضر البرزنتيشن للاجتماع، وأتسوق في السوبر ماركت." },
+                        { speaker: "Niklas", text: "Du Arme! Kann ich dir irgendwie helfen?", en: "Oh, poor you! Can I help you somehow?", ar: "يا عيني! أقدر أساعدك بأي حاجة؟" },
+                        { speaker: "Lina", text: "Ja, du kannst im Supermarkt einkaufen.", en: "Yes, you can do the shopping at the supermarket.", ar: "أيوة، تقدر تتسوق إنت في السوبر ماركت." }
+                    ]
+                },
+                {
+                    id: 'd3', title: "Gespräch 1: Der Chef ist nicht da (المدير غير موجود)", icon: "phone",
+                    lines: [
+                        { speaker: "Sekretärin", text: "Kanzlei Krause und Partner, guten Tag.", en: "Law office Krause and Partner, good day.", ar: "مكتب محاماة كراوزه وشركاه، يوم سعيد." },
+                        { speaker: "Max Friedrich", text: "Max Friedrich hier, guten Tag. Ich möchte bitte Herrn Krause sprechen.", en: "Max Friedrich here, good day. I would like to speak to Mr. Krause, please.", ar: "ماكس فريدريش معاكي. ممكن أكلم أستاذ كراوزه؟" },
+                        { speaker: "Sekretärin", text: "Moment bitte. Tut mir leid. Herr Krause ist nicht erreichbar. Soll ich ihm etwas ausrichten?", en: "One moment, please. I’m sorry. Mr. Krause is not available. Should I give him a message?", ar: "لحظة. للأسف أستاذ كراوزه مش متاح. تحب أبلغه حاجة؟" },
+                        { speaker: "Max Friedrich", text: "Ja, bitte sagen Sie ihm, dass der Vertrag bei der Firma Grünspan noch nicht angekommen ist. Er soll mich bitte zurückrufen.", en: "Yes, please tell him that the contract from the company Grünspan has not yet arrived. He should call me back, please.", ar: "أيوة، قوليله إن العقد بتاع شركة جرونشبان لسة موصلش. ياريت يكلمني." },
+                        { speaker: "Sekretärin", text: "Gut, das richte ich ihm aus. Unter welcher Telefonnummer kann Herr Krause Sie erreichen?", en: "Good, I will tell him that. At which phone number can Mr. Krause reach you?", ar: "تمام، هبلغه. إيه الرقم اللي يقدر يوصلك عليه؟" },
+                        { speaker: "Max Friedrich", text: "Er erreicht mich unter der Nummer 76 54 83.", en: "He can reach me at the number 76 54 83.", ar: "يقدر يكلمني على رقم 76 54 83." },
+                        { speaker: "Sekretärin", text: "Vielen Dank. Auf Wiederhören.", en: "Thank you very much. Goodbye.", ar: "شكراً. مع السلامة." }
+                    ]
+                },
+                {
+                    id: 'd4', title: "Gespräch 2: Der Bericht fehlt (التقرير متأخر)", icon: "alert-circle",
+                    lines: [
+                        { speaker: "Mathias", text: "Hallo Margit, hier ist Mathias.", en: "Hello Margit, this is Mathias.", ar: "أهلاً مارجيت، أنا ماتياس." },
+                        { speaker: "Margit", text: "Hallo Mathias. Wie geht es dir?", en: "Hello Mathias. How are you?", ar: "أهلاً ماتياس. إزيك؟" },
+                        { speaker: "Mathias", text: "Danke, gut. Du, Margit, wir warten noch auf deinen Konferenzbericht. Der Chef möchte den Bericht so schnell wie möglich haben.", en: "Thanks, good. Margit, we are still waiting for your conference report. The boss wants the report as soon as possible.", ar: "بخير. بقولك يا مارجيت، إحنا لسة مستنيين تقرير المؤتمر بتاعك. المدير عايزه في أسرع وقت." },
+                        { speaker: "Margit", text: "Oh, ja, der Bericht … Ich schreibe ihn morgen oder übermorgen. Im Moment habe ich sehr wenig Zeit.", en: "Oh yes, the report … I’ll write it tomorrow or the day after tomorrow. At the moment, I have very little time.", ar: "أه صح، التقرير... هكتبه بكرة أو بعده. معنديش وقت خالص دلوقتي." },
+                        { speaker: "Mathias", text: "Das ist ein bisschen spät. Kannst du den Bericht nicht noch heute schreiben?", en: "That’s a bit late. Can’t you write the report today?", ar: "ده متأخر شوية. ماينفعش تكتبيه النهاردة؟" },
+                        { speaker: "Margit", text: "Na gut, ich probiere es. Dann kann ich aber die Datenanalyse erst morgen machen.", en: "All right, I’ll try. But then I can only do the data analysis tomorrow.", ar: "طيب ماشي، هحاول. بس كده مش هقدر أعمل تحليل البيانات غير بكرة." },
+                        { speaker: "Mathias", text: "Okay. Dann sage ich dem Chef, dass der Bericht heute noch kommt.", en: "Okay. Then I’ll tell the boss that the report is coming today.", ar: "أوكي. هقول للمدير إن التقرير جاي النهاردة." }
+                    ]
+                },
+                {
+                    id: 'd5', title: "Gespräch 3: Wo bleibt der Monteur? (أين الفني؟)", icon: "tool",
+                    lines: [
+                        { speaker: "Annette Winkler", text: "Proprint, Annette Winkler.", en: "Proprint, Annette Winkler speaking.", ar: "بروبرينت، أنيت فينكلر معاك." },
+                        { speaker: "Jan Fischer", text: "Jan Fischer hier, Werbeagentur H&P. Am Freitag, dem 8. März, sollte ein Monteur kommen und unseren 3D-Drucker reparieren. Wir waren bis 20.00 Uhr im Büro, aber der Monteur ist nicht gekommen.", en: "Jan Fischer here, advertising agency H&P. On Friday, March 8th, a technician was supposed to come and repair our 3D printer. We were in the office until 8:00 p.m., but the technician didn’t come.", ar: "يان فيشر من وكالة H&P. كان المفروض فني ييجي يوم الجمعة 8 مارس يصلح طابعة الـ 3D. فضلنا في المكتب للساعة 8 بالليل ومجاش." },
+                        { speaker: "Annette Winkler", text: "Was? Das gibt es doch nicht! Moment mal, ich frage mal nach, was da passiert ist … Es tut mir leid, der Monteur ist seit Freitag krank.", en: "What? That can’t be! One moment, I’ll check what happened … I’m sorry, the technician has been sick since Friday.", ar: "إيه؟ معقولة! ثانية واحدة هسأل إيه اللي حصل... أنا أسفة، الفني عيان من يوم الجمعة." },
+                        { speaker: "Jan Fischer", text: "Und was passiert jetzt? Wir brauchen einen funktionierenden 3D-Drucker.", en: "And what happens now? We need a functioning 3D printer.", ar: "وإيه العمل دلوقتي؟ إحنا محتاجين طابعة شغالة." },
+                        { speaker: "Annette Winkler", text: "Wir schicken auf jeden Fall heute einen anderen Monteur. Er kommt wahrscheinlich am Nachmittag zwischen 14.00 und 18.00 Uhr. Ich informiere Sie noch über die genaue Uhrzeit.", en: "We will definitely send another technician today. He will probably come in the afternoon between 2:00 and 6:00 p.m. I will inform you about the exact time.", ar: "أكيد هنبعت فني تاني النهاردة. غالباً هييجي العصر بين الساعة 2 و 6. هبلغك بالوقت بالظبط." },
+                        { speaker: "Jan Fischer", text: "Ich bin heute von 13.00 bis 15.00 Uhr in einer Besprechung. Rufen Sie bitte meine Kollegin Paula Rot an. Ihre Nummer ist 54 89 92.", en: "I am in a meeting today from 1:00 to 3:00 p.m. Please call my colleague Paula Rot. Her number is 54 89 92.", ar: "أنا في اجتماع النهاردة من 1 لـ 3. ياريت تكلمي زميلتي باولا روت. رقمها 54 89 92." },
+                        { speaker: "Annette Winkler", text: "Gut, das mache ich.", en: "Good, I’ll do that.", ar: "تمام، هعمل كده." }
+                    ]
+                },
+                {
+                    id: 'd6', title: "Termin beim Chef (موعد مع المدير)", icon: "user-plus",
+                    lines: [
+                        { speaker: "Anna Meier", text: "Guten Tag, hier spricht Anna Meier. Ich möchte gern einen Termin mit Herrn Schneider vereinbaren.", en: "Good day, this is Anna Meier speaking. I would like to arrange an appointment with Mr. Schneider.", ar: "يوم سعيد، أنا آنا ماير. أود تحديد موعد مع السيد شنايدر." },
+                        { speaker: "Sekretariat", text: "Der Chef kann am Dienstag um 15 Uhr.", en: "The boss is available on Tuesday at 3 p.m.", ar: "المدير متاح يوم الثلاثاء الساعة 3." },
+                        { speaker: "Anna Meier", text: "Das passt sehr gut. Vielen Dank.", en: "That works very well. Thank you.", ar: "هذا مناسب جداً. شكراً." }
+                    ]
+                },
+                {
+                    id: 'd7', title: "Farbkopierer kaputt (عطل في ماكينة التصوير)", icon: "printer",
+                    lines: [
+                        { speaker: "Jan Fischer", text: "Guten Tag, hier spricht Jan Fischer. Unser Farbkopierer ist kaputt, ich brauche dringend einen Monteur.", en: "Good day, this is Jan Fischer. Our color copier is broken, I urgently need a technician.", ar: "يوم سعيد، أنا يان فيشر. ماكينة التصوير الألوان عطلانة، محتاج فني ضروري." },
+                        { speaker: "Zentrale", text: "Der Monteur kann morgen um 9 Uhr kommen.", en: "The technician can come tomorrow at 9 a.m.", ar: "الفني يقدر ييجي بكرة الساعة 9." },
+                        { speaker: "Jan Fischer", text: "Das ist perfekt. Dann erwarte ich den Monteur morgen um 9 Uhr. Vielen Dank.", en: "That’s perfect. Then I’ll expect the technician tomorrow at 9 a.m. Thank you.", ar: "هذا ممتاز. سأنتظر الفني بكرة الساعة 9. شكراً." }
+                    ]
+                },
+                {
+                    id: 'd8', title: "Beim Hausarzt (عند طبيب الأسرة)", icon: "stethoscope",
+                    lines: [
+                        { speaker: "Peter Wagner", text: "Guten Tag, hier ist Peter Wagner. Ich bin krank und brauche einen Termin beim Arzt.", en: "Good day, this is Peter Wagner. I am sick and need an appointment with the doctor.", ar: "يوم سعيد، أنا بيتر فاجنر. أنا مريض ومحتاج موعد عند الدكتور." },
+                        { speaker: "Praxis", text: "Sie können heute um 11 Uhr kommen.", en: "You can come today at 11 a.m.", ar: "تقدر تيجي النهاردة الساعة 11." },
+                        { speaker: "Peter Wagner", text: "Das ist gut, vielen Dank.", en: "That’s good, thank you.", ar: "ده كويس، شكراً جزيلاً." }
+                    ]
+                }
+            ],
+            culture: [
+                {
+                    id: 'c1', title: "Wie unser Büroalltag wirklich aussieht",
+                    lines: [
+                        { g: "Der Tagesablauf von Angestellten ist oft gleich:", e: "The daily routine of employees is often the same:", a: "الروتين اليومي للموظفين غالباً بيكون واحد:" },
+                        { g: "Sie fahren jeden Morgen pünktlich ins Büro, lesen dort ihre E-Mails, führen Telefongespräche, nehmen an Besprechungen teil oder stehen am Kopierer.", e: "They go to the office punctually every morning, read their emails there, make phone calls, attend meetings, or stand at the copier.", a: "بيروحوا كل يوم الصبح المكتب في ميعادهم، بيقرأوا إيميلاتهم، بيعملوا مكالمات، بيحضروا اجتماعات أو بيقفوا على ماكينة التصوير." },
+                        { g: "Irgendwann zwischen 12.00 und 14.00 Uhr machen sie eine halbe Stunde Mittagspause und abends fahren sie wieder nach Hause.", e: "At some point between 12:00 and 2:00 p.m. they take a half-hour lunch break, and in the evening they go home again.", a: "في وقت ما بين الساعة 12 و 2 الظهر بياخدوا نص ساعة استراحة غدا، وبالليل بيرجعوا البيت تاني." },
+                        { g: "Das meinen jedenfalls die Arbeitgeber.", e: "At least, that's what employers think.", a: "ده على الأقل اللي أصحاب العمل فاكرينه." },
+                        { g: "Neue Studien zeigen aber ein anderes Bild:", e: "But new studies show a different picture:", a: "لكن الدراسات الجديدة بتوضح صورة تانية:" },
+                        { g: "In der Realität kommt jeder Arbeitnehmer durchschnittlich einmal pro Woche zu spät.", e: "In reality, every employee arrives late on average once a week.", a: "في الحقيقة، كل موظف بيجي متأخر في المتوسط مرة في الأسبوع." },
+                        { g: "Rund 2,5 Stunden in der Woche liest er während der Arbeitszeit Neuigkeiten auf Facebook oder Twitter.", e: "Around 2.5 hours per week, he reads news on Facebook or Twitter during working hours.", a: "حوالي 2.5 ساعة في الأسبوع بيقرأ أخبار على فيسبوك وتويتر أثناء وقت الشغل." },
+                        { g: "Außerdem surft er im Internet oder kauft bei einem Onlinehändler ein.", e: "He also surfs the internet or shops at an online retailer.", a: "بالإضافة لده، بيتصفح النت أو بيتسوق أونلاين." },
+                        { g: "Nebenbei schaut ein Angestellter pro Tag 135 Mal auf sein Handy,", e: "In addition, an employee looks at his phone 135 times a day,", a: "كمان، الموظف بيبص في موبايله 135 مرة في اليوم،" },
+                        { g: "isst am Arbeitsplatz rund 92 Kilo Süßes im Jahr und trinkt viele Tassen Kaffee.", e: "eats around 92 kilos of sweets per year at the workplace and drinks many cups of coffee.", a: "وبياكل في الشغل حوالي 92 كيلو حلويات في السنة وبيشرب كوبايات قهوة كتير." },
+                        { g: "Beim Kaffeetrinken redet er gern mit Kollegen über andere Personen oder Privates.", e: "While drinking coffee, he likes to talk with colleagues about other people or private matters.", a: "وهو بيشرب القهوة، بيحب يتكلم مع زمايله عن ناس تانية أو أمور شخصية." },
+                        { g: "Und seine To-do-Liste muss er natürlich auch abarbeiten, einige unproduktive Meetings inklusive.", e: "And of course, he also has to work through his to-do list, including some unproductive meetings.", a: "وطبعاً لازم يخلص قايمة مهامه، شاملة بعض الاجتماعات اللي ملهاش لازمة (غير منتجة)." },
+                        { g: "Für diese Tätigkeiten braucht der Arbeitnehmer in Deutschland so viel Zeit, dass er im Durchschnitt 2,6 Überstunden pro Woche macht.", e: "For these activities, the employee in Germany needs so much time that he works an average of 2.6 hours of overtime per week.", a: "عشان يعمل كل الأنشطة دي، الموظف في ألمانيا بيحتاج وقت كتير لدرجة إنه بيعمل في المتوسط 2.6 ساعة إضافية (أوفرتايم) كل أسبوع." }
+                    ]
+                },
+                {
+                    id: 'c2', title: "Tipps für den Umgang im Büro (نصائح للتعامل في المكتب الألماني)",
+                    lines: [
+                        { g: "1. Grüßen: Grüßen ist in Deutschland sehr wichtig. Man sagt Guten Morgen, Guten Tag und in der Kantine Mahlzeit. Manchmal reicht auch ein kurzes Nicken mit einem Lächeln.", e: "1. Greeting: Greeting is very important in Germany. You say Good Morning, Good Day, and in the cafeteria Mahlzeit (Enjoy your meal). Sometimes a brief nod with a smile is enough.", a: "التحية: التحية مهمة جداً في ألمانيا. بنقول صباح الخير، يوم سعيد، وفي الكافيتريا (وجبة هنيئة). أحياناً هزة رأس مع ابتسامة بتكفي." },
+                        { g: "2. Begrüßung: Gästen und Geschäftspartnern gibt man zur Begrüßung die Hand.", e: "2. Welcoming: You shake hands with guests and business partners to welcome them.", a: "المصافحة: بنسلم بالإيد للضيوف وشركاء العمل للترحيب." },
+                        { g: "3. Anrede: In Deutschland sagt man in der Regel Sie, nur zu Freunden und Bekannten sagt man du. Normalerweise ist die Anrede: Herr/Frau.", e: "3. Form of address: In Germany, you usually say 'Sie' (formal you), only to friends and acquaintances do you say 'du'. Normally the address is: Mr./Ms.", a: "الصيغة: في العادة بنقول Sie (حضرتك)، للصحاب والمعارف بس بنقول du. الصيغة المعتادة هي: أستاذ / أستاذة." },
+                        { g: "In kleineren Firmen oder kreativen Berufen sagt man schneller du + Vorname.", e: "In smaller companies or creative professions, people switch to 'du' + first name more quickly.", a: "في الشركات الصغيرة أو المهن الإبداعية الناس بتقول (du) والاسم الأول بشكل أسرع." },
+                        { g: "4. Telefonieren: Beim Telefonieren sagt man immer zuerst seinen Namen. Erst danach kommt der Grund des Anrufs.", e: "4. Telephoning: When on the phone, you always state your name first. Only after that comes the reason for the call.", a: "التليفون: على التليفون دايماً بتقول اسمك الأول. وبعد كده بتقول سبب الاتصال." },
+                        { g: "5. Hierarchien: In vielen Firmen gibt es klare Hierarchien. Diese Strukturen muss man kennen und beachten.", e: "5. Hierarchies: In many companies there are clear hierarchies. One must know and respect these structures.", a: "التسلسل الوظيفي: في شركات كتير فيه تسلسل هرمي واضح. لازم تعرف وتاخد بالك من الهياكل دي." },
+                        { g: "6. Pünktlichkeit: Zu Terminen kommt man pünktlich.", e: "6. Punctuality: You arrive on time for appointments.", a: "المواعيد: لازم تيجي المواعيد في وقتها (بالدقيقة)." },
+                        { g: "7. Geschäftliche Gespräche: Bei geschäftlichen Gesprächen beginnt man nach dem Smalltalk sehr schnell mit dem geschäftlichen Teil.", e: "7. Business conversations: In business conversations, after the small talk, you move on to the business part very quickly.", a: "محادثات العمل: في محادثات الشغل، بندخل في الجد (جزء العمل) بسرعة جداً بعد الدردشة الخفيفة." },
+                        { g: "8. Smalltalk: Beim Smalltalk spricht man in Deutschland nicht über private Probleme, Krankheit, Politik oder Religion.", e: "8. Small talk: During small talk in Germany, you do not talk about private problems, illness, politics, or religion.", a: "الدردشة (Smalltalk): في الدردشة الخفيفة في ألمانيا مابنتكلمش عن مشاكل شخصية، أمراض، سياسة أو دين." },
+                        { g: "9. Zurückhaltung: Viele Chefs und Kollegen mögen vor allem bei neuen Kollegen etwas Zurückhaltung: Erst zuhören, dann reden.", e: "9. Restraint: Many bosses and colleagues like a little restraint, especially from new colleagues: Listen first, then speak.", a: "التحفظ: مديرين وزمايل كتير بيحبوا التحفظ (الهدوء) شوية بالذات من الموظفين الجداد: اسمع الأول، بعدين اتكلم." }
+                    ]
+                },
+                {
+                    id: 'c2_template', title: "Über das eigene Heimatland sprechen (قالب: التحدث عن البلد الأم)",
+                    lines: [
+                        { g: "In (meinem Heimatland)... sagt man ... zur Begrüßung.", e: "In (my home country)... people say ... as a greeting.", a: "في (بلدي)... يقول الناس ... للتحية." },
+                        { g: "... gibt man (auch/nicht) die Hand.", e: "... people (also/don't) shake hands.", a: "... (أيضاً/لا) يصافح الناس باليد." },
+                        { g: "... sagt man zum Chef du/Sie, zu Kollegen du/Sie.", e: "... people say du/Sie to the boss, du/Sie to colleagues.", a: "... يقول الناس للمدير (أنت/حضرتك)، وللزملاء (أنت/حضرتك)." },
+                        { g: "... sagt man beim Telefonieren zuerst/nur (Hallo) und danach sagt man (den Grund).", e: "... when telephoning, people first/only say (Hello) and then say (the reason).", a: "... عند الاتصال يقول الناس أولاً/فقط (ألو) وبعدها يقولون (السبب)." },
+                        { g: "... gibt es klare/fast keine Hierarchien.", e: "... there are clear/almost no hierarchies.", a: "... توجد تسلسلات وظيفية واضحة / لا توجد تقريباً." },
+                        { g: "... kommt man (auch) immer/nie pünktlich.", e: "... people (also) always/never arrive on time.", a: "... يأتي الناس (أيضاً) دايماً/أبداً في الموعد." },
+                        { g: "... ist der Smalltalk bei geschäftlichen Gesprächen sehr lang/kurz.", e: "... small talk in business conversations is very long/short.", a: "... الدردشة الخفيفة في محادثات العمل تكون طويلة/قصيرة جداً." },
+                        { g: "... redet man beim Smalltalk nicht über ...", e: "... during small talk, people do not talk about ...", a: "... في الدردشة لا يتحدث الناس عن ..." }
+                    ]
+                },
+                {
+                    id: 'c3', title: "Kulturvergleich: Büro in Ägypten vs. Deutschland (مثال)",
+                    lines: [
+                        { g: "In meinem Heimatland Ägypten sagt man 'As-salamu alaykum' zur Begrüßung.", e: "In my home country Egypt, people say 'As-salamu alaykum' as a greeting.", a: "في بلدي مصر، بنقول 'السلام عليكم' للتحية." },
+                        { g: "Man gibt Männern die Hand. Bei Frauen wartet man, ob sie die Hand reichen.", e: "You shake hands with men. With women, you wait to see if they offer their hand.", a: "بنسلم بالإيد على الرجالة. بالنسبة للستات بنستنى نشوف لو هيمدوا إيدهم." },
+                        { g: "Man sagt zum Chef immer 'Sie' oder einen formellen Titel (wie Herr Ingenieur oder Doktor). Man sagt auch zu älteren Kollegen oft 'Sie'.", e: "You always say 'Sie' or a formal title (like Mr. Engineer or Doctor) to the boss. You also often say 'Sie' to older colleagues.", a: "دايماً بنقول للمدير 'حضرتك' أو لقب رسمي (زي يا باشمهندس أو يا دكتور). وكمان بنقول للزملاء الأكبر سناً 'حضرتك'." },
+                        { g: "Beim Telefonieren sagt man oft 'Alo' und dann seinen Namen und den Grund.", e: "On the phone, you often say 'Alo' and then your name and the reason.", a: "على التليفون غالباً بنقول 'ألو' وبعدين الاسم والسبب." },
+                        { g: "Es gibt sehr klare und wichtige Hierarchien.", e: "There are very clear and important hierarchies.", a: "فيه تسلسل وظيفي (مقامات) واضح ومهم جداً." },
+                        { g: "Man kommt nicht immer pünktlich. Ein paar Minuten Verspätung sind oft normal.", e: "People don't always arrive on time. Being a few minutes late is often normal.", a: "الناس مش دايماً بتيجي في ميعادها. التأخير كام دقيقة غالباً شيء عادي." },
+                        { g: "Der Smalltalk bei geschäftlichen Gesprächen ist oft länger und persönlicher. Man fragt nach der Familie.", e: "Small talk in business conversations is often longer and more personal. You ask about the family.", a: "الدردشة الخفيفة في الشغل غالباً بتكون أطول وشخصية أكتر. بنسأل عن العيلة." },
+                        { g: "Beim Smalltalk redet man nicht über sensible politische Themen, aber private Fragen (z.B. nach Kindern) sind üblich.", e: "During small talk, you do not talk about sensitive political topics, but private questions (e.g., about children) are common.", a: "في الدردشة مش بنتكلم في مواضيع سياسية حساسة، لكن الأسئلة الشخصية (زي عن الأولاد) شائعة." }
+                    ]
+                }
+            ],
+            letters: [
+                {
+                    id: 'l1', title: "Einen Termin zusagen (الموافقة على موعد)",
+                    lines: [
+                        { g: "Lieber Herr Kippe,", e: "Dear Mr. Kippe,", a: "عزيزي السيد كيبه،" },
+                        { g: "Sie haben am 23. Oktober um 10.00 Uhr einen Termin mit Tamara Sand.", e: "You have an appointment with Tamara Sand on October 23 at 10:00 a.m.", a: "عندك موعد مع تمارا ساند يوم 23 أكتوبر الساعة 10." },
+                        { g: "Leider ist Frau Sand aus gesundheitlichen Gründen bis Ende Oktober nicht im Büro.", e: "Unfortunately, Mrs. Sand is out of the office until the end of October for health reasons.", a: "للأسف أستاذة ساند مش في المكتب لآخر أكتوبر لأسباب صحية." },
+                        { g: "Das Gespräch mit Ihnen führt Frau Stein. Der Terminkalender von Frau Stein ist am 23. Oktober bereits voll.", e: "The conversation with you will be conducted by Mrs. Stein. Mrs. Stein's appointment calendar is already full on October 23.", a: "أستاذة شتاين هي اللي هتعمل معاك المقابلة. بس جدولها مليان يوم 23 أكتوبر." },
+                        { g: "Können wir aus diesem Grund einen neuen Termin vereinbaren? Haben Sie am 25. Oktober um 15.00 Uhr Zeit?", e: "For this reason, can we arrange a new appointment? Are you available on October 25 at 3:00 p.m.?", a: "عشان كده ممكن نحدد ميعاد جديد؟ فاضي يوم 25 أكتوبر الساعة 3؟" },
+                        { g: "Vielen Dank für Ihr Verständnis. Mit besten Grüßen, Firma XY", e: "Thank you for your understanding. Best regards, Company XY", a: "شكراً لتفهمك. مع أطيب التحيات، شركة XY" },
+                        { g: "--- (Antwort / الرد) ---", e: "--- (Reply) ---", a: "--- (Antwort / الرد) ---" },
+                        { g: "Sehr geehrte Frau Schön,", e: "Dear Ms. Schön,", a: "عزيزتي الأستاذة شون (احترام رسمي)،" },
+                        { g: "vielen Dank für Ihre Nachricht.", e: "Thank you for your message.", a: "شكراً جزيلاً لرسالتك." },
+                        { g: "Der neue Termin am 25. Oktober um 15.00 Uhr passt mir sehr gut.", e: "The new appointment on October 25 at 3:00 p.m. suits me very well.", a: "الميعاد الجديد يوم 25 أكتوبر الساعة 3 مناسب ليا جداً." },
+                        { g: "Könnten Sie mir bitte noch den Weg zu Ihrer Firma beschreiben oder mir die genaue Adresse mitteilen?", e: "Could you please describe the way to your company or give me the exact address?", a: "ممكن لو سمحتي توصفيلي الطريق للشركة أو تديني العنوان بالظبط؟" },
+                        { g: "Mit freundlichen Grüßen, Herr Kippe", e: "Kind regards, Mr. Kippe", a: "مع خالص التحيات، السيد كيبه" }
+                    ]
+                }
+            ],
+            grammar: [
+                {
+                    title: "1. Temporale Präpositionen (حروف الجر الزمنية)",
+                    desc: "متى؟ (Wann) وكم المدة؟ (Wie lange). في اللغة الألمانية نستخدم حروف جر معينة مع الأوقات، وكل حرف يفرض حالة إعرابية معينة (غالباً Dativ).",
+                    type: "temporal_table" // Trigger for specific UI
+                },
+                {
+                    title: "2. Indirekte Fragen (الأسئلة غير المباشرة)",
+                    desc: "عندما نضع سؤالاً داخل جملة، يتحول إلى جملة جانبية (الفعـل في النهاية). إذا كان السؤال يبدأ بأداة استفهام (W-Frage) نستخدمها للربط. إذا كان سؤالاً بهل (Ja/Nein Frage) نستخدم كلمة (ob - ما إذا/لو).",
+                    structure: "Ich weiß nicht, [W-Wort / ob] ... Subjekt ... Verb.",
+                    examples: [
+                        { category: "Direkte Frage", g: "1. <span class='text-purple-600 font-bold'>Wann</span> beginnt der Unterricht?", e: "When does the class begin?", a: "متى يبدأ الدرس؟" },
+                        { category: "Mit Fragewort", g: "2. Weißt du, <span class='text-purple-600 font-bold'>wann</span> der Bus <span class='text-purple-600 font-bold'>kommt</span>?", e: "Do you know when the bus is coming?", a: "تعرف الأتوبيس هييجي إمتى؟" },
+                        { category: "Mit Fragewort", g: "3. Kannst du mir sagen, <span class='text-purple-600 font-bold'>wann</span> er angerufen <span class='text-purple-600 font-bold'>hat</span>?", e: "Can you tell me when he called?", a: "تقدر تقولي هو اتصل إمتى؟" },
+                        { category: "Mit Fragewort", g: "4. Ich weiß nicht, <span class='text-purple-600 font-bold'>warum</span> sie nicht da <span class='text-purple-600 font-bold'>ist</span>.", e: "I don't know why she isn't here.", a: "معرفش هي مش موجودة ليه." },
+                        { category: "Mit Fragewort", g: "5. Weißt du, <span class='text-purple-600 font-bold'>wo</span> er gestern gewesen <span class='text-purple-600 font-bold'>ist</span>?", e: "Do you know where he was yesterday?", a: "تعرف هو كان فين إمبارح؟" },
+                        { category: "Mit Fragewort", g: "6. Erinnerst du dich, <span class='text-purple-600 font-bold'>wer</span> das gesagt <span class='text-purple-600 font-bold'>hat</span>?", e: "Do you remember who said that?", a: "فاكر مين اللي قال كده؟" },
+                        { category: "Mit Fragewort", g: "7. Können Sie mir bitte sagen, <span class='text-purple-600 font-bold'>wie lange</span> die Besprechung <span class='text-purple-600 font-bold'>dauert</span>?", e: "Can you please tell me how long the meeting lasts?", a: "تقدر تقولي من فضلك الاجتماع هياخد وقت قد إيه؟" },
+                        { category: "Mit Fragewort", g: "8. Ich frage mich, <span class='text-purple-600 font-bold'>welche</span> Aufgaben wir schon gemacht <span class='text-purple-600 font-bold'>haben</span>.", e: "I wonder which tasks we have already done.", a: "بتساءل إيه المهام اللي إحنا عملناها بالفعل." },
+                        { category: "Mit Fragewort", g: "9. Hast du gehört, <span class='text-purple-600 font-bold'>wie</span> er nach Hause gegangen <span class='text-purple-600 font-bold'>ist</span>?", e: "Did you hear how he went home?", a: "سمعت هو روّح البيت إزاي؟" },
+                        { category: "Mit Fragewort", g: "10. Ich weiß nicht, <span class='text-purple-600 font-bold'>was</span> sie gestern gekauft <span class='text-purple-600 font-bold'>hat</span>.", e: "I don't know what she bought yesterday.", a: "معرفش هي اشترت إيه إمبارح." },
+
+                        { category: "Direkte Frage", g: "1. Kommt der Lehrer heute noch?", e: "Is the teacher still coming today?", a: "هل سيأتي المعلم اليوم؟" },
+                        { category: "Ohne Fragewort - ob", g: "2. Weißt du, <span class='text-purple-600 font-bold'>ob</span> er krank <span class='text-purple-600 font-bold'>ist</span>?", e: "Do you know if he is sick?", a: "تعرف إذا كان هو عيان؟" },
+                        { category: "Ohne Fragewort - ob", g: "3. Kannst du mir sagen, <span class='text-purple-600 font-bold'>ob</span> sie schon angekommen <span class='text-purple-600 font-bold'>ist</span>?", e: "Can you tell me if she has already arrived?", a: "تقدر تقولي لو هي وصلت؟" },
+                        { category: "Ohne Fragewort - ob", g: "4. Ich weiß nicht, <span class='text-purple-600 font-bold'>ob</span> das <span class='text-purple-600 font-bold'>stimmt</span>.", e: "I don't know if that is true.", a: "معرفش لو ده صح." },
+                        { category: "Ohne Fragewort - ob", g: "5. Weißt du, <span class='text-purple-600 font-bold'>ob</span> sie gestern hier <span class='text-purple-600 font-bold'>war</span>?", e: "Do you know if she was here yesterday?", a: "تعرف لو هي كانت هنا إمبارح؟" },
+                        { category: "Ohne Fragewort - ob", g: "6. Ich frage mich, <span class='text-purple-600 font-bold'>ob</span> er das schon gemacht <span class='text-purple-600 font-bold'>hat</span>.", e: "I wonder if he has already done that.", a: "بتساءل إذا كان هو عمل ده خلاص." },
+                        { category: "Ohne Fragewort - ob", g: "7. Können Sie mir bitte sagen, <span class='text-purple-600 font-bold'>ob</span> der Termin morgen <span class='text-purple-600 font-bold'>stattfindet</span>?", e: "Can you please tell me if the appointment is happening tomorrow?", a: "ممكن تقولي من فضلك الميعاد هيتم بكرة ولا لأ؟" },
+                        { category: "Ohne Fragewort - ob", g: "8. Weißt du, <span class='text-purple-600 font-bold'>ob</span> sie das Buch gelesen <span class='text-purple-600 font-bold'>hat</span>?", e: "Do you know if she has read the book?", a: "تعرف لو هي قرأت الكتاب؟" },
+                        { category: "Ohne Fragewort - ob", g: "9. Ich bin nicht sicher, <span class='text-purple-600 font-bold'>ob</span> er nach Hause gegangen <span class='text-purple-600 font-bold'>ist</span>.", e: "I'm not sure if he went home.", a: "أنا مش متأكد لو هو روّح." },
+                        { category: "Ohne Fragewort - ob", g: "10. Hast du gehört, <span class='text-purple-600 font-bold'>ob</span> sie gestern gefeiert <span class='text-purple-600 font-bold'>haben</span>?", e: "Did you hear if they celebrated yesterday?", a: "سمعت لو هما احتفلوا إمبارح؟" }
+                    ]
+                },
+                {
+                    title: "3. Dativ Verben (أفعال حالة الجر/الداتيف)",
+                    desc: "بعض الأفعال في الألمانية تأخذ مفعولاً في حالة الداتيف فقط (تؤثر على الأشخاص غالباً). وأفعال أخرى تأخذ مفعولين (شخص في الداتيف، وشيء في الأكوزاتيف).",
+                    type: "dative_verbs" // Trigger for specific UI
+                }
+            ],
+            verbs: [
+                {
+                    id: 'v1', ger: "machen", eng: "to do / make", ar: "يفعل / يصنع", praeteritum: "machte", perfekt: "hat gemacht", s: [
+                        { g: "Er <strong>machte</strong> viele Überstunden.", e: "He worked a lot of overtime.", a: "عمل ساعات إضافية كتير." },
+                        { g: "Hast du deine Aufgaben <strong>gemacht</strong>?", e: "Did you do your tasks?", a: "عملت المهام بتاعتك؟" }
+                    ]
+                },
+                {
+                    id: 'v2', ger: "lesen", eng: "to read", ar: "يقرأ", praeteritum: "las", perfekt: "hat gelesen", s: [
+                        { g: "Sie <strong>las</strong> die E-Mails im Büro.", e: "She read the emails in the office.", a: "هي قرأت الإيميلات في المكتب." },
+                        { g: "Ich habe den Bericht noch nicht <strong>gelesen</strong>.", e: "I haven't read the report yet.", a: "أنا لسة مقرأتش التقرير." }
+                    ]
+                },
+                {
+                    id: 'v3', ger: "schreiben", eng: "to write", ar: "يكتب", praeteritum: "schrieb", perfekt: "hat geschrieben", s: [
+                        { g: "Ich <strong>schrieb</strong> das Protokoll für das Meeting.", e: "I wrote the minutes for the meeting.", a: "أنا كتبت محضر الاجتماع." },
+                        { g: "Hast du dem Kunden schon <strong>geschrieben</strong>?", e: "Have you already written to the customer?", a: "كتبت للعميل خلاص؟" }
+                    ]
+                },
+                {
+                    id: 'v4', ger: "sprechen", eng: "to speak", ar: "يتحدث", praeteritum: "sprach", perfekt: "hat gesprochen", s: [
+                        { g: "Wir <strong>sprachen</strong> gestern mit dem Chef.", e: "We spoke with the boss yesterday.", a: "إحنا اتكلمنا مع المدير إمبارح." },
+                        { g: "Er hat am Telefon sehr schnell <strong>gesprochen</strong>.", e: "He spoke very fast on the phone.", a: "هو اتكلم بسرعة جداً على التليفون." }
+                    ]
+                },
+                {
+                    id: 'v5', ger: "anrufen", eng: "to call", ar: "يتصل", praeteritum: "rief an", perfekt: "hat angerufen", s: [
+                        { g: "Er <strong>rief</strong> den Kunden sofort <strong>an</strong>.", e: "He called the customer immediately.", a: "هو اتصل بالعميل فوراً." },
+                        { g: "Warum hast du mich gestern nicht <strong>angerufen</strong>?", e: "Why didn't you call me yesterday?", a: "ليه متصلتش بيا إمبارح؟" }
+                    ]
+                },
+                {
+                    id: 'v6', ger: "kommen", eng: "to come", ar: "يأتي", praeteritum: "kam", perfekt: "ist gekommen", s: [
+                        { g: "Der Monteur <strong>kam</strong> leider zu spät.", e: "The technician unfortunately came too late.", a: "الفني للأسف جه متأخر." },
+                        { g: "Wann bist du heute ins Büro <strong>gekommen</strong>?", e: "When did you come to the office today?", a: "جيت المكتب إمتى النهاردة؟" }
+                    ]
+                },
+                {
+                    id: 'v7', ger: "helfen", eng: "to help", ar: "يساعد", praeteritum: "half", perfekt: "hat geholfen", s: [
+                        { g: "Die Kollegen <strong>halfen</strong> mir beim Projekt.", e: "The colleagues helped me with the project.", a: "الزملاء ساعدوني في المشروع." },
+                        { g: "Wer hat dir bei der Präsentation <strong>geholfen</strong>?", e: "Who helped you with the presentation?", a: "مين ساعدك في العرض التقديمي؟" }
+                    ]
+                },
+                {
+                    id: 'v8', ger: "geben", eng: "to give", ar: "يعطي", praeteritum: "gab", perfekt: "hat gegeben", s: [
+                        { g: "Er <strong>gab</strong> ihr das wichtige Dokument.", e: "He gave her the important document.", a: "هو إداها الوثيقة المهمة." },
+                        { g: "Der Chef hat uns eine neue Aufgabe <strong>gegeben</strong>.", e: "The boss gave us a new task.", a: "المدير إدانا مهمة جديدة." }
+                    ]
+                },
+                {
+                    id: 'v9', ger: "gehen", eng: "to go", ar: "يذهب", praeteritum: "ging", perfekt: "ist gegangen", s: [
+                        { g: "Wir <strong>gingen</strong> zusammen in die Kantine.", e: "We went to the cafeteria together.", a: "رحنا الكافيتريا مع بعض." },
+                        { g: "Ist er schon nach Hause <strong>gegangen</strong>?", e: "Has he already gone home?", a: "هو روح البيت خلاص؟" }
+                    ]
+                },
+                {
+                    id: 'v10', ger: "wissen", eng: "to know (fact)", ar: "يعرف (معلومة)", praeteritum: "wusste", perfekt: "hat gewusst", s: [
+                        { g: "Ich <strong>wusste</strong> das leider nicht.", e: "I unfortunately didn't know that.", a: "للأسف مكنتش أعرف ده." },
+                        { g: "Hast du <strong>gewusst</strong>, dass das Meeting ausfällt?", e: "Did you know that the meeting is canceled?", a: "كنت تعرف إن الاجتماع اتلغى؟" }
+                    ]
+                }
+            ]
+        };
+
+        const { useState, useEffect } = React;
+
+        // --- HELPER FOR ARTICLES COLORING ---
+        const colorizeArticles = (text) => {
+            if (!text) return text;
+            const regex = /(der |die |das )/gi;
+            const parts = text.split(regex);
+            return parts.map((part, i) => {
+                const lower = part.toLowerCase();
+                if (lower === 'der ') return <span key={i} className="text-blue-500 font-extrabold">{part}</span>;
+                if (lower === 'die ') return <span key={i} className="text-rose-500 font-extrabold">{part}</span>;
+                if (lower === 'das ') return <span key={i} className="text-emerald-500 font-extrabold">{part}</span>;
+                return <span key={i}>{part}</span>;
+            });
+        };
+
+        // --- COMPONENTS ---
+        const ProgressBar = ({ total, learned, colorClass }) => {
+            const percentage = total === 0 ? 0 : Math.round((learned / total) * 100);
+            return (
+                <div className="glass-panel p-5 rounded-2xl mb-8 flex items-center justify-between transition-all" dir="rtl">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider ar-text mb-1">مستوى التقدم</h3>
+                        <p className="text-3xl font-extrabold text-slate-800">{learned} <span className="text-sm font-medium text-slate-400">/ {total} أتقنتهم</span></p>
+                    </div>
+                    <div className="relative w-20 h-20 drop-shadow-md">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path className="text-slate-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                            <path className={`${colorClass} transition-all duration-1000 ease-out`} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold text-slate-700">
+                            {percentage}%
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const WordCard = ({ item, isLearned, toggleLearned }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            return (
+                <div className="relative group perspective-1000 w-full h-[24rem]">
+                    <div className={`w-full h-full transition-all duration-700 transform-style-3d shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl ${isFlipped ? 'rotate-y-180' : ''}`}>
+
+                        {/* FRONT */}
+                        <div className="absolute w-full h-full backface-hidden bg-white border border-slate-100 rounded-2xl p-5 flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
+                            onClick={() => setIsFlipped(true)}>
+                            <div className="flex justify-between items-start shrink-0" dir="rtl">
+                                <span className="bg-orange-50 text-orange-600 text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider ar-text border border-orange-100">مفردات</span>
+                                <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <div className="text-center mt-2 flex-grow flex flex-col justify-center overflow-y-auto front-scroll px-1 py-3">
+                                <div className="flex flex-col justify-center items-center gap-3 mb-1">
+                                    <h3 className="text-2xl font-bold text-slate-800 leading-tight">{colorizeArticles(item.ger)}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={(e) => playAudio(item.ger, e)} className="p-2 rounded-full bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors shadow-sm"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                        <SpeechTester targetText={item.ger} />
+                                    </div>
+                                </div>
+                                <div className="mt-4 space-y-1">
+                                    <p className="text-slate-500 font-medium text-sm">{item.eng}</p>
+                                    <p className="text-orange-600 font-bold ar-text text-lg" dir="rtl">{item.ar}</p>
+                                </div>
+                            </div>
+
+                            <div className="text-center text-xs text-slate-400 font-medium flex items-center justify-center gap-1 ar-text mt-2 shrink-0">
+                                <i data-lucide="rotate-cw" className="w-3 h-3"></i> اضغط للأمثلة
+                            </div>
+                        </div>
+
+                        {/* BACK */}
+                        <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-2xl p-5 shadow-lg flex flex-col cursor-pointer overflow-hidden"
+                            onClick={() => setIsFlipped(false)} style={{ transform: 'rotateY(180deg)' }}>
+                            <div className="mb-3 border-b border-white/20 pb-2 flex justify-between items-center shrink-0" dir="rtl">
+                                <h4 className="font-bold text-white/90 text-sm tracking-wider ar-text">أمثلة سياقية</h4>
+                                <i data-lucide="rotate-ccw" className="w-4 h-4 text-white/60"></i>
+                            </div>
+                            <div className="overflow-y-auto card-scroll flex-grow pr-2 pb-2">
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="text-sm bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/5">
+                                            <div className="flex items-start gap-2 mb-1.5">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className="p-1 text-orange-200 hover:text-white shrink-0 mt-0.5"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <span className="leading-relaxed" dangerouslySetInnerHTML={{ __html: sentence.g }}></span>
+                                            </div>
+                                            <div className="text-orange-200 text-xs italic ml-8 mb-1.5">{sentence.e}</div>
+                                            <div className="text-amber-100 text-sm font-bold ar-text border-t border-white/10 pt-1.5 mt-1" dir="rtl">{sentence.a}</div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const IrregularVerbRow = ({ item, isLearned, toggleLearned }) => {
+            const [expanded, setExpanded] = useState(false);
+
+            return (
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md" dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                    {item.ger}
+                                    <button onClick={(e) => playAudio(item.ger, e)} className="text-emerald-600 opacity-70 hover:opacity-100 transition-opacity"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                </h3>
+                                <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className="text-emerald-600 font-bold ar-text" dir="rtl">{item.ar}</span></p>
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präteritum (ماضي بسيط)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praeteritum, e)} className="text-amber-600 bg-amber-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.praeteritum}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.praeteritum} /></div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Perfekt (ماضي تام)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.perfekt, e)} className="text-purple-600 bg-purple-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.perfekt}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.perfekt} /></div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <h4 className="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider ar-text">مثال سياقي (Beispiel)</h4>
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm group flex flex-col sm:flex-row gap-4 justify-between items-start">
+                                            <div className="flex-1">
+                                                <div className="flex items-start gap-3 mb-2">
+                                                    <button onClick={(e) => playAudio(sentence.g, e)} className="mt-0.5 text-emerald-600 bg-emerald-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                    <p className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: sentence.g }}></p>
+                                                </div>
+                                                <p className="text-slate-500 text-sm ml-10 mb-2">{sentence.e}</p>
+                                                <div className="ml-10 text-emerald-600 text-base font-bold ar-text border-t border-slate-100 pt-2" dir="rtl">{sentence.a}</div>
+                                            </div>
+                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-slate-50 p-1.5 rounded-full" dir="ltr">
+                                                <SpeechTester targetText={sentence.g} />
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const DialogueRow = ({ dialogue }) => {
+            const [expanded, setExpanded] = useState(false);
+            return (
+                <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden mb-6 transition-all duration-300 hover:shadow-lg" dir="ltr">
+                    <button
+                        className="w-full p-6 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white"
+                        onClick={() => setExpanded(!expanded)}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl">
+                                <i data-lucide={dialogue.icon} className="w-6 h-6"></i>
+                            </div>
+                            <h3 className="text-2xl font-bold text-slate-800 ar-text">{dialogue.title}</h3>
+                        </div>
+                        <i data-lucide="chevron-down" className={`w-6 h-6 text-slate-400 transform transition-transform duration-300 ${expanded ? 'rotate-180 text-blue-600' : ''}`}></i>
+                    </button>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="p-6 bg-white space-y-4">
+                            {dialogue.lines.map((line, idx) => {
+                                // Logic to alternate chat bubbles based on speaker
+                                const isFirstSpeaker = idx === 0 || line.speaker === dialogue.lines[0].speaker;
+                                return (
+                                    <div key={idx} className={`flex flex-col p-4 rounded-2xl border ${isFirstSpeaker ? 'bg-blue-50/50 border-blue-100 ml-8' : 'bg-slate-50 border-slate-100 mr-8'}`}>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${isFirstSpeaker ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-700'}`}>
+                                                {line.speaker}
+                                            </span>
+                                            <div className="flex gap-2">
+                                                <button onClick={(e) => playAudio(line.text, e)} className="text-slate-400 hover:text-blue-600 transition-colors"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <SpeechTester targetText={line.text} />
+                                            </div>
+                                        </div>
+                                        <p className="text-lg font-medium text-slate-800 mb-1">{line.text}</p>
+                                        <p className="text-sm text-slate-500 mb-2 italic">{line.en}</p>
+                                        <p className="text-blue-700 font-bold ar-text border-t border-slate-200/50 pt-2 text-right" dir="rtl">{line.ar}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Custom UI for Grammar: Temporal Prepositions Table
+        const TemporalTable = () => {
+            const thClass = "border border-slate-200 p-3 bg-purple-50 font-bold text-purple-800 text-sm tracking-wider";
+            const tdClass = "border border-slate-200 p-3 text-slate-700 font-medium";
+            return (
+                <div className="space-y-8" dir="ltr">
+                    <div className="overflow-x-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                        <h4 className="font-bold text-purple-600 text-xl mb-4 ar-text" dir="rtl">🕐 متى؟ (Wann?)</h4>
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th className={thClass}>Deutsch (Beispiel)</th>
+                                    <th className={thClass}>Präposition</th>
+                                    <th className={thClass}>Kasus</th>
+                                    <th className={thClass}>Englisch / Arabic</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td className={tdClass}>um 17.00 Uhr (Uhrzeit)</td><td className={tdClass}>um</td><td className={tdClass}>+ Akkusativ</td><td className={tdClass}>at 5:00 p.m. / الساعة 5</td></tr>
+                                <tr><td className={tdClass}>am Freitag (Tage)</td><td className={tdClass}>an</td><td className={tdClass}>+ Dativ</td><td className={tdClass}>on Friday / في يوم الجمعة</td></tr>
+                                <tr><td className={tdClass}>im August (Wochen, Monate)</td><td className={tdClass}>in</td><td className={tdClass}>+ Dativ</td><td className={tdClass}>in August / في أغسطس</td></tr>
+                                <tr><td className={tdClass}>während der Arbeitszeit</td><td className={tdClass}>während</td><td className={tdClass}>+ Genitiv</td><td className={tdClass}>during working hours / أثناء وقت العمل</td></tr>
+                                <tr><td className={tdClass}>zwischen 12.00 und 14.00 Uhr</td><td className={tdClass}>zwischen</td><td className={tdClass}>+ Dativ</td><td className={tdClass}>between 12 and 2 / بين 12 و 2</td></tr>
+                                <tr><td className={tdClass}>beim Kaffeetrinken (Tätigkeit)</td><td className={tdClass}>bei</td><td className={tdClass}>+ Dativ</td><td className={tdClass}>while drinking coffee / عند شرب القهوة</td></tr>
+                                <tr><td className={tdClass}>vor der Besprechung</td><td className={tdClass}>vor</td><td className={tdClass}>+ Dativ</td><td className={tdClass}>before the meeting / قبل الاجتماع</td></tr>
+                                <tr><td className={tdClass}>nach der Besprechung</td><td className={tdClass}>nach</td><td className={tdClass}>+ Dativ</td><td className={tdClass}>after the meeting / بعد الاجتماع</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="overflow-x-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                        <h4 className="font-bold text-purple-600 text-xl mb-4 ar-text" dir="rtl">⏳ كم المدة؟ (Wie lange?)</h4>
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th className={thClass}>Deutsch (Beispiel)</th>
+                                    <th className={thClass}>Präposition</th>
+                                    <th className={thClass}>Kasus</th>
+                                    <th className={thClass}>Englisch / Arabic</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td className={tdClass}>von 14.00 bis 16.00 Uhr</td><td className={tdClass}>von … bis</td><td className={tdClass}>+ Dativ</td><td className={tdClass}>from 2 to 4 / من 2 لـ 4</td></tr>
+                                <tr><td className={tdClass}>seit fünf Jahren</td><td className={tdClass}>seit</td><td className={tdClass}>+ Dativ</td><td className={tdClass}>for/since 5 years / منذ 5 سنين</td></tr>
+                                <tr><td className={tdClass}>bis Freitag</td><td className={tdClass}>bis</td><td className={tdClass}>+ Akkusativ</td><td className={tdClass}>until Friday / حتى يوم الجمعة</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        };
+
+        // Custom UI for Grammar: Dative Verbs
+        const DativeVerbsList = () => {
+            const pureDative = [
+                { g: "danken", a: "يشكر", en: "to thank", ex: "Ich danke dir für deine Hilfe.", ex_en: "I thank you for your help.", ex_ar: "أشكرك على مساعدتك." },
+                { g: "gratulieren", a: "يهنئ", en: "to congratulate", ex: "Wir gratulieren ihm zum Geburtstag.", ex_en: "We congratulate him on his birthday.", ex_ar: "نهنئه بعيد ميلاده." },
+                { g: "helfen", a: "يساعد", en: "to help", ex: "Sie hilft ihrer Mutter in der Küche.", ex_en: "She helps her mother in the kitchen.", ex_ar: "هي تساعد أمها في المطبخ." },
+                { g: "gefallen", a: "يعجب", en: "to please / like", ex: "Das Buch gefällt mir sehr.", ex_en: "I like the book a lot.", ex_ar: "الكتاب يعجبني جداً." },
+                { g: "gehören", a: "يخص / ملك لـ", en: "to belong to", ex: "Der Hund gehört meinem Bruder.", ex_en: "The dog belongs to my brother.", ex_ar: "الكلب ملك لأخي." },
+                { g: "schmecken", a: "يتذوق / يعجبه طعم", en: "to taste good to", ex: "Die Suppe schmeckt mir nicht.", ex_en: "I don't like the taste of the soup.", ex_ar: "الشوربة لم يعجبني طعمها." },
+                { g: "passen", a: "يناسب (مقاس)", en: "to fit / suit", ex: "Der Pullover passt mir nicht.", ex_en: "The sweater doesn't fit me.", ex_ar: "البلوفر لا يناسب مقاسي." },
+                { g: "stehen", a: "يليق (شكل/ملبس)", en: "to suit (appearance)", ex: "Die Jacke steht dir gut.", ex_en: "The jacket looks good on you.", ex_ar: "الجاكيت يليق بك." },
+                { g: "fehlen", a: "يفتقد / ينقص", en: "to miss / be missing", ex: "Du fehlst mir.", ex_en: "I miss you.", ex_ar: "أفتقدك." },
+                { g: "antworten", a: "يجيب / يرد", en: "to answer", ex: "Der Schüler antwortet dem Lehrer.", ex_en: "The student answers the teacher.", ex_ar: "الطالب يجيب المعلم." }
+            ];
+
+            const datAcc = [
+                { g: "geben", a: "يعطي", en: "to give", ex: "Ich gebe meiner Schwester ein Buch.", ex_en: "I give my sister a book.", ex_ar: "أعطي أختي كتاباً." },
+                { g: "zeigen", a: "يُري / يوضح", en: "to show", ex: "Er zeigt seinem Freund die Stadt.", ex_en: "He shows his friend the city.", ex_ar: "يُري صديقه المدينة." },
+                { g: "schenken", a: "يهدي", en: "to gift", ex: "Wir schenken unserem Vater eine Uhr.", ex_en: "We give our father a watch.", ex_ar: "نهدي والدنا ساعة." },
+                { g: "bringen", a: "يُحضر", en: "to bring", ex: "Sie bringt dem Kind ein Glas Wasser.", ex_en: "She brings the child a glass of water.", ex_ar: "تُحضر للطفل كوب ماء." },
+                { g: "erzählen", a: "يحكي", en: "to tell", ex: "Ich erzähle meinem Freund eine Geschichte.", ex_en: "I tell my friend a story.", ex_ar: "أحكي لصديقي قصة." },
+                { g: "schicken", a: "يُرسل", en: "to send", ex: "Sie schickt ihrer Tante eine Postkarte.", ex_en: "She sends her aunt a postcard.", ex_ar: "تُرسل لخالتها بطاقة بريدية." },
+                { g: "leihen", a: "يُعير / يُقرض", en: "to lend", ex: "Er leiht seinem Bruder das Fahrrad.", ex_en: "He lends his brother the bike.", ex_ar: "يُعير أخاه الدراجة." },
+                { g: "verkaufen", a: "يبيع", en: "to sell", ex: "Der Mann verkauft den Kunden frisches Obst.", ex_en: "The man sells the customers fresh fruit.", ex_ar: "الرجل يبيع للعملاء فاكهة طازجة." },
+                { g: "erklären", a: "يشرح", en: "to explain", ex: "Die Lehrerin erklärt den Studenten die Grammatik.", ex_en: "The teacher explains the grammar to the students.", ex_ar: "المعلمة تشرح للطلاب القواعد." },
+                { g: "empfehlen", a: "يوصي / يرشح", en: "to recommend", ex: "Der Kellner empfiehlt den Gästen das Menü.", ex_en: "The waiter recommends the menu to the guests.", ex_ar: "الجرسون يرشح للضيوف المنيو." }
+            ];
+
+            return (
+                <div className="space-y-8" dir="ltr">
+                    <div>
+                        <h4 className="font-bold text-purple-700 text-xl mb-4 ar-text bg-purple-100 p-3 rounded-xl inline-block" dir="rtl">1. أفعال الداتيف فقط (Reine Dativ-Verben)</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {pureDative.map((v, i) => (
+                                <div key={i} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="font-bold text-lg text-slate-800">{v.g} <span className="text-slate-400 text-sm font-normal ml-2">({v.en})</span></span>
+                                        <span className="ar-text font-bold text-purple-600" dir="rtl">{v.a}</span>
+                                    </div>
+                                    <div className="bg-slate-50 p-3 rounded-lg flex flex-col gap-1">
+                                        <p className="text-sm font-medium text-slate-700">{v.ex}</p>
+                                        <p className="text-xs text-slate-500 italic">{v.ex_en}</p>
+                                        <p className="text-xs font-bold text-purple-600 ar-text" dir="rtl">{v.ex_ar}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-blue-700 text-xl mb-4 ar-text bg-blue-100 p-3 rounded-xl inline-block mt-6" dir="rtl">2. أفعال داتيف + أكوزاتيف (Verben mit Dativ und Akkusativ)</h4>
+                        <p className="ar-text text-slate-600 mb-4 text-right" dir="rtl">الشخص يكون في الداتيف (jemandem)، والشيء يكون في الأكوزاتيف (etwas).</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {datAcc.map((v, i) => (
+                                <div key={i} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="font-bold text-lg text-slate-800">{v.g} <span className="text-slate-400 text-sm font-normal ml-2">({v.en})</span></span>
+                                        <span className="ar-text font-bold text-blue-600" dir="rtl">{v.a}</span>
+                                    </div>
+                                    <div className="bg-slate-50 p-3 rounded-lg flex flex-col gap-1">
+                                        <p className="text-sm font-medium text-slate-700">{v.ex}</p>
+                                        <p className="text-xs text-slate-500 italic">{v.ex_en}</p>
+                                        <p className="text-xs font-bold text-blue-600 ar-text" dir="rtl">{v.ex_ar}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- MAIN APP ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('words');
+            const [learnedItems, setLearnedItems] = useState(new Set());
+            const [searchTerm, setSearchTerm] = useState('');
+
+            // Load saved progress
+            useEffect(() => {
+                const saved = localStorage.getItem('a2_buero_progress');
+                if (saved) {
+                    setLearnedItems(new Set(JSON.parse(saved)));
+                }
+            }, []);
+
+            // Save progress
+            useEffect(() => {
+                localStorage.setItem('a2_buero_progress', JSON.stringify(Array.from(learnedItems)));
+            }, [learnedItems]);
+
+            useEffect(() => {
+                lucide.createIcons();
+            });
+
+            const toggleLearned = (id) => {
+                const newLearned = new Set(learnedItems);
+                if (newLearned.has(id)) newLearned.delete(id);
+                else newLearned.add(id);
+                setLearnedItems(newLearned);
+            };
+
+            const totalWords = LEARNING_DATA.words.immerOft.length + LEARNING_DATA.words.seltenNie.length + LEARNING_DATA.words.bueroalltag.length;
+            const totalVerbs = LEARNING_DATA.verbs.length;
+            const totalExp = LEARNING_DATA.expressions.length;
+            const grandTotal = totalWords + totalVerbs + totalExp;
+
+            const tabConfig = {
+                words: { labelEn: 'Vocabulary', labelAr: 'مفردات المكتب', icon: 'briefcase', color: 'orange' },
+                expressions: { labelEn: 'Phrases', labelAr: 'عبارات المواعيد', icon: 'calendar', color: 'amber' },
+                dialogues: { labelEn: 'Dialogues', labelAr: 'محادثات العمل', icon: 'phone-call', color: 'blue' },
+                verbs: { labelEn: 'Verbs', labelAr: 'أفعال هامة', icon: 'list-checks', color: 'emerald' },
+                grammar: { labelEn: 'Grammar', labelAr: 'القواعد', icon: 'book-open', color: 'purple' },
+                letters: { labelEn: 'Emails', labelAr: 'إيميلات رسمية', icon: 'mail', color: 'cyan' },
+                culture: { labelEn: 'Culture', labelAr: 'ثقافة العمل', icon: 'globe', color: 'rose' }
+            };
+
+            const activeColor = tabConfig[activeTab].color;
+
+            return (
+                <div className="h-screen flex flex-col bg-slate-50" dir="rtl">
+                    {/* TOP NAVIGATION HEADER */}
+                    <header className="w-full bg-slate-900 text-white shadow-xl z-50 shrink-0 relative overflow-hidden">
+                        <div className={`absolute top-0 left-0 w-full h-1 bg-${activeColor}-500 transition-colors duration-500`}></div>
+
+                        <div className="flex justify-between items-center px-4 md:px-8 py-3 border-b border-slate-800">
+                            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-3 ar-text">
+                                <span className={`bg-${activeColor}-500 p-2 rounded-xl transition-colors duration-500 shadow-lg`}>
+                                    <i data-lucide="monitor" className="w-5 h-5 md:w-6 md:h-6 text-white"></i>
+                                </span>
+                                A2: Im Büro
+                            </h1>
+
+                            <div className="flex items-center gap-3" dir="ltr">
+                                <div className="text-right hidden sm:block">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Progress</div>
+                                    <div className={`text-sm font-extrabold text-${activeColor}-400 transition-colors`}>{grandTotal === 0 ? 0 : Math.round((learnedItems.size / grandTotal) * 100)}%</div>
+                                </div>
+                                <div className="relative w-10 h-10">
+                                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                        <path className="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                                        <path className={`text-${activeColor}-500 transition-all duration-1000 ease-out`} strokeDasharray={`${grandTotal === 0 ? 0 : (learnedItems.size / grandTotal) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Horizontal Navigation Tabs */}
+                        <nav className="flex overflow-x-auto scrollbar-hide px-4 py-2 gap-2 snap-x">
+                            {Object.entries(tabConfig).map(([key, tab]) => (
+                                <button
+                                    key={key}
+                                    onClick={() => { setActiveTab(key); setSearchTerm(''); }}
+                                    className={`snap-center shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold ar-text group relative overflow-hidden ${activeTab === key ? `bg-${tab.color}-600 text-white shadow-md` : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <i data-lucide={tab.icon} className={`w-5 h-5 ${activeTab === key ? 'text-white' : `text-${tab.color}-400 group-hover:text-${tab.color}-300`} transition-colors`}></i>
+                                    <span className="text-sm whitespace-nowrap">{tab.labelAr}</span>
+                                    {activeTab === key && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-white/50 rounded-t-full"></div>}
+                                </button>
+                            ))}
+                        </nav>
+                    </header>
+
+                    {/* MAIN CONTENT AREA */}
+                    <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 relative" dir="ltr">
+                        <div className={`fixed top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-${activeColor}-200/20 blur-3xl -z-10 transition-colors duration-1000 pointer-events-none`}></div>
+
+                        <div className="max-w-7xl mx-auto">
+
+                            {/* LIVE SEARCH BAR (Hidden in Grammar/Culture/Dialogues/Letters) */}
+                            {activeTab !== 'grammar' && activeTab !== 'culture' && activeTab !== 'dialogues' && activeTab !== 'letters' && (
+                                <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                    <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                        <div className={`absolute -inset-0.5 bg-gradient-to-r from-${activeColor}-400 to-${activeColor}-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                        <div className="relative">
+                                            <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                            <input
+                                                type="text"
+                                                placeholder="ابحث بالعربي أو الألماني..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className={`w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-${activeColor}-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium`}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* PROGRESS BARS */}
+                            {activeTab === 'words' && <ProgressBar total={totalWords} learned={Array.from(learnedItems).filter(id => id.startsWith('w')).length} colorClass="text-orange-500" />}
+                            {activeTab === 'verbs' && <ProgressBar total={totalVerbs} learned={Array.from(learnedItems).filter(id => id.startsWith('v')).length} colorClass="text-emerald-500" />}
+                            {activeTab === 'expressions' && <ProgressBar total={totalExp} learned={Array.from(learnedItems).filter(id => id.startsWith('e')).length} colorClass="text-amber-500" />}
+
+                            {/* TAB: WORDS */}
+                            {activeTab === 'words' && (
+                                <div className="space-y-12">
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-orange-100 p-2 rounded-xl text-orange-600"><i data-lucide="check-square" className="w-6 h-6"></i></span> مهام معتادة (Immer / Oft)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.immerOft.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-red-100 p-2 rounded-xl text-red-600"><i data-lucide="x-circle" className="w-6 h-6"></i></span> نادراً / أبداً (Selten / Nie)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.seltenNie.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-yellow-100 p-2 rounded-xl text-yellow-600"><i data-lucide="building" className="w-6 h-6"></i></span> المكتب والعمل (Büroalltag)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.bueroalltag.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
+
+                            {/* TAB: EXPRESSIONS */}
+                            {activeTab === 'expressions' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-amber-100 p-2 rounded-xl text-amber-600"><i data-lucide="calendar" className="w-6 h-6"></i></span>
+                                        عبارات المواعيد (Termine vereinbaren)
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {LEARNING_DATA.expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                            <div key={exp.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative group hover:shadow-xl hover:border-amber-200 transition-all duration-300">
+                                                <button onClick={() => toggleLearned(exp.id)} className={`absolute top-5 left-5 p-2 rounded-full transition-colors z-10 ${learnedItems.has(exp.id) ? 'bg-amber-100 text-amber-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                                </button>
+                                                <span className="inline-block bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-xs font-bold mb-4 ar-text border border-amber-100">{exp.type}</span>
+                                                <div className="flex items-start gap-3 mb-3" dir="ltr">
+                                                    <div className="flex flex-col gap-2 shrink-0">
+                                                        <button onClick={(e) => playAudio(exp.ger, e)} className="text-amber-500 bg-amber-50 p-2 rounded-xl hover:bg-amber-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                        <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={exp.ger} /></div>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight mt-1">"{exp.ger}"</h3>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
+                                                    <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
+                                                    <p className="text-amber-700 font-extrabold text-xl mb-4 ar-text">{exp.ar}</p>
+                                                    <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
+                                                        <i data-lucide="info" className="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>
+                                                        <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: DIALOGUES */}
+                            {activeTab === 'dialogues' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="phone-call" className="w-6 h-6"></i></span>
+                                        محادثات التليفون والعمل (Dialoge)
+                                    </h2>
+                                    <div className="max-w-4xl mx-auto space-y-6">
+                                        {LEARNING_DATA.dialogues.map(dialogue => (
+                                            <DialogueRow key={dialogue.id} dialogue={dialogue} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: VERBS */}
+                            {activeTab === 'verbs' && (
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="list-checks" className="w-6 h-6"></i></span>
+                                        أفعال هامة في الماضي (Verben)
+                                    </h2>
+                                    <div className="space-y-4 max-w-4xl mx-auto">
+                                        {LEARNING_DATA.verbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <IrregularVerbRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: GRAMMAR */}
+                            {activeTab === 'grammar' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-purple-700 to-indigo-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="book-open" className="absolute -right-4 -bottom-4 w-48 h-48 text-white opacity-10 transform rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">القواعد النحوية (Grammatik)</h2>
+                                            <p className="text-purple-200 ar-text text-lg max-w-2xl">شرح حروف الجر الزمنية، أفعال الداتيف، وتكوين الأسئلة غير المباشرة لمستوى A2.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-8">
+                                        {LEARNING_DATA.grammar.map((gram, idx) => (
+                                            <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                    <div className="bg-purple-100 p-3 rounded-2xl text-purple-600 shrink-0 mt-1">
+                                                        <i data-lucide="braces" className="w-6 h-6"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                        <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-8">
+                                                    {gram.structure && (
+                                                        <div className="bg-slate-900 text-purple-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
+                                                            <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i> {gram.structure}
+                                                        </div>
+                                                    )}
+
+                                                    {gram.examples && (
+                                                        <>
+                                                            <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                            <ul className="space-y-4">
+                                                                {gram.examples.map((ex, i) => (
+                                                                    <li key={i} className="bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
+                                                                        <span className="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold mb-3 ar-text">{ex.category}</span>
+                                                                        <div className="flex gap-4 items-start mb-3" dir="ltr">
+                                                                            <button onClick={(e) => playAudio(ex.g, e)} className="text-purple-500 bg-white p-2 rounded-xl shadow-sm hover:bg-purple-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                            <div className="flex flex-col gap-1">
+                                                                                <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                                {ex.e && <span className="text-slate-500 text-sm italic">{ex.e}</span>}
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="text-purple-700 font-bold ar-text border-t border-purple-200/50 pt-3 mt-3">{ex.a}</div>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </>
+                                                    )}
+
+                                                    {gram.type === 'temporal_table' && <TemporalTable />}
+                                                    {gram.type === 'dative_verbs' && <DativeVerbsList />}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: LETTERS */}
+                            {activeTab === 'letters' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-cyan-600 to-teal-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="mail" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">كيفية كتابة إيميل رسمي (Formelle E-Mails)</h2>
+                                            <p className="text-cyan-100 ar-text text-lg max-w-2xl">طريقة كتابة وتأجيل المواعيد عبر الإيميل في بيئة العمل الألمانية.</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Explanation / Guide */}
+                                    <div className="bg-white p-8 rounded-3xl border border-cyan-100 mb-10 shadow-sm">
+                                        <h3 className="text-2xl font-bold text-cyan-800 mb-6 flex items-center gap-3 ar-text">
+                                            <span className="bg-cyan-100 p-2 rounded-xl"><i data-lucide="info" className="w-6 h-6 text-cyan-600"></i></span>
+                                            أساسيات الإيميل الرسمي وشبه الرسمي
+                                        </h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ar-text">
+                                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                                                <h4 className="font-bold text-slate-800 mb-3 text-lg">التحية (Anrede)</h4>
+                                                <ul className="space-y-3 text-slate-600">
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr block text-base">Sehr geehrte Frau (Müller),</span> (رسمي جداً للمؤنث)</li>
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr block text-base">Sehr geehrter Herr (Winter),</span> (رسمي جداً للمذكر)</li>
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr block text-base">Sehr geehrte Damen und Herren,</span> (رسمي للجهة/غير معروف)</li>
+                                                    <li className="pt-2 border-t border-slate-200 mt-2"><span className="text-cyan-600 font-bold dir-ltr block text-base">Liebe Frau (Sommer), / Lieber Herr (Winter),</span> (شبه رسمي - لزملاء العمل)</li>
+                                                </ul>
+                                            </div>
+                                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                                                <h4 className="font-bold text-slate-800 mb-3 text-lg">الخاتمة (Gruß)</h4>
+                                                <ul className="space-y-3 text-slate-600">
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr block text-base">Mit freundlichen Grüßen</span> (رسمي جداً - مع خالص التحيات)</li>
+                                                    <li className="pt-2 border-t border-slate-200 mt-2"><span className="text-cyan-600 font-bold dir-ltr block text-base">Mit besten Grüßen</span> (شبه رسمي - مع أطيب التحيات)</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* The Letters */}
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.letters.map((letter) => (
+                                            <div key={letter.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-cyan-100 text-cyan-700 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    E-Mail
+                                                </div>
+                                                <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-6 mt-2 flex items-center gap-3">
+                                                    <i data-lucide="mail-open" className="w-6 h-6 text-cyan-500"></i> {letter.title}
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {letter.lines.map((line, idx) => {
+                                                        const isReply = line.g.includes("---");
+                                                        return (
+                                                            <div key={idx} className={`${isReply ? 'bg-cyan-600 text-white font-bold text-center py-2 rounded-xl my-4' : 'bg-slate-50/50 p-4 rounded-2xl border border-cyan-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group'}`}>
+                                                                {isReply ? (
+                                                                    <span className="ar-text">{line.a}</span>
+                                                                ) : (
+                                                                    <>
+                                                                        <div className="flex-1">
+                                                                            <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                                <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-cyan-600 bg-white p-2 rounded-xl shadow-sm hover:bg-cyan-50 transition-colors shrink-0">
+                                                                                    <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                                </button>
+                                                                                <p className="text-slate-800 text-lg font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                            </div>
+                                                                            {line.e && <p className="sm:ml-14 text-slate-500 text-sm italic mb-2" dir="ltr">{line.e}</p>}
+                                                                            <div className="sm:ml-14 text-cyan-800 text-base font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                            <SpeechTester targetText={line.g} />
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: CULTURE */}
+                            {activeTab === 'culture' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-rose-600 to-red-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="globe" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">ثقافة العمل (Arbeitskultur)</h2>
+                                            <p className="text-rose-200 ar-text text-lg max-w-2xl">معلومات عن الواقع في المكاتب الألمانية ونصائح هامة للتعامل مقارنة بالثقافة المصرية.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.culture.map((item) => (
+                                            <div key={item.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-rose-100 text-rose-600 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    Lesetext
+                                                </div>
+                                                <h3 className="text-3xl font-extrabold text-slate-800 ar-text mb-6 mt-2">{item.title}</h3>
+                                                <div className="space-y-4">
+                                                    {item.lines.map((line, idx) => (
+                                                        <div key={idx} className="bg-slate-50/50 p-4 rounded-2xl border border-rose-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                    <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-rose-500 bg-white p-2 rounded-xl shadow-sm hover:bg-rose-50 transition-colors shrink-0">
+                                                                        <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                    </button>
+                                                                    <p className="text-slate-800 text-xl font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                </div>
+                                                                {line.e && <p className="sm:ml-14 text-slate-500 text-sm italic mb-2" dir="ltr">{line.e}</p>}
+                                                                <div className="sm:ml-14 text-rose-700 text-lg font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                </div>
+                                                            </div>
+                                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                <SpeechTester targetText={line.g} />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch A2: Essen mit Genuss</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            overflow: hidden;
+        }
+
+        .ar-text {
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Refined Card Flips */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Glassmorphism subtle effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Custom Scrollbars for Cards */
+        .card-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .card-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .front-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .front-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- HELPERS FOR AUDIO & SPEECH ---
+        const playAudio = (text, e) => {
+            if (e) e.stopPropagation();
+            const cleanText = text.replace(/<[^>]+>/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'de-DE';
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const SpeechTester = ({ targetText }) => {
+            const [status, setStatus] = React.useState('idle');
+            const [heard, setHeard] = React.useState('');
+
+            const listen = (e) => {
+                if (e) e.stopPropagation();
+                if (!('webkitSpeechRecognition' in window)) {
+                    alert('المتصفح ده مش بيدعم تسجيل الصوت، جرب Google Chrome.');
+                    return;
+                }
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+
+                recognition.onstart = () => setStatus('listening');
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    setHeard(speechResult);
+
+                    const clean = (str) => str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,!?]/g, '').trim();
+                    const targetClean = clean(targetText);
+                    const heardClean = clean(speechResult);
+
+                    if (heardClean.includes(targetClean) || targetClean.includes(heardClean) || heardClean === targetClean) {
+                        setStatus('success');
+                    } else {
+                        setStatus('fail');
+                    }
+                };
+                recognition.onerror = () => setStatus('fail');
+                recognition.onend = () => { if (status === 'listening') setStatus('idle'); };
+                recognition.start();
+            };
+
+            return (
+                <div className="inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={listen} title="جرب تنطقها" className={`p-2 rounded-full transition-all duration-300 shadow-sm ${status === 'listening' ? 'bg-red-500 text-white animate-pulse scale-110' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'}`}>
+                        <i data-lucide="mic" className="w-4 h-4"></i>
+                    </button>
+                    {status === 'success' && <span className="text-emerald-500 text-xs font-bold ar-text animate-bounce">✅ ممتاز!</span>}
+                    {status === 'fail' && <span className="text-red-500 text-xs ar-text font-bold" title={`سمعت: ${heard}`}>❌ جرب تاني</span>}
+                </div>
+            );
+        };
+
+        // --- FULL A2 LEARNING DATA (Essen mit Genuss) - NO TRUNCATION ---
+        const LEARNING_DATA = {
+            words: {
+                obstGemuese: [
+                    { id: 'w1', ger: "die Ananas", eng: "pineapple", ar: "الأناناس", s: [{ g: "Ich esse gern <strong>Ananas</strong>.", e: "I like eating pineapple.", a: "أنا بحب آكل الأناناس." }] },
+                    { id: 'w2', ger: "der Apfel", eng: "apple", ar: "التفاح", s: [{ g: "Ein <strong>Apfel</strong> am Tag ist gesund.", e: "An apple a day is healthy.", a: "تفاحة في اليوم مفيدة للصحة." }] },
+                    { id: 'w3', ger: "die Apfelsine", eng: "orange", ar: "البرتقال", s: [{ g: "Ich esse eine <strong>Apfelsine</strong>.", e: "I eat an orange.", a: "أنا باكل برتقالة." }] },
+                    { id: 'w4', ger: "die Aprikose", eng: "apricot", ar: "المشمش", s: [{ g: "Die <strong>Aprikose</strong> ist süß.", e: "The apricot is sweet.", a: "المشمش مسكر." }] },
+                    { id: 'w5', ger: "die Birne", eng: "pear", ar: "الكمثرى", s: [{ g: "Ich kaufe eine <strong>Birne</strong>.", e: "I buy a pear.", a: "أنا بشتري كمثرى." }] },
+                    { id: 'w6', ger: "die Blaubeere", eng: "blueberry", ar: "التوت الأزرق", s: [{ g: "<strong>Blaubeeren</strong> sind lecker.", e: "Blueberries are delicious.", a: "التوت الأزرق لذيذ." }] },
+                    { id: 'w7', ger: "die Erdbeere", eng: "strawberry", ar: "الفراولة", s: [{ g: "Im Sommer essen wir <strong>Erdbeeren</strong>.", e: "In summer we eat strawberries.", a: "في الصيف بناكل فراولة." }] },
+                    { id: 'w8', ger: "die Himbeere", eng: "raspberry", ar: "التوت الأحمر", s: [{ g: "Ich mag <strong>Himbeeren</strong>.", e: "I like raspberries.", a: "أنا بحب التوت الأحمر." }] },
+                    { id: 'w9', ger: "die Weintraube", eng: "grape", ar: "العنب", s: [{ g: "Wir haben frische <strong>Weintrauben</strong> gekauft.", e: "We bought fresh grapes.", a: "اشترينا عنب طازج." }] },
+                    { id: 'w10', ger: "die Zitrone", eng: "lemon", ar: "الليمون", s: [{ g: "Der Tee mit <strong>Zitrone</strong> schmeckt gut.", e: "The tea with lemon tastes good.", a: "الشاي بالليمون طعمه حلو." }] },
+                    { id: 'w11', ger: "die Gurke", eng: "cucumber", ar: "الخيار", s: [{ g: "Ich mache einen Salat mit <strong>Gurke</strong>.", e: "I am making a salad with cucumber.", a: "أنا بعمل سلطة بخيار." }] },
+                    { id: 'w12', ger: "die Möhre", eng: "carrot", ar: "الجزر", s: [{ g: "<strong>Möhren</strong> sind gut für die Augen.", e: "Carrots are good for the eyes.", a: "الجزر مفيد للعين." }] },
+                    { id: 'w13', ger: "der Knoblauch", eng: "garlic", ar: "الثوم", s: [{ g: "Dieser Käse ist mit frischem <strong>Knoblauch</strong>.", e: "This cheese is with fresh garlic.", a: "الجبنة دي بالثوم الطازج." }] },
+                    { id: 'w14', ger: "das Kraut", eng: "cabbage/herb", ar: "الكرنب / العشب", s: [{ g: "Wir brauchen frische <strong>Kräuter</strong>.", e: "We need fresh herbs.", a: "إحنا محتاجين أعشاب طازجة." }] },
+                    { id: 'w15', ger: "die Zwiebel", eng: "onion", ar: "البصل", s: [{ g: "Ich nehme ein halbes Kilo <strong>Zwiebeln</strong>.", e: "I'll take half a kilo of onions.", a: "هاخد نص كيلو بصل." }] },
+                    { id: 'w16', ger: "die Tomate", eng: "tomato", ar: "الطماطم", s: [{ g: "Sind das spanische <strong>Tomaten</strong>?", e: "Are those Spanish tomatoes?", a: "دي طماطم إسباني؟" }] },
+                    { id: 'w17', ger: "der Paprika", eng: "bell pepper", ar: "الفلفل الحلو", s: [{ g: "Wir brauchen roten <strong>Paprika</strong> für die Suppe.", e: "We need red bell pepper for the soup.", a: "محتاجين فلفل أحمر للشوربة." }] },
+                    { id: 'w18', ger: "die Aubergine", eng: "eggplant", ar: "الباذنجان", s: [{ g: "Ich koche die <strong>Aubergine</strong>.", e: "I am cooking the eggplant.", a: "أنا بطبخ الباذنجان." }] },
+                    { id: 'w19', ger: "die Zucchini", eng: "zucchini", ar: "الكوسة", s: [{ g: "Wir braten <strong>Zucchini</strong>.", e: "We are frying zucchini.", a: "إحنا بنقلي كوسة." }] },
+                    { id: 'w20', ger: "die Petersilie", eng: "parsley", ar: "البقدونس", s: [{ g: "Ich brauche <strong>Petersilie</strong> für die Suppe.", e: "I need parsley for the soup.", a: "أنا محتاج بقدونس للشوربة." }] },
+                    { id: 'w21', ger: "der Schnittlauch", eng: "chives", ar: "الثوم المعمر", s: [{ g: "<strong>Schnittlauch</strong> passt gut zu Quark.", e: "Chives go well with quark.", a: "الثوم المعمر بيليق جداً مع الكوارك (نوع جبن/زبادي)." }] },
+                    { id: 'w22', ger: "die Minze", eng: "mint", ar: "النعناع", s: [{ g: "Ich trinke Tee mit frischer <strong>Minze</strong>.", e: "I drink tea with fresh mint.", a: "أنا بشرب شاي بالنعناع الطازج." }] }
+                ],
+                fleischFisch: [
+                    { id: 'w23', ger: "der Aal", eng: "eel", ar: "ثعبان البحر", s: [{ g: "Der <strong>Aal</strong> ist ein Fisch.", e: "The eel is a fish.", a: "ثعبان البحر هو نوع من السمك." }] },
+                    { id: 'w24', ger: "der Kabeljau", eng: "cod", ar: "سمك القد", s: [{ g: "Wir essen heute <strong>Kabeljau</strong>.", e: "We are eating cod today.", a: "هناكل النهاردة سمك القد." }] },
+                    { id: 'w25', ger: "die Forelle", eng: "trout", ar: "السلمون المرقط (تراوت)", s: [{ g: "Die <strong>Forelle</strong> schmeckt gut.", e: "The trout tastes good.", a: "التراوت طعمه حلو." }] },
+                    { id: 'w26', ger: "der Lachs", eng: "salmon", ar: "السلمون", s: [{ g: "Zum Mittagessen nehme ich den <strong>Lachs</strong>.", e: "For lunch I'll have the salmon.", a: "على الغدا هاخد سلمون." }] },
+                    { id: 'w27', ger: "das Hühnerfleisch", eng: "chicken meat", ar: "لحم الدجاج", s: [{ g: "Er isst oft <strong>Hühnerfleisch</strong> mit Reis.", e: "He often eats chicken with rice.", a: "هو غالباً بياكل فراخ مع رز." }] },
+                    { id: 'w28', ger: "das Lammfleisch", eng: "lamb meat", ar: "لحم الضأن", s: [{ g: "<strong>Lammfleisch</strong> ist sehr zart.", e: "Lamb meat is very tender.", a: "لحم الضأن طري جداً." }] },
+                    { id: 'w29', ger: "das Rindfleisch", eng: "beef", ar: "لحم البقر", s: [{ g: "Ich hätte gern zwei Kilo mageres <strong>Rindfleisch</strong>.", e: "I'd like two kilos of lean beef.", a: "عايز اتنين كيلو لحمة بقري حمراء (خالية من الدهن)." }] },
+                    { id: 'w30', ger: "das Schweinefleisch", eng: "pork", ar: "لحم الخنزير", s: [{ g: "Ich esse kein <strong>Schweinefleisch</strong>.", e: "I don't eat pork.", a: "أنا مش باكل لحم خنزير." }] },
+                    { id: 'w31', ger: "das Gehackte", eng: "minced meat", ar: "اللحم المفروم", s: [{ g: "Wir brauchen <strong>Gehacktes</strong> für die Soße.", e: "We need minced meat for the sauce.", a: "محتاجين لحمة مفرومة للصلصة." }] },
+                    { id: 'w32', ger: "die Salami", eng: "salami", ar: "السلامي", s: [{ g: "300 Gramm ungarische <strong>Salami</strong>, bitte.", e: "300 grams of Hungarian salami, please.", a: "300 جرام سلامي مجري لو سمحت." }] },
+                    { id: 'w33', ger: "der Schinken", eng: "ham", ar: "لحم الخنزير المقدد", s: [{ g: "Der italienische <strong>Schinken</strong> ist im Angebot.", e: "The Italian ham is on offer.", a: "اللحم الإيطالي عليه عرض." }] },
+                    { id: 'w34', ger: "die Leberwurst", eng: "liver sausage", ar: "سجق الكبد", s: [{ g: "Ich esse Brot mit <strong>Leberwurst</strong>.", e: "I eat bread with liver sausage.", a: "باكل عيش بسجق الكبد." }] },
+                    { id: 'w35', ger: "die Blutwurst", eng: "blood sausage", ar: "سجق الدم", s: [{ g: "Er mag keine <strong>Blutwurst</strong>.", e: "He doesn't like blood sausage.", a: "هو مبيحبش سجق الدم." }] }
+                ],
+                sonstiges: [
+                    { id: 'w36', ger: "der Käse", eng: "cheese", ar: "الجبن", s: [{ g: "Wie viel von dem <strong>Käse</strong> darf es sein?", e: "How much of the cheese would you like?", a: "تحب قد إيه من الجبنة؟" }] },
+                    { id: 'w37', ger: "der Quark", eng: "quark / curd", ar: "خثارة اللبن / الكوارك", s: [{ g: "Ich esse <strong>Quark</strong> mit Früchten.", e: "I eat quark with fruits.", a: "باكل كوارك بالفواكه." }] },
+                    { id: 'w38', ger: "das Brot", eng: "bread", ar: "الخبز", s: [{ g: "Die Deutschen essen viel <strong>Brot</strong>.", e: "Germans eat a lot of bread.", a: "الألمان بياكلوا عيش كتير." }] },
+                    { id: 'w39', ger: "die Nudel", eng: "noodle / pasta", ar: "المكرونة", s: [{ g: "Mehr als ein Drittel isst am liebsten <strong>Nudeln</strong>.", e: "More than a third like to eat pasta the most.", a: "أكتر من التلت بيفضلوا ياكلوا مكرونة." }] },
+                    { id: 'w40', ger: "der Reis", eng: "rice", ar: "الأرز", s: [{ g: "Ich esse Hühnerfleisch mit <strong>Reis</strong>.", e: "I eat chicken with rice.", a: "باكل فراخ مع رز." }] },
+                    { id: 'w41', ger: "der Kuchen", eng: "cake", ar: "الكيك", s: [{ g: "Nachmittags trinken wir Kaffee und essen <strong>Kuchen</strong>.", e: "In the afternoon we drink coffee and eat cake.", a: "بعد الظهر بنشرب قهوة وناكل كيك." }] },
+                    { id: 'w42', ger: "die Torte", eng: "tart / layered cake", ar: "التورتة", s: [{ g: "Zum Geburtstag gibt es eine große <strong>Torte</strong>.", e: "For the birthday there is a large tart.", a: "عشان عيد الميلاد فيه تورتة كبيرة." }] },
+                    { id: 'w43', ger: "der Keks", eng: "cookie", ar: "البسكويت", s: [{ g: "Ich esse einen <strong>Keks</strong> zum Tee.", e: "I eat a cookie with tea.", a: "باكل بسكوتة مع الشاي." }] },
+                    { id: 'w44', ger: "das Bonbon", eng: "candy", ar: "البونبوني / الحلوى", s: [{ g: "Möchtest du ein <strong>Bonbon</strong>?", e: "Would you like a candy?", a: "عايز بونبوناية؟" }] },
+                    { id: 'w45', ger: "das Gummibärchen", eng: "gummy bear", ar: "حلوى الجيلي (الدب)", s: [{ g: "Kinder lieben <strong>Gummibärchen</strong>.", e: "Children love gummy bears.", a: "الأطفال بيحبوا الجيلي كولا (الدباديب)." }] },
+                    { id: 'w46', ger: "die Praline", eng: "praline", ar: "الشوكولاتة المحشوة", s: [{ g: "Diese <strong>Pralinen</strong> sind sehr lecker.", e: "These pralines are very delicious.", a: "الشوكولاتة دي طعمها حلو جداً." }] },
+                    { id: 'w47', ger: "die Schokolade", eng: "chocolate", ar: "الشوكولاتة", s: [{ g: "Sie isst gern dunkle <strong>Schokolade</strong>.", e: "She likes to eat dark chocolate.", a: "هي بتحب تاكل شوكولاتة غامقة." }] }
+                ]
+            },
+            expressions: [
+                { id: 'e1', type: "Food Preferences", ger: "Was essen Sie gern/am liebsten?", eng: "What do you like/most like to eat?", ar: "بتحب / بتفضل تاكل إيه؟", context: "للسؤال عن الأكل المفضل." },
+                { id: 'e2', type: "Food Preferences", ger: "Was mögen Sie nicht?", eng: "What do you not like?", ar: "مابتحبش إيه؟", context: "للسؤال عن الأكل غير المفضل." },
+                { id: 'e3', type: "Food Preferences", ger: "Ich esse gern Pizza.", eng: "I like eating pizza.", ar: "بحب آكل بيتزا.", context: "للإجابة." },
+                { id: 'e4', type: "Food Preferences", ger: "Am liebsten esse ich Nudeln.", eng: "I like pasta the most.", ar: "أكتر حاجة بفضل آكلها هي المكرونة.", context: "للإجابة والتفضيل المطلق." },
+                { id: 'e5', type: "Food Preferences", ger: "Ich mag keinen Fisch.", eng: "I don’t like fish.", ar: "مبحبش السمك.", context: "للإجابة بالرفض." },
+
+                { id: 'e6', type: "Frequency of Habits", ger: "Wie oft essen Sie Fleisch, Obst und Gemüse, Süßigkeiten, Fertiggerichte?", eng: "How often do you eat meat, fruit and vegetables, sweets, ready-made meals?", ar: "بتاكل لحمة، خضار وفاكهة، حلويات، وأكل جاهز كل قد إيه؟", context: "للسؤال عن معدل تكرار العادات." },
+                { id: 'e7', type: "Frequency of Habits", ger: "Ich esse oft Obst und Gemüse.", eng: "I often eat fruits and vegetables.", ar: "باكل خضار وفاكهة كتير (غالباً).", context: "للتعبير عن التكرار الكثير." },
+                { id: 'e8', type: "Frequency of Habits", ger: "Fleisch esse ich zweimal pro Woche.", eng: "I eat meat twice a week.", ar: "باكل لحمة مرتين في الأسبوع.", context: "تحديد عدد المرات." },
+                { id: 'e9', type: "Frequency of Habits", ger: "Süßigkeiten esse ich selten.", eng: "I rarely eat sweets.", ar: "نادراً لما باكل حلويات.", context: "للتعبير عن الندرة." },
+
+                { id: 'e10', type: "Cooking and Baking", ger: "Können Sie kochen oder backen?", eng: "Can you cook or bake?", ar: "بتعرف تطبخ أو تخبز؟", context: "للسؤال عن مهارات الطبخ." },
+                { id: 'e11', type: "Cooking and Baking", ger: "Wenn ja, was machen Sie am liebsten?", eng: "If so, what do you like to make most?", ar: "لو أيوه، بتفضل تعمل إيه؟", context: "للسؤال عن الطبخ المفضل." },
+                { id: 'e12', type: "Cooking and Baking", ger: "Ja, ich kann gut kochen.", eng: "Yes, I can cook well.", ar: "أيوه بعرف أطبخ كويس.", context: "للرد بالإيجاب." },
+                { id: 'e13', type: "Cooking and Baking", ger: "Ich backe gern Kuchen.", eng: "I like baking cakes.", ar: "بحب أخبز كيك.", context: "للرد." },
+                { id: 'e14', type: "Cooking and Baking", ger: "Am liebsten mache ich Spaghetti.", eng: "I like making spaghetti the most.", ar: "أكتر حاجة بفضل أعملها مكرونة سباجيتي.", context: "للرد بالتفضيل." },
+
+                { id: 'e15', type: "Habits During Meals", ger: "Lesen Sie manchmal beim Essen oder sehen Sie fern?", eng: "Do you sometimes read while eating or watch TV?", ar: "هل أحياناً بتقرأ وأنت بتاكل أو تتفرج ع التليفزيون؟", context: "للسؤال عن عادات الأكل." },
+                { id: 'e16', type: "Habits During Meals", ger: "Ja, manchmal lese ich beim Essen.", eng: "Yes, sometimes I read while eating.", ar: "أيوه، أحياناً بقرأ وأنا باكل.", context: "للرد بالإيجاب." },
+                { id: 'e17', type: "Habits During Meals", ger: "Nein, ich schaue nie fern beim Essen.", eng: "No, I never watch TV while eating.", ar: "لا، عمري ما بتفرج ع التليفزيون وأنا باكل.", context: "للرد بالنفي القاطع." },
+                { id: 'e18', type: "Habits During Meals", ger: "Ich höre lieber Musik beim Essen.", eng: "I prefer listening to music while eating.", ar: "بفضل أسمع مزيكا وأنا باكل.", context: "للرد بتفضيل بديل." },
+
+                { id: 'e19', type: "Lunch Details", ger: "Was und wo essen Sie mittags?", eng: "What and where do you eat for lunch?", ar: "بتاكل إيه وفين الضهر؟", context: "للسؤال عن تفاصيل الغداء." },
+                { id: 'e20', type: "Lunch Details", ger: "Ich esse mittags meistens in der Mensa.", eng: "I usually eat lunch in the cafeteria.", ar: "بتغدى غالباً في الكافيتريا.", context: "للرد بالمكان المعتاد." },
+                { id: 'e21', type: "Lunch Details", ger: "Zu Mittag esse ich gern Salat.", eng: "For lunch I like eating salad.", ar: "ع الغدا بحب آكل سلطة.", context: "للرد بالأكل." },
+                { id: 'e22', type: "Lunch Details", ger: "Ich esse mittags zu Hause mit meiner Familie.", eng: "I eat lunch at home with my family.", ar: "بتغدى في البيت مع عيلتي.", context: "للرد بالتفاصيل." },
+
+                { id: 'e23', type: "Das sagt der Kellner", ger: "Was möchten Sie trinken?", eng: "What would you like to drink?", ar: "تحب تشرب إيه؟", context: "الجرسون يسأل." },
+                { id: 'e24', type: "Das sagt der Kellner", ger: "Was kann ich Ihnen bringen?", eng: "What can I bring you?", ar: "أقدر أجيب لحضرتك إيه؟", context: "الجرسون يسأل." },
+                { id: 'e25', type: "Das sagt der Kellner", ger: "Haben Sie schon gewählt?", eng: "Have you already decided?", ar: "اخترت هتاكل إيه؟", context: "الجرسون يسأل." },
+                { id: 'e26', type: "Das sagt der Kellner", ger: "Guten Appetit!", eng: "Enjoy your meal!", ar: "بالهنا والشفا!", context: "الجرسون عند تقديم الأكل." },
+                { id: 'e27', type: "Das sagt der Kellner", ger: "Waren Sie mit dem Essen zufrieden?", eng: "Were you satisfied with the food?", ar: "هل كنت راضي عن الأكل؟", context: "الجرسون يسأل بعد الأكل." },
+                { id: 'e28', type: "Das sagt der Kellner", ger: "Hat es Ihnen geschmeckt?", eng: "Did you like it?", ar: "الأكل عجبك؟", context: "الجرسون يسأل بعد الأكل." },
+                { id: 'e29', type: "Das sagt der Kellner", ger: "Haben Sie sonst noch einen Wunsch?", eng: "Do you have any other request?", ar: "عندك أي طلب تاني؟", context: "الجرسون يسأل للتأكد." },
+                { id: 'e30', type: "Das sagt der Kellner", ger: "Zahlen Sie zusammen oder getrennt?", eng: "Will you pay together or separately?", ar: "هتدفعوا مع بعض ولا كل واحد لوحده؟", context: "الجرسون عند دفع الحساب." },
+
+                { id: 'e31', type: "Das sagt der Gast", ger: "Ich möchte … / Ich nehme …", eng: "I would like … / I'll take …", ar: "أنا عايز... / هاخد...", context: "الزبون عند الطلب." },
+                { id: 'e32', type: "Das sagt der Gast", ger: "Ich hätte gern … / Ich trinke …", eng: "I would like … / I drink …", ar: "أود الحصول على... / هشرب...", context: "الزبون عند الطلب." },
+                { id: 'e33', type: "Das sagt der Gast", ger: "Haben Sie meine Bestellung vergessen?", eng: "Did you forget my order?", ar: "أنت نسيت طلبي؟", context: "الزبون للشكوى." },
+                { id: 'e34', type: "Das sagt der Gast", ger: "Das Essen ist kalt.", eng: "The food is cold.", ar: "الأكل بارد.", context: "الزبون للشكوى." },
+                { id: 'e35', type: "Das sagt der Gast", ger: "Kann ich bitte noch (etwas Salz) haben?", eng: "Could I have (some salt), please?", ar: "ممكن تديني (شوية ملح) كمان لو سمحت؟", context: "الزبون لطلب شيء إضافي." },
+                { id: 'e36', type: "Das sagt der Gast", ger: "Prost! / Zum Wohl!", eng: "Cheers!", ar: "في صحتك! (عند الشرب)", context: "الزبون للتحية قبل الشرب." },
+                { id: 'e37', type: "Das sagt der Gast", ger: "Das Essen war hervorragend/köstlich/sehr gut.", eng: "The food was excellent/delicious/very good.", ar: "الأكل كان ممتاز/لذيذ/جيد جداً.", context: "الزبون لإبداء الإعجاب." },
+                { id: 'e38', type: "Das sagt der Gast", ger: "Wir hätten gern die Rechnung.", eng: "We would like the bill, please.", ar: "عايزين الحساب لو سمحت.", context: "الزبون لطلب الحساب." },
+                { id: 'e39', type: "Das sagt der Gast", ger: "Wir möchten dann zahlen.", eng: "We would like to pay.", ar: "إحنا عايزين ندفع.", context: "الزبون لطلب الدفع." },
+
+                { id: 'e40', type: "Fragen & Tipps", ger: "Welches Restaurant besuchen Sie am liebsten?", eng: "Which restaurant do you like to visit the most?", ar: "إيه المطعم المفضل ليك؟", context: "سؤال عن المطعم." },
+                { id: 'e41', type: "Fragen & Tipps", ger: "Können Sie ein Restaurant empfehlen?", eng: "Can you recommend a restaurant?", ar: "ممكن ترشحلي مطعم؟", context: "لطلب النصيحة." },
+                { id: 'e42', type: "Fragen & Tipps", ger: "Muss man Plätze reservieren?", eng: "Do you have to reserve tables?", ar: "هل لازم نحجز مكان؟", context: "للسؤال عن الحجز." },
+                { id: 'e43', type: "Fragen & Tipps", ger: "Wann isst man normalerweise (mittags/abends)?", eng: "When do people usually eat (lunch/dinner)?", ar: "الناس عادة بتاكل إمتى (الضهر/بالليل)؟", context: "للسؤال عن أوقات الأكل." },
+                { id: 'e44', type: "Fragen & Tipps", ger: "Bringt der Kellner die Rechnung gleich nach dem Essen?", eng: "Does the waiter bring the bill right after the meal?", ar: "هل الجرسون بيجيب الحساب بعد الأكل على طول؟", context: "سؤال عن العادات." },
+                { id: 'e45', type: "Fragen & Tipps", ger: "Gibt man Trinkgeld?", eng: "Do people give tips?", ar: "هل بندفع بقشيش؟", context: "سؤال عن البقشيش." },
+
+                { id: 'e46', type: "Beim Einkaufen (البائع)", ger: "Möchten Sie noch etwas?", eng: "Would you like anything else?", ar: "هل تود شيئاً آخر؟", context: "البائع يسأل" },
+                { id: 'e47', type: "Beim Einkaufen (البائع)", ger: "Kommt noch was dazu?", eng: "Anything else to add?", ar: "أي شيء آخر يضاف؟", context: "البائع يسأل" },
+                { id: 'e48', type: "Beim Einkaufen (البائع)", ger: "Sonst noch etwas?", eng: "Anything else?", ar: "أي شيء آخر؟", context: "البائع يسأل" },
+                { id: 'e49', type: "Beim Einkaufen (البائع)", ger: "Wie viel darf es denn sein?", eng: "How much would you like?", ar: "ما الكمية التي تريدها؟", context: "البائع يسأل عن الكمية" },
+                { id: 'e50', type: "Beim Einkaufen (البائع)", ger: "Wir haben heute Schinken im Angebot.", eng: "Today we have ham on offer.", ar: "لدينا عرض على اللحم اليوم.", context: "البائع يقترح عرضاً" },
+                { id: 'e51', type: "Beim Einkaufen (البائع)", ger: "Möchten Sie mal probieren?", eng: "Would you like to try?", ar: "هل تود أن تتذوق؟", context: "البائع يعرض التذوق" },
+                { id: 'e52', type: "Beim Einkaufen (البائع)", ger: "Dann bekomme ich 19,50 Euro, bitte.", eng: "Then that will be €19.50, please.", ar: "إذن الحساب 19.50 يورو لو سمحت.", context: "البائع يطلب الحساب" },
+
+                { id: 'e53', type: "Beim Einkaufen (الزبون)", ger: "Ich hätte gern zwei Kilo Rindfleisch.", eng: "I would like two kilos of beef.", ar: "أود 2 كيلو لحم بقري.", context: "الزبون يطلب" },
+                { id: 'e54', type: "Beim Einkaufen (الزبون)", ger: "Ich nehme ein ½ Kilo Zwiebeln.", eng: "I’ll take half a kilo of onions.", ar: "سآخذ نصف كيلو بصل.", context: "الزبون يطلب" },
+                { id: 'e55', type: "Beim Einkaufen (الزبون)", ger: "Ist dieser Käse mit frischen Kräutern?", eng: "Is this cheese with fresh herbs?", ar: "هل هذه الجبنة بالأعشاب الطازجة؟", context: "الزبون يسأل عن منتج" },
+                { id: 'e56', type: "Beim Einkaufen (الزبون)", ger: "Der Schinken schmeckt gut.", eng: "The ham tastes good.", ar: "اللحم طعمه جيد.", context: "الزبون يبدي رأيه بعد التذوق" },
+                { id: 'e57', type: "Beim Einkaufen (الزبون)", ger: "Diese Tomaten sehen gut aus.", eng: "These tomatoes look good.", ar: "هذه الطماطم تبدو جيدة.", context: "الزبون يبدي إعجابه بالمنتج" },
+                { id: 'e58', type: "Beim Einkaufen (الزبون)", ger: "Wie viel kosten die Tomaten?", eng: "How much do the tomatoes cost?", ar: "بكم الطماطم؟", context: "الزبون يسأل عن السعر" },
+                { id: 'e59', type: "Beim Einkaufen (الزبون)", ger: "Das ist alles.", eng: "That’s all.", ar: "هذا كل شيء.", context: "الزبون ينهي طلبه" }
+            ],
+            dialogues: [
+                {
+                    id: 'd1', title: "Beim Fleischer (عند الجزار)", icon: "scissors",
+                    lines: [
+                        { speaker: "Verkäufer", text: "Guten Tag, was darf es sein?", en: "Good day, what would you like?", ar: "يوم سعيد، تؤمر بإيه؟" },
+                        { speaker: "Peter", text: "Hm … ich hätte gern zwei Kilo mageres Rindfleisch.", en: "I’d like two kilos of lean beef.", ar: "عايز ٢ كيلو لحمة بقري حمراء." },
+                        { speaker: "Verkäufer", text: "Das sind zwei Kilo und 100 Gramm.", en: "That’s two kilos and 100 grams.", ar: "دول ٢ كيلو و ١٠٠ جرام." },
+                        { speaker: "Peter", text: "Ja, das ist gut.", en: "Yes, that’s fine.", ar: "تمام، حلو جداً." },
+                        { speaker: "Verkäufer", text: "Möchten Sie noch etwas?", en: "Would you like anything else?", ar: "محتاج حاجة تانية؟" },
+                        { speaker: "Peter", text: "Ja, 300 Gramm ungarische Salami, bitte.", en: "Yes, 300 grams of Hungarian salami, please.", ar: "أيوه، ٣٠٠ جرام سلامي مجري لو سمحت." },
+                        { speaker: "Verkäufer", text: "In Scheiben oder im Ganzen?", en: "Sliced or whole?", ar: "شرايح ولا حتة واحدة؟" },
+                        { speaker: "Peter", text: "In Scheiben, bitte.", en: "Sliced, please.", ar: "شرايح." },
+                        { speaker: "Verkäufer", text: "Wir haben heute italienischen Schinken im Angebot. 200 Gramm für 2,90 Euro. Möchten Sie mal probieren?", en: "Today we have Italian ham on offer. 200 grams for €2.90. Would you like to try some?", ar: "عندنا عرض على اللحم الإيطالي، ٢٠٠ جرام بـ ٢.٩٠ يورو. تحب تدوق؟" },
+                        { speaker: "Peter", text: "Ja gerne … Hm, schmeckt gut. Davon nehme ich auch noch 300 Gramm.", en: "Yes, gladly … Hm, tastes good. I’ll take another 300 grams of that as well.", ar: "ياريت... ممم، طعمه حلو. هاخد منه ٣٠٠ جرام كمان." },
+                        { speaker: "Verkäufer", text: "Kommt noch was dazu?", en: "Anything else?", ar: "في حاجة تانية؟" },
+                        { speaker: "Peter", text: "Nein, danke.", en: "No, thank you.", ar: "لا شكراً." },
+                        { speaker: "Verkäufer", text: "Das macht 27 Euro und 90 Cent.", en: "That comes to €27.90.", ar: "كده الحساب ٢٧ يورو و ٩٠ سنت." }
+                    ]
+                },
+                {
+                    id: 'd2', title: "Auf dem Markt 1 (في السوق 1)", icon: "shopping-bag",
+                    lines: [
+                        { speaker: "Verkäufer", text: "Was darf es sein?", en: "What would you like?", ar: "طلباتك إيه؟" },
+                        { speaker: "Petra", text: "Ich nehme ein halbes Kilo Zwiebeln, ein Kilo Bioäpfel und ein Kilo Tomaten.", en: "I’ll take half a kilo of onions, a kilo of organic apples, and a kilo of tomatoes.", ar: "هاخد نص كيلو بصل، كيلو تفاح أورجانيك، وكيلو طماطم." },
+                        { speaker: "Verkäufer", text: "Sind das holländische Tomaten?", en: "Do you mean the Dutch tomatoes?", ar: "تقصدي الطماطم الهولندي؟" },
+                        { speaker: "Verkäufer", text: "Nein, spanische Tomaten. Das hier sind holländische. Die kosten 4,50 Euro.", en: "No, Spanish tomatoes. These here are Dutch ones. They cost €4.50 per kilo.", ar: "لا إسباني، دول هنا هم الهولندي وبـ ٤.٥٠ يورو." },
+                        { speaker: "Petra", text: "Und was kostet ein Kilo spanische Tomaten?", en: "And how much is a kilo of Spanish tomatoes?", ar: "وبكام كيلو الطماطم الإسباني؟" },
+                        { speaker: "Verkäufer", text: "1,80 Euro.", en: "€1.80.", ar: "١.٨٠ يورو." },
+                        { speaker: "Petra", text: "Dann nehme ich ein Kilo spanische Tomaten. Die sehen sehr gut aus.", en: "Then I’ll take a kilo of Spanish tomatoes. They look very good.", ar: "خلاص هاخد كيلو إسباني. شكلهم حلو أوي." },
+                        { speaker: "Verkäufer", text: "Kommt noch was dazu?", en: "Anything else?", ar: "في حاجة تانية هتضيفيها؟" },
+                        { speaker: "Petra", text: "Ja, ich möchte noch zwei reife Mangos. Ah, ich sehe gerade, dass Sie auch Käse haben. Ist dieser Käse mit frischen Kräutern?", en: "Yes, I’d also like two ripe mangoes. Ah, I just noticed you also have cheese. Is this cheese with fresh herbs?", ar: "أيوه، عايزة منجايتين مستويين. أه، لسة شايفة إن عندكم جبنة، هي دي بالأعشاب الطازجة؟" },
+                        { speaker: "Verkäufer", text: "Ja, dieser Käse ist mit frischen Kräutern und dieser hier ist mit frischem Knoblauch.", en: "Yes, this cheese has fresh herbs, and this one here has fresh garlic.", ar: "أيوه، الجبنة دي بالأعشاب الطازجة ودي بالثوم الطازج." },
+                        { speaker: "Petra", text: "Hm, schwierige Wahl. Ich nehme den Käse mit dem Knoblauch.", en: "Hm, difficult choice. I’ll take the cheese with garlic.", ar: "امم، اختيار صعب. هاخد الجبنة اللي بالثوم." },
+                        { speaker: "Verkäufer", text: "Wie viel von dem Käse darf es denn sein?", en: "How much of the cheese would you like?", ar: "تحبي قد إيه من الجبنة دي؟" },
+                        { speaker: "Petra", text: "250 Gramm.", en: "250 grams.", ar: "٢٥٠ جرام." },
+                        { speaker: "Verkäufer", text: "Sonst noch etwas?", en: "Anything else?", ar: "أي شيء آخر؟" },
+                        { speaker: "Petra", text: "Nein, danke, das ist alles.", en: "No, thank you, that’s all.", ar: "لا شكراً، ده كل حاجة." },
+                        { speaker: "Verkäufer", text: "Dann bekomme ich bitte 19,50 Euro.", en: "Then that will be €19.50, please.", ar: "كده الحساب ١٩.٥٠ يورو لو سمحتي." }
+                    ]
+                },
+                {
+                    id: 'd3', title: "Auf dem Markt 2 (في السوق 2)", icon: "shopping-cart",
+                    lines: [
+                        { speaker: "Verkäuferin", text: "Was darf es sein?", en: "What would you like?", ar: "تؤمر بإيه؟" },
+                        { speaker: "Käufer", text: "Ich möchte einen grünen Salat, fünf Möhren und zwei Kilo Kartoffeln.", en: "I would like a green salad, five carrots, and two kilos of potatoes.", ar: "عايز سلطة خضراء، ٥ جزرات، و٢ كيلو بطاطس." },
+                        { speaker: "Verkäuferin", text: "Kommt noch etwas dazu?", en: "Anything else?", ar: "حاجة تانية مع دول؟" },
+                        { speaker: "Käufer", text: "Was kostet ein Kilo Äpfel?", en: "How much does one kilo of apples cost?", ar: "بكام كيلو التفاح؟" },
+                        { speaker: "Verkäuferin", text: "2,50 Euro.", en: "2.50 euros.", ar: "٢.٥٠ يورو." },
+                        { speaker: "Käufer", text: "Dann nehme ich ein Kilo Äpfel.", en: "Then I’ll take one kilo of apples.", ar: "يبقى هاخد كيلو تفاح." },
+                        { speaker: "Verkäuferin", text: "Sonst noch etwas?", en: "Anything else?", ar: "حاجة كمان؟" },
+                        { speaker: "Käufer", text: "Ich hätte gern noch zwei Orangen, drei Kiwis, vier Birnen und Käse mit Knoblauch.", en: "I would also like two oranges, three kiwis, four pears, and garlic cheese.", ar: "عايز كمان برتقالتين، ٣ كيوي، ٤ كمثرى وجبنة بالثوم." },
+                        { speaker: "Verkäuferin", text: "Leider haben wir keinen Käse mit Knoblauch. Das hier ist Käse mit Paprika. Er schmeckt auch sehr gut.", en: "Unfortunately, we don’t have garlic cheese. This one here is cheese with paprika. It also tastes very good.", ar: "للأسف معندناش جبنة بالثوم. دي جبنة بالفلفل وطعمها حلو جداً برضه." },
+                        { speaker: "Käufer", text: "Was ist der Preis für 250 Gramm?", en: "What is the price for 250 grams?", ar: "سعر الـ ٢٥٠ جرام كام؟" },
+                        { speaker: "Verkäuferin", text: "250 Gramm kosten fünf Euro.", en: "250 grams cost five euros.", ar: "الـ ٢٥٠ جرام بـ ٥ يورو." },
+                        { speaker: "Käufer", text: "Das finde ich teuer. Ich nehme nur 100 Gramm.", en: "I find that expensive. I’ll take only 100 grams.", ar: "ده غالي، هاخد ١٠٠ جرام بس." },
+                        { speaker: "Verkäuferin", text: "Wir haben auch holländischen Käse im Angebot.", en: "We also have Dutch cheese on offer.", ar: "عندنا كمان جبنة هولندي عليها عرض." },
+                        { speaker: "Käufer", text: "Danke. Ich brauche keinen anderen Käse.", en: "Thank you. I don’t need any other cheese.", ar: "شكراً، مش محتاج جبنة تانية." },
+                        { speaker: "Verkäuferin", text: "Wünschen Sie noch etwas?", en: "Would you like anything else?", ar: "تتمنى حاجة كمان؟" },
+                        { speaker: "Käufer", text: "Nein, das ist alles.", en: "No, that’s all.", ar: "لا، ده كل حاجة." },
+                        { speaker: "Verkäuferin", text: "Das macht 15,50 Euro.", en: "That comes to 15.50 euros.", ar: "كده الحساب ١٥.٥٠ يورو." }
+                    ]
+                },
+                {
+                    id: 'd4', title: "Auf dem Markt 3 (Kurz) (في السوق - قصير)", icon: "store",
+                    lines: [
+                        { speaker: "Verkäufer", text: "Was darf es sein?", en: "What would you like?", ar: "تؤمر بإيه؟" },
+                        { speaker: "Kunde", text: "Ich hätte gern ein Kilo Äpfel.", en: "I’d like a kilo of apples.", ar: "أود كيلو تفاح." },
+                        { speaker: "Verkäufer", text: "Wie viel möchten Sie davon?", en: "How much would you like of that?", ar: "عايز قد إيه منه؟" },
+                        { speaker: "Kunde", text: "Ein Kilo, bitte.", en: "A kilo, please.", ar: "كيلو لو سمحت." },
+                        { speaker: "Verkäufer", text: "Kommt noch was dazu?", en: "Anything else to add?", ar: "أي شيء يضاف؟" },
+                        { speaker: "Kunde", text: "Ja, ein halbes Kilo Tomaten.", en: "Yes, half a kilo of tomatoes.", ar: "نعم، نص كيلو طماطم." },
+                        { speaker: "Verkäufer", text: "Wir haben gerade Trauben im Angebot. Möchten Sie mal probieren?", en: "We currently have grapes on special. Would you like to try some?", ar: "عندنا عرض على العنب. تحب تدوق؟" },
+                        { speaker: "Kunde", text: "Ja, gerne. Wie viel kostet ein Kilo?", en: "Yes, gladly. How much is a kilo?", ar: "ياريت، الكيلو بكام؟" },
+                        { speaker: "Verkäufer", text: "2,50 Euro.", en: "€2.50.", ar: "٢.٥٠ يورو." },
+                        { speaker: "Kunde", text: "Dann nehme ich ein Kilo.", en: "Then I’ll take a kilo.", ar: "إذن هاخد كيلو." },
+                        { speaker: "Verkäufer", text: "Darf es noch etwas sein?", en: "Would you like anything else?", ar: "هل أضيف شيء آخر؟" },
+                        { speaker: "Kunde", text: "Nein, danke, das ist alles.", en: "No, thank you, that’s all.", ar: "لا شكراً." },
+                        { speaker: "Verkäufer", text: "Dann macht das 6 Euro.", en: "That comes to €6.", ar: "الحساب ٦ يورو." },
+                        { speaker: "Kunde", text: "Bitte schön.", en: "Here you go.", ar: "تفضل." }
+                    ]
+                },
+                {
+                    id: 'd5', title: "Im Restaurant bestellen (الطلب في المطعم)", icon: "utensils",
+                    lines: [
+                        { speaker: "Kellner", text: "Guten Abend.", en: "Good evening.", ar: "مساء الخير." },
+                        { speaker: "Kellner", text: "Haben Sie reserviert?", en: "Do you have a reservation?", ar: "حاجزين؟" },
+                        { speaker: "Kellner", text: "Unter welchem Namen?", en: "Under what name?", ar: "باسم مين؟" },
+                        { speaker: "Kellner", text: "Ein Tisch für zwei Personen. Hier ist Ihr Tisch.", en: "A table for two. Here is your table.", ar: "ترابيزة لشخصين. دي ترابيزتكم." },
+                        { speaker: "Gast", text: "Können wir vielleicht am Fenster sitzen?", en: "Could we maybe sit by the window?", ar: "ممكن نقعد على الشباك؟" },
+                        { speaker: "Kellner", text: "Tut mir leid, die Tische am Fenster sind reserviert.", en: "I’m sorry, the tables by the window are reserved.", ar: "للأسف الترابيزات اللي على الشباك محجوزة." },
+                        { speaker: "Kellner", text: "Hier ist die Speisekarte.", en: "Here is the menu.", ar: "اتفضلوا المنيو." },
+                        { speaker: "Kellner", text: "Möchten Sie schon etwas trinken?", en: "Would you like something to drink already?", ar: "تحبوا تشربوا حاجة دلوقتي؟" },
+                        { speaker: "Gast 1", text: "Ich nehme ein helles Bier, vielleicht ein Hefeweizen.", en: "I’ll have a light beer, maybe a wheat beer.", ar: "هاخد بيرة فاتحة، ممكن بيرة قمح." },
+                        { speaker: "Gast 2", text: "Ich nehme ein Mineralwasser. Ohne Sprudel bitte.", en: "I’ll have mineral water. Without gas, please.", ar: "هاخد مياه معدنية. من غير صودا لو سمحت." },
+                        { speaker: "Kellner", text: "Es gibt nur vier Vorspeisen, vier Hauptgerichte und drei Desserts. Dafür ist alles frisch.", en: "There are only four starters, four main dishes, and three desserts. But everything is fresh.", ar: "عندنا بس ٤ مقبلات، ٤ أطباق رئيسية و٣ حلويات. بس كل حاجة طازة." },
+                        { speaker: "Gast 1", text: "Anton hat gesagt, dass das Essen hier hervorragend ist.", en: "Anton said that the food here is excellent.", ar: "أنطون قال إن الأكل هنا ممتاز." },
+                        { speaker: "Gast 2", text: "War Anton schon mal hier?", en: "Has Anton been here before?", ar: "هو أنطون كان هنا قبل كده؟" },
+                        { speaker: "Gast 1", text: "Ja, sie haben hier ihren Hochzeitstag gefeiert.", en: "Yes, they celebrated their wedding anniversary here.", ar: "أيوه، هما احتفلوا بعيد جوازهم هنا." },
+                        { speaker: "Gast 2", text: "Was nimmst du?", en: "What will you take?", ar: "هتاخد إيه؟" },
+                        { speaker: "Gast 1", text: "Ich nehme den Lachs oder den Tafelspitz.", en: "I’ll take the salmon or the boiled beef.", ar: "هاخد السلمون أو اللحم المسلوق." },
+                        { speaker: "Gast 2", text: "Isst du keine Vorspeise?", en: "Aren’t you having a starter?", ar: "مش هتاكل مقبلات؟" },
+                        { speaker: "Gast 1", text: "Vielleicht die Tagessuppe. Ich esse den Tafelspitz und als Vorspeise einen Salat.", en: "Maybe the soup of the day. I’ll have the boiled beef and a salad as a starter.", ar: "ممكن شوربة اليوم. هاكل اللحم المسلوق وسلطة كمقبلات." },
+                        { speaker: "Gast 2", text: "Möhrensalat mit Ingwer … so was schmeckt?", en: "Carrot salad with ginger … does that taste good?", ar: "سلطة جزر بالجنزبيل.. طعمها حلو دي؟" },
+                        { speaker: "Kellner", text: "Haben Sie schon gewählt?", en: "Have you decided already?", ar: "اخترتوا هتاكلوا إيه؟" },
+                        { speaker: "Gast 1", text: "Ich nehme das Rindfleisch und den Möhrensalat.", en: "I’ll take the beef and the carrot salad.", ar: "هاخد اللحم البقري وسلطة الجزر." },
+                        { speaker: "Gast 2", text: "Was gibt es als Tagessuppe?", en: "What is the soup of the day?", ar: "إيه هي شوربة اليوم؟" },
+                        { speaker: "Kellner", text: "Fischsuppe nach Art des Hauses.", en: "Fish soup, house specialty.", ar: "شوربة سمك مخصوصة." },
+                        { speaker: "Gast 2", text: "Dann nehme ich keine Vorspeise, nur den Lachs.", en: "Then I won’t take a starter, only the salmon.", ar: "خلاص مش هاخد مقبلات، هاخد السلمون بس." },
+                        { speaker: "Kellner", text: "Darf es noch etwas zu trinken sein?", en: "Would you like something else to drink?", ar: "تحبوا تشربوا حاجة تانية؟" },
+                        { speaker: "Gast 1", text: "Im Moment nicht, vielleicht später.", en: "Not at the moment, maybe later.", ar: "مش دلوقتي، ممكن بعدين." }
+                    ]
+                },
+                {
+                    id: 'd6', title: "Konversation: Kochsendungen (محادثة: برامج الطبخ)", icon: "tv",
+                    lines: [
+                        { speaker: "Person A", text: "Haben Sie schon einmal in einem sehr guten Restaurant gegessen?", en: "Have you ever eaten in a very good restaurant?", ar: "أكلت قبل كده في مطعم كويس جداً؟" },
+                        { speaker: "Person B", text: "Ja, einmal in einem italienischen Gourmet-Restaurant in Berlin.", en: "Yes, once in an Italian gourmet restaurant in Berlin.", ar: "أيوه، مرة في مطعم ذواقة إيطالي في برلين." },
+                        { speaker: "Person A", text: "Was haben Sie gegessen?", en: "What did you eat?", ar: "أكلت إيه؟" },
+                        { speaker: "Person B", text: "Ich habe frische Pasta mit Trüffeln und ein Glas Rotwein gehabt. Es war fantastisch!", en: "I had fresh pasta with truffles and a glass of red wine. It was fantastic!", ar: "أكلت مكرونة فريش بالكمأة (الترافل) وكاس نبيذ أحمر. كان رائع!" },
+                        { speaker: "Person A", text: "Sehen Sie manchmal Kochsendungen im Fernsehen?", en: "Do you sometimes watch cooking shows on TV?", ar: "بتتفرج أحياناً على برامج طبخ في التليفزيون؟" },
+                        { speaker: "Person B", text: "Ja, sehr oft. Meine Lieblingssendung ist „Das perfekte Dinner“.", en: "Yes, very often. My favorite show is “The Perfect Dinner.”", ar: "أيوه، كتير جداً. برنامجي المفضل هو العشاء المثالي." },
+                        { speaker: "Person A", text: "Können Sie gut kochen?", en: "Can you cook well?", ar: "بتعرف تطبخ كويس؟" },
+                        { speaker: "Person B", text: "Ja, ich koche gern. Am liebsten mache ich Lasagne und Suppen.", en: "Yes, I like cooking. I especially enjoy making lasagna and soups.", ar: "أيوه بحب أطبخ، وأكتر حاجة بحب أعملها اللازانيا والشوربات." },
+                        { speaker: "Person A", text: "Toll, dann laden Sie mich doch einmal ein!", en: "Great, then you should invite me sometime!", ar: "ممتاز، ابقى اعزميني بقى مرة!" },
+                        { speaker: "Person B", text: "Sehr gern!", en: "With pleasure!", ar: "بكل سرور!" }
+                    ]
+                }
+            ],
+            culture: [
+                {
+                    id: 'c1', title: "Was die Deutschen so essen und trinken",
+                    lines: [
+                        { g: "Die Anzahl der Bücher über gesunde Ernährung ist riesig.", a: "عدد الكتب عن التغذية الصحية ضخم جداً." },
+                        { g: "Auch Fernsehsendungen und Zeitschriften geben regelmäßig Tipps zum richtigen Frühstück, Mittag- oder Abendessen.", a: "وبرامج التليفزيون والمجلات بتدي نصايح بانتظام للفطار والغدا والعشا." },
+                        { g: "Das theoretische Wissen über gesunde Ernährung ist also vorhanden – aber wie sieht es in der Praxis aus?", a: "المعرفة النظرية موجودة، بس في الواقع إيه الوضع؟" },
+                        { g: "Der Ernährungsreport im Auftrag der Bundesregierung und eine Umfrage des Meinungsforschungsinstituts Forsa geben Antworten.", a: "تقرير التغذية بتكليف من الحكومة الفيدرالية واستطلاع رأي معهد فورسا بيدي إجابات." },
+                        { g: "Lieblingsgericht: Mehr als ein Drittel der Deutschen isst am liebsten Nudeln.", a: "الأكلة المفضلة: أكتر من تلت الألمان بيحبوا المكرونة أكتر حاجة." },
+                        { g: "Fleisch: Nur drei Prozent der Deutschen sind Vegetarier und essen überhaupt kein Fleisch,", a: "اللحوم: 3% بس من الألمان نباتيين ومبياكلوش لحمة خالص،" },
+                        { g: "bei den Frauen sind es sechs Prozent, bei den Männern ist es nur ein Prozent.", a: "بالنسبة للستات 6%، وبالنسبة للرجالة 1% بس." },
+                        { g: "Fast die Hälfte der Männer isst jeden Tag Fleisch – bei den Frauen ist es nur jede Fünfte.", a: "تقريباً نص الرجالة بياكلوا لحمة كل يوم – بالنسبة للستات واحدة من كل خمسة بس." },
+                        { g: "Obst und Gemüse: 85 Prozent der Frauen essen täglich Obst und Gemüse, bei den Männern sind es 66 Prozent.", a: "الخضار والفاكهة: 85% من الستات بياكلوا خضار وفاكهة كل يوم، مقابل 66% للرجالة." },
+                        { g: "Süßigkeiten: Frauen essen gern Süßes? Ja, aber auch Männer naschen gern: 22 Prozent der Männer und 21 Prozent der Frauen essen gern Süßigkeiten.", a: "الحلويات: هل النساء يحبون الحلويات؟ نعم، لكن الرجال أيضاً يحبون النقنقة: 22% من الرجالة و 21% من الستات بيحبوا ياكلوا حلويات." },
+                        { g: "Kochen: 93 Prozent der deutschen Frauen können nach eigenen Aussagen gut kochen,", a: "الطبخ: 93% من الستات الألمان بيقولوا إنهم بيعرفوا يطبخوا كويس،" },
+                        { g: "auch 58 Prozent der Männer loben ihre eigenen Kochkünste.", a: "وكمان 58% من الرجالة بيمدحوا مهاراتهم في الطبخ." },
+                        { g: "Das bedeutet aber nicht, dass die Deutschen täglich kochen.", a: "لكن ده مش معناه إن الألمان بيطبخوا كل يوم." },
+                        { g: "Nur in 41 Prozent der Haushalte gibt es täglich frisch gekochtes Essen.", a: "41% بس من البيوت بيكون فيها أكل طازة مطبوخ كل يوم." },
+                        { g: "Fertiggerichte: 42 Prozent der jungen Erwachsenen essen mindestens zweimal in der Woche Fertiggerichte, 17 Prozent jeden Tag.", a: "الأكل الجاهز: 42% من الشباب البالغين بياكلوا أكل جاهز مرتين في الأسبوع ع الأقل، و 17% كل يوم." },
+                        { g: "Preis: Für junge Leute zwischen 14 und 18 spielt der Preis die größte Rolle beim Einkaufen.", a: "السعر: للشباب من 14 لـ 18 سنة السعر بيلعب الدور الأكبر في الشراء." },
+                        { g: "Über 30-Jährige achten mehr auf die Qualität und die Herkunft der Lebensmittel.", a: "اللي فوق الـ 30 بيهتموا أكتر بجودة ومصدر الأكل." },
+                        { g: "Bereits jeder Fünfte nutzt im Supermarkt sein Handy und sucht im Internet nach Produktinformationen.", a: "بالفعل واحد من كل خمسة بيستخدم تليفونه في السوبر ماركت ويدور على النت على معلومات المنتجات." },
+                        { g: "Konzentration auf das Essen: Viele Singles geben an, dass sie neben dem Essen fernsehen, das Internet nutzen oder lesen.", a: "التركيز على الأكل: كتير من العزاب بيقولوا إنهم بيتفرجوا ع التليفزيون، بيستخدموا النت أو بيقرأوا أثناء الأكل." },
+                        { g: "Insgesamt sagen 50 Prozent der Deutschen, dass für sie gesunde Ernährung zu wenig Zeit hat.", a: "إجمالاً 50% من الألمان بيقولوا إن الأكل الصحي مفيش وقت كفاية عشانه بالنسبة لهم." }
+                    ]
+                },
+                {
+                    id: 'c2', title: "Der Koch David Görne",
+                    lines: [
+                        { g: "Es war ein Tag wie jeder andere.", a: "كان يوم عادي جداً." },
+                        { g: "Der Koch David Görne stand mit seiner Schürze in seinem Restaurant in einem kleinen Dorf in Frankreich.", a: "الطباخ ديفيد جورن كان واقف بمريلته في مطعمه في قرية صغيرة في فرنسا." },
+                        { g: "Plötzlich klingelte das Telefon. Am anderen Ende der Leitung war die Chefin des Guide Michelin.", a: "فجأة التليفون رن. على الناحية التانية من الخط كانت مديرة دليل ميشلان." },
+                        { g: "Sie teilte ihm mit, dass er für seine Arbeit einen Michelin-Stern bekommt.", a: "بلغته إنه هياخد نجمة ميشلان على شغله." },
+                        { g: "Bisher war der junge Koch aus Hamburg ein Geheimtipp in der Pariser Gourmet-Szene, jetzt gehört er zu den großen Köchen in Frankreich!", a: "الطباخ الشاب اللي من هامبورج كان لحد دلوقتي سر في عالم الذواقة في باريس، دلوقتي هو بقى من كبار الطباخين في فرنسا!" },
+                        { g: "Schon als Kind sah David seinen Eltern gern beim Kochen zu.", a: "من وهو طفل كان ديفيد بيحب يتفرج على أهله وهم بيطبخوا." },
+                        { g: "Doch seine Eltern wollten, dass David studiert. Also fing er mit einem Jurastudium an.", a: "بس أهله كانوا عايزينه يدرس، عشان كده بدأ يدرس حقوق." },
+                        { g: "In den ersten Semestern las David mehr Kochbücher als Jurabücher und er sah bald, dass Anwalt nicht der richtige Beruf für ihn ist.", a: "في الفصول الدراسية الأولى قرأ كتب طبخ أكتر من كتب الحقوق، واكتشف قريب إن المحاماة مش هي المهنة المناسبة ليه." },
+                        { g: "Im dritten Semester brach er sein Studium ab und wurde Lehrling.", a: "في الترم التالت ساب الكلية وبدأ كمتدرب." },
+                        { g: "Seine Ausbildung begann er in einem 5-Sterne-Hotel in Hamburg.", a: "بدأ تدريبه في فندق 5 نجوم في هامبورج." },
+                        { g: "Nach einigen Jahren in verschiedenen Restaurants und Hotelküchen wollte David Görne sein eigenes Restaurant eröffnen,", a: "بعد كام سنة في مطاعم ومطابخ فنادق مختلفة كان ديفيد عايز يفتح مطعمه الخاص،" },
+                        { g: "am liebsten ein kleines Restaurant mit engem Kontakt zwischen Koch und Gästen. Diese Idee konnte er schließlich in Frankreich realisieren.", a: "ويفضل يكون مطعم صغير فيه تواصل قريب بين الطباخ والضيوف. الفكرة دي قدر يحققها في النهاية في فرنسا." },
+                        { g: "In seinem Restaurant sitzen maximal 14 Gäste rund um einen Herd. Hier können die Gäste alle Schritte beim Kochen sehen.", a: "في مطعمه بيقعد بحد أقصى 14 ضيف حوالين البوتاجاز. هنا الضيوف بيقدروا يشوفوا كل خطوات الطبخ." },
+                        { g: "Die Lebensmittel kauft der Koch bei den Bauern aus der Umgebung.", a: "الطباخ بيشتري الأكل من المزارعين اللي في المنطقة المحيطة." },
+                        { g: "Im Restaurant war kürzlich auch ein Ehepaar aus der Nähe von Paris.", a: "مؤخراً كان في المطعم زوجين من مكان قريب من باريس." },
+                        { g: "Nach dem Essen sagte die Frau: „Es war ein unvergessliches Erlebnis.“", a: "بعد الأكل الست قالت: \"كانت تجربة لا تُنسى.\"" },
+                        { g: "Wir Gäste in einem Interview: „Er kocht wie ein Franzose.“", a: "ضيوف تانيين قالوا في مقابلة: \"ده بيطبخ كأنه فرنسي.\"" }
+                    ]
+                },
+                {
+                    id: 'c3', title: "Der Bismarckhering",
+                    lines: [
+                        { g: "Der Hering galt früher als Essen für arme Leute.", a: "سمك الرنجة كان زمان بيعتبر أكل للناس الفقيرة." },
+                        { g: "Doch auch Reichskanzler Otto von Bismarck (1815–1898) liebte den Hering.", a: "لكن المستشار الألماني أوتو فون بسمارك (1815-1898) كمان كان بيعشق الرنجة." },
+                        { g: "Bismarck war ein Genussmensch, er aß viel und gern.", a: "بسمارك كان شخص ذواق، كان بياكل كتير وبحب." },
+                        { g: "In Berichten über Bismarck kann man lesen, dass er mühelos zum Frühstück 16 Eier oder abends 150 Austern essen konnte.", a: "في تقارير عن بسمارك ممكن تقرأ إنه كان بيقدر ياكل 16 بيضة ع الفطار أو 150 محارة ع العشا بمنتهى السهولة." },
+                        { g: "Ein Fischhändler aus Stralsund wollte Bismarck eine Freude machen.", a: "تاجر سمك من مدينة شترالسوند كان عايز يفرحه." },
+                        { g: "Er schickte ihm zum Geburtstag ein Fass mit Heringen in einer Marinade aus Essig und Gewürzen.", a: "بعتله في عيد ميلاده برميل فيه رنجة في تتبيلة من الخل والبهارات." },
+                        { g: "Die sauren Heringe schmeckten dem Reichskanzler so gut, dass er das Rezept haben wollte.", a: "الرنجة الحامضة دي عجبت المستشار جداً لدرجة إنه طلب الوصفة." },
+                        { g: "Der Fischhändler verkaufte seine Heringe dann als Bismarckheringe und so heißen saure Heringe bis heute.", a: "تاجر السمك بعد كده بقى يبيع الرنجة بتاعته باسم (رنجة بسمارك) وعشان كده الرنجة الحامضة لسة معروفة بالاسم ده لحد النهاردة." }
+                    ]
+                },
+                {
+                    id: 'c4', title: "Der Kaiserschmarrn",
+                    lines: [
+                        { g: "Über die Herkunft dieses österreichischen Desserts gibt es viele Geschichten.", a: "فيه قصص كتير حوالين أصل الحلوى النمساوية دي." },
+                        { g: "Eine (vermutlich unwahre) Geschichte geht so:", a: "فيه قصة (غالباً مش حقيقية) بتقول كالتالي:" },
+                        { g: "Der Koch des österreichischen Kaisers Franz Josef I. (1830–1916) wollte speziell für die Kaiserin Sissi eine leichte Nachspeise erfinden.", a: "طباخ الإمبراطور النمساوي فرانز جوزيف الأول (1830-1916) كان عايز يبتكر حلوى خفيفة مخصوص عشان الإمبراطورة سيسي." },
+                        { g: "Aus diesem Grund entstand ein lockerer Teig aus Eiern, Milch und Mehl und wurde noch mit Rosinen und Zucker dazu verfeinert.", a: "عشان كده عمل عجينة هشة من البيض واللبن والدقيق وحط عليها زبيب وسكر عشان يحليها." },
+                        { g: "Leider gelang die Nachspeise nicht – der Kaiserschmarrn „fiel auseinander“.", a: "للأسف الحلوى مانجحتش – العجينة اتقطعت وفكت من بعض." },
+                        { g: "Die Kaiserin mochte ihn auch gar nicht, doch der Kaiser fand das Essen sehr lecker.", a: "الإمبراطورة معجبتهاش الحلوى دي خالص، لكن الإمبراطور لقاها لذيذة جداً." },
+                        { g: "Seit diesem Zeitpunkt an nannte man das Dessert Kaiserschmarrn.", a: "من اللحظة دي اتسمت الحلوى باسم كايزرشمارن (فوضى الإمبراطور)." }
+                    ]
+                },
+                {
+                    id: 'c5', title: "Die Schillerlocke",
+                    lines: [
+                        { g: "Die Schillerlocke ist ein Gebäck. Sie hat die Form einer Haarlocke und ist mit Sahne gefüllt.", a: "الشيلرلوكه دي نوع من المخبوزات. شكلها زي خصلة الشعر ومحشية بالكريمة." },
+                        { g: "Ihr Name kommt von dem großen deutschen Dichter Friedrich Schiller (1759–1805).", a: "اسمها جي من الشاعر الألماني العظيم فريدريش شيلر (1759-1805)." },
+                        { g: "Friedrich Schiller hatte nämlich wunderschöne Locken.", a: "ده لأن فريدريش شيلر كان عنده خصلات شعر مموجة جميلة جداً." },
+                        { g: "In seinem Wohnhaus in Weimar kann man noch heute in einem Glaskasten zwei Locken des Dichters sehen.", a: "في بيته في مدينة فايمار ممكن لحد النهاردة تشوف خصلتين من شعر الشاعر ده جوه صندوق أزاز." },
+                        { g: "Die sahen genauso aus wie das Gebäck. Darum heißt das Gebäck Schillerlocke.", a: "الخصلتين دول كان شكلهم بالظبط زي المخبوزات دي، عشان كده اتسمت شيلرلوكه." },
+                        { g: "Wer den Namen erfand und warum er bis heute benutzt wird – auf diese Fragen gibt es keine Antwort.", a: "مين اللي اخترع الاسم ده وليه لسة بيستخدم لحد النهاردة – الأسئلة دي مفيش إجابة عليها." }
+                    ]
+                },
+                {
+                    id: 'c6', title: "Kaffee und Kuchen",
+                    lines: [
+                        { g: "Haben Sie schon einmal von der deutsch-österreichischen Tradition von Kaffee und Kuchen gehört?", a: "هل سمعت قبل كده عن التقليد الألماني النمساوي بتاع القهوة والكيك؟" },
+                        { g: "Wenn ja, dann wissen Sie, dass Deutsche und Österreicher gern nachmittags in ein Café oder eine Konditorei gehen.", a: "لو أيوه، فأنت عارف إن الألمان والنمساويين بيحبوا يروحوا الكافيهات أو محلات الحلويات بعد الظهر." },
+                        { g: "Sie bestellen dort ein Stück Kuchen und eine Tasse Kaffee und reden über das eigene Leben oder andere Leute.", a: "بيطلبوا هناك حتة كيكة وفنجان قهوة وبيتكلموا عن حياتهم أو عن ناس تانية." },
+                        { g: "Die Tradition von Kaffee und Kuchen entstand im 17. Jahrhundert gemeinsam mit den ersten Kaffeehäusern.", a: "تقليد القهوة والكيك ده بدأ في القرن الـ 17 مع ظهور أول المقاهي." },
+                        { g: "Vor allem die Wiener sitzen noch heute in ihren berühmten Kaffeehäusern und genießen Kaffee und Kuchen.", a: "سكان فيينا بالذات لسة لحد النهاردة بيقعدوا في مقاهيهم المشهورة وبيستمتعوا بالقهوة والكيك." },
+                        { g: "Die Wiener Kaffeehauskultur gehört seit 2011 zum Weltkulturerbe.", a: "ثقافة المقاهي في فيينا بقت جزء من التراث العالمي من سنة 2011." }
+                    ]
+                },
+                {
+                    id: 'c7', title: "Mein Lieblingsrestaurant",
+                    lines: [
+                        { g: "Ich gehe am liebsten in ein italienisches Restaurant. Es heißt Milano.", a: "أفضل الذهاب إلى مطعم إيطالي. اسمه ميلانو." },
+                        { g: "Ich kann dieses Restaurant sehr empfehlen.", a: "يمكنني التوصية بهذا المطعم بشدة." },
+                        { g: "Das Essen schmeckt ausgezeichnet. Es gibt leckere Pasta und Fisch.", a: "الطعام مذاقه ممتاز. يوجد هناك مكرونة لذيذة وسمك." }
+                    ]
+                },
+                {
+                    id: 'c8', title: "Restaurantbesuche in meinem Heimatland",
+                    lines: [
+                        { g: "In guten Restaurants muss man Plätze reservieren.", a: "في المطاعم الجيدة يجب على المرء حجز أماكن." },
+                        { g: "Mittags isst man zwischen 12.00 und 14.00 Uhr, abends zwischen 19.00 und 21.00 Uhr.", a: "ظهراً يأكل الناس بين الساعة 12:00 و 14:00، ومساءً بين 19:00 و 21:00." },
+                        { g: "Der Kellner bringt die Rechnung nicht sofort, man muss oft darum bitten.", a: "الجرسون لا يُحضر الفاتورة فوراً، يجب غالباً أن تطلبها." },
+                        { g: "Man gibt etwa 10 % Trinkgeld.", a: "يُعطى حوالي 10% كبقشيش." }
+                    ]
+                }
+            ],
+            letters: [
+                {
+                    id: 'l1', title: "Brief aus Berlin (Currywurst)",
+                    lines: [
+                        { g: "Liebe Eva, herzliche Grüße aus Berlin!", a: "عزيزتي إيفا، أطيب التحيات من برلين!" },
+                        { g: "Ich habe mich lange nicht gemeldet, ich weiß. Meine neue Arbeit ist sehr stressig, aber sie macht Spaß.", a: "عارفة إني متأخرة في الرد بقالي كتير. شغلي الجديد مرهق جداً بس ممتع." },
+                        { g: "Gestern hat mich mein Freund Alex in das Restaurant Bieberbau eingeladen, wir sind ja nun schon ein Jahr zusammen.", a: "إمبارح صاحبي أليكس عزمني في مطعم بيبرباو، إحنا بقالنا سنة مع بعض دلوقتي." },
+                        { g: "Das war natürlich etwas ganz Besonderes. Normalerweise essen wir in preiswerteren Restaurants oder kochen zu Hause.", a: "دي كانت حاجة سبيشيال طبعاً. إحنا عادة بناكل في مطاعم أرخص أو بنطبخ في البيت." },
+                        { g: "Zum Ausgehen ist Berlin eine tolle Stadt. Es gibt mehr als 4.500 Restaurants, mehr Dönerläden als in Istanbul und man findet fast in jeder Straße einen Currywurststand.", a: "برلين مدينة رائعة للخروج. فيها أكتر من 4500 مطعم، ومحلات شاورما أكتر من إسطنبول، وتقريباً هتلاقي كشك نقانق بالكاري في كل شارع." },
+                        { g: "Jemand hat mir erzählt, dass die Berliner die Currywurst (eine gebratene Wurst mit Ketchup und Curry) erfunden haben.", a: "حد قالي إن البرلينيين هم اللي اخترعوا النقانق بالكاري (نقانق مقلية مع كاتشب وكاري)." },
+                        { g: "Ich glaube das natürlich nicht. Doch esse ich jetzt einmal in der Woche Currywurst. Ich bin also schon fast eine Berlinerin geworden.", a: "طبعاً أنا مش مصدقة ده. بس بقيت باكل نقانق بالكاري مرة في الأسبوع، فتقريباً بقيت برلينية." },
+                        { g: "Du musst mich unbedingt mal besuchen. Bis bald, Deine Irina. PS: Die Berliner haben sogar ein Currywurst-Museum!", a: "لازم ضروري تيجي تزوريني مرة. أشوفك قريب، إيرينا. ملاحظة: البرلينيين عندهم حتى متحف للنقانق بالكاري!" }
+                    ]
+                },
+                {
+                    id: 'l2', title: "Brief aus London (Indisch)",
+                    lines: [
+                        { g: "Lieber Lucas, herzliche Grüße aus London!", a: "عزيزي لوكاس، أطيب التحيات من لندن!" },
+                        { g: "Ich habe mich lange nicht gemeldet, denn ich habe einen neuen Job.", a: "ماردتش من فترة طويلة لأن عندي شغل جديد." },
+                        { g: "Gestern Abend waren wir in einem sehr guten indischen Restaurant. Ich habe ein scharfes Curry mit Basmatireis gegessen. Das schmeckte ausgezeichnet.", a: "إمبارح بالليل كنا في مطعم هندي ممتاز. أكلت كاري حراق مع رز بسمتي، كان طعمه رائع." },
+                        { g: "Du isst doch auch gern indisch, oder?", a: "أنت كمان بتحب الأكل الهندي، صح؟" },
+                        { g: "In London gibt es natürlich auch viele andere gute Restaurants. Wir essen manchmal italienisch, griechisch oder thailändisch.", a: "في لندن طبعاً فيه مطاعم تانية كتير ممتازة. أحياناً بناكل إيطالي، يوناني أو تايلاندي." },
+                        { g: "Zu Hause kochen wir nicht so oft. Wir haben keine Zeit.", a: "إحنا مش بنطبخ في البيت كتير، معندناش وقت." },
+                        { g: "Du musst mich unbedingt mal in London besuchen. Bis bald! Deine Eva", a: "لازم ضروري تيجي تزورني في لندن مرة. إلى اللقاء قريب! إيفا" }
+                    ]
+                },
+                {
+                    id: 'l3', title: "Brief aus Paris (Bistro)",
+                    lines: [
+                        { g: "Lieber Lucas, viele Grüße aus Paris!", a: "عزيزي لوكاس، تحياتي من باريس!" },
+                        { g: "Vorgestern war ich in einem kleinen französischen Bistro. Dort habe ich eine Quiche Lorraine gegessen, sie war fantastisch.", a: "أول إمبارح كنت في بيسترو (مطعم) فرنسي صغير. أكلت هناك كيش لورين وكانت رائعة." },
+                        { g: "Außerdem gibt es hier köstliche Crêpes und natürlich Baguette an jeder Ecke.", a: "بالإضافة لده، فيه هنا كريب لذيذ وطبعاً عيش باجيت في كل ناصية." },
+                        { g: "In Paris kann man jeden Tag etwas Neues entdecken. Zu Hause esse ich fast nie so gut.", a: "في باريس الواحد يقدر يكتشف حاجة جديدة كل يوم. في البيت أنا تقريباً عمري ما باكل بالحلاوة دي." },
+                        { g: "Du musst unbedingt einmal nach Paris reisen! Dein Max", a: "لازم ضروري تسافر لباريس في يوم من الأيام! ماكس" }
+                    ]
+                },
+                {
+                    id: 'l4', title: "Brief aus Rom (Pizzeria)",
+                    lines: [
+                        { g: "Lieber Lucas, sonnige Grüße aus Rom!", a: "عزيزي لوكاس، تحياتي المشمسة من روما!" },
+                        { g: "Ich habe gestern Abend in einer Pizzeria gegessen. Die Pizza Margherita war groß und unglaublich lecker.", a: "إمبارح بالليل اتعشيت في مطعم بيتزا. البيتزا مارجريتا كانت كبيرة ولذيذة بشكل مش معقول." },
+                        { g: "In Rom gibt es viele Restaurants mit Pasta, Lasagne oder Gelato zum Nachtisch.", a: "في روما فيه مطاعم كتير للمكرونة، اللازانيا أو الجيلاتي للتحلية." },
+                        { g: "Wir essen fast jeden Abend draußen, denn es schmeckt besser als zu Hause.", a: "إحنا تقريباً بناكل بره كل يوم، لأن طعمه أحسن من أكل البيت." },
+                        { g: "Ich hoffe, du kommst bald nach Rom, dann gehen wir zusammen essen! Deine Julia", a: "أتمنى تيجي روما قريب عشان نروح ناكل سوا! جوليا" }
+                    ]
+                }
+            ],
+            grammar: [
+                {
+                    title: "1. Nebensätze mit 'dass' (الجمل الجانبية باستخدام أن/dass)",
+                    desc: "تُستخدم 'dass' لربط جملتين، وتأتي بمعنى (أنّ). دائماً ما يكون الفعل المُصرف في نهاية الجملة التي تبدأ بـ dass.",
+                    structure: "Hauptsatz (الجملة الرئيسية), dass + Subjekt + ... + Verb am Ende.",
+                    examples: [
+                        { category: "Alltag & Personen (في الحياة اليومية)", g: "Meine Schwester freut sich, <span class='text-purple-600 font-bold'>dass</span> sie bald Geburtstag <span class='text-purple-600 font-bold'>hat</span>.", a: "أختي مبسوطة إن عيد ميلادها قريب." },
+                        { category: "Alltag & Personen", g: "Unser Nachbar beschwert sich, <span class='text-purple-600 font-bold'>dass</span> die Musik zu laut <span class='text-purple-600 font-bold'>ist</span>.", a: "جارنا بيشتكي إن المزيكا عالية." },
+                        { category: "Alltag & Personen", g: "Die Kinder schreien, <span class='text-purple-600 font-bold'>dass</span> sie Hunger <span class='text-purple-600 font-bold'>haben</span>.", a: "الأطفال بيصرخوا إنهم جعانين." },
+                        { category: "Alltag & Personen", g: "Mein Vater hat versprochen, <span class='text-purple-600 font-bold'>dass</span> er uns morgen <span class='text-purple-600 font-bold'>besucht</span>.", a: "والدي وعد إنه هيزورنا بكرة." },
+                        { category: "Alltag & Personen", g: "Die Touristen erzählen, <span class='text-purple-600 font-bold'>dass</span> die Stadt sehr schön <span class='text-purple-600 font-bold'>ist</span>.", a: "السياح بيقولوا إن المدينة جميلة." },
+
+                        { category: "Vergangenheit (في الماضي)", g: "Meine Oma erinnerte sich, <span class='text-purple-600 font-bold'>dass</span> sie als Kind oft im Garten <span class='text-purple-600 font-bold'>spielte</span>.", a: "جدتي افتكرت إنها وهي طفلة كانت بتلعب كتير في الجنينة." },
+                        { category: "Vergangenheit", g: "Er hat mir gestern gesagt, <span class='text-purple-600 font-bold'>dass</span> er keine Zeit <span class='text-purple-600 font-bold'>hatte</span>.", a: "هو قالي إمبارح إنه مكنش عنده وقت." },
+                        { category: "Vergangenheit", g: "Wir haben bemerkt, <span class='text-purple-600 font-bold'>dass</span> die Tür offen <span class='text-purple-600 font-bold'>war</span>.", a: "إحنا لاحظنا إن الباب كان مفتوح." },
+                        { category: "Vergangenheit", g: "Die Schüler fanden es gut, <span class='text-purple-600 font-bold'>dass</span> die Prüfung leicht <span class='text-purple-600 font-bold'>war</span>.", a: "الطلاب لقوا إنه شيء كويس إن الامتحان كان سهل." },
+                        { category: "Vergangenheit", g: "Sie haben erzählt, <span class='text-purple-600 font-bold'>dass</span> sie den Film schon gesehen <span class='text-purple-600 font-bold'>hatten</span>.", a: "هما قالوا إنهم شافوا الفيلم قبل كده." },
+
+                        { category: "Zukunft (للمستقبل)", g: "Es ist sicher, <span class='text-purple-600 font-bold'>dass</span> wir morgen früher <span class='text-purple-600 font-bold'>losfahren</span>.", a: "أكيد إننا هنتحرك بدري بكرة." },
+                        { category: "Zukunft", g: "Ich verspreche dir, <span class='text-purple-600 font-bold'>dass</span> ich nächste Woche <span class='text-purple-600 font-bold'>anrufe</span>.", a: "بوعدك إني هتصل بيك الأسبوع الجاي." },
+                        { category: "Zukunft", g: "Unsere Lehrer hoffen, <span class='text-purple-600 font-bold'>dass</span> wir gute Noten bekommen <span class='text-purple-600 font-bold'>werden</span>.", a: "مدرسيننا بيتمنوا إننا نجيب درجات كويسة." },
+                        { category: "Zukunft", g: "Der Arzt ist überzeugt, <span class='text-purple-600 font-bold'>dass</span> die Patientin bald gesund <span class='text-purple-600 font-bold'>wird</span>.", a: "الدكتور مقتنع إن المريضة هتخف قريب." },
+                        { category: "Zukunft", g: "Wir erwarten, <span class='text-purple-600 font-bold'>dass</span> die Lieferung am Montag <span class='text-purple-600 font-bold'>ankommt</span>.", a: "إحنا متوقعين إن الشحنة توصل يوم الاتنين." },
+
+                        { category: "Gefühle (المشاعر والآراء)", g: "Es ärgert mich, <span class='text-purple-600 font-bold'>dass</span> er nie <span class='text-purple-600 font-bold'>zuhört</span>.", a: "بيضايقني إنه عمره ما بيسمع." },
+                        { category: "Gefühle", g: "Ich finde es schade, <span class='text-purple-600 font-bold'>dass</span> sie nicht mitkommen <span class='text-purple-600 font-bold'>kann</span>.", a: "شايف إنها خسارة إنها مش هتقدر تيجي معانا." },
+                        { category: "Gefühle", g: "Alle waren glücklich, <span class='text-purple-600 font-bold'>dass</span> das Spiel gewonnen <span class='text-purple-600 font-bold'>wurde</span>.", a: "الكل كان سعيد إن الماتش اتكسب." },
+                        { category: "Gefühle", g: "Sie ist stolz, <span class='text-purple-600 font-bold'>dass</span> ihr Sohn den Preis gewonnen <span class='text-purple-600 font-bold'>hat</span>.", a: "هي فخورة إن ابنها كسب الجايزة." },
+                        { category: "Gefühle", g: "Wir wundern uns, <span class='text-purple-600 font-bold'>dass</span> der Laden so früh <span class='text-purple-600 font-bold'>schließt</span>.", a: "إحنا مستغربين إن المحل بيقفل بدري كده." },
+
+                        { category: "Offiziell (رسمي ومحايد)", g: "Es ist bekannt, <span class='text-purple-600 font-bold'>dass</span> Wasser bei 100 Grad <span class='text-purple-600 font-bold'>kocht</span>.", a: "معروف إن الميه بتغلي عند ١٠٠ درجة." },
+                        { category: "Offiziell", g: "Studien zeigen, <span class='text-purple-600 font-bold'>dass</span> Sport die Gesundheit <span class='text-purple-600 font-bold'>verbessert</span>.", a: "الدراسات بتوضح إن الرياضة بتحسن الصحة." },
+                        { category: "Offiziell", g: "Es ist bewiesen, <span class='text-purple-600 font-bold'>dass</span> Rauchen gefährlich <span class='text-purple-600 font-bold'>ist</span>.", a: "مُثبت علمياً إن التدخين مضر." },
+                        { category: "Offiziell", g: "Es gibt Hinweise, <span class='text-purple-600 font-bold'>dass</span> das Klima sich <span class='text-purple-600 font-bold'>verändert</span>.", a: "فيه مؤشرات إن المناخ بيتغير." },
+                        { category: "Offiziell", g: "Wissenschaftler sagen, <span class='text-purple-600 font-bold'>dass</span> der Planet sich <span class='text-purple-600 font-bold'>erwärmt</span>.", a: "العلماء بيقولوا إن الكوكب بيسخن." },
+
+                        { category: "Strukturen (تراكيب مختلفة)", g: "Ich habe Angst, <span class='text-purple-600 font-bold'>dass</span> ich die Prüfung nicht <span class='text-purple-600 font-bold'>bestehe</span>.", a: "أنا خايف إني مانجحش في الامتحان." },
+                        { category: "Strukturen", g: "Sie betont, <span class='text-purple-600 font-bold'>dass</span> Ehrlichkeit sehr wichtig <span class='text-purple-600 font-bold'>ist</span>.", a: "هي بتأكد إن الأمانة مهمة جداً." },
+                        { category: "Strukturen", g: "Mein Bruder behauptet, <span class='text-purple-600 font-bold'>dass</span> er gestern zu Hause <span class='text-purple-600 font-bold'>war</span>.", a: "أخويا بيدعي إنه كان في البيت إمبارح." },
+                        { category: "Strukturen", g: "Der Politiker erklärte, <span class='text-purple-600 font-bold'>dass</span> er <span class='text-purple-600 font-bold'>zurücktritt</span>.", a: "السياسي وضح إنه هيستقيل." },
+                        { category: "Strukturen", g: "Wir sind uns sicher, <span class='text-purple-600 font-bold'>dass</span> du es schaffen <span class='text-purple-600 font-bold'>kannst</span>.", a: "إحنا متأكدين إنك تقدر تعملها." }
+                    ]
+                },
+                {
+                    title: "2. Adjektivdeklination (إعراب الصفات - النهايات)",
+                    desc: "في اللغة الألمانية، تتغير نهاية الصفة بناءً على الأداة التي تسبقها (معرفة، نكرة، أو بدون أداة) وكذلك حسب الحالة الإعرابية (Nominativ, Akkusativ, Dativ).",
+                    tables: true // Trigger for custom UI rendering
+                }
+            ],
+            verbs: [
+                { id: 'v11', ger: "sein", eng: "to be", ar: "يكون", praeteritum: "war", perfekt: "ist gewesen", s: [{ g: "Ich <strong>war</strong> gestern krank.", e: "I was sick yesterday.", a: "أنا كنت عيان إمبارح." }] },
+                { id: 'v12', ger: "haben", eng: "to have", ar: "يملك / لديه", praeteritum: "hatte", perfekt: "hat gehabt", s: [{ g: "Wir <strong>hatten</strong> viel Zeit.", e: "We had a lot of time.", a: "كان عندنا وقت كتير." }] },
+                { id: 'v13', ger: "gehen", eng: "to go", ar: "يذهب", praeteritum: "ging", perfekt: "ist gegangen", s: [{ g: "Er <strong>ging</strong> nach Hause.", e: "He went home.", a: "هو راح البيت." }] },
+                { id: 'v14', ger: "kommen", eng: "to come", ar: "يأتي", praeteritum: "kam", perfekt: "ist gekommen", s: [{ g: "Sie <strong>kam</strong> spät zur Schule.", e: "She came late to school.", a: "هي جت متأخرة ع المدرسة." }] },
+                { id: 'v15', ger: "sehen", eng: "to see", ar: "يرى", praeteritum: "sah", perfekt: "hat gesehen", s: [{ g: "Ich <strong>sah</strong> einen schönen Film.", e: "I saw a nice movie.", a: "أنا شفت فيلم حلو." }] },
+                { id: 'v16', ger: "lesen", eng: "to read", ar: "يقرأ", praeteritum: "las", perfekt: "hat gelesen", s: [{ g: "Er <strong>las</strong> ein spannendes Buch.", e: "He read an exciting book.", a: "هو قرأ كتاب مشوق." }] },
+                { id: 'v17', ger: "schreiben", eng: "to write", ar: "يكتب", praeteritum: "schrieb", perfekt: "hat geschrieben", s: [{ g: "Sie <strong>schrieb</strong> einen Brief.", e: "She wrote a letter.", a: "هي كتبت جواب." }] },
+                { id: 'v18', ger: "trinken", eng: "to drink", ar: "يشرب", praeteritum: "trank", perfekt: "hat getrunken", s: [{ g: "Ich <strong>trank</strong> ein Glas Wasser.", e: "I drank a glass of water.", a: "أنا شربت كوباية ميه." }] },
+                { id: 'v19', ger: "essen", eng: "to eat", ar: "يأكل", praeteritum: "aß", perfekt: "hat gegessen", s: [{ g: "Wir <strong>aßen</strong> Pizza zum Mittagessen.", e: "We ate pizza for lunch.", a: "إحنا أكلنا بيتزا ع الغدا." }] },
+                { id: 'v20', ger: "finden", eng: "to find", ar: "يجد", praeteritum: "fand", perfekt: "hat gefunden", s: [{ g: "Er <strong>fand</strong> den Schlüssel nicht.", e: "He didn't find the key.", a: "هو ملقاش المفتاح." }] },
+                { id: 'v21', ger: "geben", eng: "to give", ar: "يعطي", praeteritum: "gab", perfekt: "hat gegeben", s: [{ g: "Sie <strong>gab</strong> mir ein Geschenk.", e: "She gave me a present.", a: "هي ادتني هدية." }] },
+                { id: 'v22', ger: "nehmen", eng: "to take", ar: "يأخذ", praeteritum: "nahm", perfekt: "hat genommen", s: [{ g: "Ich <strong>nahm</strong> den Bus zur Arbeit.", e: "I took the bus to work.", a: "أنا ركبت (أخدت) الأتوبيس للشغل." }] },
+                { id: 'v23', ger: "schlafen", eng: "to sleep", ar: "ينام", praeteritum: "schlief", perfekt: "hat geschlafen", s: [{ g: "Das Kind <strong>schlief</strong> tief.", e: "The child slept deeply.", a: "الطفل نام بعمق." }] },
+                { id: 'v24', ger: "helfen", eng: "to help", ar: "يساعد", praeteritum: "half", perfekt: "hat geholfen", s: [{ g: "Er <strong>half</strong> seiner Mutter.", e: "He helped his mother.", a: "هو ساعد مامته." }] },
+                { id: 'v25', ger: "stehen", eng: "to stand", ar: "يقف", praeteritum: "stand", perfekt: "hat gestanden", s: [{ g: "Ich <strong>stand</strong> an der Haltestelle.", e: "I stood at the bus stop.", a: "أنا وقفت في المحطة." }] },
+                { id: 'v26', ger: "bleiben", eng: "to stay", ar: "يمكث / يبقى", praeteritum: "blieb", perfekt: "ist geblieben", s: [{ g: "Sie <strong>blieb</strong> zu Hause.", e: "She stayed at home.", a: "هي قعدت في البيت." }] },
+                { id: 'v27', ger: "laufen", eng: "to run / walk", ar: "يجري / يمشي", praeteritum: "lief", perfekt: "ist gelaufen", s: [{ g: "Wir <strong>liefen</strong> im Park.", e: "We ran in the park.", a: "إحنا جرينا في الحديقة." }] },
+                { id: 'v28', ger: "fahren", eng: "to drive / go", ar: "يقود / يسافر", praeteritum: "fuhr", perfekt: "ist gefahren", s: [{ g: "Er <strong>fuhr</strong> nach München.", e: "He drove/went to Munich.", a: "هو سافر لميونخ." }] },
+                { id: 'v29', ger: "treffen", eng: "to meet", ar: "يقابل", praeteritum: "traf", perfekt: "hat getroffen", s: [{ g: "Ich <strong>traf</strong> meinen Freund im Café.", e: "I met my friend at the café.", a: "أنا قابلت صاحبي في الكافيه." }] },
+                { id: 'v30', ger: "beginnen", eng: "to begin", ar: "يبدأ", praeteritum: "begann", perfekt: "hat begonnen", s: [{ g: "Der Kurs <strong>begann</strong> um neun Uhr.", e: "The course started at nine o'clock.", a: "الكورس بدأ الساعة تسعة." }] }
+            ]
+        };
+
+        const { useState, useEffect } = React;
+
+        // --- HELPER FOR ARTICLES COLORING ---
+        const colorizeArticles = (text) => {
+            if (!text) return text;
+            const regex = /(der |die |das )/gi;
+            const parts = text.split(regex);
+            return parts.map((part, i) => {
+                const lower = part.toLowerCase();
+                if (lower === 'der ') return <span key={i} className="text-blue-500 font-extrabold">{part}</span>;
+                if (lower === 'die ') return <span key={i} className="text-rose-500 font-extrabold">{part}</span>;
+                if (lower === 'das ') return <span key={i} className="text-emerald-500 font-extrabold">{part}</span>;
+                return <span key={i}>{part}</span>;
+            });
+        };
+
+        // --- COMPONENTS ---
+        const ProgressBar = ({ total, learned, colorClass }) => {
+            const percentage = total === 0 ? 0 : Math.round((learned / total) * 100);
+            return (
+                <div className="glass-panel p-5 rounded-2xl mb-8 flex items-center justify-between transition-all" dir="rtl">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider ar-text mb-1">مستوى التقدم</h3>
+                        <p className="text-3xl font-extrabold text-slate-800">{learned} <span className="text-sm font-medium text-slate-400">/ {total} أتقنتهم</span></p>
+                    </div>
+                    <div className="relative w-20 h-20 drop-shadow-md">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path className="text-slate-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                            <path className={`${colorClass} transition-all duration-1000 ease-out`} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold text-slate-700">
+                            {percentage}%
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const WordCard = ({ item, isLearned, toggleLearned }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            return (
+                <div className="relative group perspective-1000 w-full h-[24rem]">
+                    <div className={`w-full h-full transition-all duration-700 transform-style-3d shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl ${isFlipped ? 'rotate-y-180' : ''}`}>
+
+                        {/* FRONT */}
+                        <div className="absolute w-full h-full backface-hidden bg-white border border-slate-100 rounded-2xl p-5 flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
+                            onClick={() => setIsFlipped(true)}>
+                            <div className="flex justify-between items-start shrink-0" dir="rtl">
+                                <span className="bg-orange-50 text-orange-600 text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider ar-text border border-orange-100">مفردات</span>
+                                <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <div className="text-center mt-2 flex-grow flex flex-col justify-center overflow-y-auto front-scroll px-1 py-3">
+                                <div className="flex flex-col justify-center items-center gap-3 mb-1">
+                                    <h3 className="text-2xl font-bold text-slate-800 leading-tight">{colorizeArticles(item.ger)}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={(e) => playAudio(item.ger, e)} className="p-2 rounded-full bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors shadow-sm"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                        <SpeechTester targetText={item.ger} />
+                                    </div>
+                                </div>
+                                <div className="mt-4 space-y-1">
+                                    <p className="text-slate-500 font-medium text-sm">{item.eng}</p>
+                                    <p className="text-orange-600 font-bold ar-text text-lg" dir="rtl">{item.ar}</p>
+                                </div>
+                            </div>
+
+                            <div className="text-center text-xs text-slate-400 font-medium flex items-center justify-center gap-1 ar-text mt-2 shrink-0">
+                                <i data-lucide="rotate-cw" className="w-3 h-3"></i> اضغط للأمثلة
+                            </div>
+                        </div>
+
+                        {/* BACK */}
+                        <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-2xl p-5 shadow-lg flex flex-col cursor-pointer overflow-hidden"
+                            onClick={() => setIsFlipped(false)} style={{ transform: 'rotateY(180deg)' }}>
+                            <div className="mb-3 border-b border-white/20 pb-2 flex justify-between items-center shrink-0" dir="rtl">
+                                <h4 className="font-bold text-white/90 text-sm tracking-wider ar-text">أمثلة سياقية</h4>
+                                <i data-lucide="rotate-ccw" className="w-4 h-4 text-white/60"></i>
+                            </div>
+                            <div className="overflow-y-auto card-scroll flex-grow pr-2 pb-2">
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="text-sm bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/5">
+                                            <div className="flex items-start gap-2 mb-1.5">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className="p-1 text-orange-200 hover:text-white shrink-0 mt-0.5"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <span className="leading-relaxed" dangerouslySetInnerHTML={{ __html: sentence.g }}></span>
+                                            </div>
+                                            <div className="text-orange-200 text-xs italic ml-8 mb-1.5">{sentence.e}</div>
+                                            <div className="text-amber-200 text-sm font-bold ar-text border-t border-white/10 pt-1.5 mt-1" dir="rtl">{sentence.a}</div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const IrregularVerbRow = ({ item, isLearned, toggleLearned }) => {
+            const [expanded, setExpanded] = useState(false);
+
+            return (
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md" dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                    {item.ger}
+                                    <button onClick={(e) => playAudio(item.ger, e)} className="text-emerald-600 opacity-70 hover:opacity-100 transition-opacity"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                </h3>
+                                <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className="text-emerald-600 font-bold ar-text" dir="rtl">{item.ar}</span></p>
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präteritum (ماضي بسيط)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praeteritum, e)} className="text-amber-600 bg-amber-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.praeteritum}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.praeteritum} /></div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Perfekt (ماضي تام)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.perfekt, e)} className="text-purple-600 bg-purple-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.perfekt}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.perfekt} /></div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <h4 className="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider ar-text">مثال سياقي (Beispiel)</h4>
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm group flex flex-col sm:flex-row gap-4 justify-between items-start">
+                                            <div className="flex-1">
+                                                <div className="flex items-start gap-3 mb-2">
+                                                    <button onClick={(e) => playAudio(sentence.g, e)} className="mt-0.5 text-emerald-600 bg-emerald-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                    <p className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: sentence.g }}></p>
+                                                </div>
+                                                <p className="text-slate-500 text-sm ml-10 mb-2">{sentence.e}</p>
+                                                <div className="ml-10 text-emerald-600 text-base font-bold ar-text border-t border-slate-100 pt-2" dir="rtl">{sentence.a}</div>
+                                            </div>
+                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-slate-50 p-1.5 rounded-full" dir="ltr">
+                                                <SpeechTester targetText={sentence.g} />
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const DialogueRow = ({ dialogue }) => {
+            const [expanded, setExpanded] = useState(false);
+            return (
+                <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden mb-6 transition-all duration-300 hover:shadow-lg" dir="ltr">
+                    <button
+                        className="w-full p-6 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white"
+                        onClick={() => setExpanded(!expanded)}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl">
+                                <i data-lucide={dialogue.icon} className="w-6 h-6"></i>
+                            </div>
+                            <h3 className="text-2xl font-bold text-slate-800 ar-text">{dialogue.title}</h3>
+                        </div>
+                        <i data-lucide="chevron-down" className={`w-6 h-6 text-slate-400 transform transition-transform duration-300 ${expanded ? 'rotate-180 text-blue-600' : ''}`}></i>
+                    </button>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="p-6 bg-white space-y-4">
+                            {dialogue.lines.map((line, idx) => {
+                                const isCustomer = line.speaker === "Peter" || line.speaker === "Petra" || line.speaker === "Kunde" || line.speaker === "Käufer" || line.speaker.includes("Gast") || line.speaker === "Person A";
+                                return (
+                                    <div key={idx} className={`flex flex-col p-4 rounded-2xl border ${isCustomer ? 'bg-blue-50/50 border-blue-100 ml-8' : 'bg-slate-50 border-slate-100 mr-8'}`}>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${isCustomer ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-700'}`}>
+                                                {line.speaker}
+                                            </span>
+                                            <div className="flex gap-2">
+                                                <button onClick={(e) => playAudio(line.text, e)} className="text-slate-400 hover:text-blue-600 transition-colors"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <SpeechTester targetText={line.text} />
+                                            </div>
+                                        </div>
+                                        <p className="text-lg font-medium text-slate-800 mb-1">{line.text}</p>
+                                        <p className="text-sm text-slate-500 mb-2 italic">{line.en}</p>
+                                        <p className="text-blue-700 font-bold ar-text border-t border-slate-200/50 pt-2 text-right" dir="rtl">{line.ar}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const AdjectiveTables = () => {
+            const thClass = "border border-slate-200 p-3 bg-indigo-50 font-bold text-indigo-800 text-sm tracking-wider";
+            const tdClass = "border border-slate-200 p-3 text-center text-slate-700 font-medium";
+
+            return (
+                <div className="space-y-8" dir="ltr">
+                    {/* Definite Article */}
+                    <div className="overflow-x-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                        <h4 className="font-bold text-indigo-600 text-lg mb-4 ar-text" dir="rtl">1. مع أداة المعرفة (Mit dem bestimmten Artikel: der, die, das)</h4>
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th className={thClass}>Kasus</th>
+                                    <th className={thClass}>Maskulin</th>
+                                    <th className={thClass}>Feminin</th>
+                                    <th className={thClass}>Neutrum</th>
+                                    <th className={thClass}>Plural</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td className={tdClass}>Nominativ</td><td className={tdClass}>-e</td><td className={tdClass}>-e</td><td className={tdClass}>-e</td><td className={tdClass}>-en</td></tr>
+                                <tr><td className={tdClass}>Akkusativ</td><td className={tdClass}>-en</td><td className={tdClass}>-e</td><td className={tdClass}>-e</td><td className={tdClass}>-en</td></tr>
+                                <tr><td className={tdClass}>Dativ</td><td className={tdClass}>-en</td><td className={tdClass}>-en</td><td className={tdClass}>-en</td><td className={tdClass}>-en</td></tr>
+                                <tr><td className={tdClass}>Genitiv</td><td className={tdClass}>-en</td><td className={tdClass}>-en</td><td className={tdClass}>-en</td><td className={tdClass}>-en</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Indefinite Article */}
+                    <div className="overflow-x-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                        <h4 className="font-bold text-indigo-600 text-lg mb-4 ar-text" dir="rtl">2. مع أداة النكرة (Mit dem unbestimmten Artikel: ein, eine)</h4>
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th className={thClass}>Kasus</th>
+                                    <th className={thClass}>Maskulin</th>
+                                    <th className={thClass}>Feminin</th>
+                                    <th className={thClass}>Neutrum</th>
+                                    <th className={thClass}>Plural (Keine Artikel)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td className={tdClass}>Nominativ</td><td className={tdClass}>-er</td><td className={tdClass}>-e</td><td className={tdClass}>-es</td><td className={tdClass}>-en</td></tr>
+                                <tr><td className={tdClass}>Akkusativ</td><td className={tdClass}>-en</td><td className={tdClass}>-e</td><td className={tdClass}>-es</td><td className={tdClass}>-en</td></tr>
+                                <tr><td className={tdClass}>Dativ</td><td className={tdClass}>-en</td><td className={tdClass}>-en</td><td className={tdClass}>-en</td><td className={tdClass}>-en</td></tr>
+                                <tr><td className={tdClass}>Genitiv</td><td className={tdClass}>-en</td><td className={tdClass}>-en</td><td className={tdClass}>-en</td><td className={tdClass}>-en</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* No Article */}
+                    <div className="overflow-x-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                        <h4 className="font-bold text-indigo-600 text-lg mb-4 ar-text" dir="rtl">3. بدون أداة (Ohne Artikel)</h4>
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th className={thClass}>Kasus</th>
+                                    <th className={thClass}>Maskulin</th>
+                                    <th className={thClass}>Feminin</th>
+                                    <th className={thClass}>Neutrum</th>
+                                    <th className={thClass}>Plural</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td className={tdClass}>Nominativ</td><td className={tdClass}>-er</td><td className={tdClass}>-e</td><td className={tdClass}>-es</td><td className={tdClass}>-e</td></tr>
+                                <tr><td className={tdClass}>Akkusativ</td><td className={tdClass}>-en</td><td className={tdClass}>-e</td><td className={tdClass}>-es</td><td className={tdClass}>-e</td></tr>
+                                <tr><td className={tdClass}>Dativ</td><td className={tdClass}>-em</td><td className={tdClass}>-er</td><td className={tdClass}>-em</td><td className={tdClass}>-en</td></tr>
+                                <tr><td className={tdClass}>Genitiv</td><td className={tdClass}>-en</td><td className={tdClass}>-er</td><td className={tdClass}>-en</td><td className={tdClass}>-er</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- MAIN APP ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('words');
+            const [learnedItems, setLearnedItems] = useState(new Set());
+            const [searchTerm, setSearchTerm] = useState('');
+
+            // Load saved progress
+            useEffect(() => {
+                const saved = localStorage.getItem('a2_essen_progress');
+                if (saved) {
+                    setLearnedItems(new Set(JSON.parse(saved)));
+                }
+            }, []);
+
+            // Save progress
+            useEffect(() => {
+                localStorage.setItem('a2_essen_progress', JSON.stringify(Array.from(learnedItems)));
+            }, [learnedItems]);
+
+            useEffect(() => {
+                lucide.createIcons();
+            });
+
+            const toggleLearned = (id) => {
+                const newLearned = new Set(learnedItems);
+                if (newLearned.has(id)) newLearned.delete(id);
+                else newLearned.add(id);
+                setLearnedItems(newLearned);
+            };
+
+            const totalWords = LEARNING_DATA.words.obstGemuese.length + LEARNING_DATA.words.fleischFisch.length + LEARNING_DATA.words.sonstiges.length;
+            const totalVerbs = LEARNING_DATA.verbs.length;
+            const totalExp = LEARNING_DATA.expressions.length;
+            const grandTotal = totalWords + totalVerbs + totalExp;
+
+            const tabConfig = {
+                words: { labelEn: 'Vocabulary', labelAr: 'مفردات الأكل', icon: 'apple', color: 'orange' },
+                expressions: { labelEn: 'Phrases', labelAr: 'سوابق وجمل', icon: 'message-square', color: 'amber' },
+                dialogues: { labelEn: 'Dialogues', labelAr: 'محادثات', icon: 'users', color: 'blue' },
+                verbs: { labelEn: 'Past Verbs', labelAr: 'الأفعال (ماضي)', icon: 'activity', color: 'emerald' },
+                grammar: { labelEn: 'Grammar', labelAr: 'القواعد', icon: 'book-open', color: 'purple' },
+                letters: { labelEn: 'Letters', labelAr: 'رسائل وإيميلات', icon: 'mail', color: 'cyan' },
+                culture: { labelEn: 'Culture', labelAr: 'ثقافة وقصص', icon: 'globe', color: 'rose' }
+            };
+
+            const activeColor = tabConfig[activeTab].color;
+
+            return (
+                <div className="h-screen flex flex-col bg-slate-50" dir="rtl">
+                    {/* TOP NAVIGATION HEADER */}
+                    <header className="w-full bg-slate-900 text-white shadow-xl z-50 shrink-0 relative overflow-hidden">
+                        <div className={`absolute top-0 left-0 w-full h-1 bg-${activeColor}-500 transition-colors duration-500`}></div>
+
+                        <div className="flex justify-between items-center px-4 md:px-8 py-3 border-b border-slate-800">
+                            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-3 ar-text">
+                                <span className={`bg-${activeColor}-500 p-2 rounded-xl transition-colors duration-500 shadow-lg`}>
+                                    <i data-lucide="coffee" className="w-5 h-5 md:w-6 md:h-6 text-white"></i>
+                                </span>
+                                A2: Essen mit Genuss
+                            </h1>
+
+                            <div className="flex items-center gap-3" dir="ltr">
+                                <div className="text-right hidden sm:block">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Progress</div>
+                                    <div className={`text-sm font-extrabold text-${activeColor}-400 transition-colors`}>{grandTotal === 0 ? 0 : Math.round((learnedItems.size / grandTotal) * 100)}%</div>
+                                </div>
+                                <div className="relative w-10 h-10">
+                                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                        <path className="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                                        <path className={`text-${activeColor}-500 transition-all duration-1000 ease-out`} strokeDasharray={`${grandTotal === 0 ? 0 : (learnedItems.size / grandTotal) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Horizontal Navigation Tabs */}
+                        <nav className="flex overflow-x-auto scrollbar-hide px-4 py-2 gap-2 snap-x">
+                            {Object.entries(tabConfig).map(([key, tab]) => (
+                                <button
+                                    key={key}
+                                    onClick={() => { setActiveTab(key); setSearchTerm(''); }}
+                                    className={`snap-center shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold ar-text group relative overflow-hidden ${activeTab === key ? `bg-${tab.color}-600 text-white shadow-md` : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <i data-lucide={tab.icon} className={`w-5 h-5 ${activeTab === key ? 'text-white' : `text-${tab.color}-400 group-hover:text-${tab.color}-300`} transition-colors`}></i>
+                                    <span className="text-sm whitespace-nowrap">{tab.labelAr}</span>
+                                    {activeTab === key && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-white/50 rounded-t-full"></div>}
+                                </button>
+                            ))}
+                        </nav>
+                    </header>
+
+                    {/* MAIN CONTENT AREA */}
+                    <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 relative" dir="ltr">
+                        <div className={`fixed top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-${activeColor}-200/20 blur-3xl -z-10 transition-colors duration-1000 pointer-events-none`}></div>
+
+                        <div className="max-w-7xl mx-auto">
+
+                            {/* LIVE SEARCH BAR (Hidden in Grammar/Culture/Dialogues/Letters) */}
+                            {activeTab !== 'grammar' && activeTab !== 'culture' && activeTab !== 'dialogues' && activeTab !== 'letters' && (
+                                <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                    <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                        <div className={`absolute -inset-0.5 bg-gradient-to-r from-${activeColor}-400 to-${activeColor}-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                        <div className="relative">
+                                            <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                            <input
+                                                type="text"
+                                                placeholder="ابحث بالعربي أو الألماني..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className={`w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-${activeColor}-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium`}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* PROGRESS BARS */}
+                            {activeTab === 'words' && <ProgressBar total={totalWords} learned={Array.from(learnedItems).filter(id => id.startsWith('w')).length} colorClass="text-orange-500" />}
+                            {activeTab === 'verbs' && <ProgressBar total={totalVerbs} learned={Array.from(learnedItems).filter(id => id.startsWith('v')).length} colorClass="text-emerald-500" />}
+                            {activeTab === 'expressions' && <ProgressBar total={totalExp} learned={Array.from(learnedItems).filter(id => id.startsWith('e')).length} colorClass="text-amber-500" />}
+
+                            {/* TAB: WORDS */}
+                            {activeTab === 'words' && (
+                                <div className="space-y-12">
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-orange-100 p-2 rounded-xl text-orange-600"><i data-lucide="apple" className="w-6 h-6"></i></span> الخضار والفاكهة والأعشاب (Obst, Gemüse & Kräuter)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.obstGemuese.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-red-100 p-2 rounded-xl text-red-600"><i data-lucide="beef" className="w-6 h-6"></i></span> اللحوم والأسماك (Fleisch & Fisch)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.fleischFisch.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-yellow-100 p-2 rounded-xl text-yellow-600"><i data-lucide="croissant" className="w-6 h-6"></i></span> منتجات أخرى (Sonstiges)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.sonstiges.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
+
+                            {/* TAB: EXPRESSIONS */}
+                            {activeTab === 'expressions' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-amber-100 p-2 rounded-xl text-amber-600"><i data-lucide="message-square" className="w-6 h-6"></i></span>
+                                        جمل شائعة وسوابق (Redemittel)
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {LEARNING_DATA.expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                            <div key={exp.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative group hover:shadow-xl hover:border-amber-200 transition-all duration-300">
+                                                <button onClick={() => toggleLearned(exp.id)} className={`absolute top-5 left-5 p-2 rounded-full transition-colors z-10 ${learnedItems.has(exp.id) ? 'bg-amber-100 text-amber-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                                </button>
+                                                <span className="inline-block bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-xs font-bold mb-4 ar-text border border-amber-100">{exp.type}</span>
+                                                <div className="flex items-start gap-3 mb-3" dir="ltr">
+                                                    <div className="flex flex-col gap-2 shrink-0">
+                                                        <button onClick={(e) => playAudio(exp.ger, e)} className="text-amber-500 bg-amber-50 p-2 rounded-xl hover:bg-amber-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                        <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={exp.ger} /></div>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight mt-1">"{exp.ger}"</h3>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
+                                                    <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
+                                                    <p className="text-amber-700 font-extrabold text-xl mb-4 ar-text">{exp.ar}</p>
+                                                    <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
+                                                        <i data-lucide="info" className="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>
+                                                        <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: DIALOGUES */}
+                            {activeTab === 'dialogues' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="users" className="w-6 h-6"></i></span>
+                                        محادثات التسوق والمطعم (Dialoge)
+                                    </h2>
+                                    <div className="max-w-4xl mx-auto space-y-6">
+                                        {LEARNING_DATA.dialogues.map(dialogue => (
+                                            <DialogueRow key={dialogue.id} dialogue={dialogue} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: VERBS */}
+                            {activeTab === 'verbs' && (
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="activity" className="w-6 h-6"></i></span>
+                                        الأفعال الشاذة في الماضي البسيط (Präteritum)
+                                    </h2>
+                                    <div className="space-y-4 max-w-4xl mx-auto">
+                                        {LEARNING_DATA.verbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <IrregularVerbRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: GRAMMAR */}
+                            {activeTab === 'grammar' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-purple-700 to-indigo-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="book-open" className="absolute -right-4 -bottom-4 w-48 h-48 text-white opacity-10 transform rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">القواعد النحوية (Grammatik)</h2>
+                                            <p className="text-purple-200 ar-text text-lg max-w-2xl">شرح قاعدة الجمل الجانبية باستخدام "dass" وجداول إعراب الصفات الأساسية لمستوى A2.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-8">
+                                        {LEARNING_DATA.grammar.map((gram, idx) => (
+                                            <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                    <div className="bg-purple-100 p-3 rounded-2xl text-purple-600 shrink-0 mt-1">
+                                                        <i data-lucide="braces" className="w-6 h-6"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                        <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-8">
+                                                    {gram.structure && (
+                                                        <div className="bg-slate-900 text-purple-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
+                                                            <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i> {gram.structure}
+                                                        </div>
+                                                    )}
+
+                                                    {gram.examples && (
+                                                        <>
+                                                            <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                            <ul className="space-y-4">
+                                                                {gram.examples.map((ex, i) => (
+                                                                    <li key={i} className="bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
+                                                                        <span className="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold mb-3 ar-text">{ex.category}</span>
+                                                                        <div className="flex gap-4 items-center mb-3" dir="ltr">
+                                                                            <button onClick={(e) => playAudio(ex.g, e)} className="text-purple-500 bg-white p-2 rounded-xl shadow-sm hover:bg-purple-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                            <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                        </div>
+                                                                        <div className="text-purple-700 font-bold ar-text border-t border-purple-200/50 pt-3 mt-3">{ex.a}</div>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </>
+                                                    )}
+
+                                                    {gram.tables && <AdjectiveTables />}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: LETTERS */}
+                            {activeTab === 'letters' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-cyan-600 to-teal-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="mail" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">كيفية كتابة رسالة (Briefe schreiben)</h2>
+                                            <p className="text-cyan-100 ar-text text-lg max-w-2xl">أمثلة عملية لرسائل وإيميلات غير رسمية حول الطعام والمطاعم في مستوى A2.</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Explanation / Guide */}
+                                    <div className="bg-white p-8 rounded-3xl border border-cyan-100 mb-10 shadow-sm">
+                                        <h3 className="text-2xl font-bold text-cyan-800 mb-6 flex items-center gap-3 ar-text">
+                                            <span className="bg-cyan-100 p-2 rounded-xl"><i data-lucide="info" className="w-6 h-6 text-cyan-600"></i></span>
+                                            أساسيات كتابة الرسالة والإيميل
+                                        </h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ar-text">
+                                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                                                <h4 className="font-bold text-slate-800 mb-3">1. التحية (Anrede)</h4>
+                                                <ul className="space-y-2 text-slate-600">
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr">Lieber Ahmed,</span> (للمذكر)</li>
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr">Liebe Sara,</span> (للمؤنث)</li>
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr">Hallo Ali,</span> (عام)</li>
+                                                </ul>
+                                            </div>
+                                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                                                <h4 className="font-bold text-slate-800 mb-3">2. المقدمة (Einleitung)</h4>
+                                                <ul className="space-y-2 text-slate-600">
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr">Wie geht es dir?</span> (كيف حالك؟)</li>
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr">Ich habe mich lange nicht gemeldet.</span> (لم أراسلك منذ فترة)</li>
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr">Danke für deine E-Mail.</span> (شكراً لإيميلك)</li>
+                                                </ul>
+                                            </div>
+                                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                                                <h4 className="font-bold text-slate-800 mb-3">3. الخاتمة (Schluss)</h4>
+                                                <ul className="space-y-2 text-slate-600">
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr">Bis bald!</span> (أراك قريباً!)</li>
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr">Liebe Grüße</span> (مع أطيب التحيات)</li>
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr">Dein Max / Deine Eva</span> (المُرسل)</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* The Letters */}
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        {LEARNING_DATA.letters.map((letter) => (
+                                            <div key={letter.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-cyan-100 text-cyan-700 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    Brief / E-Mail
+                                                </div>
+                                                <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-6 mt-2 flex items-center gap-3">
+                                                    <i data-lucide="mail-open" className="w-6 h-6 text-cyan-500"></i> {letter.title}
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {letter.lines.map((line, idx) => (
+                                                        <div key={idx} className="bg-slate-50/50 p-4 rounded-2xl border border-cyan-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                    <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-cyan-600 bg-white p-2 rounded-xl shadow-sm hover:bg-cyan-50 transition-colors shrink-0">
+                                                                        <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                    </button>
+                                                                    <p className="text-slate-800 text-lg font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                </div>
+                                                                <div className="sm:ml-14 text-cyan-800 text-base font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                </div>
+                                                            </div>
+                                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                <SpeechTester targetText={line.g} />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: CULTURE */}
+                            {activeTab === 'culture' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-rose-600 to-red-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="globe" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">قصص وثقافة (Kultur)</h2>
+                                            <p className="text-rose-200 ar-text text-lg max-w-2xl">معلومات ثقافية حول الأكل في ألمانيا وقصص وراء أشهر الأكلات.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.culture.map((item) => (
+                                            <div key={item.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-rose-100 text-rose-600 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    Lesetext
+                                                </div>
+                                                <h3 className="text-3xl font-extrabold text-slate-800 ar-text mb-6 mt-2">{item.title}</h3>
+                                                <div className="space-y-4">
+                                                    {item.lines.map((line, idx) => (
+                                                        <div key={idx} className="bg-slate-50/50 p-4 rounded-2xl border border-rose-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                    <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-rose-500 bg-white p-2 rounded-xl shadow-sm hover:bg-rose-50 transition-colors shrink-0">
+                                                                        <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                    </button>
+                                                                    <p className="text-slate-800 text-xl font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                </div>
+                                                                <div className="sm:ml-14 text-rose-700 text-lg font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                </div>
+                                                            </div>
+                                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                <SpeechTester targetText={line.g} />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

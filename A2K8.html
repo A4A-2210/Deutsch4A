@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch A2: Medien und Politik</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            overflow: hidden;
+        }
+
+        .ar-text {
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Refined Card Flips */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Glassmorphism subtle effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Custom Scrollbars for Cards */
+        .card-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .card-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .front-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .front-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- HELPERS FOR AUDIO & SPEECH ---
+        const playAudio = (text, e) => {
+            if (e) e.stopPropagation();
+            const cleanText = text.replace(/<[^>]+>/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'de-DE';
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const SpeechTester = ({ targetText }) => {
+            const [status, setStatus] = React.useState('idle');
+            const [heard, setHeard] = React.useState('');
+
+            const listen = (e) => {
+                if (e) e.stopPropagation();
+                if (!('webkitSpeechRecognition' in window)) {
+                    alert('المتصفح ده مش بيدعم تسجيل الصوت، جرب Google Chrome.');
+                    return;
+                }
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+
+                recognition.onstart = () => setStatus('listening');
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    setHeard(speechResult);
+
+                    const clean = (str) => str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,!?:]/g, '').trim();
+                    const targetClean = clean(targetText);
+                    const heardClean = clean(speechResult);
+
+                    if (heardClean.includes(targetClean) || targetClean.includes(heardClean) || heardClean === targetClean) {
+                        setStatus('success');
+                    } else {
+                        setStatus('fail');
+                    }
+                };
+                recognition.onerror = () => setStatus('fail');
+                recognition.onend = () => { if (status === 'listening') setStatus('idle'); };
+                recognition.start();
+            };
+
+            return (
+                <div className="inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={listen} title="جرب تنطقها" className={`p-2 rounded-full transition-all duration-300 shadow-sm ${status === 'listening' ? 'bg-red-500 text-white animate-pulse scale-110' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'}`}>
+                        <i data-lucide="mic" className="w-4 h-4"></i>
+                    </button>
+                    {status === 'success' && <span className="text-emerald-500 text-xs font-bold ar-text animate-bounce">✅ ممتاز!</span>}
+                    {status === 'fail' && <span className="text-red-500 text-xs ar-text font-bold" title={`سمعت: ${heard}`}>❌ جرب تاني</span>}
+                </div>
+            );
+        };
+
+        // --- FULL A2 LEARNING DATA (Medien und Politik) ---
+        const LEARNING_DATA = {
+            words: {
+                medien: [
+                    {
+                        id: 'w1', ger: "die Zeitung", eng: "newspaper", ar: "الجريدة", s: [
+                            { g: "Ich lese morgens die <strong>Zeitung</strong> beim Frühstück.", e: "I read the newspaper in the morning during breakfast.", a: "أقرأ الجريدة في الصباح أثناء الإفطار." },
+                            { g: "Diese <strong>Zeitung</strong> berichtet viel über Politik.", e: "This newspaper reports a lot about politics.", a: "هذه الجريدة تنشر الكثير عن السياسة." },
+                            { g: "Wo kann ich hier eine deutsche <strong>Zeitung</strong> kaufen?", e: "Where can I buy a German newspaper here?", a: "أين يمكنني شراء جريدة ألمانية هنا؟" }
+                        ]
+                    },
+                    {
+                        id: 'w2', ger: "die Nachricht", eng: "news / message", ar: "الخبر / الرسالة", s: [
+                            { g: "Ich sehe mir jeden Abend die <strong>Nachrichten</strong> an.", e: "I watch the news every evening.", a: "أشاهد الأخبار كل مساء." },
+                            { g: "Die <strong>Nachricht</strong> von deinem Erfolg hat mich gefreut.", e: "The news of your success made me happy.", a: "خبر نجاحك أسعدني." },
+                            { g: "Er schickt mir oft <strong>Nachrichten</strong> per SMS.", e: "He often sends me messages via SMS.", a: "يرسل لي رسائل غالباً عبر الرسائل القصيرة." }
+                        ]
+                    },
+                    {
+                        id: 'w3', ger: "das Streaming-Portal", eng: "streaming portal", ar: "بوابة بث (نتفليكس)", s: [
+                            { g: "Welches <strong>Streaming-Portal</strong> nutzt du am liebsten?", e: "Which streaming portal do you prefer to use?", a: "أي بوابة بث تفضل استخدامها؟" },
+                            { g: "Filme auf einem <strong>Streaming-Portal</strong> sind praktisch.", e: "Films on a streaming portal are practical.", a: "الأفلام على بوابات البث عملية." },
+                            { g: "Ich habe ein Abo bei einem neuen <strong>Streaming-Portal</strong>.", e: "I have a subscription to a new streaming portal.", a: "لدي اشتراك في بوابة بث جديدة." }
+                        ]
+                    },
+                    {
+                        id: 'w4', ger: "der Zuschauer", eng: "viewer", ar: "المُشاهد", s: [
+                            { g: "Millionen <strong>Zuschauer</strong> sahen das Fußballspiel.", e: "Millions of viewers watched the football match.", a: "شاهد ملايين المشاهدين مباراة كرة القدم." },
+                            { g: "Die Sendung hat viele junge <strong>Zuschauer</strong>.", e: "The program has many young viewers.", a: "البرنامج له العديد من المشاهدين الشباب." },
+                            { g: "Die Sendung mit den meisten <strong>Zuschauern</strong> war das Qualifikationsspiel.", e: "The program with the most viewers was the qualification game.", a: "كان البرنامج صاحب أعلى نسبة مشاهدة هو مباراة التصفيات." }
+                        ]
+                    },
+                    {
+                        id: 'w5', ger: "die Serie", eng: "series", ar: "المسلسل", s: [
+                            { g: "Ich bin ein großer Fan von amerikanischen <strong>Serien</strong>.", e: "I am a big fan of American series.", a: "أنا من كبار المعجبين بالمسلسلات الأمريكية." },
+                            { g: "Die neue <strong>Serie</strong> auf Netflix ist sehr spannend.", e: "The new series on Netflix is very exciting.", a: "المسلسل الجديد مشوق جداً." },
+                            { g: "Wie viele Folgen hat diese <strong>Serie</strong>?", e: "How many episodes does this series have?", a: "كم عدد حلقات هذا المسلسل؟" }
+                        ]
+                    },
+                    {
+                        id: 'w6', ger: "die Reportage", eng: "report / documentary", ar: "التقرير / التحقيق", s: [
+                            { g: "Ich finde <strong>Reportagen</strong> über Tiere am interessantesten.", e: "I find reports about animals the most interesting.", a: "أجد التقارير عن الحيوانات أكثر إثارة للاهتمام." },
+                            { g: "Die <strong>Reportage</strong> im Fernsehen war sehr informativ.", e: "The report on TV was very informative.", a: "التقرير التلفزيوني كان غنياً بالمعلومات." },
+                            { g: "Hast du die <strong>Reportage</strong> über das Schloss gesehen?", e: "Did you see the report about the castle?", a: "هل رأيت التحقيق عن القلعة؟" }
+                        ]
+                    },
+                    {
+                        id: 'w7', ger: "die Fachzeitschrift", eng: "specialist journal", ar: "مجلة متخصصة", s: [
+                            { g: "Ich lese regelmäßig eine <strong>Fachzeitschrift</strong> für Medizin.", e: "I regularly read a medical specialist journal.", a: "أقرأ بانتظام مجلة متخصصة في الطب." },
+                            { g: "In dieser <strong>Fachzeitschrift</strong> gibt es neue Studien.", e: "In this specialist journal, there are new studies.", a: "في هذه المجلة توجد دراسات جديدة." },
+                            { g: "Abonnierst du eine <strong>Fachzeitschrift</strong>?", e: "Do you subscribe to a specialist journal?", a: "هل تشترك في مجلة متخصصة؟" }
+                        ]
+                    },
+                    {
+                        id: 'w8', ger: "die Mediathek", eng: "media library", ar: "مكتبة الوسائط", s: [
+                            { g: "Ich nutze die <strong>Mediathek</strong> von ARD.", e: "I use the ARD media library.", a: "أستخدم مكتبة الوسائط لقناة ARD." },
+                            { g: "In der <strong>Mediathek</strong> gibt es viele interessante Filme.", e: "There are many interesting films in the media library.", a: "يوجد العديد من الأفلام الممتعة في مكتبة الوسائط." },
+                            { g: "Hast du die Dokumentation in der <strong>Mediathek</strong> gesehen?", e: "Did you see the documentary in the media library?", a: "هل رأيت الفيلم الوثائقي في مكتبة الوسائط؟" }
+                        ]
+                    },
+                    {
+                        id: 'w9', ger: "das Online-Netzwerk", eng: "online network", ar: "شبكة تواصل اجتماعي", s: [
+                            { g: "Ich nutze <strong>Online-Netzwerke</strong>, um Freunde zu kontaktieren.", e: "I use online networks to contact friends.", a: "أستخدم شبكات التواصل للاتصال بالأصدقاء." },
+                            { g: "Dieses <strong>Online-Netzwerk</strong> ist sehr beliebt bei Jugendlichen.", e: "This online network is very popular with young people.", a: "هذه الشبكة مشهورة جداً بين الشباب." },
+                            { g: "Man kann über <strong>Online-Netzwerke</strong> leicht Grüße senden.", e: "One can easily send greetings via online networks.", a: "يمكن للمرء إرسال التحيات بسهولة عبر الشبكات." }
+                        ]
+                    },
+                    {
+                        id: 'w10', ger: "der Dokumentarfilm", eng: "documentary film", ar: "فيلم وثائقي", s: [
+                            { g: "Ich sehe gern <strong>Dokumentarfilme</strong> über die Natur.", e: "I like watching documentaries about nature.", a: "أحب مشاهدة الأفلام الوثائقية عن الطبيعة." },
+                            { g: "Der neue <strong>Dokumentarfilm</strong> auf ARTE ist sehr spannend.", e: "The new documentary on ARTE is very exciting.", a: "الفيلم الوثائقي الجديد مشوق جداً." },
+                            { g: "Er dreht einen <strong>Dokumentarfilm</strong> über Ägypten.", e: "He is shooting a documentary about Egypt.", a: "هو يصور فيلماً وثائقياً عن مصر." }
+                        ]
+                    },
+                    {
+                        id: 'w11', ger: "der Spielfilm", eng: "feature film", ar: "فيلم روائي", s: [
+                            { g: "Heute Abend läuft ein toller <strong>Spielfilm</strong> im Fernsehen.", e: "A great feature film is on TV tonight.", a: "يُعرض فيلم روائي رائع على التلفاز الليلة." },
+                            { g: "Ist das eine Dokumentation oder ein <strong>Spielfilm</strong>?", e: "Is that a documentary or a feature film?", a: "هل هذا فيلم وثائقي أم فيلم روائي؟" },
+                            { g: "Dieser <strong>Spielfilm</strong> hat viele Preise gewonnen.", e: "This feature film has won many awards.", a: "هذا الفيلم الروائي فاز بالعديد من الجوائز." }
+                        ]
+                    },
+                    {
+                        id: 'w12', ger: "die Überraschung", eng: "surprise", ar: "مفاجأة", s: [
+                            { g: "Die Statistik bietet keine großen <strong>Überraschungen</strong>.", e: "The statistics offer no big surprises.", a: "الإحصائيات لا تقدم مفاجآت كبيرة." },
+                            { g: "Das ist wirklich eine tolle <strong>Überraschung</strong>!", e: "That is really a great surprise!", a: "هذه حقاً مفاجأة رائعة!" },
+                            { g: "Das Ergebnis war für alle eine <strong>Überraschung</strong>.", e: "The result was a surprise for everyone.", a: "النتيجة كانت مفاجأة للجميع." }
+                        ]
+                    }
+                ],
+                politik: [
+                    {
+                        id: 'w13', ger: "die Regierung", eng: "government", ar: "الحكومة", s: [
+                            { g: "Die <strong>Regierung</strong> will neue Wohnungen bauen lassen.", e: "The government wants to have new apartments built.", a: "تريد الحكومة بناء شقق جديدة." },
+                            { g: "Das <strong>Regierungs</strong>treffen findet in Berlin statt.", e: "The government meeting takes place in Berlin.", a: "اجتماع الحكومة يعقد في برلين." },
+                            { g: "Die <strong>Regierung</strong> trifft eine sehr wichtige Entscheidung.", e: "The government is making a very important decision.", a: "الحكومة تتخذ قراراً مهماً جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w14', ger: "das Gesetz", eng: "law", ar: "القانون", s: [
+                            { g: "Der Bundestag entscheidet über viele neue <strong>Gesetze</strong>.", e: "The Bundestag decides on many new laws.", a: "البرلمان يقرر بشأن العديد من القوانين الجديدة." },
+                            { g: "Jeder Bürger muss sich an das <strong>Gesetz</strong> halten.", e: "Every citizen must abide by the law.", a: "يجب على كل مواطن الالتزام بالقانون." },
+                            { g: "Das neue <strong>Gesetz</strong> tritt morgen in Kraft.", e: "The new law comes into force tomorrow.", a: "القانون الجديد يدخل حيز التنفيذ غداً." }
+                        ]
+                    },
+                    {
+                        id: 'w15', ger: "die Wahl", eng: "election", ar: "الانتخابات", s: [
+                            { g: "Alle vier Jahre findet in Deutschland eine <strong>Wahl</strong> statt.", e: "An election takes place in Germany every four years.", a: "تُجرى الانتخابات في ألمانيا كل أربع سنوات." },
+                            { g: "Das Ergebnis der <strong>Wahl</strong> war eine große Überraschung.", e: "The result of the election was a big surprise.", a: "نتيجة الانتخابات كانت مفاجأة كبيرة." },
+                            { g: "Gehst du am Sonntag zur <strong>Wahl</strong>?", e: "Are you going to the election on Sunday?", a: "هل ستذهب للانتخابات يوم الأحد؟" }
+                        ]
+                    },
+                    {
+                        id: 'w16', ger: "die Partei", eng: "party (political)", ar: "الحزب (السياسي)", s: [
+                            { g: "Mit der zweiten Stimme wählt man in Deutschland eine <strong>Partei</strong>.", e: "With the second vote, one elects a party in Germany.", a: "بالصوت الثاني يتم اختيار حزب في ألمانيا." },
+                            { g: "Diese <strong>Partei</strong> hat die Wahl gestern gewonnen.", e: "This party won the election yesterday.", a: "هذا الحزب فاز في الانتخابات أمس." },
+                            { g: "Welche <strong>Partei</strong> hat die besten Ideen für die Umwelt?", e: "Which party has the best ideas for the environment?", a: "أي حزب لديه أفضل الأفكار للبيئة؟" }
+                        ]
+                    },
+                    {
+                        id: 'w17', ger: "das Ereignis", eng: "event", ar: "الحدث", s: [
+                            { g: "Das Konzert gestern war ein großes <strong>Ereignis</strong>.", e: "The concert yesterday was a big event.", a: "الحفل بالأمس كان حدثاً كبيراً." },
+                            { g: "Mich interessieren vor allem politische <strong>Ereignisse</strong>.", e: "I am particularly interested in political events.", a: "تهمني الأحداث السياسية بشكل خاص." },
+                            { g: "Wir sprechen oft über aktuelle <strong>Ereignisse</strong>.", e: "We often talk about current events.", a: "غالباً ما نتحدث عن الأحداث الجارية." }
+                        ]
+                    },
+                    {
+                        id: 'w18', ger: "die Wirtschaft", eng: "economy", ar: "الاقتصاد", s: [
+                            { g: "Es gibt heute wichtige Neuigkeiten aus der <strong>Wirtschaft</strong>.", e: "There is important news from the economy today.", a: "هناك أخبار هامة من الاقتصاد اليوم." },
+                            { g: "Der <strong>Wirtschafts</strong>minister reist heute nach Japan.", e: "The Minister of Economic Affairs is traveling to Japan today.", a: "وزير الاقتصاد يسافر اليوم إلى اليابان." },
+                            { g: "Die <strong>Wirtschaft</strong> des Landes wächst schnell.", e: "The country's economy is growing fast.", a: "اقتصاد البلاد ينمو بسرعة." }
+                        ]
+                    },
+                    {
+                        id: 'w19', ger: "der Bundestag", eng: "Bundestag", ar: "البرلمان الألماني", s: [
+                            { g: "Das Parlament in Deutschland ist der <strong>Bundestag</strong>.", e: "The parliament in Germany is the Bundestag.", a: "البرلمان في ألمانيا هو البوندستاغ." },
+                            { g: "Der <strong>Bundestag</strong> entscheidet über viele neue Gesetze.", e: "The Bundestag decides on many new laws.", a: "البرلمان يقرر بشأن العديد من القوانين الجديدة." },
+                            { g: "Im <strong>Bundestag</strong> sitzen etwa 600 Abgeordnete.", e: "About 600 representatives sit in the Bundestag.", a: "يجلس حوالي 600 نائب في البرلمان." }
+                        ]
+                    },
+                    {
+                        id: 'w20', ger: "der Abgeordnete", eng: "Member of Parliament", ar: "النائب البرلماني", s: [
+                            { g: "Der <strong>Abgeordnete</strong> spricht heute im Parlament.", e: "The MP speaks in parliament today.", a: "النائب يتحدث اليوم في البرلمان." },
+                            { g: "Wir wählen die <strong>Abgeordneten</strong> für vier Jahre.", e: "We elect the representatives for four years.", a: "نحن ننتخب النواب لمدة أربع سنوات." },
+                            { g: "Wie viele <strong>Abgeordnete</strong> gibt es im Bundestag?", e: "How many MPs are there in the Bundestag?", a: "كم عدد النواب الموجودين في البرلمان؟" }
+                        ]
+                    },
+                    {
+                        id: 'w21', ger: "der Bundeskanzler", eng: "Chancellor", ar: "المستشار", s: [
+                            { g: "Die <strong>Bundeskanzlerin</strong> bestimmt die Minister.", e: "The Federal Chancellor determines the ministers.", a: "المستشارة تحدد الوزراء." },
+                            { g: "Der <strong>Kanzler</strong> führt die Regierungsgeschäfte.", e: "The Chancellor conducts the business of government.", a: "المستشار يدير أعمال الحكومة." },
+                            { g: "Er ist die mächtigste Person in der deutschen Politik.", e: "He is the most powerful person in German politics.", a: "هو أقوى شخصية في السياسة الألمانية." }
+                        ]
+                    },
+                    {
+                        id: 'w22', ger: "die Verfassung", eng: "constitution", ar: "الدستور", s: [
+                            { g: "Der Bundestag kann die <strong>Verfassung</strong> (das Grundgesetz) ändern.", e: "The Bundestag can amend the constitution (Basic Law).", a: "البرلمان يمكنه تعديل الدستور (القانون الأساسي)." },
+                            { g: "Jedes Land braucht eine gute <strong>Verfassung</strong>.", e: "Every country needs a good constitution.", a: "كل بلد يحتاج إلى دستور جيد." },
+                            { g: "Die Rechte der Bürger stehen in der <strong>Verfassung</strong>.", e: "Citizens' rights are written in the constitution.", a: "حقوق المواطنين مكتوبة في الدستور." }
+                        ]
+                    },
+                    {
+                        id: 'w23', ger: "der Vertrag", eng: "treaty / contract", ar: "العقد / المعاهدة", s: [
+                            { g: "Er genehmigt internationale <strong>Verträge</strong>.", e: "He approves international treaties.", a: "هو يوافق على المعاهدات الدولية." },
+                            { g: "Bitte unterschreiben Sie den <strong>Vertrag</strong> hier.", e: "Please sign the contract here.", a: "يرجى توقيع العقد هنا." },
+                            { g: "Der <strong>Vertrag</strong> mit der Firma ist sehr wichtig.", e: "The contract with the company is very important.", a: "العقد مع الشركة مهم جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w24', ger: "die Sicherheitspolitik", eng: "security policy", ar: "السياسة الأمنية", s: [
+                            { g: "Ergebnisse werden im Bereich der <strong>Sicherheitspolitik</strong> erwartet.", e: "Results are expected in the area of security policy.", a: "من المتوقع نتائج في مجال السياسة الأمنية." },
+                            { g: "Die <strong>Sicherheitspolitik</strong> ist ein wichtiges Thema in Europa.", e: "Security policy is an important topic in Europe.", a: "السياسة الأمنية موضوع مهم في أوروبا." },
+                            { g: "Der Minister hält eine Rede über <strong>Sicherheitspolitik</strong>.", e: "The minister gives a speech on security policy.", a: "يلقي الوزير خطاباً حول السياسة الأمنية." }
+                        ]
+                    },
+                    {
+                        id: 'w25', ger: "der Vertreter", eng: "representative", ar: "الممثل / المندوب", s: [
+                            { g: "Viele <strong>Vertreter</strong> der Wirtschaft sind anwesend.", e: "Many representatives of the economy are present.", a: "العديد من ممثلي الاقتصاد حاضرون." },
+                            { g: "Er ist der offizielle <strong>Vertreter</strong> der Firma.", e: "He is the official representative of the company.", a: "هو الممثل الرسمي للشركة." },
+                            { g: "Die <strong>Vertreter</strong> treffen sich im Kanzleramt.", e: "The representatives meet at the Chancellery.", a: "يجتمع الممثلون في مكتب المستشارية." }
+                        ]
+                    },
+                    {
+                        id: 'w26', ger: "die Bundeswehr", eng: "German Armed Forces", ar: "الجيش الألماني", s: [
+                            { g: "Der Bundestag entscheidet über den Einsatz der <strong>Bundeswehr</strong>.", e: "The Bundestag decides on the deployment of the Bundeswehr.", a: "البرلمان يقرر بشأن نشر الجيش الألماني." },
+                            { g: "Mein Bruder arbeitet bei der <strong>Bundeswehr</strong>.", e: "My brother works in the armed forces.", a: "أخي يعمل في القوات المسلحة." },
+                            { g: "Die <strong>Bundeswehr</strong> hilft bei der Katastrophe.", e: "The armed forces are helping with the disaster.", a: "الجيش الألماني يساعد في الكارثة." }
+                        ]
+                    },
+                    {
+                        id: 'w27', ger: "die Bauindustrie", eng: "construction industry", ar: "قطاع البناء", s: [
+                            { g: "Nach Angaben der <strong>Bauindustrie</strong> werden viele Wohnungen gebaut.", e: "According to the construction industry, many apartments are being built.", a: "وفقاً لقطاع البناء، يتم بناء العديد من الشقق." },
+                            { g: "Die <strong>Bauindustrie</strong> sucht neue Mitarbeiter.", e: "The construction industry is looking for new employees.", a: "قطاع البناء يبحث عن موظفين جدد." },
+                            { g: "Das ist ein wichtiges Projekt für die <strong>Bauindustrie</strong>.", e: "This is an important project for the construction industry.", a: "هذا مشروع مهم لقطاع البناء." }
+                        ]
+                    },
+                    {
+                        id: 'w28', ger: "die Maßnahme", eng: "measure / action", ar: "إجراء / تدبير", s: [
+                            { g: "Die Regierung will nun <strong>Maßnahmen</strong> für den Bau treffen.", e: "The government now wants to take measures for the construction.", a: "تريد الحكومة الآن اتخاذ تدابير للبناء." },
+                            { g: "Wir müssen sofort neue <strong>Maßnahmen</strong> ergreifen.", e: "We must take new measures immediately.", a: "يجب علينا اتخاذ تدابير جديدة فوراً." },
+                            { g: "Diese <strong>Maßnahme</strong> schützt die Umwelt.", e: "This measure protects the environment.", a: "هذا الإجراء يحمي البيئة." }
+                        ]
+                    },
+                    {
+                        id: 'w29', ger: "das Parlament", eng: "parliament", ar: "البرلمان", s: [
+                            { g: "Das <strong>Parlament</strong> der Bundesrepublik ist der Bundestag.", e: "The parliament of the Federal Republic is the Bundestag.", a: "البرلمان في الجمهورية الاتحادية هو البوندستاغ." },
+                            { g: "Das <strong>Parlament</strong> diskutiert über das neue Gesetz.", e: "The parliament is discussing the new law.", a: "يناقش البرلمان القانون الجديد." },
+                            { g: "Die Sitzung im <strong>Parlament</strong> dauerte drei Stunden.", e: "The session in parliament lasted three hours.", a: "استغرقت الجلسة في البرلمان ثلاث ساعات." }
+                        ]
+                    },
+                    {
+                        id: 'w30', ger: "das Staatsoberhaupt", eng: "head of state", ar: "رأس الدولة", s: [
+                            { g: "Der Bundespräsident ist das <strong>Staatsoberhaupt</strong> Deutschlands.", e: "The Federal President is the head of state of Germany.", a: "الرئيس الاتحادي هو رأس دولة ألمانيا." },
+                            { g: "Das <strong>Staatsoberhaupt</strong> empfängt den Gast aus Frankreich.", e: "The head of state receives the guest from France.", a: "رأس الدولة يستقبل الضيف من فرنسا." },
+                            { g: "Welche Aufgaben hat ein <strong>Staatsoberhaupt</strong>?", e: "What are the duties of a head of state?", a: "ما هي مهام رأس الدولة؟" }
+                        ]
+                    },
+                    {
+                        id: 'w31', ger: "die Sitzung", eng: "session / meeting", ar: "الجلسة", s: [
+                            { g: "Die <strong>Sitzungen</strong> finden im Reichstagsgebäude statt.", e: "The sessions take place in the Reichstag building.", a: "تُعقد الجلسات في مبنى الرايخستاغ." },
+                            { g: "Ich kann nicht kommen, ich bin in einer <strong>Sitzung</strong>.", e: "I can't come, I'm in a meeting.", a: "لا أستطيع الحضور، أنا في جلسة." },
+                            { g: "Die <strong>Sitzung</strong> des Parlaments war sehr lang.", e: "The session of parliament was very long.", a: "جلسة البرلمان كانت طويلة جداً." }
+                        ]
+                    }
+                ],
+                allgemein: [
+                    {
+                        id: 'w32', ger: "die Leistungsfähigkeit", eng: "performance capability", ar: "الكفاءة / القدرة على الأداء", s: [
+                            { g: "Wir können nicht alles mit gleicher <strong>Leistungsfähigkeit</strong> tun.", e: "We cannot do everything with the same capability.", a: "لا يمكننا فعل كل شيء بنفس الكفاءة." },
+                            { g: "Schreibt man beim Fahren eine SMS, sinkt die <strong>Leistungsfähigkeit</strong>.", e: "If you write a text while driving, performance capability drops.", a: "إذا كتبت رسالة أثناء القيادة، تنخفض الكفاءة." },
+                            { g: "Eine gute Ernährung steigert die <strong>Leistungsfähigkeit</strong>.", e: "Good nutrition increases performance capability.", a: "التغذية الجيدة تزيد من القدرة على الأداء." }
+                        ]
+                    },
+                    {
+                        id: 'w33', ger: "die Fehlerquote", eng: "error rate", ar: "معدل الخطأ", s: [
+                            { g: "Die <strong>Fehlerquote</strong> beim Multitasking ist hoch.", e: "The error rate in multitasking is high.", a: "معدل الخطأ في تعدد المهام مرتفع." },
+                            { g: "Wir müssen die <strong>Fehlerquote</strong> senken.", e: "We have to lower the error rate.", a: "يجب علينا تقليل معدل الخطأ." },
+                            { g: "Schreibt man eine SMS beim Fahren, steigt die <strong>Fehlerquote</strong>.", e: "If one writes an SMS while driving, the error rate rises.", a: "إذا كتب المرء رسالة أثناء القيادة، يرتفع معدل الخطأ." }
+                        ]
+                    },
+                    {
+                        id: 'w34', ger: "das Ergebnis", eng: "result", ar: "النتيجة", s: [
+                            { g: "Das <strong>Ergebnis</strong> der Wahl wird morgen bekannt gegeben.", e: "The result of the election will be announced tomorrow.", a: "سيتم إعلان نتيجة الانتخابات غداً." },
+                            { g: "Wissenschaftler sind zu diesem <strong>Ergebnis</strong> gekommen.", e: "Scientists have come to this result.", a: "لقد توصل العلماء إلى هذه النتيجة." },
+                            { g: "Konkrete <strong>Ergebnisse</strong> werden bald erwartet.", e: "Concrete results are expected soon.", a: "من المتوقع ظهور نتائج ملموسة قريباً." }
+                        ]
+                    },
+                    {
+                        id: 'w35', ger: "die Gefahr", eng: "danger", ar: "الخطر", s: [
+                            { g: "Forscher warnen vor der <strong>Gefahr</strong> durch Mücken.", e: "Researchers warn of the danger posed by mosquitoes.", a: "يحذر الباحثون من الخطر الذي يمثله البعوض." },
+                            { g: "Das Autofahren bei Nebel ist eine große <strong>Gefahr</strong>.", e: "Driving in fog is a big danger.", a: "قيادة السيارة في الضباب خطر كبير." },
+                            { g: "Wir müssen diese <strong>Gefahr</strong> ernst nehmen.", e: "We must take this danger seriously.", a: "يجب علينا أن نأخذ هذا الخطر بجدية." }
+                        ]
+                    },
+                    {
+                        id: 'w36', ger: "die Vorlesung", eng: "lecture", ar: "المحاضرة (الجامعية)", s: [
+                            { g: "Die <strong>Vorlesung</strong> an der Universität war sehr langweilig.", e: "The lecture at the university was very boring.", a: "المحاضرة في الجامعة كانت مملة جداً." },
+                            { g: "Wenn ich <strong>Vorlesung</strong> habe, höre ich aufmerksam zu.", e: "When I have a lecture, I listen attentively.", a: "عندما يكون لدي محاضرة، أستمع بانتباه." },
+                            { g: "Um 10 Uhr beginnt meine erste <strong>Vorlesung</strong>.", e: "My first lecture starts at 10 o'clock.", a: "تبدأ محاضرتي الأولى الساعة 10." }
+                        ]
+                    },
+                    {
+                        id: 'w37', ger: "die Freisprechanlage", eng: "hands-free system", ar: "نظام التحدث الحر", s: [
+                            { g: "Im Auto telefoniere ich nur über die <strong>Freisprechanlage</strong>.", e: "In the car, I only talk on the phone via the hands-free system.", a: "في السيارة، أتحدث في الهاتف فقط عبر نظام التحدث الحر." },
+                            { g: "Die neue <strong>Freisprechanlage</strong> funktioniert sehr gut.", e: "The new hands-free system works very well.", a: "نظام التحدث الحر الجديد يعمل بشكل جيد جداً." },
+                            { g: "Eine <strong>Freisprechanlage</strong> ist beim Fahren sehr wichtig.", e: "A hands-free system is very important when driving.", a: "نظام التحدث الحر مهم جداً أثناء القيادة." }
+                        ]
+                    },
+                    {
+                        id: 'w38', ger: "die Tätigkeit", eng: "activity / task", ar: "النشاط / المهمة", s: [
+                            { g: "Multitasking bedeutet mehrere <strong>Tätigkeiten</strong> gleichzeitig.", e: "Multitasking means multiple activities at the same time.", a: "تعدد المهام يعني أنشطة متعددة في نفس الوقت." },
+                            { g: "Welche <strong>Tätigkeit</strong> machst du am liebsten?", e: "Which activity do you like doing most?", a: "أي نشاط تفضل القيام به؟" },
+                            { g: "Körperliche <strong>Tätigkeiten</strong> sind gut für die Gesundheit.", e: "Physical activities are good for health.", a: "الأنشطة البدنية جيدة للصحة." }
+                        ]
+                    },
+                    {
+                        id: 'w39', ger: "die Konzentration", eng: "concentration", ar: "التركيز", s: [
+                            { g: "Diese Aufgabe erfordert hohe <strong>Konzentration</strong>.", e: "This task requires high concentration.", a: "هذه المهمة تتطلب تركيزاً عالياً." },
+                            { g: "Meine <strong>Konzentration</strong> sinkt am späten Nachmittag.", e: "My concentration drops in the late afternoon.", a: "ينخفض تركيزي في أواخر فترة ما بعد الظهر." },
+                            { g: "Lärm stört mich bei der <strong>Konzentration</strong>.", e: "Noise disturbs me in concentrating.", a: "الضوضاء تزعجني في التركيز." }
+                        ]
+                    },
+                    {
+                        id: 'w40', ger: "die Geldanlage", eng: "investment", ar: "الاستثمار المالي", s: [
+                            { g: "Viele Leute sehen Kunst als gute <strong>Geldanlage</strong>.", e: "Many people see art as a good investment.", a: "يرى الكثيرون الفن كاستثمار مالي جيد." },
+                            { g: "Immobilien sind oft eine sehr sichere <strong>Geldanlage</strong>.", e: "Real estate is often a very safe investment.", a: "العقارات غالباً ما تكون استثماراً آمناً جداً." },
+                            { g: "Eine gute <strong>Geldanlage</strong> bringt später viel Gewinn.", e: "A good investment brings a lot of profit later.", a: "الاستثمار الجيد يجلب الكثير من الربح لاحقاً." }
+                        ]
+                    },
+                    {
+                        id: 'w41', ger: "das Weltkulturerbe", eng: "World Cultural Heritage", ar: "التراث الثقافي العالمي", s: [
+                            { g: "Die Pyramiden gehören zum <strong>Weltkulturerbe</strong>.", e: "The pyramids belong to the World Cultural Heritage.", a: "الأهرامات تنتمي للتراث الثقافي العالمي." },
+                            { g: "Zwei Häuser in Stuttgart gehören jetzt zum <strong>Weltkulturerbe</strong>.", e: "Two houses in Stuttgart are now part of the World Cultural Heritage.", a: "ينتمي الآن منزلان في شتوتغارت إلى التراث الثقافي العالمي." },
+                            { g: "Die UNESCO führt die Liste des <strong>Weltkulturerbes</strong>.", e: "UNESCO maintains the World Heritage list.", a: "اليونسكو تدير قائمة التراث العالمي." }
+                        ]
+                    },
+                    {
+                        id: 'w42', ger: "der Kompromiss", eng: "compromise", ar: "حل وسط", s: [
+                            { g: "Ein Krimi ist für uns ein guter <strong>Kompromiss</strong>.", e: "A crime thriller is a good compromise for us.", a: "فيلم الجريمة هو حل وسط جيد بالنسبة لنا." },
+                            { g: "Wir müssen einen fairen <strong>Kompromiss</strong> finden.", e: "We have to find a fair compromise.", a: "يجب أن نجد حلاً وسطاً عادلاً." },
+                            { g: "Beide Seiten haben dem <strong>Kompromiss</strong> zugestimmt.", e: "Both sides agreed to the compromise.", a: "وافق كلا الجانبين على الحل الوسط." }
+                        ]
+                    },
+                    {
+                        id: 'w43', ger: "die Zinsen", eng: "interest rates", ar: "الفوائد", s: [
+                            { g: "Deutsche sparen trotz niedriger <strong>Zinsen</strong>.", e: "Germans save despite low interest rates.", a: "الألمان يدخرون رغم انخفاض أسعار الفائدة." },
+                            { g: "Die Bank bietet hohe <strong>Zinsen</strong> für dieses Konto.", e: "The bank offers high interest rates for this account.", a: "البنك يقدم فوائد عالية لهذا الحساب." },
+                            { g: "Ich muss jeden Monat <strong>Zinsen</strong> für den Kredit bezahlen.", e: "I have to pay interest for the loan every month.", a: "يجب أن أدفع فوائد القرض كل شهر." }
+                        ]
+                    },
+                    {
+                        id: 'w44', ger: "die Kunstauktion", eng: "art auction", ar: "مزاد فني", s: [
+                            { g: "Es gab Rekordpreise bei der letzten <strong>Kunstauktion</strong>.", e: "There were record prices at the last art auction.", a: "كانت هناك أسعار قياسية في المزاد الفني الأخير." },
+                            { g: "Wir gehen am Wochenende zu einer <strong>Kunstauktion</strong>.", e: "We are going to an art auction on the weekend.", a: "سنذهب إلى مزاد فني في عطلة نهاية الأسبوع." },
+                            { g: "Die <strong>Kunstauktion</strong> findet in London statt.", e: "The art auction is taking place in London.", a: "يقام المزاد الفني في لندن." }
+                        ]
+                    },
+                    {
+                        id: 'w45', ger: "der Geldbeutel", eng: "wallet / budget", ar: "المحفظة / الميزانية", s: [
+                            { g: "Sie bieten Kunstwerke für Interessenten mit großem <strong>Geldbeutel</strong> an.", e: "They offer artworks for interested parties with deep pockets.", a: "يعرضون أعمالاً فنية للمهتمين ذوي الميزانيات الكبيرة." },
+                            { g: "Ich habe meinen <strong>Geldbeutel</strong> zu Hause vergessen.", e: "I forgot my wallet at home.", a: "لقد نسيت محفظتي في المنزل." },
+                            { g: "Dieses Auto ist zu teuer für meinen <strong>Geldbeutel</strong>.", e: "This car is too expensive for my budget.", a: "هذه السيارة غالية جداً على ميزانيتي." }
+                        ]
+                    },
+                    {
+                        id: 'w46', ger: "die Straftat", eng: "criminal offense", ar: "الجريمة / المخالفة الجنائية", s: [
+                            { g: "Die Anzahl der <strong>Straftaten</strong> hat sich nicht verändert.", e: "The number of criminal offenses has not changed.", a: "عدد الجرائم لم يتغير." },
+                            { g: "Eine <strong>Straftat</strong> wird von der Polizei bestraft.", e: "A criminal offense is punished by the police.", a: "الجريمة يُعاقب عليها من قبل الشرطة." },
+                            { g: "Politisch motivierte <strong>Straftaten</strong> nehmen zu.", e: "Politically motivated crimes are increasing.", a: "الجرائم ذات الدوافع السياسية تتزايد." }
+                        ]
+                    },
+                    {
+                        id: 'w47', ger: "der Einbruch", eng: "burglary", ar: "السطو / الاقتحام", s: [
+                            { g: "Eine Zunahme gibt es bei den <strong>Einbrüchen</strong> in Wohnungen.", e: "There is an increase in burglaries in apartments.", a: "هناك زيادة في عمليات السطو على الشقق." },
+                            { g: "Die Polizei untersucht den <strong>Einbruch</strong>.", e: "The police are investigating the burglary.", a: "الشرطة تحقق في عملية السطو." },
+                            { g: "Nach dem <strong>Einbruch</strong> wurde eine Alarmanlage installiert.", e: "After the burglary, an alarm system was installed.", a: "بعد عملية السطو، تم تركيب نظام إنذار." }
+                        ]
+                    },
+                    {
+                        id: 'w48', ger: "die Niederlage", eng: "defeat", ar: "الهزيمة", s: [
+                            { g: "Das war bereits die dritte <strong>Niederlage</strong> im Finale.", e: "That was already the third defeat in the final.", a: "كانت هذه بالفعل الهزيمة الثالثة في النهائي." },
+                            { g: "Die Mannschaft muss aus der <strong>Niederlage</strong> lernen.", e: "The team must learn from the defeat.", a: "يجب أن يتعلم الفريق من الهزيمة." },
+                            { g: "Es war eine sehr knappe <strong>Niederlage</strong>.", e: "It was a very narrow defeat.", a: "لقد كانت هزيمة متقاربة جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w49', ger: "die Europameisterschaft", eng: "European Championship", ar: "بطولة أمم أوروبا", s: [
+                            { g: "Die Spiele zur Qualifikation der <strong>Europameisterschaft</strong> waren beliebt.", e: "The qualification games for the European Championship were popular.", a: "مباريات التأهل لبطولة أمم أوروبا كانت محبوبة." },
+                            { g: "Wer gewinnt dieses Jahr die <strong>Europameisterschaft</strong>?", e: "Who will win the European Championship this year?", a: "من سيفوز ببطولة أمم أوروبا هذا العام؟" },
+                            { g: "Das Finale der <strong>Europameisterschaft</strong> findet im Sommer statt.", e: "The final of the European Championship takes place in summer.", a: "نهائي بطولة أمم أوروبا يقام في الصيف." }
+                        ]
+                    },
+                    {
+                        id: 'w50', ger: "die Qualifikation", eng: "qualification", ar: "التأهل / التصفيات", s: [
+                            { g: "Die Mannschaft hat die <strong>Qualifikation</strong> leider verpasst.", e: "The team unfortunately missed the qualification.", a: "للأسف فات الفريق التأهل." },
+                            { g: "Die Spiele zur <strong>Qualifikation</strong> waren sehr spannend.", e: "The qualification games were very exciting.", a: "مباريات التصفيات كانت مشوقة جداً." },
+                            { g: "Er hat die richtige <strong>Qualifikation</strong> für diesen Job.", e: "He has the right qualification for this job.", a: "لديه المؤهل المناسب لهذه الوظيفة." }
+                        ]
+                    },
+                    {
+                        id: 'w51', ger: "der Gewinn", eng: "profit", ar: "الربح", s: [
+                            { g: "Geld auf der Bank bringt im Moment keinen <strong>Gewinn</strong>.", e: "Money in the bank currently brings no profit.", a: "المال في البنك لا يجلب أي ربح في الوقت الحالي." },
+                            { g: "Die Firma machte letztes Jahr einen großen <strong>Gewinn</strong>.", e: "The company made a big profit last year.", a: "حققت الشركة ربحاً كبيراً العام الماضي." },
+                            { g: "Der <strong>Gewinn</strong> wird am Ende des Monats berechnet.", e: "The profit is calculated at the end of the month.", a: "يتم حساب الربح في نهاية الشهر." }
+                        ]
+                    },
+                    {
+                        id: 'w52', ger: "die Gemeinsamkeit", eng: "similarity", ar: "القاسم المشترك / وجه الشبه", s: [
+                            { g: "Finden Sie <strong>Gemeinsamkeiten</strong> und Unterschiede.", e: "Find similarities and differences.", a: "ابحث عن أوجه الشبه والاختلاف." },
+                            { g: "Wir haben viele <strong>Gemeinsamkeiten</strong>.", e: "We have many similarities.", a: "لدينا العديد من القواسم المشتركة." },
+                            { g: "Gibt es eine <strong>Gemeinsamkeit</strong> zwischen den Texten?", e: "Is there a similarity between the texts?", a: "هل يوجد وجه شبه بين النصوص؟" }
+                        ]
+                    },
+                    {
+                        id: 'w53', ger: "der Unterschied", eng: "difference", ar: "الاختلاف / الفرق", s: [
+                            { g: "Finden Sie Gemeinsamkeiten und <strong>Unterschiede</strong>.", e: "Find similarities and differences.", a: "ابحث عن أوجه الشبه والاختلاف." },
+                            { g: "Der <strong>Unterschied</strong> ist sehr groß.", e: "The difference is very big.", a: "الفرق كبير جداً." },
+                            { g: "Kennst du den <strong>Unterschied</strong>?", e: "Do you know the difference?", a: "هل تعرف الفرق؟" }
+                        ]
+                    },
+                    {
+                        id: 'w54', ger: "die Freizeit", eng: "free time", ar: "وقت الفراغ", s: [
+                            { g: "Ich lese in meiner <strong>Freizeit</strong> keine Fachliteratur.", e: "I don't read specialist literature in my free time.", a: "لا أقرأ كتباً متخصصة في وقت فراغي." },
+                            { g: "Was machst du in deiner <strong>Freizeit</strong>?", e: "What do you do in your free time?", a: "ماذا تفعل في وقت فراغك؟" },
+                            { g: "Ich habe heute wenig <strong>Freizeit</strong>.", e: "I have little free time today.", a: "لدي وقت فراغ قليل اليوم." }
+                        ]
+                    },
+                    {
+                        id: 'w55', ger: "der Glückwunsch", eng: "congratulation", ar: "التهنئة", s: [
+                            { g: "Wie senden Sie Grüße oder <strong>Glückwünsche</strong>?", e: "How do you send greetings or good wishes?", a: "كيف ترسل التحيات أو التهاني؟" },
+                            { g: "Herzlichen <strong>Glückwunsch</strong> zum Geburtstag!", e: "Happy birthday!", a: "تهانينا القلبية بعيد ميلادك!" },
+                            { g: "Sie hat viele <strong>Glückwünsche</strong> bekommen.", e: "She received many congratulations.", a: "تلقت العديد من التهاني." }
+                        ]
+                    },
+                    {
+                        id: 'w56', ger: "die Wäsche", eng: "laundry", ar: "الغسيل", s: [
+                            { g: "Zum Beispiel bügle ich <strong>Wäsche</strong>, wenn ich fernsehe.", e: "For example, I iron laundry when I watch TV.", a: "على سبيل المثال، أكوي الغسيل عندما أشاهد التلفاز." },
+                            { g: "Die <strong>Wäsche</strong> ist noch nass.", e: "The laundry is still wet.", a: "الغسيل ما زال مبللاً." },
+                            { g: "Wer wäscht heute die <strong>Wäsche</strong>?", e: "Who is doing the laundry today?", a: "من يغسل الغسيل اليوم؟" }
+                        ]
+                    },
+                    {
+                        id: 'w57', ger: "die Prüfung", eng: "exam", ar: "الامتحان", s: [
+                            { g: "Leider bekomme ich in der <strong>Prüfung</strong> eine schlechte Note.", e: "Unfortunately, I get a bad grade on the exam.", a: "للأسف أحصل على درجة سيئة في الامتحان." },
+                            { g: "Die <strong>Prüfung</strong> war sehr schwer.", e: "The exam was very difficult.", a: "الامتحان كان صعباً جداً." },
+                            { g: "Wann hast du deine <strong>Prüfung</strong>?", e: "When do you have your exam?", a: "متى يكون امتحانك؟" }
+                        ]
+                    },
+                    {
+                        id: 'w58', ger: "die Note", eng: "grade (school)", ar: "الدرجة (المدرسية)", s: [
+                            { g: "Ich bekomme in der Prüfung eine schlechte <strong>Note</strong>.", e: "I get a bad grade on the exam.", a: "أحصل على درجة سيئة في الامتحان." },
+                            { g: "Meine <strong>Noten</strong> sind dieses Jahr sehr gut.", e: "My grades are very good this year.", a: "درجاتي جيدة جداً هذا العام." },
+                            { g: "Er freut sich über die gute <strong>Note</strong>.", e: "He is happy about the good grade.", a: "هو سعيد بالدرجة الجيدة." }
+                        ]
+                    },
+                    {
+                        id: 'w59', ger: "der Wohnungsmarkt", eng: "housing market", ar: "سوق الإسكان", s: [
+                            { g: "Die Lage auf dem <strong>Wohnungsmarkt</strong> muss sich verbessern.", e: "The situation on the housing market must improve.", a: "يجب أن يتحسن الوضع في سوق الإسكان." },
+                            { g: "Der <strong>Wohnungsmarkt</strong> in der Stadt ist sehr teuer.", e: "The housing market in the city is very expensive.", a: "سوق الإسكان في المدينة غالي جداً." },
+                            { g: "Gibt es freie Wohnungen auf dem <strong>Wohnungsmarkt</strong>?", e: "Are there any available apartments on the housing market?", a: "هل توجد شقق خالية في سوق الإسكان؟" }
+                        ]
+                    }
+                ]
+            },
+            expressions: [
+                { id: 'e1', type: "Vorlieben", ger: "Ich möchte heute Abend ... sehen.", eng: "I would like to watch ... tonight.", ar: "أريد مشاهدة ... هذا المساء.", context: "للتعبير عما تود مشاهدته." },
+                { id: 'e2', type: "Meinung", ger: "Ich finde ... am interessantesten.", eng: "I find ... the most interesting.", ar: "أجد ... هو الأكثر إثارة للاهتمام.", context: "لإبداء رأيك في البرامج." },
+                { id: 'e3', type: "Vorlieben", ger: "Ich bin ein/kein (Krimi)fan.", eng: "I am a/not a (crime story) fan.", ar: "أنا (لست) من محبي أفلام الجريمة.", context: "للتعبير عن نوعك المفضل." },
+                { id: 'e4', type: "Meinung erfragen", ger: "Was hältst du von...?", eng: "What do you think of...?", ar: "ما رأيك في...؟", context: "لسؤال شخص عن رأيه في خيار معين." },
+                { id: 'e5', type: "Vergleich", ger: "Ich finde ... interessanter als...", eng: "I find ... more interesting than...", ar: "أجد ... أكثر إثارة للاهتمام من...", context: "للمقارنة بين برنامجين." },
+                { id: 'e6', type: "Entscheidung", ger: "Wir haben uns für ... entschieden.", eng: "We have decided on...", ar: "لقد قررنا اختيار...", context: "عند الوصول لقرار جماعي." },
+                { id: 'e7', type: "Begründung", ger: "Ein Grund dafür ist, dass...", eng: "One reason for that is that...", ar: "أحد الأسباب لذلك هو أن...", context: "لإعطاء سبب لاختيارك." },
+                { id: 'e8', type: "Statistik", ger: "Die Sendung mit den meisten Zuschauern war...", eng: "The program with the most viewers was...", ar: "البرنامج الذي حظي بأكبر عدد من المشاهدين كان...", context: "للحديث عن الإحصائيات." },
+                { id: 'e9', type: "Statistik", ger: "Auf Platz zwei folgt ...", eng: "In second place follows...", ar: "في المركز الثاني يأتي...", context: "لترتيب البرامج." },
+                { id: 'e10', type: "Aktivitäten", ger: "Nachrichtensendungen sehen", eng: "to watch news broadcasts", ar: "مشاهدة نشرات الأخبار", context: "وصف الأنشطة المعتادة." },
+                { id: 'e11', type: "Aktivitäten", ger: "sich über aktuelle Politik informieren", eng: "to inform oneself about current politics", ar: "الاستعلام عن السياسة الحالية", context: "وصف الأنشطة." },
+                { id: 'e12', type: "Aktivitäten", ger: "Filme im Internet herunterladen", eng: "to download films from the internet", ar: "تنزيل الأفلام من الإنترنت", context: "وصف الأنشطة." },
+                { id: 'e13', type: "Aktivitäten", ger: "Fachzeitschriften lesen", eng: "to read specialist journals", ar: "قراءة المجلات المتخصصة", context: "وصف الأنشطة." },
+                { id: 'e14', type: "Frage", ger: "Wo/Wie informieren Sie sich über aktuelle Politik?", eng: "Where/How do you inform yourself about current politics?", ar: "أين/كيف تستعلم عن السياسة الحالية؟", context: "سؤال عن المصادر." },
+                { id: 'e15', type: "Frage", ger: "Wo/Wie sehen Sie Filme?", eng: "Where/How do you watch films?", ar: "أين/كيف تشاهد الأفلام؟", context: "سؤال عن المصادر." },
+                { id: 'e16', type: "Frage", ger: "Wie tauschen Sie mit Bekannten/Freunden Informationen aus?", eng: "How do you exchange information with acquaintances/friends?", ar: "كيف تتبادل المعلومات مع المعارف/الأصدقاء؟", context: "سؤال عن التواصل." },
+                { id: 'e17', type: "Wichtige Ausdrücke", ger: "Kunstwerke anbieten", eng: "to offer artworks", ar: "عرض أعمال فنية", context: "في سياق الفن والمعارض." },
+                { id: 'e18', type: "Wichtige Ausdrücke", ger: "einen Käufer finden", eng: "to find a buyer", ar: "إيجاد مشترٍ", context: "في سياق التجارة." },
+                { id: 'e19', type: "Wichtige Ausdrücke", ger: "Kunst als Geldanlage sehen", eng: "to see art as an investment", ar: "رؤية الفن كاستثمار مالي", context: "في سياق الاستثمار." },
+                { id: 'e20', type: "Wichtige Ausdrücke", ger: "auf der Liste der gefährlichsten Tiere stehen", eng: "to be on the list of the most dangerous animals", ar: "مدرج في قائمة أخطر الحيوانات", context: "في سياق البيئة والحيوانات." },
+                { id: 'e21', type: "Wichtige Ausdrücke", ger: "vor einer Gefahr warnen", eng: "to warn of a danger", ar: "التحذير من خطر", context: "عند إعطاء تحذيرات." },
+                { id: 'e22', type: "Wichtige Ausdrücke", ger: "an einer Krankheit / durch Mückenstiche sterben", eng: "to die from a disease / by mosquito bites", ar: "الموت بمرض / بسبب لدغات البعوض", context: "للحديث عن الأسباب المؤدية للوفاة." },
+                { id: 'e23', type: "Wichtige Ausdrücke", ger: "tödliche Krankheiten übertragen", eng: "to transmit deadly diseases", ar: "نقل أمراض مميتة", context: "في سياق العدوى والأمراض." },
+                { id: 'e24', type: "Wichtige Ausdrücke", ger: "Maßnahmen treffen", eng: "to take measures", ar: "اتخاذ تدابير / إجراءات", context: "في سياق القرارات السياسية والحكومية." }
+            ],
+            dialogues: [
+                {
+                    id: 'd1', title: "Interview: Mediennutzung (Lukas & Maria)", icon: "radio",
+                    lines: [
+                        { speaker: "Lukas", text: "Hallo Maria. Fangen wir an. Wie informierst du dich über aktuelle Politik? Ich höre meistens Nachrichten im Radio.", en: "Hello Maria. Let's begin. How do you inform yourself about current politics? I mostly listen to the news on the radio.", ar: "مرحباً ماريا. لنبدأ. كيف تستعلمين عن السياسة الحالية؟ أنا غالباً أسمع الأخبار في الراديو." },
+                        { speaker: "Maria", text: "Interessant. Ich informiere mich im Internet. Ich lese keine Zeitung und sehe selten Nachrichten im Fernsehen.", en: "Interesting. I inform myself on the internet. I don't read newspapers and rarely watch the news on television.", ar: "مثير للاهتمام. أنا استعلم من الإنترنت. لا أقرأ الجرائد ونادراً ما أشاهد الأخبار في التلفاز." },
+                        { speaker: "Lukas", text: "Und wo siehst du Filme? Ich nutze gern Streaming-Portale, aber ich gehe auch oft ins Kino.", en: "And where do you watch films? I like to use streaming portals, but I also go to the cinema often.", ar: "وأين تشاهدين الأفلام؟ أحب استخدام بوابات البث، لكني أذهب أيضاً للسينما غالباً." },
+                        { speaker: "Maria", text: "Ich nutze auch Streaming-Portale. Ins Kino gehe ich selten. Liest du denn viel Literatur?", en: "I also use streaming portals. I rarely go to the cinema. Do you read a lot of literature then?", ar: "أنا أيضاً أستخدم بوابات البث. نادراً ما أذهب للسينما. إذن هل تقرأ الكثير من الأدب؟" },
+                        { speaker: "Lukas", text: "Ja, ich lese viele Romane auf meinem Tablet. Und du?", en: "Yes, I read a lot of novels on my tablet. And you?", ar: "نعم، أقرأ روايات كثيرة على التابلت الخاص بي. وأنتِ؟" },
+                        { speaker: "Maria", text: "Ich lese nur selten Bücher. Dafür höre ich viel Musik, meistens mit meinem Smartphone.", en: "I only rarely read books. In exchange, I listen to a lot of music, mostly with my smartphone.", ar: "أقرأ الكتب نادراً. في المقابل أسمع موسيقى كثيرة، غالباً بموبايلي." },
+                        { speaker: "Lukas", text: "Ich auch! Manchmal gehe ich auch gern in Konzerte. Letzte Frage: Wie schickst du Freunden Glückwünsche?", en: "Me too! Sometimes I also like to go to concerts. Last question: How do you send good wishes to friends?", ar: "أنا أيضاً! أحياناً أحب الذهاب للحفلات. سؤال أخير: كيف ترسلين التهاني للأصدقاء؟" },
+                        { speaker: "Maria", text: "Ich schicke meistens eine SMS oder nutze Online-Netzwerke.", en: "I mostly send an SMS or use online networks.", ar: "غالباً أرسل رسالة نصية أو أستخدم شبكات التواصل." },
+                        { speaker: "Lukas", text: "Da bin ich altmodisch. Ich telefoniere lieber.", en: "I'm old-fashioned in that regard. I prefer to telephone.", ar: "في هذه النقطة أنا قديم الطراز. أفضل الاتصال هاتفياً." }
+                    ]
+                },
+                {
+                    id: 'd2', title: "Tun Sie manchmal zwei Dinge gleichzeitig?", icon: "layers",
+                    lines: [
+                        { speaker: "Petra", text: "Ob ich manchmal zwei Dinge gleichzeitig tue? Ja, natürlich. Zum Beispiel bügle ich Wäsche, wenn ich fernsehe. Dann finde ich das Bügeln nicht so langweilig. Ich telefoniere beim Fernsehen auch manchmal mit meiner Mutter oder mit Freunden.", en: "Whether I sometimes do two things at once? Yes, of course. For example, I iron laundry when I watch TV. Then I don't find ironing so boring. I also sometimes talk on the phone with my mother or with friends while watching TV.", ar: "هل أفعل أحياناً شيئين في نفس الوقت؟ نعم بالطبع. مثلاً أكوي الغسيل عندما أشاهد التلفاز. حينها لا أجد الكي مملاً جداً. وأتحدث أحياناً في الهاتف مع أمي أو أصدقائي أثناء مشاهدة التلفاز." },
+                        { speaker: "Birgit", text: "Ich höre beim Kochen gern Musik, am liebsten Opern. Das inspiriert mich. Wenn ich fernsehe, checke ich oft meine E-Mails, manche E-Mails beantworte ich auch gleich.", en: "I like to listen to music while cooking, preferably operas. That inspires me. When I watch TV, I often check my emails; I also answer some emails right away.", ar: "أحب سماع الموسيقى أثناء الطبخ، وأفضل الأوبرا. هذا يلهمني. عندما أشاهد التلفاز، أتفقد إيميلاتي غالباً، وأرد على بعضها فوراً." },
+                        { speaker: "Luca", text: "Wenn ich frühstücke, lese ich auf meinem Tablet die Nachrichten. Das mache ich jeden Morgen. Außerdem höre ich beim Laufen Musik. Das motiviert mich, dann laufe ich schneller.", en: "When I'm having breakfast, I read the news on my tablet. I do that every morning. Besides that, I listen to music while running. That motivates me, then I run faster.", ar: "عندما أفطر، أقرأ الأخبار على التابلت. أفعل ذلك كل صباح. بالإضافة لذلك أسمع الموسيقى أثناء الجري. هذا يحفزني، حينها أجري أسرع." },
+                        { speaker: "Yannick", text: "Wenn ich an der Uni Vorlesung habe, sende ich oft Nachrichten an meine Freunde. Leider höre ich dann nicht richtig zu und bekomme in der Prüfung eine schlechte Note. Aber wenn die Vorlesung sehr langweilig ist ... was soll man da machen?", en: "When I have a lecture at the university, I often send messages to my friends. Unfortunately, I don't listen properly then and get a bad grade on the exam. But when the lecture is very boring... what can you do?", ar: "عندما أكون في المحاضرة بالجامعة، أرسل غالباً رسائل لأصدقائي. للأسف لا أستمع جيداً حينها وأحصل على درجة سيئة في الامتحان. لكن عندما تكون المحاضرة مملة جداً... ماذا عساي أن أفعل؟" },
+                        { speaker: "Jan", text: "Ich mache viele Dinge gleichzeitig. Wenn ich Auto fahre, telefoniere ich mit Kunden, über die Freisprechanlage natürlich. Dann muss ich die Gespräche nicht im Büro führen und spare Zeit. Beim Mittagessen lese ich oft Berichte oder spreche mit Kollegen. Ich habe viel zu tun und wenig Zeit.", en: "I do many things at the same time. When I'm driving, I talk on the phone with clients, using the hands-free system, of course. Then I don't have to have the conversations in the office and I save time. During lunch, I often read reports or talk with colleagues. I have a lot to do and little time.", ar: "أفعل أشياء كثيرة في نفس الوقت. عندما أقود السيارة، أتحدث مع العملاء عبر نظام التحدث الحر طبعاً. حينها لا أضطر لإجراء المحادثات في المكتب وأوفر الوقت. أثناء الغداء أقرأ التقارير غالباً أو أتحدث مع الزملاء. لدي الكثير لأفعله والقليل من الوقت." }
+                    ]
+                },
+                {
+                    id: 'd3', title: "TV Programm auswählen (Leo, Nina, Tom)", icon: "tv",
+                    lines: [
+                        { speaker: "Leo", text: "Also, was machen wir heute Abend? Aber zuerst: Wie lange seht ihr eigentlich so am Tag fern? Ich vielleicht eine Stunde.", en: "So, what are we doing tonight? But first: How long do you all actually watch TV per day? Maybe an hour for me.", ar: "حسناً، ماذا سنفعل هذا المساء؟ ولكن أولاً: كم من الوقت تشاهدون التلفاز في اليوم؟ أنا ربما ساعة واحدة." },
+                        { speaker: "Nina", text: "Bei mir ist es ähnlich. Ich sehe gern Dokumentarfilme und Reportagen, aber keine Shows.", en: "It's similar for me. I like to watch documentaries and reports, but no shows.", ar: "الأمر مشابه بالنسبة لي. أحب مشاهدة الأفلام الوثائقية والتقارير، ولكن ليس البرامج الاستعراضية." },
+                        { speaker: "Tom", text: "Ich sehe definitiv mehr, vielleicht zwei bis drei Stunden. Ich bin ein großer Fan von Serien und Sport. Was sollen wir also heute Abend sehen?", en: "I definitely watch more, maybe two to three hours. I'm a big fan of series and sports. So what should we watch tonight?", ar: "أنا أشاهد بالتأكيد أكثر، ربما من ساعتين لثلاث. أنا معجب كبير بالمسلسلات والرياضة. إذن ماذا سنشاهد الليلة؟" },
+                        { speaker: "Nina", text: "Ich möchte heute Abend „Schloss Österreich“ sehen. Ich finde Reportagen am interessantesten.", en: "I would like to watch \"Castle Austria\" tonight. I find reports the most interesting.", ar: "أريد أن أشاهد 'قلعة النمسا' الليلة. أجد التقارير أكثر إثارة للاهتمام." },
+                        { speaker: "Tom", text: "Oh nein, Reportagen sind langweilig. Ich möchte lieber Handball sehen! Das ist ein Viertelfinale, das wird spannend.", en: "Oh no, reports are boring. I would rather watch handball! It's a quarterfinal, that will be exciting.", ar: "أوه لا، التقارير مملة. أفضل مشاهدة كرة اليد! إنها مباراة ربع النهائي، ستكون مشوقة." },
+                        { speaker: "Leo", text: "Was haltet ihr von „Mord ist die beste Medizin“? Das ist ein Krimi, das ist spannender als eine Reportage und nicht so lang wie das Handballspiel.", en: "What do you guys think of \"Murder is the Best Medicine\"? It's a crime story, that's more exciting than a report and not as long as the handball match.", ar: "ما رأيكم في 'القتل هو أفضل دواء'؟ إنه فيلم جريمة، وهو أكثر تشويقاً من التقرير وليس طويلاً مثل مباراة كرة اليد." },
+                        { speaker: "Nina", text: "Ein Krimi ist eine gute Idee. Ich bin ein Krimifan.", en: "A crime story is a good idea. I'm a crime story fan.", ar: "فيلم الجريمة فكرة جيدة. أنا من محبي أفلام الجريمة." },
+                        { speaker: "Tom", text: "Okay, einverstanden.", en: "Okay, I agree.", ar: "حسناً، أوافق." },
+                        { speaker: "Leo", text: "Super. Wir haben uns für „Mord ist die beste Medizin“ entschieden. Ein Grund dafür ist, dass wir alle Krimis mögen und es ein guter Kompromiss ist.", en: "Great. We have decided on \"Murder is the Best Medicine\". One reason for that is that we all like crime stories and it's a good compromise.", ar: "رائع. لقد قررنا اختيار 'القتل هو أفضل دواء'. أحد الأسباب هو أننا جميعاً نحب أفلام الجريمة وهو حل وسط جيد." }
+                    ]
+                },
+                {
+                    id: 'd4', title: "Interview: Aktuelles (Lena & Markus)", icon: "mic",
+                    lines: [
+                        { speaker: "Lena", text: "Hallo Markus. Sag mal, wie oft siehst du am Tag Nachrichten?", en: "Hello Markus. Tell me, how often do you watch the news per day?", ar: "مرحباً ماركوس. قل لي، كم مرة تشاهد الأخبار في اليوم؟" },
+                        { speaker: "Markus", text: "Ich lese die Nachrichten meistens online, so zwei- oder dreimal am Tag. Und du?", en: "I mostly read the news online, about two or three times a day. And you?", ar: "أقرأ الأخبار غالباً عبر الإنترنت، حوالي مرتين أو ثلاث مرات في اليوم. وأنت؟" },
+                        { speaker: "Lena", text: "Ich höre morgens Nachrichten im Radio. Das reicht mir meistens. Welche Nachrichten interessieren dich denn besonders?", en: "I listen to the news on the radio in the morning. That's usually enough for me. Which news interests you in particular?", ar: "أسمع الأخبار في الراديو صباحاً. هذا يكفيني غالباً. ما الأخبار التي تهمك بشكل خاص؟" },
+                        { speaker: "Markus", text: "Mich interessieren vor allem Sportereignisse und Neuigkeiten aus dem Ausland. Nachrichten von Prominenten lese ich nie.", en: "I'm mainly interested in sporting events and news from abroad. I never read news about celebrities.", ar: "أهتم أساساً بالأحداث الرياضية والأخبار من الخارج. لا أقرأ أبداً أخبار المشاهير." },
+                        { speaker: "Lena", text: "Bei mir ist es eher Aktuelles aus Kunst und Kultur und auch die Wissenschaft. Letzte Frage: Mit wem sprichst du über diese Themen?", en: "For me, it's more current events from art and culture, and also science. Last question: With whom do you talk about these topics?", ar: "بالنسبة لي، أهتم أكثر بالأحداث الجارية في الفن والثقافة وكذلك العلوم. سؤال أخير: مع من تتحدثين عن هذه المواضيع؟" },
+                        { speaker: "Markus", text: "Meistens mit meinen Freunden. Wir schicken uns oft interessante Artikel.", en: "Mostly with my friends. We often send each other interesting articles.", ar: "غالباً مع أصدقائي. نرسل لبعضنا مقالات مثيرة للاهتمام." }
+                    ]
+                }
+            ],
+            culture: [
+                {
+                    id: 'c1', title: "Lesetext: Multitasking",
+                    lines: [
+                        { g: "Multitasking bedeutet, dass ein Mensch mehrere Tätigkeiten gleichzeitig durchführt.", e: "Multitasking means that a person carries out several activities at the same time.", a: "تعدد المهام يعني أن الشخص يقوم بعدة أنشطة في نفس الوقت." },
+                        { g: "Einige Wissenschaftler meinen jetzt, wir können nicht mehrere Dinge zur gleichen Zeit mit gleicher Konzentration und Leistungsfähigkeit tun.", e: "Some scientists now think that we cannot do several things at the same time with the same concentration and capability.", a: "بعض العلماء يرون الآن أننا لا نستطيع فعل عدة أشياء في نفس الوقت بنفس التركيز والقدرة." },
+                        { g: "Wenn wir uns auf eine Sache konzentrieren, funktionieren andere Fähigkeiten nicht mehr hundertprozentig.", e: "When we concentrate on one thing, other abilities no longer function one hundred percent.", a: "عندما نركز على شيء واحد، فإن القدرات الأخرى لم تعد تعمل بنسبة مائة بالمائة." },
+                        { g: "Es ist natürlich möglich, dass jemand fernsieht und gleichzeitig bügelt.", e: "It is of course possible for someone to watch TV and iron at the same time.", a: "من الممكن طبعاً أن يشاهد أحدهم التلفاز ويكوي في نفس الوقت." },
+                        { g: "Das Bügeln läuft in der Regel automatisch ab, man braucht dazu keine volle Konzentration.", e: "Ironing usually runs automatically; you don't need full concentration for it.", a: "الكي يسير في العادة بشكل آلي، لا يحتاج المرء لتركيز كامل لذلك." },
+                        { g: "Anders sieht es beim Autofahren aus. Untersuchungen haben ergeben, dass die Konzentrationsfähigkeit sinkt, wenn man beim Autofahren telefoniert.", e: "It's a different situation with driving a car. Studies have shown that the ability to concentrate sinks when one talks on the phone while driving.", a: "الأمر مختلف عند قيادة السيارة. أظهرت الفحوصات أن القدرة على التركيز تنخفض عندما يتحدث المرء في الهاتف أثناء القيادة." },
+                        { g: "Schreibt man dazu noch eine SMS, liegt die Leistungsfähigkeit nur noch bei 60 Prozent, die Fehlerquote steigt.", e: "If you also write an SMS, the performance capability is only at 60 percent, and the error rate rises.", a: "وإذا كتب المرء رسالة نصية أيضاً، فإن القدرة على الأداء تبلغ 60% فقط، ويرتفع معدل الخطأ." },
+                        { g: "Neurobiologen sind nach vielen Experimenten zu dem Ergebnis gekommen, dass es Multitasking gar nicht gibt.", e: "Neurobiologists have come to the conclusion after many experiments that multitasking doesn't exist at all.", a: "توصل علماء الأعصاب بعد العديد من التجارب إلى نتيجة مفادها أن تعدد المهام غير موجود أصلاً." },
+                        { g: "Das Gehirn kann sich nicht auf mehrere Aufgaben gleichzeitig konzentrieren.", e: "The brain cannot concentrate on several tasks at the same time.", a: "الدماغ لا يمكنه التركيز على مهام متعددة في وقت واحد." },
+                        { g: "Konkret bedeutet das: Wenn wir z. B. telefonieren und gleichzeitig mitschreiben, verstehen wir nur die Hälfte.", e: "Specifically, this means: When we, for example, talk on the phone and write things down at the same time, we only understand half.", a: "عملياً يعني هذا: عندما نتحدث في الهاتف ونكتب في نفس الوقت، فإننا نفهم النصف فقط." }
+                    ]
+                },
+                {
+                    id: 'c2', title: "Zusammenfassung: Multitasking",
+                    lines: [
+                        { g: "1. Wenn man mehrere Aufgaben parallel erledigt, heißt das <strong>Multitasking</strong>.", e: "When one handles several tasks in parallel, it's called MULTITASKING.", a: "عندما ينجز المرء مهام متعددة بالتوازي، يسمى ذلك تعدد المهام." },
+                        { g: "2. Viele Menschen führen mehrere <strong>Tätigkeiten</strong> gleichzeitig durch.", e: "Many people carry out several ACTIVITIES at the same time.", a: "العديد من الناس يقومون بعدة أنشطة في نفس الوقت." },
+                        { g: "3. Aber können wir überhaupt mehrere <strong>Dinge</strong> gleichzeitig tun?", e: "But can we even do several THINGS at the same time?", a: "لكن هل يمكننا أصلاً أن نفعل عدة أشياء في نفس الوقت؟" },
+                        { g: "4. <strong>Wissenschaftler</strong> sagen, dass Multitasking nicht möglich ist.", e: "SCIENTISTS say that multitasking is not possible.", a: "يقول العلماء أن تعدد المهام غير ممكن." },
+                        { g: "5. Wenn wir beim Autofahren telefonieren, sinkt die <strong>Konzentrationsfähigkeit</strong>.", e: "When we talk on the phone while driving, our CONCENTRATION ABILITY sinks.", a: "عندما نتحدث في الهاتف أثناء القيادة، تنخفض قدرتنا على التركيز." },
+                        { g: "6. Die <strong>Fehlerquote</strong> steigt.", e: "The ERROR RATE rises.", a: "معدل الخطأ يرتفع." },
+                        { g: "7. Zu diesem <strong>Ergebnis</strong> sind Neurobiologen nach vielen Experimenten gekommen.", e: "Neurobiologists came to this RESULT after many experiments.", a: "إلى هذه النتيجة توصل علماء الأعصاب بعد العديد من التجارب." },
+                        { g: "8. Das <strong>Gehirn</strong> kann sich nicht gleichzeitig auf mehrere Aufgaben konzentrieren.", e: "The BRAIN cannot concentrate on several tasks at the same time.", a: "الدماغ لا يمكنه التركيز على عدة مهام في نفس الوقت." }
+                    ]
+                },
+                {
+                    id: 'c3', title: "Statistik: Die beliebtesten Fernsehsendungen in Deutschland",
+                    lines: [
+                        { g: "Die Statistik zu den beliebtesten Fernsehsendungen bietet keine Überraschungen.", e: "The statistics on the most popular television programs offer no surprises.", a: "إحصائيات البرامج التلفزيونية الأكثر شعبية لا تقدم مفاجآت." },
+                        { g: "Auf Platz eins liegt wie jedes Jahr der Fußball.", e: "In first place, like every year, is football.", a: "في المركز الأول، وككل عام، تأتي كرة القدم." },
+                        { g: "Die Spiele zur Qualifikation der Fußball-Europameisterschaft waren die Sendungen mit den meisten Zuschauern (10,79 Millionen).", e: "The qualification games for the European Football Championship were the programs with the most viewers (10.79 million).", a: "مباريات التأهل لبطولة أمم أوروبا كانت البرامج ذات أكبر عدد من المشاهدين (10.79 مليون)." },
+                        { g: "Auf Platz zwei folgt die beliebte Krimireihe „Tatort“ mit durchschnittlich 9,61 Millionen Zuschauern.", e: "In second place follows the popular crime series \"Tatort\" with an average of 9.61 million viewers.", a: "في المركز الثاني تليها سلسلة الجرائم الشهيرة 'Tatort' بمتوسط 9.61 مليون مشاهد." },
+                        { g: "Bei den Tatortkrimis aus verschiedenen Städten Deutschlands, Österreichs und der Schweiz steht der Tatort aus Münster an der Spitze. Auch das ist kein neuer Trend.", e: "Among the Tatort crime stories from various cities in Germany, Austria, and Switzerland, the Tatort from Münster is at the top. This is also not a new trend.", a: "من بين حلقات الجريمة من مدن مختلفة في ألمانيا والنمسا وسويسرا، تقف حلقة مدينة مونستر في الصدارة. هذا أيضاً ليس اتجاهاً جديداً." },
+                        { g: "Dahinter folgen wieder Fußballereignisse: der DFB-Pokal (8,91 Millionen) und die UEFA Champions League (8,42 Millionen).", e: "Following behind are again football events: the DFB-Pokal (8.91 million) and the UEFA Champions League (8.42 million).", a: "ويلي ذلك أحداث كرة القدم مرة أخرى: كأس ألمانيا (8.91 مليون) ودوري أبطال أوروبا (8.42 مليون)." },
+                        { g: "Die nächsten Plätze belegen drei weitere deutsche Krimiserien („Polizeiruf 110“, „Wilsberg“ und „Ein starkes Team“).", e: "The next spots are occupied by three other German crime series (\"Polizeiruf 110\", \"Wilsberg\", and \"Ein starkes Team\").", a: "المراكز التالية تحتلها ثلاث مسلسلات جرائم ألمانية أخرى ('Polizeiruf 110' و 'Wilsberg' و 'Ein starkes Team')." },
+                        { g: "Immer noch beliebt sind deutsche Serien wie „Der Bergdoktor“, Quizshows wie „Wer wird Millionär?“ oder Sendungen für die Partnersuche wie „Bauer sucht Frau“.", e: "Still popular are German series like \"Der Bergdoktor\", quiz shows like \"Wer wird Millionär?\", or matchmaking shows like \"Bauer sucht Frau\".", a: "ما زالت المسلسلات الألمانية مثل 'طبيب الجبل' وبرامج المسابقات مثل 'من سيربح المليون؟' أو برامج المواعدة مثل 'المزارع يبحث عن زوجة' محبوبة." },
+                        { g: "Das Interesse an Showsendungen (z. B. „Das Supertalent“) ist gesunken. Die Talentshow belegt nur Platz 33.", e: "The interest in show programs (e.g., \"Das Supertalent\") has declined. The talent show only occupies 33rd place.", a: "انخفض الاهتمام ببرامج العروض الاستعراضية (مثل 'سوبر تالنت'). يحتل برنامج المواهب المركز 33 فقط." }
+                    ]
+                },
+                {
+                    id: 'c4', title: "Beliebte Fernsehsendungen in meinem Heimatland (Ägypten)",
+                    lines: [
+                        { g: "Die Ägypter sehen am liebsten Fernsehserien, besonders während des Ramadan.", e: "Egyptians most like to watch television series, especially during Ramadan.", a: "المصريون يفضلون مشاهدة المسلسلات التلفزيونية، خاصة خلال شهر رمضان." },
+                        { g: "Talkshows und Comedysendungen sind in Ägypten auch sehr beliebt.", e: "Talk shows and comedy programs are also very popular in Egypt.", a: "البرامج الحوارية والكوميدية مشهورة جداً أيضاً في مصر." },
+                        { g: "Die Sendung mit den meisten Zuschauern ist oft eine große Ramadan-Serie wie zum Beispiel „El Ekhteyar“.", e: "The program with the most viewers is often a big Ramadan series, such as \"El Ekhteyar\".", a: "البرنامج الذي يحظى بأكبر عدد من المشاهدين يكون غالباً مسلسل رمضاني ضخم، مثل 'الاختيار'." },
+                        { g: "Auf Platz zwei folgt meist eine andere dramatische Serie. Das ist kein neuer Trend.", e: "In second place usually follows another dramatic series. This is not a new trend.", a: "في المركز الثاني غالباً ما يأتي مسلسل درامي آخر. هذا ليس اتجاهاً جديداً." },
+                        { g: "Platz drei belegt häufig eine bekannte Talkshow mit einem berühmten Moderator.", e: "Third place is often occupied by a well-known talk show with a famous host.", a: "يحتل المركز الثالث غالباً برنامج حواري معروف مع مذيع شهير." },
+                        { g: "Immer noch sehr beliebt sind klassische ägyptische Filme.", e: "Classic Egyptian films are still very popular.", a: "لا تزال الأفلام المصرية الكلاسيكية محبوبة للغاية." },
+                        { g: "Traditionelle Nachrichtensendungen sehen die Leute nicht mehr so gern.", e: "People don't like to watch traditional news broadcasts as much anymore.", a: "لم يعد الناس يحبون مشاهدة نشرات الأخبار التقليدية كثيراً." },
+                        { g: "Das Interesse an internationalen Streaming-Diensten ist stark gestiegen. Das ist nicht überraschend, da die Internetnutzung zunimmt.", e: "The interest in international streaming services has risen sharply. That is not surprising, as internet usage is increasing.", a: "الاهتمام بخدمات البث العالمية ارتفع بشدة. هذا ليس مفاجئاً، حيث يزداد استخدام الإنترنت." },
+                        { g: "Ich habe keine persönliche Lieblingssendung, aber ich erkenne die kulturelle Bedeutung von vielen ägyptischen Serien an.", e: "I do not have a personal favorite program, but I recognize the cultural importance of many Egyptian series.", a: "ليس لدي برنامج مفضل شخصياً، لكني أدرك الأهمية الثقافية للعديد من المسلسلات المصرية." }
+                    ]
+                },
+                {
+                    id: 'c5', title: "Fakten: Einige Fakten über die deutsche Politik",
+                    lines: [
+                        { g: "Das Parlament der Bundesrepublik Deutschland ist der Deutsche Bundestag. Die Sitzungen finden im Reichstagsgebäude in Berlin statt.", e: "The parliament of the Federal Republic of Germany is the German Bundestag. The sessions take place in the Reichstag building in Berlin.", a: "البرلمان في جمهورية ألمانيا يسمى البوندستاغ. تقام الجلسات في مبنى الرايخستاغ في برلين." },
+                        { g: "Seine wichtigste Aufgabe ist die Entscheidung über neue Gesetze. Er kann auch das Grundgesetz (die Verfassung) ändern.", e: "Its most important task is deciding on new laws. It can also amend the Basic Law (the constitution).", a: "أهم مهامه هي إقرار القوانين الجديدة. يمكنه أيضاً تعديل الدستور." },
+                        { g: "Er genehmigt internationale Verträge und bestimmt über die finanziellen Mittel der verschiedenen Ministerien.", e: "It approves international treaties and determines the financial resources of the various ministries.", a: "يوافق على المعاهدات الدولية ويحدد الميزانيات المالية لمختلف الوزارات." },
+                        { g: "Der Bundestag entscheidet über den Einsatz der Armee, der Bundeswehr.", e: "The Bundestag decides on the deployment of the army, the Bundeswehr.", a: "البرلمان يقرر بشأن نشر الجيش (الجيش الألماني)." },
+                        { g: "In Deutschland finden alle vier Jahre Bundestagswahlen statt. Jeder Wähler hat zwei Stimmen.", e: "In Germany, federal elections take place every four years. Every voter has two votes.", a: "تُجرى الانتخابات في ألمانيا كل 4 سنوات. كل ناخب لديه صوتان." },
+                        { g: "Mit der ersten Stimme wählt man einen Kandidaten aus dem Wohnort, mit der zweiten Stimme wählt man eine Partei.", e: "With the first vote, one elects a candidate from their place of residence; with the second vote, one elects a party.", a: "بالصوت الأول تختار مرشح منطقتك، وبالثاني تختار الحزب." },
+                        { g: "In Deutschland gibt es viele Parteien, z. B. die Sozialdemokratische Partei SPD, die konservativen Unionsparteien CDU und CSU, Bündnis 90/Die Grünen, die Linke oder die liberale Partei FDP.", e: "In Germany, there are many parties, e.g., the Social Democratic Party SPD, the conservative Union parties CDU and CSU, Alliance 90/The Greens, the Left party, or the liberal party FDP.", a: "توجد أحزاب كثيرة في ألمانيا مثل الحزب الاشتراكي، والحزبين المسيحيين الديمقراطيين، والخضر، واليسار، والحزب الديمقراطي الحر." },
+                        { g: "Wenn eine Partei mindestens fünf Prozent der Stimmen gewinnt, kommt sie in den Bundestag. Im Bundestag sitzen etwa 600 Abgeordnete.", e: "If a party wins at least five percent of the vote, it gets into the Bundestag. There are about 600 representatives sitting in the Bundestag.", a: "إذا فاز حزب بـ 5% على الأقل، يدخل البرلمان الذي يضم حوالي 600 نائب." },
+                        { g: "Die Regierungsgeschäfte führt die Bundeskanzlerin/der Bundeskanzler. Sie/Er ist die mächtigste Person in der deutschen Politik.", e: "The Federal Chancellor conducts the business of government. She/He is the most powerful person in German politics.", a: "يدير المستشار(ة) أعمال الحكومة. وهو أقوى شخصية في السياسة الألمانية." },
+                        { g: "Die Bundeskanzlerin/Der Bundeskanzler bestimmt die Minister und die politischen Richtlinien.", e: "The Federal Chancellor determines the ministers and the political guidelines.", a: "المستشار(ة) يحدد الوزراء والتوجهات السياسية." },
+                        { g: "Die Bundespräsidentin/Der Bundespräsident ist das Staatsoberhaupt der Bundesrepublik Deutschland.", e: "The Federal President is the head of state of the Federal Republic of Germany.", a: "الرئيس(ة) الاتحادي هو رأس دولة جمهورية ألمانيا." },
+                        { g: "Sie/Er vertritt die Bundesregierung völkerrechtlich und übernimmt repräsentative Aufgaben im In- und Ausland.", e: "She/He represents the federal government under international law and takes on representative duties at home and abroad.", a: "هو/هي يمثل الحكومة الفيدرالية في القانون الدولي ويتولى مهام تمثيلية في الداخل والخارج." }
+                    ]
+                },
+                {
+                    id: 'c6', title: "Kurznachrichten (أخبار قصيرة)",
+                    lines: [
+                        { g: "<strong>300 000 neue Wohnungen:</strong> In Deutschland werden zurzeit so viele Wohnungen gebaut wie seit zehn Jahren nicht mehr. Nach Angaben der Bauindustrie werden in diesem Jahr etwa 300 000 neue Wohnungen fertiggestellt.", e: "In Germany, as many apartments are currently being built as haven't been in ten years. According to the construction industry, about 300,000 new apartments will be completed this year.", a: "في ألمانيا، يتم حاليًا بناء عدد من الشقق لم نشهده منذ عشر سنوات. وفقًا لقطاع البناء، سيتم إنجاز حوالي 300 ألف شقة جديدة هذا العام." },
+                        { g: "Doch das reicht nicht. Damit sich die Lage auf dem Wohnungsmarkt verbessert, müssen jedes Jahr 350 000 bis 400 000 neue Wohnungen entstehen. Die Regierung will nun Maßnahmen für den Bau von mehr Wohnungen treffen.", e: "But that is not enough. For the situation on the housing market to improve, 350,000 to 400,000 new apartments must be built each year. The government now wants to take measures for the construction of more apartments.", a: "لكن هذا لا يكفي. لكي يتحسن الوضع في سوق الإسكان، يجب بناء 350 إلى 400 ألف شقة جديدة كل عام. الحكومة تريد الآن اتخاذ تدابير لبناء المزيد من الشقق." },
+                        { g: "<strong>Deutsch-polnische Zusammenarbeit:</strong> Heute beginnt das deutsch-polnische Regierungstreffen in Berlin. Themen sind die Verbesserung der Zusammenarbeit und die Intensivierung der wirtschaftlichen Beziehungen.", e: "Today begins the German-Polish government meeting in Berlin. Topics are the improvement of cooperation and the intensification of economic relations.", a: "اليوم يبدأ اجتماع الحكومة الألمانية البولندية في برلين. المواضيع هي تحسين التعاون وتكثيف العلاقات الاقتصادية." },
+                        { g: "An der Besprechung im Kanzleramt nehmen Vertreter der Regierung und der Wirtschaft teil. Konkrete Ergebnisse werden vor allem im Bereich der Sicherheitspolitik erwartet.", e: "Representatives of the government and the economy take part in the meeting at the Chancellery. Concrete results are expected above all in the area of security policy.", a: "يشارك ممثلو الحكومة والاقتصاد في الاجتماع بمكتب المستشارية. ومن المتوقع التوصل إلى نتائج ملموسة خاصة في مجال السياسة الأمنية." },
+                        { g: "<strong>Deutsche sparen trotz niedriger Zinsen:</strong> Nach einer Studie der deutschen Banken sind fast 60 Prozent der Bundesbürger mit ihrer finanziellen Situation zufrieden. Das ist der höchste Wert seit vielen Jahren.", e: "According to a study by the German banks, almost 60 percent of federal citizens are satisfied with their financial situation. That is the highest value in many years.", a: "وفقاً لدراسة للبنوك الألمانية، فإن حوالي 60% من المواطنين راضون عن وضعهم المالي. هذه هي أعلى قيمة منذ سنوات عديدة." },
+                        { g: "Doch vor allem die jungen Leute wollen ihr Geld nicht sparen. Sie geben es lieber für Kleidung, Reisen und andere Dinge aus. Ein Grund dafür ist, dass Geld auf der Bank im Moment keinen Gewinn bringt.", e: "But especially the young people do not want to save their money. They prefer to spend it on clothing, travel and other things. One reason for this is that money in the bank currently brings no profit.", a: "لكن الشباب بشكل خاص لا يريدون توفير أموالهم. يفضلون إنفاقها على الملابس والسفر وأشياء أخرى. أحد الأسباب هو أن المال في البنك لا يجلب أي ربح حالياً." },
+                        { g: "<strong>Die Mücke: Das gefährlichste Tier:</strong> Die meisten Menschen haben Angst vor Schlangen, Haien oder Löwen. Doch diese Tiere stehen nicht auf der Liste der gefährlichsten Tiere für den Menschen. Danach ist das gefährlichste Tier die Mücke.", e: "Most people are afraid of snakes, sharks or lions. But these animals are not on the list of the most dangerous animals for humans. According to it, the most dangerous animal is the mosquito.", a: "يخاف معظم الناس من الثعابين أو أسماك القرش أو الأسود. لكن هذه الحيوانات ليست مدرجة في قائمة أخطر الحيوانات على البشر. وفقاً لذلك، فإن أخطر حيوان هو البعوضة." },
+                        { g: "Etwa 750 000 Menschen sterben jedes Jahr an den Folgen eines Mückenstichs, denn Mücken übertragen tödliche Krankheiten. Klimaforscher warnen jetzt vor der Gefahr, dass sich Mücken weiter ausbreiten. Die Temperaturen steigen, der Regen nimmt zu – das sind ideale Lebensbedingungen für Mücken.", e: "About 750,000 people die each year from the consequences of a mosquito bite, because mosquitoes transmit deadly diseases. Climate researchers now warn of the danger that mosquitoes will spread further. Temperatures rise, rain increases - these are ideal living conditions for mosquitoes.", a: "يموت حوالي 750 ألف شخص سنوياً من عواقب لدغة بعوضة، لأن البعوض ينقل أمراضاً مميتة. يحذر باحثو المناخ الآن من خطر انتشار البعوض بشكل أكبر. ترتفع درجات الحرارة ويزداد المطر - هذه ظروف معيشية مثالية للبعوض." },
+                        { g: "<strong>Rekordpreise bei Kunstauktion:</strong> Größer, höher, teurer – auf der Art Basel wird noch bis zum Sonntag mit moderner Kunst gehandelt. 286 Galeristen aus 88 Ländern bieten Kunstwerke für Interessenten mit großem Geldbeutel an.", e: "Bigger, higher, more expensive - modern art is being traded at Art Basel until Sunday. 286 gallery owners from 88 countries offer artworks for interested parties with large wallets.", a: "أكبر، أعلى، أغلى - سيتم تداول الفن الحديث في معرض آرت بازل حتى يوم الأحد. 286 صاحب معرض من 88 دولة يقدمون أعمالاً فنية للمهتمين ذوي الميزانيات الكبيرة." },
+                        { g: "Gleich am ersten Tag der Kunstmesse fand die Skulptur „Tomato Head“ von Paul McCarthy für 4,75 Millionen Dollar einen Käufer. Das Interesse an Kunst ist weiter gestiegen, so berichten die Kunsthändler. Viele Käufer, darunter auch Prominente aus dem Showbusiness, sehen Kunst als gute Geldanlage.", e: "Right on the first day of the art fair, the sculpture 'Tomato Head' by Paul McCarthy found a buyer for 4.75 million dollars. Interest in art has continued to rise, according to art dealers. Many buyers, including celebrities from show business, see art as a good investment.", a: "في اليوم الأول من المعرض الفني، وجد تمثال 'رأس الطماطم' لبول مكارثي مشترياً مقابل 4.75 مليون دولار. لقد استمر الاهتمام بالفن في الارتفاع، حسبما أفاد تجار الفن. يرى العديد من المشترين، بما في ذلك المشاهير من عالم الاستعراض، الفن كاستثمار مالي جيد." }
+                    ]
+                },
+                {
+                    id: 'c7', title: "Nachrichten im Radio (أخبار الراديو)",
+                    lines: [
+                        { g: "<strong>Nachrichten im Radio:</strong> Es ist 9.00 Uhr, Sie hören die Kurznachrichten.", e: "News on the Radio: It is 9:00 AM, you are listening to the short news.", a: "أخبار الراديو: إنها الساعة 9 صباحاً، أنتم تستمعون للأخبار القصيرة." },
+                        { g: "<strong>Wirtschaftsminister in Japan:</strong> Der deutsche Wirtschaftsminister ist heute mit einer Wirtschaftsdelegation nach Japan gereist. Ab morgen finden Gespräche mit dem japanischen Wirtschaftsminister und Vertretern der Wirtschaft statt.", e: "The German Minister of Economic Affairs traveled to Japan today with a business delegation. Starting tomorrow, talks will take place with the Japanese Minister of Economic Affairs and representatives of the business community.", a: "سافر وزير الاقتصاد الألماني اليوم مع وفد اقتصادي إلى اليابان. اعتباراً من الغد ستجرى محادثات مع وزير الاقتصاد الياباني وممثلي الاقتصاد." },
+                        { g: "Im Mittelpunkt steht eine Vertiefung der Zusammenarbeit in den Bereichen Technik, Digitalisierung und Städtebau. Konkret geht es um neue technische Standards in der Telekommunikation.", e: "The focus is on deepening cooperation in the areas of technology, digitalization, and urban development. Specifically, it is about new technical standards in telecommunications.", a: "ينصب التركيز على تعميق التعاون في مجالات التكنولوجيا والرقمنة والتنمية الحضرية. تحديداً، يتعلق الأمر بالمعايير التقنية الجديدة في الاتصالات." },
+                        { g: "<strong>Straftaten in Deutschland:</strong> Heute hat der Innenminister die neue Kriminalstatistik präsentiert. Laut Statistik hat sich die Anzahl der Straftaten in Deutschland nicht verändert.", e: "Today, the Minister of the Interior presented the new crime statistics. According to the statistics, the number of criminal offenses in Germany has not changed.", a: "اليوم قدم وزير الداخلية إحصاءات الجريمة الجديدة. ووفقاً للإحصاءات، لم يتغير عدد الجرائم في ألمانيا." },
+                        { g: "Eine Zunahme gibt es bei politisch motivierten Straftaten und bei den Einbrüchen in Wohnungen und Häuser. Die Anzahl anderer Straftaten ging zurück. Die gefährlichste Stadt in Deutschland ist wie im letzten Jahr Frankfurt.", e: "There is an increase in politically motivated crimes and in burglaries in apartments and houses. The number of other criminal offenses has decreased. The most dangerous city in Germany is Frankfurt, same as last year.", a: "هناك زيادة في الجرائم ذات الدوافع السياسية وعمليات السطو على الشقق والمنازل. انخفض عدد الجرائم الأخرى. أخطر مدينة في ألمانيا هي فرانكفورت كالعام الماضي." },
+                        { g: "<strong>Weltkulturerbe in Stuttgart:</strong> Zwei Häuser in Stuttgart gehören ab jetzt zum Weltkulturerbe. Die UNESCO nahm am Sonntag einige Bauwerke des Architekten Le Corbusier in sieben Ländern in die Liste des Weltkulturerbes auf.", e: "Two houses in Stuttgart are now part of the World Cultural Heritage. On Sunday, UNESCO added some buildings by the architect Le Corbusier in seven countries to the World Cultural Heritage list.", a: "ينتمي منزلان في شتوتغارت من الآن فصاعداً إلى التراث الثقافي العالمي. يوم الأحد، أدرجت اليونسكو بعض مباني المهندس المعماري لو كوربوزييه في سبعة بلدان في قائمة التراث الثقافي العالمي." },
+                        { g: "Dazu zählen auch die Corbusier-Häuser in Stuttgart. Laut UNESCO hat Le Corbusier großen Einfluss auf die Architektur des 20. Jahrhunderts.", e: "The Corbusier houses in Stuttgart are also among them. According to UNESCO, Le Corbusier had a great influence on the architecture of the 20th century.", a: "ويشمل ذلك أيضاً منازل كوربوزييه في شتوتغارت. وفقاً لليونسكو، كان للو كوربوزييه تأثير كبير على الهندسة المعمارية في القرن العشرين." },
+                        { g: "<strong>FC Bayern verliert im Finale:</strong> Der FC Bayern verlor gestern Abend das Finale der UEFA Champions League gegen Real Madrid eins zu zwei. Das war für die Bayern bereits die dritte Niederlage in einem Finale der Champions League.", e: "FC Bayern lost the final of the UEFA Champions League against Real Madrid one to two last night. For Bayern, this was already the third defeat in a Champions League final.", a: "خسر نادي بايرن ميونيخ نهائي دوري أبطال أوروبا أمام ريال مدريد بنتيجة واحد لاثنين الليلة الماضية. كانت هذه بالفعل الهزيمة الثالثة لبايرن في نهائي دوري أبطال أوروبا." },
+                        { g: "<strong>Und zum Schluss das Wetter:</strong> Im Norden von Deutschland scheint die Sonne, im Süden ist es überwiegend wolkig. Vor allem in Niederbayern regnet es seit gestern Abend. Die Temperaturen liegen zwischen 18 und 22 Grad.", e: "And finally, the weather: In the north of Germany, the sun is shining; in the south, it is predominantly cloudy. Especially in Lower Bavaria, it has been raining since yesterday evening. The temperatures are between 18 and 22 degrees.", a: "وفي الختام حالة الطقس: في شمال ألمانيا تشرق الشمس، أما في الجنوب فالجو غائم في الغالب. في ولاية بافاريا السفلى على وجه الخصوص تمطر منذ مساء أمس. تتراوح درجات الحرارة بين 18 و 22 درجة." }
+                    ]
+                }
+            ],
+            letters: [
+                {
+                    id: 'l1', title: "E-Mail: Fernsehsendung auswählen (ترتيب مشاهدة التلفاز)",
+                    lines: [
+                        { g: "Liebe Nina,", e: "Dear Nina,", a: "عزيزتي نينا،" },
+                        { g: "wollen wir heute Abend zusammen fernsehen?", e: "Do we want to watch TV together tonight?", a: "هل نود مشاهدة التلفاز معاً هذا المساء؟" },
+                        { g: "Um 20:15 Uhr läuft ein spannender Krimi im Fernsehen.", e: "At 8:15 p.m., an exciting crime thriller is on TV.", a: "في الساعة 8:15 مساءً، يُعرض فيلم جريمة مشوق على التلفاز." },
+                        { g: "Ich bin ein großer Krimifan und finde Reportagen oft langweilig.", e: "I am a big crime thriller fan and often find reports boring.", a: "أنا من أشد المعجبين بأفلام الجريمة وغالباً ما أجد التقارير مملة." },
+                        { g: "Hast du Zeit und Lust, den Film mit mir zu schauen?", e: "Do you have the time and desire to watch the movie with me?", a: "هل لديك الوقت والرغبة لمشاهدة الفيلم معي؟" },
+                        { g: "Viele Grüße, Leo", e: "Best regards, Leo", a: "مع أطيب التحيات، ليو" },
+                        { g: "--- (Antwort / الرد) ---", e: "--- (Reply) ---", a: "--- (Antwort / الرد) ---" },
+                        { g: "Lieber Leo,", e: "Dear Leo,", a: "عزيزي ليو،" },
+                        { g: "danke für deine E-Mail.", e: "Thank you for your email.", a: "شكراً على إيميلك." },
+                        { g: "Ein Krimi ist eine tolle Idee! Ich sehe auch gern Krimis.", e: "A crime thriller is a great idea! I also like watching crime thrillers.", a: "فيلم الجريمة فكرة رائعة! أنا أيضاً أحب مشاهدة أفلام الجريمة." },
+                        { g: "Das ist definitiv spannender als das Handballspiel heute Abend.", e: "That is definitely more exciting than the handball game tonight.", a: "هذا بالتأكيد أكثر تشويقاً من مباراة كرة اليد الليلة." },
+                        { g: "Ich komme gegen 20:00 Uhr zu dir. Soll ich Snacks mitbringen?", e: "I'll come to your place around 8:00 p.m. Should I bring snacks?", a: "سآتي إليك حوالي الساعة 8 مساءً. هل أحضر معي بعض الوجبات الخفيفة؟" },
+                        { g: "Bis später! Liebe Grüße, Nina", e: "See you later! Best regards, Nina", a: "أراك لاحقاً! مع خالص تحياتي، نينا" }
+                    ]
+                }
+            ],
+            grammar: [
+                {
+                    title: "1. Wenn-Sätze (Was machst du, wenn...?)",
+                    desc: "كلمة (Wenn) تعني (عندما / لو) وتُستخدم لربط جملتين (Hauptsatz و Nebensatz). الجملة الجانبية التي تبدأ بـ wenn يأتي الفعل في نهايتها. والجملة الأساسية المتبقية تبدأ بالفعل مباشرة كونه يحتل المركز الثاني في الجملة الكلية.",
+                    structure: "Wenn + Subjekt + ... + Verb, [Verb] + Subjekt ...",
+                    examples: [
+                        { category: "Beispiel 1", g: "<strong>Wenn</strong> ich frühstücke, <strong>lese</strong> ich Zeitung.", e: "When I eat breakfast, I read the newspaper.", a: "عندما أفطر، أقرأ الجريدة." },
+                        { category: "Beispiel 2", g: "<strong>Wenn</strong> ich fernsehe, <strong>checke</strong> ich E-Mails.", e: "When I watch TV, I check emails.", a: "عندما أشاهد التلفاز، أتفقد الإيميلات." },
+                        { category: "Beispiel 3", g: "<strong>Wenn</strong> ich Zug fahre, <strong>mache</strong> ich Hausaufgaben.", e: "When I take the train, I do my homework.", a: "عندما أستقل القطار، أعمل واجباتي." },
+                        { category: "Beispiel 4", g: "<strong>Wenn</strong> ich koche, <strong>höre</strong> ich Musik.", e: "When I cook, I listen to music.", a: "عندما أطبخ، أسمع الموسيقى." },
+                        { category: "Beispiel 5", g: "<strong>Wenn</strong> ich Vorlesungen besuche, <strong>höre</strong> ich zu.", e: "When I attend lectures, I listen.", a: "عندما أحضر المحاضرات، أستمع." }
+                    ]
+                },
+                {
+                    title: "2. Nominalstrukturen (التركيبات الاسمية)",
+                    desc: "في النصوص الرسمية مثل الأخبار والصحف، نستخدم الأسماء المجرورة (Genitiv) أو حروف الجر (Präpositionen) لوصف العلاقات واختصار الجمل الطويلة.",
+                    structure: "Nomen + [Genitiv] / Nomen + [Präposition]",
+                    examples: [
+                        { category: "Genitiv", g: "Die Regierung will nun Maßnahmen für den Bau <strong>von mehr Wohnungen</strong> treffen.", e: "The government now wants to take measures for the construction of more apartments.", a: "تريد الحكومة الآن اتخاذ تدابير لبناء <strong>المزيد من الشقق</strong>." },
+                        { category: "Genitiv", g: "Ein Thema des Regierungstreffens ist die Verbesserung <strong>der Zusammenarbeit</strong>.", e: "One topic of the government meeting is the improvement of the cooperation.", a: "أحد مواضيع اجتماع الحكومة هو تحسين <strong>التعاون</strong>." },
+                        { category: "Präposition", g: "Konkrete Ergebnisse werden vor allem <strong>im Bereich</strong> der Sicherheitspolitik erwartet.", e: "Concrete results are expected especially in the area of security policy.", a: "من المتوقع التوصل لنتائج ملموسة خاصة <strong>في مجال</strong> السياسة الأمنية." },
+                        { category: "Präposition", g: "Fast 60 Prozent der Bundesbürger sind <strong>mit ihrer finanziellen Situation</strong> zufrieden.", e: "Almost 60 percent of the German citizens are satisfied with their financial situation.", a: "حوالي 60% من المواطنين الألمان راضون <strong>عن وضعهم المالي</strong>." },
+                        { category: "Präposition", g: "286 Galeristen <strong>aus 88 Ländern</strong> bieten Kunstwerke für Interessenten mit großem Geldbeutel an.", e: "286 gallerists from 88 countries offer works of art for interested parties with deep pockets.", a: "286 من أصحاب المعارض <strong>من 88 دولة</strong> يعرضون أعمالاً فنية للمهتمين ذوي الميزانيات الكبيرة." },
+                        { category: "Präposition", g: "Gleich <strong>am ersten Tag</strong> der Kunstmesse fand die Skulptur „Tomato Head“ einen Käufer.", e: "Right on the first day of the art fair, the sculpture 'Tomato Head' found a buyer.", a: "<strong>في اليوم الأول</strong> مباشرة من المعرض الفني، وجد تمثال 'رأس الطماطم' مشترياً." },
+                        { category: "Präposition", g: "Das Interesse <strong>an Kunst</strong> ist weiter gestiegen.", e: "The interest in art has continued to rise.", a: "الاهتمام <strong>بالفن</strong> استمر في الارتفاع." },
+                        { category: "Präposition", g: "Etwa 750 000 Menschen sterben jedes Jahr <strong>an den Folgen</strong> eines Mückenstichs.", e: "About 750,000 people die each year from the consequences of a mosquito bite.", a: "يموت حوالي 750 ألف إنسان كل عام <strong>من عواقب</strong> لدغة بعوضة." }
+                    ]
+                }
+            ],
+            verbs: [
+                {
+                    id: 'v1', ger: "konzentrieren", eng: "to concentrate", ar: "يركز", praeteritum: "konzentrierte", perfekt: "hat konzentriert", s: [
+                        { g: "Ich kann mich bei Lärm nicht <strong>konzentrieren</strong>.", e: "I cannot concentrate when there is noise.", a: "لا أستطيع التركيز مع الضوضاء." },
+                        { g: "Man muss sich auf eine Sache <strong>konzentrieren</strong>.", e: "One must concentrate on one thing.", a: "يجب على المرء التركيز في شيء واحد." },
+                        { g: "Das Gehirn kann sich nicht auf mehrere Aufgaben <strong>konzentrieren</strong>.", e: "The brain cannot concentrate on several tasks.", a: "الدماغ لا يستطيع التركيز على مهام متعددة." }
+                    ]
+                },
+                {
+                    id: 'v2', ger: "informieren", eng: "to inform", ar: "يستعلم / يخبر", praeteritum: "informierte", perfekt: "hat informiert", s: [
+                        { g: "Ich <strong>informiere</strong> mich im Internet über Politik.", e: "I inform myself on the internet about politics.", a: "أنا استعلم عن السياسة من الإنترنت." },
+                        { g: "Wo <strong>informierst</strong> du dich über aktuelle Ereignisse?", e: "Where do you inform yourself about current events?", a: "من أين تستقي معلوماتك عن الأحداث الجارية؟" },
+                        { g: "Die Nachrichten <strong>informieren</strong> uns jeden Tag.", e: "The news informs us every day.", a: "الأخبار تخبرنا كل يوم." }
+                    ]
+                },
+                {
+                    id: 'v3', ger: "ablaufen", eng: "to proceed / run", ar: "يسير / يحدث", praeteritum: "lief ab", perfekt: "ist abgelaufen", s: [
+                        { g: "Das Bügeln <strong>läuft</strong> in der Regel automatisch <strong>ab</strong>.", e: "Ironing usually runs automatically.", a: "عملية الكي تسير عادة بشكل تلقائي." },
+                        { g: "Wie <strong>läuft</strong> die Prüfung <strong>ab</strong>?", e: "How does the exam proceed?", a: "كيف سيسير الامتحان؟" },
+                        { g: "Der Prozess <strong>läuft</strong> reibungslos <strong>ab</strong>.", e: "The process is running smoothly.", a: "العملية تسير بسلاسة." }
+                    ]
+                },
+                {
+                    id: 'v4', ger: "übertragen", eng: "to transmit", ar: "ينقل / يبث", praeteritum: "übertrug", perfekt: "hat übertragen", s: [
+                        { g: "Mücken <strong>übertragen</strong> tödliche Krankheiten.", e: "Mosquitoes transmit deadly diseases.", a: "البعوض ينقل أمراضاً مميتة." },
+                        { g: "Das Spiel wird live <strong>übertragen</strong>.", e: "The match is broadcast live.", a: "المباراة تُبث مباشرة." },
+                        { g: "Können Sie die Daten auf den USB-Stick <strong>übertragen</strong>?", e: "Can you transfer the data to the USB stick?", a: "هل يمكنك نقل البيانات إلى ذاكرة الفلاش؟" }
+                    ]
+                },
+                {
+                    id: 'v5', ger: "bügeln", eng: "to iron", ar: "يكوي", praeteritum: "bügelte", perfekt: "hat gebügelt", s: [
+                        { g: "Zum Beispiel <strong>bügle</strong> ich Wäsche, wenn ich fernsehe.", e: "For example, I iron laundry when I watch TV.", a: "على سبيل المثال، أكوي الغسيل عندما أشاهد التلفاز." },
+                        { g: "Ich hasse es, Hemden zu <strong>bügeln</strong>.", e: "I hate ironing shirts.", a: "أكره كي القمصان." },
+                        { g: "Wer <strong>bügelt</strong> heute die Kleidung?", e: "Who is ironing the clothes today?", a: "من سيكوي الملابس اليوم؟" }
+                    ]
+                },
+                {
+                    id: 'v6', ger: "steigen", eng: "to rise", ar: "يرتفع / يزداد", praeteritum: "stieg", perfekt: "ist gestiegen", s: [
+                        { g: "Die Fehlerquote <strong>steigt</strong>, wenn man müde ist.", e: "The error rate rises when you are tired.", a: "يرتفع معدل الخطأ عندما يكون المرء متعباً." },
+                        { g: "Die Temperaturen <strong>steigen</strong> im Sommer.", e: "Temperatures rise in the summer.", a: "ترتفع درجات الحرارة في الصيف." },
+                        { g: "Das Interesse an Kunst ist weiter <strong>gestiegen</strong>.", e: "Interest in art has continued to rise.", a: "الاهتمام بالفن استمر في الارتفاع." }
+                    ]
+                },
+                {
+                    id: 'v7', ger: "sinken", eng: "to sink / drop", ar: "ينخفض", praeteritum: "sank", perfekt: "ist gesunken", s: [
+                        { g: "Die Konzentrationsfähigkeit <strong>sinkt</strong>, wenn man telefoniert.", e: "The ability to concentrate sinks when one talks on the phone.", a: "تنخفض القدرة على التركيز عندما يتحدث المرء في الهاتف." },
+                        { g: "Das Interesse an Shows ist <strong>gesunken</strong>.", e: "Interest in shows has declined.", a: "انخفض الاهتمام بالبرامج الاستعراضية." },
+                        { g: "Die Preise für diese Autos <strong>sinken</strong>.", e: "The prices for these cars are dropping.", a: "أسعار هذه السيارات تنخفض." }
+                    ]
+                },
+                {
+                    id: 'v8', ger: "sparen", eng: "to save", ar: "يوفر / يدخر", praeteritum: "sparte", perfekt: "hat gespart", s: [
+                        { g: "Deutsche <strong>sparen</strong> trotz niedriger Zinsen.", e: "Germans save despite low interest rates.", a: "الألمان يدخرون رغم انخفاض أسعار الفائدة." },
+                        { g: "Junge Leute wollen ihr Geld nicht <strong>sparen</strong>.", e: "Young people do not want to save their money.", a: "الشباب لا يريدون توفير أموالهم." },
+                        { g: "Wir müssen Zeit und Energie <strong>sparen</strong>.", e: "We must save time and energy.", a: "يجب علينا توفير الوقت والطاقة." }
+                    ]
+                },
+                {
+                    id: 'v9', ger: "präsentieren", eng: "to present", ar: "يعرض / يقدم", praeteritum: "präsentierte", perfekt: "hat präsentiert", s: [
+                        { g: "Heute hat der Innenminister die Kriminalstatistik <strong>präsentiert</strong>.", e: "Today, the Minister of the Interior presented the crime statistics.", a: "قدم وزير الداخلية اليوم إحصاءات الجريمة." },
+                        { g: "Wir <strong>präsentieren</strong> unsere Ergebnisse morgen.", e: "We will present our results tomorrow.", a: "سنعرض نتائجنا غداً." },
+                        { g: "Der Moderator <strong>präsentiert</strong> die Show.", e: "The host presents the show.", a: "المذيع يقدم البرنامج." }
+                    ]
+                },
+                {
+                    id: 'v10', ger: "bestimmen", eng: "to determine", ar: "يحدد / يقرر", praeteritum: "bestimmte", perfekt: "hat bestimmt", s: [
+                        { g: "Die Bundeskanzlerin <strong>bestimmt</strong> die Minister.", e: "The Federal Chancellor determines the ministers.", a: "المستشارة تحدد الوزراء." },
+                        { g: "Der Bundestag <strong>bestimmt</strong> über die finanziellen Mittel.", e: "The Bundestag determines the financial resources.", a: "البرلمان يحدد الموارد المالية." },
+                        { g: "Wer <strong>bestimmt</strong> hier die neuen Regeln?", e: "Who determines the new rules here?", a: "من يحدد القواعد الجديدة هنا؟" }
+                    ]
+                },
+                {
+                    id: 'v11', ger: "fernsehen", eng: "to watch TV", ar: "يشاهد التلفاز", praeteritum: "sah fern", perfekt: "hat ferngesehen", s: [
+                        { g: "Wie lange siehst du normalerweise am Tag <strong>fern</strong>?", e: "How long do you usually watch TV per day?", a: "كم من الوقت تشاهد التلفاز عادةً في اليوم؟" },
+                        { g: "Ich <strong>sehe</strong> abends gern mit meiner Familie <strong>fern</strong>.", e: "I like to watch TV in the evening with my family.", a: "أحب مشاهدة التلفاز مساءً مع عائلتي." },
+                        { g: "Wenn ich <strong>fernsiehe</strong>, bügle ich oft Wäsche.", e: "When I watch TV, I often iron laundry.", a: "عندما أشاهد التلفاز، غالباً ما أكوي الغسيل." }
+                    ]
+                },
+                {
+                    id: 'v12', ger: "herunterladen", eng: "to download", ar: "يُحمِّل (إنترنت)", praeteritum: "lud herunter", perfekt: "hat heruntergeladen", s: [
+                        { g: "Kann ich diesen Film aus dem Internet <strong>herunterladen</strong>?", e: "Can I download this film from the internet?", a: "هل يمكنني تحميل هذا الفيلم من الإنترنت؟" },
+                        { g: "Du musst die kleine Datei zuerst <strong>herunterladen</strong>.", e: "You have to download the small file first.", a: "عليك تحميل الملف الصغير أولاً." },
+                        { g: "Er hat das Update auf sein Smartphone <strong>heruntergeladen</strong>.", e: "He downloaded the update to his smartphone.", a: "لقد قام بتنزيل التحديث على هاتفه الذكي." }
+                    ]
+                },
+                {
+                    id: 'v13', ger: "stattfinden", eng: "to take place", ar: "يقام / يُعقد", praeteritum: "fand statt", perfekt: "hat stattgefunden", s: [
+                        { g: "Das wichtige Meeting <strong>findet</strong> heute im Büro <strong>statt</strong>.", e: "The important meeting takes place today in the office.", a: "الاجتماع الهام يُعقد اليوم في المكتب." },
+                        { g: "Die Bundestagswahl <strong>findet</strong> alle vier Jahre <strong>statt</strong>.", e: "The federal election takes place every four years.", a: "الانتخابات البرلمانية تُجرى كل أربع سنوات." },
+                        { g: "Weißt du, wo das Konzert <strong>stattfindet</strong>?", e: "Do you know where the concert is taking place?", a: "هل تعرف أين يقام الحفل الموسيقي؟" }
+                    ]
+                },
+                {
+                    id: 'v14', ger: "auswählen", eng: "to select", ar: "يختار", praeteritum: "wählte aus", perfekt: "hat ausgewählt", s: [
+                        { g: "Bitte <strong>wählen</strong> Sie eine Sendung für heute Abend <strong>aus</strong>.", e: "Please select a program for tonight.", a: "من فضلك اختر برنامجاً لهذا المساء." },
+                        { g: "Ich muss einen guten Kandidaten <strong>auswählen</strong>.", e: "I have to choose a good candidate.", a: "يجب علي اختيار مرشح جيد." },
+                        { g: "Wir haben den besten Film für uns <strong>ausgewählt</strong>.", e: "We chose the best film for us.", a: "لقد اخترنا أفضل فيلم لنا." }
+                    ]
+                },
+                {
+                    id: 'v15', ger: "warnen", eng: "to warn", ar: "يحذر", praeteritum: "warnte", perfekt: "hat gewarnt", s: [
+                        { g: "Klimaforscher <strong>warnen</strong> vor der Ausbreitung der Mücken.", e: "Climate researchers warn of the spread of mosquitoes.", a: "علماء المناخ يحذرون من انتشار البعوض." },
+                        { g: "Ich <strong>warne</strong> dich, das ist sehr gefährlich!", e: "I warn you, that is very dangerous!", a: "أنا أحذرك، هذا خطير جداً!" },
+                        { g: "Die Polizei <strong>warnt</strong> vor Einbrechern in der Gegend.", e: "The police warn of burglars in the area.", a: "الشرطة تحذر من اللصوص في المنطقة." }
+                    ]
+                },
+                {
+                    id: 'v16', ger: "sterben", eng: "to die", ar: "يموت", praeteritum: "starb", perfekt: "ist gestorben", s: [
+                        { g: "Viele Menschen <strong>sterben</strong> jedes Jahr an Mückenstichen.", e: "Many people die each year from mosquito bites.", a: "العديد من الأشخاص يموتون سنوياً من لدغات البعوض." },
+                        { g: "Der berühmte Schauspieler ist gestern leider <strong>gestorben</strong>.", e: "The famous actor unfortunately died yesterday.", a: "الممثل الشهير توفي للأسف أمس." },
+                        { g: "Diese schönen Pflanzen <strong>sterben</strong> ohne Wasser.", e: "These beautiful plants will die without water.", a: "هذه النباتات الجميلة ستموت بدون ماء." }
+                    ]
+                },
+                {
+                    id: 'v17', ger: "anbieten", eng: "to offer", ar: "يعرض / يقدم", praeteritum: "bot an", perfekt: "hat angeboten", s: [
+                        { g: "Galeristen <strong>bieten</strong> Kunstwerke für Interessenten <strong>an</strong>.", e: "Gallerists offer artworks for interested parties.", a: "أصحاب المعارض يعرضون الأعمال الفنية للمهتمين." },
+                        { g: "Was <strong>bietet</strong> dieses neue Hotel <strong>an</strong>?", e: "What does this new hotel offer?", a: "ماذا يقدم هذا الفندق الجديد؟" },
+                        { g: "Wir <strong>bieten</strong> unseren Kunden den besten Service.", e: "We offer our customers the best service.", a: "نحن نقدم لعملائنا أفضل خدمة." }
+                    ]
+                },
+                {
+                    id: 'v18', ger: "verstehen", eng: "to understand", ar: "يفهم", praeteritum: "verstand", perfekt: "hat verstanden", s: [
+                        { g: "Wer beim Telefonieren noch etwas anderes macht, <strong>versteht</strong> nur die Hälfte.", e: "Whoever does something else while on the phone only understands half.", a: "من يفعل شيئاً آخر أثناء التحدث في الهاتف يفهم النصف فقط." },
+                        { g: "Ich <strong>verstehe</strong> diese Regel in der Grammatik nicht.", e: "I don't understand this rule in grammar.", a: "أنا لا أفهم هذه القاعدة في النحو." },
+                        { g: "Hast du <strong>verstanden</strong>, was der Lehrer gesagt hat?", e: "Did you understand what the teacher said?", a: "هل فهمت ما قاله المعلم؟" }
+                    ]
+                },
+                {
+                    id: 'v19', ger: "finden", eng: "to find", ar: "يجد", praeteritum: "fand", perfekt: "hat gefunden", s: [
+                        { g: "Die Skulptur <strong>fand</strong> gleich am ersten Tag einen Käufer.", e: "The sculpture found a buyer right on the first day.", a: "وجد التمثال مشترياً في اليوم الأول مباشرة." },
+                        { g: "Ich <strong>finde</strong> Reportagen am interessantesten.", e: "I find reports the most interesting.", a: "أجد التقارير هي الأكثر إثارة للاهتمام." },
+                        { g: "Wo <strong>finde</strong> ich Informationen über die Wahl?", e: "Where do I find information about the election?", a: "أين أجد معلومات حول الانتخابات؟" }
+                    ]
+                },
+                {
+                    id: 'v20', ger: "sehen", eng: "to see / watch", ar: "يرى / يشاهد", praeteritum: "sah", perfekt: "hat gesehen", s: [
+                        { g: "Ich möchte heute Abend einen Dokumentarfilm <strong>sehen</strong>.", e: "I would like to watch a documentary tonight.", a: "أود مشاهدة فيلم وثائقي هذا المساء." },
+                        { g: "Viele Käufer <strong>sehen</strong> Kunst als gute Geldanlage.", e: "Many buyers see art as a good investment.", a: "يرى العديد من المشترين الفن كاستثمار مالي جيد." },
+                        { g: "Hast du die Nachrichten heute Morgen <strong>gesehen</strong>?", e: "Did you see the news this morning?", a: "هل رأيت الأخبار هذا الصباح؟" }
+                    ]
+                },
+                {
+                    id: 'v21', ger: "stehen", eng: "to stand / be on a list", ar: "يقف / يُدرج", praeteritum: "stand", perfekt: "hat gestanden", s: [
+                        { g: "Diese Tiere <strong>stehen</strong> nicht auf der Liste der gefährlichsten Tiere.", e: "These animals are not on the list of the most dangerous animals.", a: "هذه الحيوانات ليست مدرجة في قائمة أخطر الحيوانات." },
+                        { g: "Der Tatort aus Münster <strong>steht</strong> an der Spitze.", e: "The Tatort from Münster is at the top.", a: "تأتي حلقة الجريمة من مدينة مونستر في الصدارة." },
+                        { g: "Im Mittelpunkt <strong>steht</strong> eine Vertiefung der Zusammenarbeit.", e: "The focus is on deepening cooperation.", a: "ينصب التركيز على تعميق التعاون." }
+                    ]
+                },
+                {
+                    id: 'v22', ger: "anfangen", eng: "to start / begin", ar: "يبدأ", praeteritum: "fing an", perfekt: "hat angefangen", s: [
+                        { g: "Hallo Maria. <strong>Fangen</strong> wir <strong>an</strong>.", e: "Hello Maria. Let's start.", a: "مرحباً ماريا. لنبدأ." },
+                        { g: "Wann <strong>fängt</strong> der Film <strong>an</strong>?", e: "When does the film start?", a: "متى يبدأ الفيلم؟" },
+                        { g: "Er hat gestern mit dem Kurs <strong>angefangen</strong>.", e: "He started the course yesterday.", a: "لقد بدأ الدورة أمس." }
+                    ]
+                },
+                {
+                    id: 'v23', ger: "ausüben", eng: "to exercise / perform", ar: "يمارس / يزاول", praeteritum: "übte aus", perfekt: "hat ausgeübt", s: [
+                        { g: "Niemand kann zwei Tätigkeiten mit gleicher Konzentration <strong>ausüben</strong>.", e: "No one can perform two activities with the same concentration.", a: "لا أحد يستطيع ممارسة نشاطين بنفس التركيز." },
+                        { g: "Welchen Beruf <strong>üben</strong> Sie <strong>aus</strong>?", e: "What profession do you practice?", a: "ما هي المهنة التي تزاولها؟" },
+                        { g: "Er <strong>übt</strong> viel Druck auf das Team <strong>aus</strong>.", e: "He exerts a lot of pressure on the team.", a: "هو يمارس ضغطاً كبيراً على الفريق." }
+                    ]
+                },
+                {
+                    id: 'v24', ger: "erledigen", eng: "to handle / get done", ar: "ينجز / يُنهي", praeteritum: "erledigte", perfekt: "hat erledigt", s: [
+                        { g: "Wenn man mehrere Aufgaben parallel <strong>erledigt</strong>, heißt das Multitasking.", e: "When one handles several tasks in parallel, it's called multitasking.", a: "عندما ينجز المرء مهام متعددة بالتوازي، يسمى ذلك تعدد المهام." },
+                        { g: "Hast du deine Arbeit schon <strong>erledigt</strong>?", e: "Have you already finished your work?", a: "هل أنجزت عملك بالفعل؟" },
+                        { g: "Ich muss heute noch viel <strong>erledigen</strong>.", e: "I still have a lot to get done today.", a: "ما زال لدي الكثير لأنجزه اليوم." }
+                    ]
+                },
+                {
+                    id: 'v25', ger: "durchführen", eng: "to carry out", ar: "ينفذ / يجري", praeteritum: "führte durch", perfekt: "hat durchgeführt", s: [
+                        { g: "Ein Mensch <strong>führt</strong> mehrere Tätigkeiten <strong>durch</strong>.", e: "A person carries out several activities.", a: "الشخص ينفذ عدة أنشطة." },
+                        { g: "Der Arzt <strong>führt</strong> die Operation <strong>durch</strong>.", e: "The doctor performs the surgery.", a: "الطبيب يجري العملية الجراحية." },
+                        { g: "Wir haben ein erfolgreiches Experiment <strong>durchgeführt</strong>.", e: "We have carried out a successful experiment.", a: "لقد أجرينا تجربة ناجحة." }
+                    ]
+                },
+                {
+                    id: 'v26', ger: "funktionieren", eng: "to function / work", ar: "يعمل / يشتغل", praeteritum: "funktionierte", perfekt: "hat funktioniert", s: [
+                        { g: "Andere Fähigkeiten <strong>funktionieren</strong> nicht mehr hundertprozentig.", e: "Other abilities no longer function one hundred percent.", a: "القدرات الأخرى لا تعود تعمل بنسبة مائة بالمائة." },
+                        { g: "Mein altes Radio <strong>funktioniert</strong> nicht mehr.", e: "My old radio doesn't work anymore.", a: "الراديو القديم الخاص بي لم يعد يعمل." },
+                        { g: "Wie <strong>funktioniert</strong> dieses neue Programm?", e: "How does this new program work?", a: "كيف يعمل هذا البرنامج الجديد؟" }
+                    ]
+                },
+                {
+                    id: 'v27', ger: "ergeben", eng: "to yield / show", ar: "يُسفر عن / يُظهر", praeteritum: "ergab", perfekt: "hat ergeben", s: [
+                        { g: "Untersuchungen haben <strong>ergeben</strong>, dass die Konzentration sinkt.", e: "Studies have shown that concentration drops.", a: "أظهرت الفحوصات أن التركيز ينخفض." },
+                        { g: "Was hat die letzte Umfrage <strong>ergeben</strong>?", e: "What did the latest survey show?", a: "ماذا أسفرت الاستطلاعات الأخيرة؟" },
+                        { g: "Eins und eins <strong>ergibt</strong> zwei.", e: "One plus one equals two.", a: "واحد زائد واحد يساوي اثنين." }
+                    ]
+                },
+                {
+                    id: 'v28', ger: "mitschreiben", eng: "to take notes", ar: "يُدوّن / يكتب أثناء الاستماع", praeteritum: "schrieb mit", perfekt: "hat mitgeschrieben", s: [
+                        { g: "Wenn wir telefonieren und <strong>mitschreiben</strong>, verstehen wir nur die Hälfte.", e: "When we talk on the phone and take notes, we only understand half.", a: "عندما نتحدث في الهاتف وندون في نفس الوقت، نفهم النصف فقط." },
+                        { g: "Bitte <strong>schreiben</strong> Sie im Unterricht <strong>mit</strong>.", e: "Please take notes during class.", a: "من فضلك دوّن الملاحظات أثناء الدرس." },
+                        { g: "Er hat in der Vorlesung alles <strong>mitgeschrieben</strong>.", e: "He took notes on everything in the lecture.", a: "لقد دوّن كل شيء في المحاضرة." }
+                    ]
+                },
+                {
+                    id: 'v29', ger: "zuhören", eng: "to listen to", ar: "يستمع لـ / يُنصت", praeteritum: "hörte zu", perfekt: "hat zugehört", s: [
+                        { g: "Leider <strong>höre</strong> ich dann nicht richtig <strong>zu</strong>.", e: "Unfortunately, I don't listen properly then.", a: "للأسف لا أستمع جيداً حينها." },
+                        { g: "Bitte <strong>hör</strong> mir gut <strong>zu</strong>!", e: "Please listen to me carefully!", a: "من فضلك أنصت إلي جيداً!" },
+                        { g: "Die Studenten haben aufmerksam <strong>zugehört</strong>.", e: "The students listened attentively.", a: "استمع الطلاب بانتباه." }
+                    ]
+                },
+                {
+                    id: 'v30', ger: "achten", eng: "to pay attention", ar: "ينتبه لـ / يراعي", praeteritum: "achtete", perfekt: "hat geachtet", s: [
+                        { g: "Beim Autofahren <strong>achte</strong> ich auf den Verkehr.", e: "When driving, I pay attention to the traffic.", a: "أثناء قيادة السيارة أنتبه لحركة المرور." },
+                        { g: "<strong>Achten</strong> Sie bitte auf die Stufen!", e: "Please mind the steps!", a: "انتبه للدرج (السلالم) من فضلك!" },
+                        { g: "Du musst mehr auf deine Gesundheit <strong>achten</strong>.", e: "You must pay more attention to your health.", a: "يجب أن تهتم بصحتك أكثر." }
+                    ]
+                },
+                {
+                    id: 'v31', ger: "besuchen", eng: "to visit / attend", ar: "يزور / يحضر", praeteritum: "besuchte", perfekt: "hat besucht", s: [
+                        { g: "Wenn ich Vorlesungen <strong>besuche</strong>, höre ich zu.", e: "When I attend lectures, I listen.", a: "عندما أحضر المحاضرات، أستمع." },
+                        { g: "Ich <strong>besuche</strong> morgen meine Großmutter.", e: "I will visit my grandmother tomorrow.", a: "سأزور جدتي غداً." },
+                        { g: "Hast du das neue Museum schon <strong>besucht</strong>?", e: "Have you already visited the new museum?", a: "هل زرت المتحف الجديد بالفعل؟" }
+                    ]
+                },
+                {
+                    id: 'v32', ger: "kochen", eng: "to cook", ar: "يطبخ", praeteritum: "kochte", perfekt: "hat gekocht", s: [
+                        { g: "Wenn ich Essen <strong>koche</strong>, höre ich Musik.", e: "When I cook food, I listen to music.", a: "عندما أطبخ الطعام، أسمع الموسيقى." },
+                        { g: "Mein Vater <strong>kocht</strong> sehr gut.", e: "My father cooks very well.", a: "والدي يطبخ بشكل جيد جداً." },
+                        { g: "Was <strong>kochst</strong> du heute Abend für uns?", e: "What are you cooking for us tonight?", a: "ماذا ستطبخ لنا الليلة؟" }
+                    ]
+                },
+                {
+                    id: 'v33', ger: "reden", eng: "to talk", ar: "يتحدث / يدردش", praeteritum: "redete", perfekt: "hat geredet", s: [
+                        { g: "Wenn ich Kaffee trinke, <strong>rede</strong> ich mit Kollegen.", e: "When I drink coffee, I talk with colleagues.", a: "عندما أشرب القهوة، أتحدث مع الزملاء." },
+                        { g: "Wir haben gestern lange miteinander <strong>geredet</strong>.", e: "We talked to each other for a long time yesterday.", a: "تحدثنا مع بعضنا البعض طويلاً أمس." },
+                        { g: "Worüber <strong>redet</strong> ihr gerade?", e: "What are you guys talking about right now?", a: "عم تتحدثون الآن؟" }
+                    ]
+                },
+                {
+                    id: 'v34', ger: "tauschen", eng: "to exchange / swap", ar: "يتبادل / يبدل", praeteritum: "tauschte", perfekt: "hat getauscht", s: [
+                        { g: "Wie <strong>tauschen</strong> Sie mit Freunden Informationen aus?", e: "How do you exchange information with friends?", a: "كيف تتبادل المعلومات مع الأصدقاء؟" },
+                        { g: "Wir haben in der Schule die Plätze <strong>getauscht</strong>.", e: "We swapped seats in school.", a: "لقد بادلنا الأماكن في المدرسة." },
+                        { g: "Möchtest du dein Sandwich mit mir <strong>tauschen</strong>?", e: "Do you want to trade your sandwich with me?", a: "هل تريد تبادل شطيرتك معي؟" }
+                    ]
+                },
+                {
+                    id: 'v35', ger: "schicken", eng: "to send", ar: "يُرسل", praeteritum: "schickte", perfekt: "hat geschickt", s: [
+                        { g: "Ich <strong>schicke</strong> meistens eine SMS oder E-Mail.", e: "I usually send an SMS or email.", a: "غالباً ما أرسل رسالة نصية أو إيميل." },
+                        { g: "Hast du das Paket schon <strong>geschickt</strong>?", e: "Have you already sent the package?", a: "هل أرسلت الطرد بالفعل؟" },
+                        { g: "Wir <strong>schicken</strong> unseren Freunden Glückwünsche.", e: "We send our friends congratulations.", a: "نرسل لأصدقائنا التهاني." }
+                    ]
+                },
+                {
+                    id: 'v36', ger: "laufen", eng: "to run", ar: "يجري / يركض", praeteritum: "lief", perfekt: "ist gelaufen", s: [
+                        { g: "Außerdem höre ich beim <strong>Laufen</strong> gern Musik.", e: "Besides that, I like to listen to music while running.", a: "بالإضافة لذلك، أحب سماع الموسيقى أثناء الجري." },
+                        { g: "Das motiviert mich, dann <strong>laufe</strong> ich schneller.", e: "That motivates me, then I run faster.", a: "هذا يحفزني، حينها أجري أسرع." },
+                        { g: "Er <strong>läuft</strong> jeden Morgen fünf Kilometer im Park.", e: "He runs five kilometers in the park every morning.", a: "هو يركض خمسة كيلومترات في الحديقة كل صباح." }
+                    ]
+                },
+                {
+                    id: 'v37', ger: "nutzen", eng: "to use", ar: "يستخدم / يستغل", praeteritum: "nutzte", perfekt: "hat genutzt", s: [
+                        { g: "Ich <strong>nutze</strong> oft Streaming-Portale für Filme.", e: "I often use streaming portals for films.", a: "غالباً أستخدم بوابات البث للأفلام." },
+                        { g: "Du solltest deine Freizeit besser <strong>nutzen</strong>.", e: "You should make better use of your free time.", a: "يجب أن تستغل وقت فراغك بشكل أفضل." },
+                        { g: "Welche Online-Netzwerke <strong>nutzt</strong> du?", e: "Which online networks do you use?", a: "أي شبكات تواصل تستخدم؟" }
+                    ]
+                },
+                {
+                    id: 'v38', ger: "telefonieren", eng: "to telephone", ar: "يتصل بالهاتف", praeteritum: "telefonierte", perfekt: "hat telefoniert", s: [
+                        { g: "Da bin ich altmodisch, ich <strong>telefoniere</strong> lieber.", e: "I'm old-fashioned there, I prefer to telephone.", a: "في هذه النقطة أنا قديم الطراز، أفضل الاتصال الهاتفي." },
+                        { g: "Beim Fernsehen <strong>telefoniere</strong> ich manchmal mit meiner Mutter.", e: "While watching TV, I sometimes talk on the phone with my mother.", a: "أثناء مشاهدة التلفاز، أتحدث أحياناً في الهاتف مع أمي." },
+                        { g: "Mit wem hast du gestern so lange <strong>telefoniert</strong>?", e: "Who were you talking on the phone with for so long yesterday?", a: "مع من كنت تتحدث في الهاتف طويلاً أمس؟" }
+                    ]
+                },
+                {
+                    id: 'v39', ger: "twittern", eng: "to tweet", ar: "يغرد (على تويتر)", praeteritum: "twitterte", perfekt: "hat getwittert", s: [
+                        { g: "Ich <strong>twittere</strong>, blogge und poste alles.", e: "I tweet, blog, and post everything.", a: "أنا أغرد، وأدون، وأنشر كل شيء." },
+                        { g: "Der Politiker <strong>twittert</strong> sehr oft über seine Pläne.", e: "The politician tweets very often about his plans.", a: "السياسي يغرد كثيراً عن خططه." },
+                        { g: "Hast du diese lustige Nachricht <strong>getwittert</strong>?", e: "Did you tweet this funny message?", a: "هل غردت بهذه الرسالة المضحكة؟" }
+                    ]
+                },
+                {
+                    id: 'v40', ger: "bloggen", eng: "to blog", ar: "يدون (في مدونة)", praeteritum: "bloggte", perfekt: "hat gebloggt", s: [
+                        { g: "Sie <strong>bloggt</strong> über Mode und Reisen.", e: "She blogs about fashion and travel.", a: "هي تدون عن الموضة والسفر." },
+                        { g: "Ich <strong>blogge</strong> in meiner Freizeit sehr gern.", e: "I like to blog in my free time.", a: "أحب التدوين في وقت فراغي." },
+                        { g: "Er hat früher viel über Politik <strong>gebloggt</strong>.", e: "He used to blog a lot about politics.", a: "لقد كان يدون كثيراً عن السياسة في الماضي." }
+                    ]
+                },
+                {
+                    id: 'v41', ger: "posten", eng: "to post", ar: "ينشر (على الإنترنت)", praeteritum: "postete", perfekt: "hat gepostet", s: [
+                        { g: "Ich <strong>poste</strong> oft Bilder auf Facebook.", e: "I often post pictures on Facebook.", a: "غالباً أنشر صوراً على فيسبوك." },
+                        { g: "Was hast du da in der Gruppe <strong>gepostet</strong>?", e: "What did you post in the group there?", a: "ماذا نشرت هناك في المجموعة؟" },
+                        { g: "Bitte <strong>poste</strong> dieses Foto nicht online!", e: "Please do not post this photo online!", a: "من فضلك لا تنشر هذه الصورة على الإنترنت!" }
+                    ]
+                },
+                {
+                    id: 'v42', ger: "treffen", eng: "to take (measures) / to meet", ar: "يتخذ (تدابير) / يلتقي", praeteritum: "traf", perfekt: "hat getroffen", s: [
+                        { g: "Die Regierung will nun Maßnahmen für den Bau <strong>treffen</strong>.", e: "The government now wants to take measures for the construction.", a: "تريد الحكومة الآن اتخاذ تدابير للبناء." },
+                        { g: "Wir <strong>treffen</strong> uns morgen um 10 Uhr.", e: "We meet tomorrow at 10 o'clock.", a: "سنلتقي غداً الساعة 10." },
+                        { g: "Die Entscheidung hat ihn hart <strong>getroffen</strong>.", e: "The decision hit him hard.", a: "القرار أثر عليه بقوة." }
+                    ]
+                },
+                {
+                    id: 'v43', ger: "erwarten", eng: "to expect", ar: "يتوقع / ينتظر", praeteritum: "erwartete", perfekt: "hat erwartet", s: [
+                        { g: "Konkrete Ergebnisse werden vor allem in der Sicherheitspolitik <strong>erwartet</strong>.", e: "Concrete results are expected especially in security policy.", a: "من المتوقع تحقيق نتائج ملموسة خاصة في السياسة الأمنية." },
+                        { g: "Wir <strong>erwarten</strong> viele Gäste auf der Party.", e: "We expect many guests at the party.", a: "نتوقع العديد من الضيوف في الحفلة." },
+                        { g: "Das habe ich nicht von dir <strong>erwartet</strong>.", e: "I didn't expect that from you.", a: "لم أتوقع ذلك منك." }
+                    ]
+                },
+                {
+                    id: 'v44', ger: "genehmigen", eng: "to approve", ar: "يوافق على / يعتمد", praeteritum: "genehmigte", perfekt: "hat genehmigt", s: [
+                        { g: "Der Bundestag <strong>genehmigt</strong> internationale Verträge.", e: "The Bundestag approves international treaties.", a: "يوافق البرلمان على المعاهدات الدولية." },
+                        { g: "Der Chef hat meinen Urlaubsantrag <strong>genehmigt</strong>.", e: "The boss approved my vacation request.", a: "وافق المدير على طلب إجازتي." },
+                        { g: "Das Projekt wurde endlich <strong>genehmigt</strong>.", e: "The project was finally approved.", a: "تمت الموافقة على المشروع أخيراً." }
+                    ]
+                },
+                {
+                    id: 'v45', ger: "übernehmen", eng: "to take on / take over", ar: "يتولى", praeteritum: "übernahm", perfekt: "hat übernommen", s: [
+                        { g: "Der Bundespräsident <strong>übernimmt</strong> repräsentative Aufgaben.", e: "The Federal President takes on representative duties.", a: "يتولى الرئيس الاتحادي مهام تمثيلية." },
+                        { g: "Können Sie diese Aufgabe für mich <strong>übernehmen</strong>?", e: "Can you take on this task for me?", a: "هل يمكنك تولي هذه المهمة بدلاً عني؟" },
+                        { g: "Die neue Firma hat das Projekt <strong>übernommen</strong>.", e: "The new company has taken over the project.", a: "تولت الشركة الجديدة المشروع." }
+                    ]
+                },
+                {
+                    id: 'v46', ger: "vertreten", eng: "to represent", ar: "يمثل", praeteritum: "vertrat", perfekt: "hat vertreten", s: [
+                        { g: "Er <strong>vertritt</strong> die Bundesregierung völkerrechtlich.", e: "He represents the federal government under international law.", a: "هو يمثل الحكومة الفيدرالية في القانون الدولي." },
+                        { g: "Wer <strong>vertritt</strong> dich, wenn du im Urlaub bist?", e: "Who represents you when you are on vacation?", a: "من ينوب عنك عندما تكون في إجازة؟" },
+                        { g: "Der Anwalt hat seinen Mandanten gut <strong>vertreten</strong>.", e: "The lawyer represented his client well.", a: "مثل المحامي موكله جيداً." }
+                    ]
+                },
+                {
+                    id: 'v47', ger: "ändern", eng: "to amend / change", ar: "يعدل / يغير", praeteritum: "änderte", perfekt: "hat geändert", s: [
+                        { g: "Der Bundestag kann auch das Grundgesetz <strong>ändern</strong>.", e: "The Bundestag can also amend the Basic Law.", a: "يمكن للبرلمان أيضاً تعديل الدستور." },
+                        { g: "Du musst dein Passwort regelmäßig <strong>ändern</strong>.", e: "You must change your password regularly.", a: "يجب عليك تغيير كلمة المرور بانتظام." },
+                        { g: "Der Plan hat sich plötzlich <strong>geändert</strong>.", e: "The plan has suddenly changed.", a: "تغيرت الخطة فجأة." }
+                    ]
+                }
+            ]
+        };
+
+        const { useState, useEffect } = React;
+
+        // --- HELPER FOR ARTICLES COLORING ---
+        const colorizeArticles = (text) => {
+            if (!text) return text;
+            const regex = /(der |die |das )/gi;
+            const parts = text.split(regex);
+            return parts.map((part, i) => {
+                const lower = part.toLowerCase();
+                if (lower === 'der ') return <span key={i} className="text-blue-500 font-extrabold">{part}</span>;
+                if (lower === 'die ') return <span key={i} className="text-rose-500 font-extrabold">{part}</span>;
+                if (lower === 'das ') return <span key={i} className="text-emerald-500 font-extrabold">{part}</span>;
+                return <span key={i}>{part}</span>;
+            });
+        };
+
+        // --- COMPONENTS ---
+        const ProgressBar = ({ total, learned, colorClass }) => {
+            const percentage = total === 0 ? 0 : Math.round((learned / total) * 100);
+            return (
+                <div className="glass-panel p-5 rounded-2xl mb-8 flex items-center justify-between transition-all" dir="rtl">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider ar-text mb-1">مستوى التقدم</h3>
+                        <p className="text-3xl font-extrabold text-slate-800">{learned} <span className="text-sm font-medium text-slate-400">/ {total} أتقنتهم</span></p>
+                    </div>
+                    <div className="relative w-20 h-20 drop-shadow-md">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path className="text-slate-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                            <path className={`${colorClass} transition-all duration-1000 ease-out`} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold text-slate-700">
+                            {percentage}%
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const WordCard = ({ item, isLearned, toggleLearned }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            return (
+                <div className="relative group perspective-1000 w-full h-[24rem]">
+                    <div className={`w-full h-full transition-all duration-700 transform-style-3d shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl ${isFlipped ? 'rotate-y-180' : ''}`}>
+
+                        {/* FRONT */}
+                        <div className="absolute w-full h-full backface-hidden bg-white border border-slate-100 rounded-2xl p-5 flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
+                            onClick={() => setIsFlipped(true)}>
+                            <div className="flex justify-between items-start shrink-0" dir="rtl">
+                                <span className="bg-orange-50 text-orange-600 text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider ar-text border border-orange-100">مفردات</span>
+                                <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <div className="text-center mt-2 flex-grow flex flex-col justify-center overflow-y-auto front-scroll px-1 py-3">
+                                <div className="flex flex-col justify-center items-center gap-3 mb-1">
+                                    <h3 className="text-2xl font-bold text-slate-800 leading-tight">{colorizeArticles(item.ger)}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={(e) => playAudio(item.ger, e)} className="p-2 rounded-full bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors shadow-sm"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                        <SpeechTester targetText={item.ger} />
+                                    </div>
+                                </div>
+                                <div className="mt-4 space-y-1">
+                                    <p className="text-slate-500 font-medium text-sm">{item.eng}</p>
+                                    <p className="text-orange-600 font-bold ar-text text-lg" dir="rtl">{item.ar}</p>
+                                </div>
+                            </div>
+
+                            <div className="text-center text-xs text-slate-400 font-medium flex items-center justify-center gap-1 ar-text mt-2 shrink-0">
+                                <i data-lucide="rotate-cw" className="w-3 h-3"></i> اضغط للأمثلة
+                            </div>
+                        </div>
+
+                        {/* BACK */}
+                        <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-2xl p-5 shadow-lg flex flex-col cursor-pointer overflow-hidden"
+                            onClick={() => setIsFlipped(false)} style={{ transform: 'rotateY(180deg)' }}>
+                            <div className="mb-3 border-b border-white/20 pb-2 flex justify-between items-center shrink-0" dir="rtl">
+                                <h4 className="font-bold text-white/90 text-sm tracking-wider ar-text">أمثلة سياقية</h4>
+                                <i data-lucide="rotate-ccw" className="w-4 h-4 text-white/60"></i>
+                            </div>
+                            <div className="overflow-y-auto card-scroll flex-grow pr-2 pb-2">
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="text-sm bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/5">
+                                            <div className="flex items-start gap-2 mb-1.5">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className="p-1 text-orange-200 hover:text-white shrink-0 mt-0.5"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <span className="leading-relaxed" dangerouslySetInnerHTML={{ __html: sentence.g }}></span>
+                                            </div>
+                                            <div className="text-orange-200 text-xs italic ml-8 mb-1.5">{sentence.e}</div>
+                                            <div className="text-amber-100 text-sm font-bold ar-text border-t border-white/10 pt-1.5 mt-1" dir="rtl">{sentence.a}</div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const IrregularVerbRow = ({ item, isLearned, toggleLearned }) => {
+            const [expanded, setExpanded] = useState(false);
+
+            return (
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md" dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                    {item.ger}
+                                    <button onClick={(e) => playAudio(item.ger, e)} className="text-emerald-600 opacity-70 hover:opacity-100 transition-opacity"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                </h3>
+                                <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className="text-emerald-600 font-bold ar-text" dir="rtl">{item.ar}</span></p>
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präteritum (ماضي بسيط)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praeteritum, e)} className="text-amber-600 bg-amber-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.praeteritum}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.praeteritum} /></div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Perfekt (ماضي تام)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.perfekt, e)} className="text-purple-600 bg-purple-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.perfekt}</p>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.perfekt} /></div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <h4 className="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider ar-text">مثال سياقي (Beispiel)</h4>
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm group flex flex-col sm:flex-row gap-4 justify-between items-start">
+                                            <div className="flex-1">
+                                                <div className="flex items-start gap-3 mb-2">
+                                                    <button onClick={(e) => playAudio(sentence.g, e)} className="mt-0.5 text-emerald-600 bg-emerald-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                    <p className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: sentence.g }}></p>
+                                                </div>
+                                                <p className="text-slate-500 text-sm ml-10 mb-2">{sentence.e}</p>
+                                                <div className="ml-10 text-emerald-600 text-base font-bold ar-text border-t border-slate-100 pt-2" dir="rtl">{sentence.a}</div>
+                                            </div>
+                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-slate-50 p-1.5 rounded-full" dir="ltr">
+                                                <SpeechTester targetText={sentence.g} />
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const DialogueRow = ({ dialogue }) => {
+            const [expanded, setExpanded] = useState(false);
+            return (
+                <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden mb-6 transition-all duration-300 hover:shadow-lg" dir="ltr">
+                    <button
+                        className="w-full p-6 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white"
+                        onClick={() => setExpanded(!expanded)}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl">
+                                <i data-lucide={dialogue.icon} className="w-6 h-6"></i>
+                            </div>
+                            <h3 className="text-2xl font-bold text-slate-800 ar-text">{dialogue.title}</h3>
+                        </div>
+                        <i data-lucide="chevron-down" className={`w-6 h-6 text-slate-400 transform transition-transform duration-300 ${expanded ? 'rotate-180 text-blue-600' : ''}`}></i>
+                    </button>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="p-6 bg-white space-y-4">
+                            {dialogue.lines.map((line, idx) => {
+                                // Logic to alternate chat bubbles based on speaker
+                                const isFirstSpeaker = idx === 0 || line.speaker === dialogue.lines[0].speaker;
+                                return (
+                                    <div key={idx} className={`flex flex-col p-4 rounded-2xl border ${isFirstSpeaker ? 'bg-blue-50/50 border-blue-100 ml-8' : 'bg-slate-50 border-slate-100 mr-8'}`}>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${isFirstSpeaker ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-700'}`}>
+                                                {line.speaker}
+                                            </span>
+                                            <div className="flex gap-2">
+                                                <button onClick={(e) => playAudio(line.text, e)} className="text-slate-400 hover:text-blue-600 transition-colors"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <SpeechTester targetText={line.text} />
+                                            </div>
+                                        </div>
+                                        <p className="text-lg font-medium text-slate-800 mb-1">{line.text}</p>
+                                        <p className="text-sm text-slate-500 mb-2 italic">{line.en}</p>
+                                        <p className="text-blue-700 font-bold ar-text border-t border-slate-200/50 pt-2 text-right" dir="rtl">{line.ar}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- MAIN APP ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('words');
+            const [learnedItems, setLearnedItems] = useState(new Set());
+            const [searchTerm, setSearchTerm] = useState('');
+
+            // Load saved progress
+            useEffect(() => {
+                const saved = localStorage.getItem('a2_medien_progress');
+                if (saved) {
+                    setLearnedItems(new Set(JSON.parse(saved)));
+                }
+            }, []);
+
+            // Save progress
+            useEffect(() => {
+                localStorage.setItem('a2_medien_progress', JSON.stringify(Array.from(learnedItems)));
+            }, [learnedItems]);
+
+            useEffect(() => {
+                lucide.createIcons();
+            });
+
+            const toggleLearned = (id) => {
+                const newLearned = new Set(learnedItems);
+                if (newLearned.has(id)) newLearned.delete(id);
+                else newLearned.add(id);
+                setLearnedItems(newLearned);
+            };
+
+            const totalWords = LEARNING_DATA.words.medien.length + LEARNING_DATA.words.politik.length + LEARNING_DATA.words.allgemein.length;
+            const totalVerbs = LEARNING_DATA.verbs.length;
+            const totalExp = LEARNING_DATA.expressions.length;
+            const grandTotal = totalWords + totalVerbs + totalExp;
+
+            const tabConfig = {
+                words: { labelEn: 'Vocabulary', labelAr: 'مفردات الدرس', icon: 'briefcase', color: 'orange' },
+                expressions: { labelEn: 'Phrases', labelAr: 'عبارات المناقشة', icon: 'message-square', color: 'amber' },
+                dialogues: { labelEn: 'Dialogues', labelAr: 'محادثات تفاعلية', icon: 'phone-call', color: 'blue' },
+                verbs: { labelEn: 'Verbs', labelAr: 'أفعال هامة', icon: 'list-checks', color: 'emerald' },
+                grammar: { labelEn: 'Grammar', labelAr: 'القواعد (Grammatik)', icon: 'book-open', color: 'purple' },
+                letters: { labelEn: 'Emails', labelAr: 'الإيميل (E-Mail)', icon: 'mail', color: 'cyan' },
+                culture: { labelEn: 'Culture', labelAr: 'نصوص ومعلومات', icon: 'globe', color: 'rose' }
+            };
+
+            const activeColor = tabConfig[activeTab].color;
+
+            return (
+                <div className="h-screen flex flex-col bg-slate-50" dir="rtl">
+                    {/* TOP NAVIGATION HEADER */}
+                    <header className="w-full bg-slate-900 text-white shadow-xl z-50 shrink-0 relative overflow-hidden">
+                        <div className={`absolute top-0 left-0 w-full h-1 bg-${activeColor}-500 transition-colors duration-500`}></div>
+
+                        <div className="flex justify-between items-center px-4 md:px-8 py-3 border-b border-slate-800">
+                            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-3 ar-text">
+                                <span className={`bg-${activeColor}-500 p-2 rounded-xl transition-colors duration-500 shadow-lg`}>
+                                    <i data-lucide="tv-2" className="w-5 h-5 md:w-6 md:h-6 text-white"></i>
+                                </span>
+                                A2: Medien & Politik
+                            </h1>
+
+                            <div className="flex items-center gap-3" dir="ltr">
+                                <div className="text-right hidden sm:block">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Progress</div>
+                                    <div className={`text-sm font-extrabold text-${activeColor}-400 transition-colors`}>{grandTotal === 0 ? 0 : Math.round((learnedItems.size / grandTotal) * 100)}%</div>
+                                </div>
+                                <div className="relative w-10 h-10">
+                                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                        <path className="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                                        <path className={`text-${activeColor}-500 transition-all duration-1000 ease-out`} strokeDasharray={`${grandTotal === 0 ? 0 : (learnedItems.size / grandTotal) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Horizontal Navigation Tabs */}
+                        <nav className="flex overflow-x-auto scrollbar-hide px-4 py-2 gap-2 snap-x">
+                            {Object.entries(tabConfig).map(([key, tab]) => (
+                                <button
+                                    key={key}
+                                    onClick={() => { setActiveTab(key); setSearchTerm(''); }}
+                                    className={`snap-center shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold ar-text group relative overflow-hidden ${activeTab === key ? `bg-${tab.color}-600 text-white shadow-md` : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <i data-lucide={tab.icon} className={`w-5 h-5 ${activeTab === key ? 'text-white' : `text-${tab.color}-400 group-hover:text-${tab.color}-300`} transition-colors`}></i>
+                                    <span className="text-sm whitespace-nowrap">{tab.labelAr}</span>
+                                    {activeTab === key && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-white/50 rounded-t-full"></div>}
+                                </button>
+                            ))}
+                        </nav>
+                    </header>
+
+                    {/* MAIN CONTENT AREA */}
+                    <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 relative" dir="ltr">
+                        <div className={`fixed top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-${activeColor}-200/20 blur-3xl -z-10 transition-colors duration-1000 pointer-events-none`}></div>
+
+                        <div className="max-w-7xl mx-auto">
+
+                            {/* LIVE SEARCH BAR */}
+                            {activeTab !== 'grammar' && activeTab !== 'culture' && activeTab !== 'dialogues' && activeTab !== 'letters' && (
+                                <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                    <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                        <div className={`absolute -inset-0.5 bg-gradient-to-r from-${activeColor}-400 to-${activeColor}-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                        <div className="relative">
+                                            <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                            <input
+                                                type="text"
+                                                placeholder="ابحث بالعربي أو الألماني..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className={`w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-${activeColor}-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium`}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* PROGRESS BARS */}
+                            {activeTab === 'words' && <ProgressBar total={totalWords} learned={Array.from(learnedItems).filter(id => id.startsWith('w')).length} colorClass="text-orange-500" />}
+                            {activeTab === 'verbs' && <ProgressBar total={totalVerbs} learned={Array.from(learnedItems).filter(id => id.startsWith('v')).length} colorClass="text-emerald-500" />}
+                            {activeTab === 'expressions' && <ProgressBar total={totalExp} learned={Array.from(learnedItems).filter(id => id.startsWith('e')).length} colorClass="text-amber-500" />}
+
+                            {/* TAB: WORDS */}
+                            {activeTab === 'words' && (
+                                <div className="space-y-12">
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-orange-100 p-2 rounded-xl text-orange-600"><i data-lucide="tv" className="w-6 h-6"></i></span> الإعلام والتلفاز (Medien)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.medien.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-red-100 p-2 rounded-xl text-red-600"><i data-lucide="landmark" className="w-6 h-6"></i></span> السياسة والاقتصاد (Politik)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.politik.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-yellow-100 p-2 rounded-xl text-yellow-600"><i data-lucide="brain" className="w-6 h-6"></i></span> مصطلحات عامة (Allgemein)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.allgemein.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
+
+                            {/* TAB: EXPRESSIONS */}
+                            {activeTab === 'expressions' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-amber-100 p-2 rounded-xl text-amber-600"><i data-lucide="message-square" className="w-6 h-6"></i></span>
+                                        عبارات المناقشة والإحصائيات
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {LEARNING_DATA.expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                            <div key={exp.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative group hover:shadow-xl hover:border-amber-200 transition-all duration-300">
+                                                <button onClick={() => toggleLearned(exp.id)} className={`absolute top-5 left-5 p-2 rounded-full transition-colors z-10 ${learnedItems.has(exp.id) ? 'bg-amber-100 text-amber-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                                </button>
+                                                <span className="inline-block bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-xs font-bold mb-4 ar-text border border-amber-100">{exp.type}</span>
+                                                <div className="flex items-start gap-3 mb-3" dir="ltr">
+                                                    <div className="flex flex-col gap-2 shrink-0">
+                                                        <button onClick={(e) => playAudio(exp.ger, e)} className="text-amber-500 bg-amber-50 p-2 rounded-xl hover:bg-amber-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                        <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={exp.ger} /></div>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight mt-1">"{exp.ger}"</h3>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
+                                                    <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
+                                                    <p className="text-amber-700 font-extrabold text-xl mb-4 ar-text">{exp.ar}</p>
+                                                    <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
+                                                        <i data-lucide="info" className="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>
+                                                        <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: DIALOGUES */}
+                            {activeTab === 'dialogues' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="phone-call" className="w-6 h-6"></i></span>
+                                        محادثات تفاعلية (Dialoge)
+                                    </h2>
+                                    <div className="max-w-4xl mx-auto space-y-6">
+                                        {LEARNING_DATA.dialogues.map(dialogue => (
+                                            <DialogueRow key={dialogue.id} dialogue={dialogue} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: VERBS */}
+                            {activeTab === 'verbs' && (
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="list-checks" className="w-6 h-6"></i></span>
+                                        أفعال هامة مع الماضي (Verben)
+                                    </h2>
+                                    <div className="space-y-4 max-w-4xl mx-auto">
+                                        {LEARNING_DATA.verbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <IrregularVerbRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: GRAMMAR */}
+                            {activeTab === 'grammar' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-purple-700 to-indigo-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="book-open" className="absolute -right-4 -bottom-4 w-48 h-48 text-white opacity-10 transform rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">القواعد النحوية (Grammatik)</h2>
+                                            <p className="text-purple-200 ar-text text-lg max-w-2xl">شرح جمل Wenn والتركيبات الاسمية (Nominalstrukturen) لمستوى A2.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-8">
+                                        {LEARNING_DATA.grammar.map((gram, idx) => (
+                                            <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                    <div className="bg-purple-100 p-3 rounded-2xl text-purple-600 shrink-0 mt-1">
+                                                        <i data-lucide="braces" className="w-6 h-6"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                        <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-8">
+                                                    {gram.structure && (
+                                                        <div className="bg-slate-900 text-purple-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
+                                                            <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i> {gram.structure}
+                                                        </div>
+                                                    )}
+
+                                                    {gram.examples && (
+                                                        <>
+                                                            <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                            <ul className="space-y-4">
+                                                                {gram.examples.map((ex, i) => (
+                                                                    <li key={i} className="bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
+                                                                        <span className="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold mb-3 ar-text">{ex.category}</span>
+                                                                        <div className="flex gap-4 items-start mb-3" dir="ltr">
+                                                                            <button onClick={(e) => playAudio(ex.g, e)} className="text-purple-500 bg-white p-2 rounded-xl shadow-sm hover:bg-purple-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                            <div className="flex flex-col gap-1">
+                                                                                <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                                {ex.e && <span className="text-slate-500 text-sm italic">{ex.e}</span>}
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="text-purple-700 font-bold ar-text border-t border-purple-200/50 pt-3 mt-3" dangerouslySetInnerHTML={{ __html: ex.a }}></div>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: LETTERS */}
+                            {activeTab === 'letters' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-cyan-600 to-teal-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="mail" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">كيفية كتابة إيميل (E-Mails)</h2>
+                                            <p className="text-cyan-100 ar-text text-lg max-w-2xl">طريقة كتابة إيميل لترتيب موعد ومشاهدة برنامج تلفزيوني معاً.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white p-8 rounded-3xl border border-cyan-100 mb-10 shadow-sm">
+                                        <h3 className="text-2xl font-bold text-cyan-800 mb-6 flex items-center gap-3 ar-text">
+                                            <span className="bg-cyan-100 p-2 rounded-xl"><i data-lucide="info" className="w-6 h-6 text-cyan-600"></i></span>
+                                            أساسيات الإيميل شبه الرسمي (للأصدقاء/الزملاء)
+                                        </h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ar-text">
+                                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                                                <h4 className="font-bold text-slate-800 mb-3 text-lg">التحية (Anrede)</h4>
+                                                <ul className="space-y-3 text-slate-600">
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr block text-base">Liebe (Nina),</span> (للمؤنث)</li>
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr block text-base">Lieber (Leo),</span> (للمذكر)</li>
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr block text-base">Hallo zusammen,</span> (لمجموعة أشخاص)</li>
+                                                </ul>
+                                            </div>
+                                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                                                <h4 className="font-bold text-slate-800 mb-3 text-lg">الخاتمة (Gruß)</h4>
+                                                <ul className="space-y-3 text-slate-600">
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr block text-base">Liebe Grüße</span> (مع خالص تحياتي)</li>
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr block text-base">Viele Grüße</span> (تحياتي الكثيرة)</li>
+                                                    <li><span className="text-cyan-600 font-bold dir-ltr block text-base">Bis später!</span> (أراك لاحقاً!)</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.letters.map((letter) => (
+                                            <div key={letter.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-cyan-100 text-cyan-700 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    E-Mail
+                                                </div>
+                                                <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-6 mt-2 flex items-center gap-3">
+                                                    <i data-lucide="mail-open" className="w-6 h-6 text-cyan-500"></i> {letter.title}
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {letter.lines.map((line, idx) => {
+                                                        const isReply = line.g.includes("---");
+                                                        return (
+                                                            <div key={idx} className={`${isReply ? 'bg-cyan-600 text-white font-bold text-center py-2 rounded-xl my-4' : 'bg-slate-50/50 p-4 rounded-2xl border border-cyan-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group'}`}>
+                                                                {isReply ? (
+                                                                    <span className="ar-text">{line.a}</span>
+                                                                ) : (
+                                                                    <>
+                                                                        <div className="flex-1">
+                                                                            <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                                <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-cyan-600 bg-white p-2 rounded-xl shadow-sm hover:bg-cyan-50 transition-colors shrink-0">
+                                                                                    <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                                </button>
+                                                                                <p className="text-slate-800 text-lg font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                            </div>
+                                                                            {line.e && <p className="sm:ml-14 text-slate-500 text-sm italic mb-2" dir="ltr">{line.e}</p>}
+                                                                            <div className="sm:ml-14 text-cyan-800 text-base font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                            <SpeechTester targetText={line.g} />
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: CULTURE */}
+                            {activeTab === 'culture' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-rose-600 to-red-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="globe" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">نصوص وثقافة (Lesetexte)</h2>
+                                            <p className="text-rose-200 ar-text text-lg max-w-2xl">معلومات عن التلفاز، السياسة الألمانية، تعدد المهام، وثقافة العمل.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.culture.map((item) => (
+                                            <div key={item.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-rose-100 text-rose-600 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    Lesetext
+                                                </div>
+                                                <h3 className="text-3xl font-extrabold text-slate-800 ar-text mb-6 mt-2">{item.title}</h3>
+                                                <div className="space-y-4">
+                                                    {item.lines.map((line, idx) => (
+                                                        <div key={idx} className="bg-slate-50/50 p-4 rounded-2xl border border-rose-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                    <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-rose-500 bg-white p-2 rounded-xl shadow-sm hover:bg-rose-50 transition-colors shrink-0">
+                                                                        <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                    </button>
+                                                                    <p className="text-slate-800 text-xl font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                </div>
+                                                                {line.e && <p className="sm:ml-14 text-slate-500 text-sm italic mb-2" dir="ltr">{line.e}</p>}
+                                                                <div className="sm:ml-14 text-rose-700 text-lg font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                </div>
+                                                            </div>
+                                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                <SpeechTester targetText={line.g} />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

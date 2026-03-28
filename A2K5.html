@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch A2: Alltag, Ausbildung & Verben</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            overflow: hidden;
+        }
+
+        .ar-text {
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Refined Card Flips */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .card-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .front-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .front-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .front-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- HELPERS FOR AUDIO & SPEECH ---
+        const playAudio = (text, e) => {
+            if (e) e.stopPropagation();
+            const cleanText = text.replace(/<[^>]+>/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'de-DE';
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const SpeechTester = ({ targetText }) => {
+            const [status, setStatus] = React.useState('idle');
+            const [heard, setHeard] = React.useState('');
+
+            const listen = (e) => {
+                if (e) e.stopPropagation();
+                if (!('webkitSpeechRecognition' in window)) {
+                    alert('المتصفح ده مش بيدعم تسجيل الصوت، جرب Google Chrome.');
+                    return;
+                }
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+
+                recognition.onstart = () => setStatus('listening');
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    setHeard(speechResult);
+
+                    const clean = (str) => str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,!?:]/g, '').trim();
+                    const targetClean = clean(targetText);
+                    const heardClean = clean(speechResult);
+
+                    if (heardClean.includes(targetClean) || targetClean.includes(heardClean) || heardClean === targetClean) {
+                        setStatus('success');
+                    } else {
+                        setStatus('fail');
+                    }
+                };
+                recognition.onerror = () => setStatus('fail');
+                recognition.onend = () => { if (status === 'listening') setStatus('idle'); };
+                recognition.start();
+            };
+
+            return (
+                <div className="inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={listen} title="جرب تنطقها" className={`p-2 rounded-full transition-all duration-300 shadow-sm ${status === 'listening' ? 'bg-red-500 text-white animate-pulse scale-110' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'}`}>
+                        <i data-lucide="mic" className="w-4 h-4"></i>
+                    </button>
+                    {status === 'success' && <span className="text-emerald-500 text-xs font-bold ar-text animate-bounce">✅ ممتاز!</span>}
+                    {status === 'fail' && <span className="text-red-500 text-xs ar-text font-bold" title={`سمعت: ${heard}`}>❌ جرب تاني</span>}
+                </div>
+            );
+        };
+
+        // --- FULL A2 LEARNING DATA (Massive Update) ---
+        const LEARNING_DATA = {
+            words: {
+                schulfaecher: [
+                    {
+                        id: 'w1', ger: "die Geografie", eng: "Geography", ar: "الجغرافيا", s: [
+                            { g: "Die Schüler lernen etwas über Landschaften und fremde Länder.", e: "The students learn something about landscapes and foreign countries.", a: "يتعلم الطلاب شيئاً عن المناظر الطبيعية والبلدان الأجنبية." },
+                            { g: "Wir haben eine Landkarte in Geografie gezeichnet.", e: "We drew a map in geography.", a: "رسمنا خريطة في الجغرافيا." },
+                            { g: "Mein Lieblingsfach ist Geografie, weil ich gerne reise.", e: "My favorite subject is geography because I like to travel.", a: "مادتي المفضلة هي الجغرافيا لأنني أحب السفر." }
+                        ]
+                    },
+                    {
+                        id: 'w2', ger: "die Kunst", eng: "Art", ar: "الفن / الرسم", s: [
+                            { g: "Die Schüler malen und erfahren etwas über Kunstgeschichte.", e: "The students paint and learn something about art history.", a: "الطلاب يرسمون ويتعلمون شيئاً عن تاريخ الفن." },
+                            { g: "Ich brauche neue Farben für den Kunstunterricht.", e: "I need new colors for art class.", a: "أحتاج ألواناً جديدة لحصة الفن." },
+                            { g: "Kunst macht mir sehr viel Spaß.", e: "Art is a lot of fun for me.", a: "الفن ممتع جداً بالنسبة لي." }
+                        ]
+                    },
+                    {
+                        id: 'w3', ger: "die Geschichte", eng: "History", ar: "التاريخ", s: [
+                            { g: "Die Schüler erfahren etwas über historische Ereignisse.", e: "The students learn about historical events.", a: "يتعلم الطلاب عن الأحداث التاريخية." },
+                            { g: "Im Geschichtsunterricht lesen wir alte Texte.", e: "In history class we read old texts.", a: "في حصة التاريخ نقرأ نصوصاً قديمة." },
+                            { g: "Ich finde die Geschichte von Ägypten sehr interessant.", e: "I find the history of Egypt very interesting.", a: "أجد تاريخ مصر مثيراً جداً للاهتمام." }
+                        ]
+                    },
+                    {
+                        id: 'w4', ger: "die Musik", eng: "Music", ar: "الموسيقى", s: [
+                            { g: "Die Schüler singen oder spielen ein Instrument.", e: "The students sing or play an instrument.", a: "الطلاب يغنون أو يعزفون على آلة موسيقية." },
+                            { g: "Wir hören viele klassische Lieder in Musik.", e: "We listen to many classical songs in music.", a: "نستمع للعديد من الأغاني الكلاسيكية في الموسيقى." },
+                            { g: "Meine Schwester hat immer eine Eins in Musik.", e: "My sister always gets an A in music.", a: "أختي دائماً تحصل على امتياز في الموسيقى." }
+                        ]
+                    },
+                    {
+                        id: 'w5', ger: "die Mathematik", eng: "Mathematics", ar: "الرياضيات", s: [
+                            { g: "Die Schüler müssen viel rechnen.", e: "The students have to do a lot of math.", a: "يجب على الطلاب حساب الكثير." },
+                            { g: "Die Hausaufgaben in Mathematik sind heute schwer.", e: "The math homework is hard today.", a: "واجبات الرياضيات صعبة اليوم." },
+                            { g: "Ich brauche einen Taschenrechner für Mathematik.", e: "I need a calculator for math.", a: "أحتاج إلى آلة حاسبة للرياضيات." }
+                        ]
+                    },
+                    {
+                        id: 'w6', ger: "die Biologie", eng: "Biology", ar: "الأحياء", s: [
+                            { g: "Die Schüler lernen etwas über den Menschen, die Tiere und die Pflanzen.", e: "The students learn something about humans, animals, and plants.", a: "يتعلم الطلاب عن البشر والحيوانات والنباتات." },
+                            { g: "Wir haben ein Experiment in Biologie gemacht.", e: "We did an experiment in biology.", a: "أجرينا تجربة في الأحياء." },
+                            { g: "Biologie ist wichtig für das Medizinstudium.", e: "Biology is important for studying medicine.", a: "الأحياء مهمة لدراسة الطب." }
+                        ]
+                    },
+                    {
+                        id: 'w7', ger: "Englisch", eng: "English", ar: "اللغة الإنجليزية", s: [
+                            { g: "Die Schüler lernen eine Sprache und etwas über die Kultur.", e: "The students learn a language and something about the culture.", a: "يتعلم الطلاب لغة وشيئاً عن الثقافة." },
+                            { g: "Wir sprechen oft Englisch im Unterricht.", e: "We often speak English in class.", a: "نتحدث الإنجليزية كثيراً في الحصة." },
+                            { g: "Gute Englischkenntnisse sind heute sehr wichtig.", e: "Good English skills are very important today.", a: "مهارات الإنجليزية الجيدة مهمة جداً اليوم." }
+                        ]
+                    },
+                    {
+                        id: 'w8', ger: "der Sport", eng: "Sports", ar: "الرياضة (البدنية)", s: [
+                            { g: "Die Schüler treiben Sport.", e: "The students do sports.", a: "الطلاب يمارسون الرياضة." },
+                            { g: "Wir spielen jeden Freitag Fußball im Sportunterricht.", e: "We play football every Friday in PE class.", a: "نلعب كرة القدم كل جمعة في حصة الألعاب." },
+                            { g: "Nach dem Sportunterricht bin ich immer müde.", e: "After PE class I am always tired.", a: "بعد حصة الألعاب أكون متعباً دائماً." }
+                        ]
+                    },
+                    {
+                        id: 'w9', ger: "die Physik", eng: "Physics", ar: "الفيزياء", s: [
+                            { g: "Die Schüler lernen etwas über Technik, Raum und Zeit.", e: "The students learn something about technology, space, and time.", a: "يتعلم الطلاب عن التكنولوجيا والمكان والزمان." },
+                            { g: "Der Physiklehrer erklärt alles sehr genau.", e: "The physics teacher explains everything very precisely.", a: "معلم الفيزياء يشرح كل شيء بدقة بالغة." },
+                            { g: "Ich verstehe die Formel in Physik nicht.", e: "I don't understand the formula in physics.", a: "أنا لا أفهم المعادلة في الفيزياء." }
+                        ]
+                    },
+                    {
+                        id: 'w10', ger: "die Chemie", eng: "Chemistry", ar: "الكيمياء", s: [
+                            { g: "Die Schüler lernen etwas über Elemente und Stoffe oder machen Experimente.", e: "The students learn something about elements and substances or do experiments.", a: "يتعلم الطلاب عن العناصر والمواد أو يجرون تجارب." },
+                            { g: "Im Chemielabor müssen wir vorsichtig sein.", e: "In the chemistry lab we must be careful.", a: "في معمل الكيمياء يجب أن نكون حذرين." },
+                            { g: "Chemie war in der Schule mein Lieblingsfach.", e: "Chemistry was my favorite subject in school.", a: "الكيمياء كانت مادتي المفضلة في المدرسة." }
+                        ]
+                    }
+                ],
+                berufe: [
+                    {
+                        id: 'w11', ger: "der Kaufmann im Einzelhandel", eng: "Retail merchant", ar: "تاجر تجزئة / بائع", s: [
+                            { g: "Als Kaufmann im Einzelhandel ist man Ansprechpartner Nummer eins für Kunden.", e: "As a retail merchant, one is the number one contact person for customers.", a: "بصفتك تاجر تجزئة، فأنت الشخص الأول للاتصال بالعملاء." },
+                            { g: "Die Aufgaben sind vielfältig: die Waren prüfen, Kunden beraten, Bestellungen aufgeben.", e: "The tasks are diverse: checking goods, advising customers, placing orders.", a: "المهام متنوعة: فحص البضائع، تقديم المشورة للعملاء، تقديم الطلبات." },
+                            { g: "Er verkauft Kleidung und Schuhe.", e: "He sells clothes and shoes.", a: "هو يبيع الملابس والأحذية." }
+                        ]
+                    },
+                    {
+                        id: 'w12', ger: "der Kaufmann für Büromanagement", eng: "Merchant for office management", ar: "مدير مكتب", s: [
+                            { g: "Als Kaufmann für Büromanagement ist man ein Alleskönner im Büro.", e: "As a merchant for office management, one is an all-rounder in the office.", a: "بصفتك مديراً للمكتب، فأنت شخص يجيد كل شيء في المكتب." },
+                            { g: "Man muss Termine koordinieren, Telefongespräche führen oder die Abrechnung machen.", e: "One must coordinate appointments, conduct telephone calls, or do the billing.", a: "يجب تنسيق المواعيد، إجراء المكالمات الهاتفية، أو عمل الفواتير." },
+                            { g: "Sie schreibt E-Mails und organisiert Meetings.", e: "She writes emails and organizes meetings.", a: "هي تكتب الإيميلات وتنظم الاجتماعات." }
+                        ]
+                    },
+                    {
+                        id: 'w13', ger: "der Altenpfleger", eng: "Geriatric nurse", ar: "ممرض كبار السن", s: [
+                            { g: "Als Altenpfleger unterstützt und betreut man ältere Menschen.", e: "As a geriatric nurse, one supports and cares for elderly people.", a: "كممرض كبار السن، تدعم وتعتني بكبار السن." },
+                            { g: "Ein Pfleger hilft Senioren zum Beispiel beim Anziehen oder bei der Medikamente.", e: "A nurse helps seniors, for example, with dressing or medication.", a: "يساعد الممرض كبار السن مثلاً في ارتداء الملابس أو الأدوية." },
+                            { g: "Dieser Beruf ist anstrengend, aber sehr wichtig.", e: "This profession is exhausting, but very important.", a: "هذه المهنة مرهقة، لكنها مهمة جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w14', ger: "der Industriekaufmann", eng: "Industrial clerk", ar: "موظف صناعي وتجاري", s: [
+                            { g: "Als Industriekaufmann braucht man gute Deutsch- und Englischkenntnisse.", e: "As an industrial clerk, one needs good German and English skills.", a: "كموظف صناعي، تحتاج لمهارات جيدة في الألمانية والإنجليزية." },
+                            { g: "Er kann in den Bereichen Personal, Marketing, Einkauf oder Rechnungswesen arbeiten.", e: "He can work in HR, marketing, purchasing, or accounting.", a: "يمكنه العمل في الموارد البشرية، التسويق، المشتريات، أو الحسابات." },
+                            { g: "Er telefoniert oft mit internationalen Kunden.", e: "He often calls international clients.", a: "يتحدث كثيراً عبر الهاتف مع عملاء دوليين." }
+                        ]
+                    },
+                    {
+                        id: 'w15', ger: "der Kfz-Mechatroniker", eng: "Automotive mechatronics technician", ar: "فني ميكانيكا سيارات", s: [
+                            { g: "Viele Kfz-Mechatroniker arbeiten in einer Autowerkstatt.", e: "Many automotive mechatronics technicians work in an auto repair shop.", a: "يعمل الكثير من فنيي السيارات في ورشة سيارات." },
+                            { g: "Sie reparieren Autos und beraten Kunden.", e: "They repair cars and advise customers.", a: "يصلحون السيارات وينصحون العملاء." },
+                            { g: "Mein Bruder macht eine Ausbildung zum Kfz-Mechatroniker.", e: "My brother is doing an apprenticeship as an automotive mechatronics technician.", a: "أخي يقوم بتدريب مهني كفني ميكانيكا سيارات." }
+                        ]
+                    },
+                    {
+                        id: 'w16', ger: "der Lehrer", eng: "Teacher", ar: "المعلم (تخصص: علم التربية Pädagogik)", s: [
+                            { g: "Er unterrichtet Schüler.", e: "He teaches students.", a: "هو يدرس للطلاب." },
+                            { g: "Die Lehrerin korrigiert die Hausaufgaben der Kinder.", e: "The teacher corrects the children's homework.", a: "المعلمة تصحح واجبات الأطفال." },
+                            { g: "Herr Müller ist ein sehr freundlicher Lehrer.", e: "Mr. Müller is a very friendly teacher.", a: "الأستاذ مولر معلم ودود جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w17', ger: "der Jurist", eng: "Lawyer", ar: "المحامي (تخصص: القانون Jura)", s: [
+                            { g: "Er beschäftigt sich mit Gesetzen und rechtlichen Normen.", e: "He deals with laws and legal norms.", a: "يتعامل مع القوانين والمعايير القانونية." },
+                            { g: "Der Jurist arbeitet in einer großen Kanzlei.", e: "The lawyer works in a large law firm.", a: "المحامي يعمل في مكتب محاماة كبير." },
+                            { g: "Das Studium für Juristen dauert sehr lange.", e: "The studies for lawyers take a very long time.", a: "دراسة المحامين تستغرق وقتاً طويلاً جداً." }
+                        ]
+                    },
+                    {
+                        id: 'w18', ger: "der Betriebswirt", eng: "Business administrator", ar: "مدير أعمال (تخصص: إدارة أعمال BWL)", s: [
+                            { g: "Er hat wirtschaftliche Kenntnisse und übernimmt Aufgaben im Management.", e: "He has economic knowledge and takes on management tasks.", a: "لديه معرفة اقتصادية ويتولى مهام إدارية." },
+                            { g: "Die Betriebswirtin plant das Budget der Firma.", e: "The business administrator plans the company's budget.", a: "مديرة الأعمال تخطط ميزانية الشركة." },
+                            { g: "Er hat als Betriebswirt viel Verantwortung.", e: "As a business administrator, he has a lot of responsibility.", a: "بصفته مدير أعمال، لديه الكثير من المسؤوليات." }
+                        ]
+                    },
+                    {
+                        id: 'w19', ger: "der Maschinenbauingenieur", eng: "Mechanical engineer", ar: "مهندس ميكانيكا", s: [
+                            { g: "Er konstruiert und überwacht Maschinen und Anlagen.", e: "He designs and monitors machines and systems.", a: "يصمم ويراقب الآلات والأنظمة." },
+                            { g: "Sie arbeitet als Maschinenbauingenieurin in der Autoindustrie.", e: "She works as a mechanical engineer in the auto industry.", a: "تعمل كمهندسة ميكانيكا في صناعة السيارات." },
+                            { g: "Ein Maschinenbauingenieur muss gut in Mathe sein.", e: "A mechanical engineer must be good at math.", a: "مهندس الميكانيكا يجب أن يكون جيداً في الرياضيات." }
+                        ]
+                    },
+                    {
+                        id: 'w20', ger: "der Arzt", eng: "Doctor", ar: "طبيب (تخصص: الطب Medizin)", s: [
+                            { g: "Er behandelt kranke Menschen.", e: "He treats sick people.", a: "يعالج المرضى." },
+                            { g: "Der Arzt schreibt ein Rezept für den Patienten.", e: "The doctor writes a prescription for the patient.", a: "الطبيب يكتب روشتة للمريض." },
+                            { g: "Ich habe morgen einen Termin beim Arzt.", e: "I have an appointment with the doctor tomorrow.", a: "لدي موعد مع الطبيب غداً." }
+                        ]
+                    },
+                    {
+                        id: 'w21', ger: "der Germanist", eng: "Germanist", ar: "متخصص لغة ألمانية", s: [
+                            { g: "Er beschäftigt sich mit der deutschen Sprache und Literatur.", e: "He deals with the German language and literature.", a: "يتعامل مع اللغة الألمانية وأدبها." },
+                            { g: "Der Germanist liest viele deutsche Bücher.", e: "The Germanist reads many German books.", a: "متخصص اللغة الألمانية يقرأ الكثير من الكتب الألمانية." },
+                            { g: "Sie arbeitet als Germanistin an der Universität.", e: "She works as a Germanist at the university.", a: "هي تعمل كمتخصصة لغة ألمانية في الجامعة." }
+                        ]
+                    },
+                    {
+                        id: 'w22', ger: "der Informatiker", eng: "Computer scientist", ar: "عالم حاسوب / مبرمج", s: [
+                            { g: "Er entwickelt, programmiert und modifiziert Hardware und Software.", e: "He develops, programs, and modifies hardware and software.", a: "يطور ويبرمج ويعدل الأجهزة والبرامج." },
+                            { g: "Mein Kollege ist Informatiker und löst alle Computerprobleme.", e: "My colleague is a computer scientist and solves all computer problems.", a: "زميلي مبرمج ويحل كل مشاكل الكمبيوتر." },
+                            { g: "Ein Informatiker verdient oft ein gutes Gehalt.", e: "A computer scientist often earns a good salary.", a: "المبرمج غالباً ما يكسب راتباً جيداً." }
+                        ]
+                    },
+                    {
+                        id: 'w23', ger: "der Elektroingenieur", eng: "Electrical engineer", ar: "مهندس كهرباء", s: [
+                            { g: "Er entwickelt und konstruiert elektrotechnische Produkte.", e: "He develops and designs electrotechnical products.", a: "يطور ويصمم المنتجات الكهروتقنية." },
+                            { g: "Die Firma sucht einen neuen Elektroingenieur.", e: "The company is looking for a new electrical engineer.", a: "الشركة تبحث عن مهندس كهرباء جديد." },
+                            { g: "Der Elektroingenieur testet die neuen Geräte.", e: "The electrical engineer tests the new devices.", a: "مهندس الكهرباء يختبر الأجهزة الجديدة." }
+                        ]
+                    }
+                ]
+            },
+            expressions: [
+                { id: 'e1', type: "Schule", ger: "Erinnern Sie sich gern an Ihre Schulzeit?", eng: "Do you like to remember your school days?", ar: "هل تحب تذكر أيام دراستك؟", context: "Ja, ich erinnere mich gern an meine Schulzeit. / Nein, nicht immer." },
+                { id: 'e2', type: "Schule", ger: "Sind Sie gern in die Schule gegangen?", eng: "Did you like going to school?", ar: "هل كنت تحب الذهاب للمدرسة؟", context: "Ja, ich bin gern in die Schule gegangen." },
+                { id: 'e3', type: "Schule", ger: "Welche Sprachen haben Sie in der Schule gelernt?", eng: "Which languages did you learn at school?", ar: "ما اللغات التي تعلمتها في المدرسة؟", context: "Ich habe Englisch und Französisch gelernt. Wir haben auch Latein gelernt." },
+                { id: 'e4', type: "Schule", ger: "Wann hat der Unterricht angefangen, wann hat er aufgehört?", eng: "When did the lessons start, when did they finish?", ar: "متى كانت تبدأ الحصص، ومتى تنتهي؟", context: "Der Unterricht hat um 8 Uhr angefangen. Er hat um 1 Uhr aufgehört." },
+                { id: 'e5', type: "Schule", ger: "Haben Sie immer Hausaufgaben gemacht?", eng: "Did you always do your homework?", ar: "هل كنت دائماً تؤدي واجباتك؟", context: "Ja, ich habe immer Hausaufgaben gemacht. / Manchmal habe ich sie vergessen." },
+                { id: 'e6', type: "Schule", ger: "Wie war Ihr Schulweg? Sind Sie gelaufen, sind Sie gefahren?", eng: "How was your way to school? Did you walk, did you drive?", ar: "كيف كان طريقك للمدرسة؟ مشياً أم بالسيارة؟", context: "Ich bin immer zu Fuß gegangen. / Ich bin mit dem Fahrrad gefahren." },
+                { id: 'e7', type: "Schule", ger: "Was waren Ihre Lieblingsfächer?", eng: "What were your favorite subjects?", ar: "ما هي موادك المفضلة؟", context: "Meine Lieblingsfächer waren Mathematik und Biologie. / Sport war mein Lieblingsfach." },
+                { id: 'e8', type: "Schule", ger: "Hatten Sie eine Lieblingslehrerin/einen Lieblingslehrer?", eng: "Did you have a favorite teacher?", ar: "هل كان لديك معلم مفضل؟", context: "Ja, meine Lieblingslehrerin war Frau Müller. / Nein, ich hatte keinen Lieblingslehrer." },
+
+                { id: 'e9', type: "Studium", ger: "Guten Tag, ich hätte gern ein paar Informationen über ein Studium in Österreich.", eng: "Good day, I would like some information about studying in Austria.", ar: "يوم سعيد، أود بعض المعلومات عن الدراسة في النمسا.", context: "لطلب معلومات عن الدراسة." },
+                { id: 'e10', type: "Studium", ger: "Muss ich vor dem Studium eine Prüfung oder einen Test machen?", eng: "Do I need to take an exam or test before studying?", ar: "هل يجب أن أجري امتحاناً قبل الدراسة؟", context: "للاستفسار عن شروط القبول." },
+                { id: 'e11', type: "Studium", ger: "Wie kann ich mich für das Studium einschreiben?", eng: "How can I enroll for the studies?", ar: "كيف يمكنني التسجيل في الدراسة؟", context: "לلسؤال عن خطوات التسجيل." },
+                { id: 'e12', type: "Studium", ger: "Gibt es Studiengebühren?", eng: "Are there tuition fees?", ar: "هل توجد رسوم دراسية؟", context: "Nein, an staatlichen Universitäten gibt es keine Studiengebühren." },
+
+                { id: 'e13', type: "Ausbildung", ger: "Ich bin in München zur Schule gegangen.", eng: "I went to school in Munich.", ar: "ذهبت للمدرسة في ميونخ.", context: "للحديث عن مسيرتك التعليمية." },
+                { id: 'e14', type: "Ausbildung", ger: "Danach habe ich in Berlin studiert und eine Ausbildung gemacht.", eng: "After that, I studied in Berlin and did training.", ar: "بعدها درست في برلين وقمت بتدريب مهني.", context: "لوصف ما بعد المدرسة." },
+                { id: 'e15', type: "Ausbildung", ger: "Mein Studium war sehr theoretisch, aber manchmal auch spannend.", eng: "My studies were very theoretical but sometimes exciting.", ar: "دراستي كانت نظرية جداً لكن شيقة أحياناً.", context: "لتقييم فترة الدراسة." },
+                { id: 'e16', type: "Ausbildung", ger: "Mein Praktikum habe ich bei einer Bank absolviert.", eng: "I did my internship at a bank.", ar: "أتممت فترة تدريبي في بنك.", context: "للحديث عن التدريب العملي." }
+            ],
+            dialogues: [
+                {
+                    id: 'd1', title: "Schulzeit Interview (مقابلة عن وقت المدرسة)", icon: "mic",
+                    lines: [
+                        { speaker: "Moderator", text: "Liebe Zuhörerinnen, liebe Zuhörer, herzlich willkommen zur Sendung „Schulzeit“. Wir haben heute einen Gast. Bei mir ist Marina Albrecht. Guten Morgen, Marina.", en: "Dear listeners, welcome to 'School Time'. With me is Marina Albrecht. Good morning.", ar: "أعزائي المستمعين، أهلاً بكم في برنامج 'وقت المدرسة'. ضيفتنا اليوم مارينا ألبرشت. صباح الخير مارينا." },
+                        { speaker: "Moderator", text: "Zunächst herzlichen Glückwunsch. Du hast den dritten Platz bei den Deutschen Schwimmmeisterschaften belegt. Schule und Schwimmen – das ist doch sicher nicht so einfach zu organisieren?", en: "Congratulations on 3rd place at the Swimming Championships. School and swimming – not easy to organize, right?", ar: "أولاً مبروك المركز الثالث في بطولة السباحة. المدرسة والسباحة، أكيد تنظيمهم مش سهل؟" },
+                        { speaker: "Marina", text: "Ja, das stimmt. Ich trainiere jeden Morgen von 6.00 bis 8.00 Uhr und nachmittags von 15.00 bis 18.00 Uhr.", en: "Yes, that's true. I train every morning from 6 to 8 and afternoons from 3 to 6.", ar: "أيوة صحيح. بتمرن كل يوم الصبح من 6 لـ 8 وبعد الظهر من 3 لـ 6." },
+                        { speaker: "Moderator", text: "Hast du dann überhaupt noch Zeit für Hausaufgaben?", en: "Do you then even have time for homework?", ar: "هل عندك وقت أصلاً للواجبات؟" },
+                        { speaker: "Marina", text: "Nein, eigentlich nicht. Aber wenn wir zum Beispiel einen Test haben, lerne ich abends nach dem Abendessen. Ich gehe jetzt in die 11. Klasse, da ist der Stress noch nicht so groß.", en: "No, not really. But if we have a test, I study in the evening. I'm in 11th grade, so stress isn't big yet.", ar: "لأ مش أوي. بس لو عندنا امتحان بذاكر بالليل بعد العشا. أنا في 11 دلوقتي فالضغط مش كبير لسة." },
+                        { speaker: "Moderator", text: "Andere Mädchen in deinem Alter gehen in ihrer Freizeit aus. Hast du dafür noch Zeit?", en: "Other girls your age go out. Do you have time for that?", ar: "البنات اللي في سنك بيخرجوا في وقت فراغهم. عندك وقت لده؟" },
+                        { speaker: "Marina", text: "Ich gehe nicht so viel aus, aber manchmal gehe ich mit meinen Freundinnen ins Kino.", en: "I don't go out much, but sometimes to the cinema with friends.", ar: "مابخرجش كتير، بس أحياناً بروح السينما مع صاحباتي." },
+                        { speaker: "Moderator", text: "Was sind deine Lieblingsfächer? Weißt du schon, was du später mal studieren möchtest?", en: "What are your favorite subjects? Do you know what you want to study?", ar: "إيه موادك المفضلة؟ عارفة عايزة تدرسي إيه بعدين؟" },
+                        { speaker: "Marina", text: "Mein Lieblingsfach ist Biologie. Ich möchte gern Medizin studieren und Ärztin werden.", en: "Biology is my favorite. I want to study medicine and become a doctor.", ar: "الأحياء. عايزة أدرس طب وأبقى دكتورة." },
+                        { speaker: "Moderator", text: "Für Medizin braucht man sehr gute Noten. Schaffst du das, wenn du weiter so viel trainierst?", en: "Medicine needs good grades. Can you manage that with so much training?", ar: "الطب محتاج درجات عالية. هتقدري تعملي ده مع التمرين الكتير ده؟" },
+                        { speaker: "Marina", text: "Ich weiß es nicht. Im Moment konzentriere ich mich auf das Schwimmen. Mal sehen, wie es weitergeht.", en: "I don't know. Currently I focus on swimming. We'll see.", ar: "معرفش. دلوقتي أنا مركزة في السباحة. هنشوف إيه اللي هيحصل." }
+                    ]
+                },
+                {
+                    id: 'd2', title: "Studieren in Österreich (الدراسة في النمسا)", icon: "graduation-cap",
+                    lines: [
+                        { speaker: "Moderator", text: "Bei jungen Leuten ist das Interesse an einem Studium in Österreich stark gestiegen. Warum ist Österreich als Studienort so attraktiv, Herr Meisner?", en: "Interest in studying in Austria has risen. Why is it so attractive, Mr. Meisner?", ar: "اهتمام الشباب بالدراسة في النمسا زاد. ليه النمسا جذابة كده كوجهة دراسية يا أستاذ مايسنر؟" },
+                        { speaker: "Herr Meisner", text: "Österreich ist ein sehr schönes Land. Außerdem ist es sehr günstig und es gibt keinen Numerus clausus.", en: "Austria is beautiful, convenient, and there is no numerus clausus (admission restriction).", ar: "النمسا بلد جميل جداً. وموقعها ممتاز ومفيش فيها تنسيق مجموع (Numerus clausus)." },
+                        { speaker: "Herr Meisner", text: "Das bedeutet, jeder mit dem Abitur kann jedes Studienfach studieren. Ausnahmen sind Medizin und Psychologie.", en: "Anyone with Abitur can study any subject. Exceptions are medicine and psychology.", ar: "يعني أي حد معاه ثانوية يقدر يدرس أي تخصص. ما عدا الطب وعلم النفس." },
+                        { speaker: "Moderator", text: "Die Universitäten unterscheiden sich von den deutschen Unis nicht so sehr, oder?", en: "The universities don't differ much from German ones, right?", ar: "الجامعات مش مختلفة كتير عن جامعات ألمانيا صح؟" },
+                        { speaker: "Herr Meisner", text: "Genau. Die Sprache ist gleich und die Studienzeit auch. Das Bachelorstudium dauert drei Jahre, das Masterstudium zwei.", en: "Exactly. Same language and study length. Bachelor is 3 years, Master 2.", ar: "بالظبط. اللغة واحدة ومدة الدراسة واحدة. البكالوريوس 3 سنين والماجستير 2." },
+                        { speaker: "Herr Meisner", text: "Das Wintersemester startet am 1. Oktober. Das Sommersemester beginnt am 1. März. Die Anmeldung findet im Sommer statt.", en: "Winter semester starts Oct 1. Summer semester March 1. Enrollment is in summer.", ar: "الترم الشتوي بيبدأ 1 أكتوبر. والصيفي 1 مارس. التقديم بيكون في الصيف." },
+                        { speaker: "Herr Meisner", text: "Aber eine einfache Anmeldung bedeutet nicht automatisch einen einfachen Abschluss! Die Prüfungen sind oft sehr schwer.", en: "But easy enrollment doesn't mean easy graduation! Exams are hard.", ar: "بس التسجيل السهل مش معناه تخرج سهل! الامتحانات غالباً صعبة جداً." }
+                    ]
+                }
+            ],
+            culture: [
+                {
+                    id: 'c1', title: "Was hat Lukas gestern gemacht? (روتين لوكاس)",
+                    lines: [
+                        { g: "Um 9.00 Uhr ist Lukas aufgestanden.", e: "At 9:00 a.m. Lukas got up.", a: "الساعة 9 الصبح لوكاس صحي." },
+                        { g: "Danach hat er sich geduscht und sich angezogen.", e: "After that he took a shower and got dressed.", a: "بعدها أخد دُش ولبس هدومه." },
+                        { g: "Um 9.45 Uhr ist er mit dem Fahrrad zur Uni gefahren.", e: "At 9:45 a.m. he rode his bike to the university.", a: "الساعة 9:45 راح الجامعة بالعجلة." },
+                        { g: "Dort hat Lukas zwei Vorlesungen besucht. In der Pause hat er sich mit einem Freund unterhalten.", e: "There Lukas attended two lectures. During the break he talked with a friend.", a: "هناك حضر محاضرتين. وفي الاستراحة اتكلم مع صاحبه." },
+                        { g: "Danach hat Lukas eine Bewerbung geschrieben. Er hat sich um einen Praktikumsplatz bei einer Zeitung beworben.", e: "After that Lukas wrote an application. He applied for an internship at a newspaper.", a: "بعدين كتب طلب تقديم. قدم على تدريب في جريدة." },
+                        { g: "Nach dem Mittagessen hat er sich auf eine Präsentation zum Thema Literatur in der Schweiz vorbereitet.", e: "After lunch he prepared for a presentation on literature in Switzerland.", a: "بعد الغدا حضّر لبريزنتيشن عن الأدب في سويسرا." },
+                        { g: "Die Präsentation ist gut gelaufen. Am Anfang hat sich Lukas über die Technik geärgert. Sie hat nicht richtig funktioniert.", e: "The presentation went well. At the beginning Lukas was annoyed with the tech. It didn’t work properly.", a: "البريزنتيشن كان كويس. في الأول اتضايق من الأجهزة عشان مشتغلتش كويس." },
+                        { g: "Abends ist er ausgegangen und hat sich unsterblich in Anna verliebt.", e: "In the evening he went out and fell madly in love with Anna.", a: "بالليل خرج ووقع في غرام آنا." }
+                    ]
+                },
+                {
+                    id: 'c2', title: "Der Tagesablauf von Eva Berger (روتين إيفا)",
+                    lines: [
+                        { g: "Ich heiße Eva Berger. Normalerweise stehe ich um 7.00 Uhr auf.", e: "My name is Eva Berger. Usually, I get up at 7:00 a.m.", a: "اسمي إيفا بيرجر. في العادة بصحى الساعة 7." },
+                        { g: "Auf dem Weg zur Arbeit ärgere ich mich oft über die vielen Staus.", e: "On the way to work, I often get annoyed about the many traffic jams.", a: "في طريقي للشغل بتضايق كتير من الزحمة." },
+                        { g: "Ich arbeite in einer Bank: Ich lese meine E-Mails und die Börsenberichte. Danach analysiere ich verschiedene Daten.", e: "I work in a bank: I read emails and stock reports. Then I analyze data.", a: "بشتغل في بنك: بقرأ الإيميلات وتقارير البورصة. وبعدين بحلل البيانات." },
+                        { g: "Um 11.00 Uhr haben wir eine kurze Besprechung. Wir unterhalten uns über bestimmte Entwicklungen.", e: "At 11:00 we have a short meeting. We talk about certain developments.", a: "الساعة 11 عندنا اجتماع قصير. بنتكلم فيه عن تطورات معينة." },
+                        { g: "Zum Mittagessen treffe ich mich mittwochs und freitags mit meinem Freund. Er ist Ingenieur und sucht Arbeit.", e: "For lunch, I meet my boyfriend on Wed and Fri. He's an engineer looking for work.", a: "في الغدا بقابل صاحبي أيام الأربعاء والجمعة. هو مهندس وبيدور على شغل." },
+                        { g: "Er hat sich schon bei zehn verschiedenen Firmen beworben.", e: "He has already applied to ten different companies.", a: "قدم بالفعل في 10 شركات مختلفة." },
+                        { g: "Abends lernen wir Französisch. Wir haben uns für einen Sprachkurs eingeschrieben.", e: "In the evenings we study French. We enrolled in a language course.", a: "بالليل بنذاكر فرنساوي. سجلنا في كورس لغة." }
+                    ]
+                },
+                {
+                    id: 'c3', title: "Der Tagesablauf von Carola Mitschke (روتين كارولا - طبيبة)",
+                    lines: [
+                        { g: "Ich heiße Carola Mitschke und bin Hausärztin.", e: "My name is Carola Mitschke and I am a general practitioner.", a: "اسمي كارولا ميتشكه وأنا طبيبة عامة." },
+                        { g: "Die Praxis öffnet um 7.30 Uhr, ab 8.00 Uhr beginnt die Sprechstunde.", e: "The practice opens at 7:30, consultations begin at 8:00.", a: "العيادة بتفتح 7:30، ومن 8 بتبدأ الكشوفات." },
+                        { g: "Zuerst unterhalte ich mich mit den Patienten über ihre Probleme, danach untersuche ich sie.", e: "First, I talk with patients about problems, then I examine them.", a: "أولاً بتكلم مع المرضى عن مشاكلهم، وبعدين بكشف عليهم." },
+                        { g: "Zum Schluss schreibe ich ein Rezept für die Medikamente oder überweise sie zu einem Facharzt.", e: "Finally, I write a prescription or refer them to a specialist.", a: "في النهاية بكتب روشتة للأدوية أو بحولهم لطبيب متخصص." },
+                        { g: "Gestern habe ich mich auf eine Konferenz vorbereitet. Ich halte dort einen kurzen Vortrag.", e: "Yesterday, I prepared for a conference. I will give a short lecture there.", a: "إمبارح حضرت لمؤتمر. هعمل هناك محاضرة قصيرة." }
+                    ]
+                },
+                {
+                    id: 'c4', title: "Bildungswege in Deutschland (مسارات التعليم في ألمانيا)",
+                    lines: [
+                        { g: "Kleinkinder bis drei Jahre können in eine Kinderkrippe gehen, Kinder zwischen drei und sechs in einen Kindergarten.", e: "Toddlers up to 3 can go to daycare, children 3-6 to kindergarten.", a: "الأطفال لحد 3 سنين ممكن يروحوا الحضانة (Kinderkrippe)، ومن 3 لـ 6 رياض الأطفال (Kindergarten)." },
+                        { g: "Die Preise für die Betreuung variieren stark. Manche verlangen keine Gebühren, andere kosten mehrere hundert Euro.", e: "Childcare prices vary. Some are free, others cost several hundred euros.", a: "أسعار الرعاية بتختلف جداً. بعضها مجاني والتاني بيكلف مئات اليوروهات." },
+                        { g: "Die meisten Schulen sind staatlich und gebührenfrei.", e: "Most schools are public and free of charge.", a: "معظم المدارس حكومية ومجانية." },
+                        { g: "Verantwortlich für Schulpolitik sind die einzelnen Bundesländer.", e: "The federal states are responsible for school policy.", a: "الولايات هي المسؤولة عن سياسة التعليم." },
+                        { g: "Die Grundschule besuchen die Kinder von der 1. bis zur 4. Klasse.", e: "Children attend elementary school from 1st to 4th grade.", a: "المدرسة الابتدائية من الصف الأول للرابع." },
+                        { g: "Es gibt die Hauptschule, die Realschule oder das Gymnasium. Am Gymnasium kann man das Abitur machen.", e: "There is Hauptschule, Realschule, or Gymnasium. At Gymnasium you can take the Abitur.", a: "فيه الـ Hauptschule و Realschule و Gymnasium. في الجيمنازيوم ممكن تعمل الثانوية (Abitur)." },
+                        { g: "Damit bekommt man die allgemeine Hochschulreife und kann an einer Universität studieren.", e: "This gives university entrance qualification to study at a university.", a: "وبكده بتاخد مؤهل دخول الجامعة وتقدر تدرس." },
+                        { g: "Nach der Haupt- oder Realschule machen viele Jugendliche eine Berufsausbildung (2 bis 3 Jahre).", e: "After Haupt/Realschule, many do vocational training (2-3 years).", a: "بعد المدارس دي، شباب كتير بيعملوا تدريب مهني (سنتين لـ 3)." }
+                    ]
+                },
+                {
+                    id: 'c5', title: "Schulsystem in Ägypten (نظام التعليم في مصر)",
+                    lines: [
+                        { g: "In meinem Heimatland Ägypten müssen Kinder ab sechs Jahren in die Schule gehen.", e: "In Egypt, children must go to school from the age of six.", a: "في مصر، الأطفال لازم يروحوا المدرسة من سن 6 سنين." },
+                        { g: "Die gesamte Schulzeit bis zum Universitätsstudium dauert zwölf Jahre. (Grundschule, Vorbereitungsschule, Oberschule)", e: "The entire school period lasts 12 years. (Primary, Preparatory, Secondary)", a: "فترة الدراسة كلها للجامعة 12 سنة. (ابتدائي، إعدادي، ثانوي)." },
+                        { g: "Es gibt staatliche Schulen, die fast kostenlos sind, und private Schulen, die teuer sein können.", e: "There are public schools (almost free) and private schools (expensive).", a: "فيه مدارس حكومية (شبه مجانية) ومدارس خاصة ممكن تكون غالية." },
+                        { g: "Das Notensystem basiert auf Prozenten. Die Noten der 'Thanaweya Amma' sind extrem wichtig.", e: "The grading system is based on percentages. 'Thanaweya Amma' grades are extremely important.", a: "نظام الدرجات مبني على النسب المئوية. درجات الثانوية العامة مهمة جداً." },
+                        { g: "Das Ergebnis entscheidet darüber, an welcher Universität und in welcher Fakultät man studieren darf.", e: "The result decides at which university and faculty one is allowed to study.", a: "النتيجة بتحدد هتدخل أي جامعة وأي كلية." }
+                    ]
+                },
+                {
+                    id: 'c6', title: "Lebenslauf: Lena Hummel (السيرة الذاتية لـ لينا)",
+                    lines: [
+                        { g: "Lena Hummel arbeitet seit 2012 als Personalreferentin bei der DEKRA in Berlin.", e: "Lena Hummel has been working as an HR Officer at DEKRA in Berlin since 2012.", a: "لينا هومل شغالة مسؤولة موارد بشرية (HR) في DEKRA في برلين من 2012." },
+                        { g: "Ihre Aufgaben: Betreuung von Personal, Führen von Personalakten und Mitarbeiterschulung.", e: "Her tasks: Personnel support, maintaining files, employee training.", a: "مهامها: رعاية الموظفين، إدارة ملفات شؤون العاملين، وتدريب الموظفين." },
+                        { g: "Sie hat 2008 Abitur gemacht (Note 1,8) und dann Betriebswirtschaftslehre (BWL) an der Universität Leipzig studiert.", e: "She graduated high school in 2008 and studied Business Administration in Leipzig.", a: "عملت ثانوية عامة سنة 2008 وبعدين درست إدارة أعمال في جامعة لايبزيغ." },
+                        { g: "Ihr Studienschwerpunkt war Personalmanagement. Sie spricht sehr gut Englisch (C1) und ein bisschen Spanisch (A2).", e: "Her specialization was HR. She speaks English very well (C1) and a little Spanish (A2).", a: "تخصصها كان إدارة الموارد البشرية. بتتكلم إنجليزي كويس جداً وشوية إسباني." },
+                        { g: "Lena ist ledig.", e: "Lena is single.", a: "لينا عزباء." }
+                    ]
+                }
+            ],
+            letters: [
+                {
+                    id: 'l1', title: "E-Mail an eine Freundin (إيميل عن الدراسة في النمسا)",
+                    lines: [
+                        { g: "Hallo Anna,", e: "Hello Anna,", a: "أهلاً آنا،" },
+                        { g: "ich studiere seit zwei Monaten in Wien.", e: "I have been studying in Vienna for two months.", a: "أنا بدرس في فيينا بقالي شهرين." },
+                        { g: "Mein Studium gefällt mir sehr gut, besonders die Vorlesungen in Biologie.", e: "I like my studies very much, especially the biology lectures.", a: "دراستي عجباني جداً، بالذات محاضرات الأحياء." },
+                        { g: "In meiner Freizeit gehe ich oft ins Kino oder treffe mich mit Freunden.", e: "In my free time I often go to the cinema or meet friends.", a: "في وقت الفراغ بروح السينما كتير أو بقابل أصحابي." },
+                        { g: "Am Wochenende mache ich gern Ausflüge in die Berge.", e: "On weekends I like to go on trips to the mountains.", a: "في الويك إند بحب أعمل رحلات للجبال." },
+                        { g: "Wien ist eine wunderschöne Stadt, und ich fühle mich hier sehr wohl. Liebe Grüße!", e: "Vienna is a wonderful city, and I feel very comfortable here. Best regards!", a: "فيينا مدينة رائعة وأنا حاسة براحة كبيرة هنا. أطيب التحيات!" }
+                    ]
+                },
+                {
+                    id: 'l2', title: "Kurze SMS-Nachrichten bei Verspätung (رسائل SMS للتأخير)",
+                    lines: [
+                        { g: "--- Beispiel 1 ---", e: "--- Example 1 ---", a: "--- المثال الأول ---" },
+                        { g: "Komme leider zu spät, weil die U-Bahn Verspätung hat. Warten bitte im Café Central. Bin in 15 Minuten da. Freue mich auf unser Treffen!", e: "Unfortunately late, subway is delayed. Please wait in Café Central. There in 15 mins. Looking forward to our meeting!", a: "أسف هتأخر عشان المترو متأخر. استنى في كافيه سنترال. 15 دقيقة وأكون هناك. متحمس لمقابلتنا!" },
+                        { g: "--- Beispiel 2 ---", e: "--- Example 2 ---", a: "--- المثال الثاني ---" },
+                        { g: "Tut mir leid, der Bus steckt im Stau. Kannst du noch 20 Minuten warten? Vielleicht treffen wir uns direkt vor der Uni-Bibliothek.", e: "Sorry, bus stuck in traffic. Can you wait 20 mins? Maybe we meet directly in front of the uni library.", a: "معلش الأتوبيس زحمة. ممكن تستنى 20 دقيقة؟ ممكن نتقابل قدام مكتبة الجامعة على طول." },
+                        { g: "--- Beispiel 3 ---", e: "--- Example 3 ---", a: "--- المثال الثالث ---" },
+                        { g: "Sorry, verspäte mich. Hatte noch eine Besprechung mit Professor. Schlage vor, dass wir uns um 18:30 im Park beim Eingang treffen.", e: "Sorry, running late. Had a meeting with professor. I suggest we meet at 6:30 pm at the park entrance.", a: "سوري هتأخر. كان عندي ميتنج مع الدكتور. بقترح نتقابل 6:30 في البارك عند المدخل." }
+                    ]
+                }
+            ],
+            grammar: [
+                {
+                    title: "1. Reflexivpronomen (الضمائر المنعكسة)",
+                    desc: "الضمائر المنعكسة تعود على الفاعل. بعض الأفعال تتطلب دائماً هذه الضمائر. لاحظ الفرق بين الأكوزاتيف (A) والداتيف (D) عندما يكون هناك مفعول به إضافي في الجملة (مثل: أغسل شعري).",
+                    type: "reflexive_table"
+                },
+                {
+                    title: "2. Wenn-Sätze (جمل الشرط بـ Wenn)",
+                    desc: "نستخدم (Wenn) بمعنى 'عندما' أو 'إذا/لو'. الفعل في جملة wenn يأتي في النهاية. وإذا بدأنا بـ wenn، فإن الجملة الثانية تبدأ بالفعل.",
+                    structure: "Wenn [Subjekt] ... [Verb], [Verb] [Subjekt] ...",
+                    examples: [
+                        { category: "Zeitpunkt / Bedingung", g: "Wenn ich Zeit <span class='text-purple-600 font-bold'>habe</span>, <span class='text-purple-600 font-bold'>lese</span> ich ein Buch.", e: "When I have time, I read a book.", a: "لما بيكون عندي وقت، بقرأ كتاب." },
+                        { category: "Zeitpunkt / Bedingung", g: "Wenn ich Urlaub <span class='text-purple-600 font-bold'>habe</span>, <span class='text-purple-600 font-bold'>fahre</span> ich ans Meer.", e: "When I’m on vacation, I go to the sea.", a: "لما بكون في أجازة، بروح البحر." },
+                        { category: "Zeitpunkt / Bedingung", g: "Wenn ich eine Prüfung <span class='text-purple-600 font-bold'>habe</span>, <span class='text-purple-600 font-bold'>lerne</span> ich viel.", e: "When I have an exam, I study a lot.", a: "لما بيكون عندي امتحان، بذاكر كتير." },
+                        { category: "Zeitpunkt / Bedingung", g: "Wenn es <span class='text-purple-600 font-bold'>regnet</span>, <span class='text-purple-600 font-bold'>nehme</span> ich einen Regenschirm.", e: "When it rains, I take an umbrella.", a: "لما بتمطر، باخد شمسية." }
+                    ]
+                }
+            ],
+            verbs: [
+                // REFLEXIVE VERBS
+                {
+                    id: 'v1', ger: "sich anziehen", eng: "to get dressed", ar: "يرتدي ملابسه", type: "Reflexiv (Akk)", praeteritum: "zog sich an", perfekt: "hat sich angezogen", s: [
+                        { g: "Ich <strong>ziehe mich</strong> morgens <strong>an</strong>.", e: "I get dressed in the morning.", a: "أرتدي ملابسي في الصباح." },
+                        { g: "Heute habe ich <strong>mich</strong> schnell <strong>angezogen</strong>.", e: "Today I got dressed quickly.", a: "اليوم ارتديت ملابسي بسرعة." },
+                        { g: "Am Wochenende <strong>ziehe</strong> ich <strong>mich</strong> bequem <strong>an</strong>.", e: "On the weekend I dress comfortably.", a: "في عطلة نهاية الأسبوع أرتدي ملابس مريحة." }
+                    ]
+                },
+                {
+                    id: 'v2', ger: "sich ausziehen", eng: "to undress", ar: "يخلع ملابسه", type: "Reflexiv (Akk)", praeteritum: "zog sich aus", perfekt: "hat sich ausgezogen", s: [
+                        { g: "Ich <strong>ziehe mich</strong> vor dem Schlafengehen <strong>aus</strong>.", e: "I undress before going to sleep.", a: "أخلع ملابسي قبل النوم." },
+                        { g: "Gestern habe ich <strong>mich</strong> spät <strong>ausgezogen</strong>.", e: "Yesterday I undressed late.", a: "أمس خلعت ملابسي متأخراً." },
+                        { g: "Nach dem Sport <strong>zieht</strong> er <strong>sich</strong> sofort <strong>aus</strong>.", e: "After sports, he undresses immediately.", a: "بعد الرياضة، يخلع ملابسه فوراً." }
+                    ]
+                },
+                {
+                    id: 'v3', ger: "sich umziehen", eng: "to change clothes", ar: "يغير ملابسه", type: "Reflexiv (Akk)", praeteritum: "zog sich um", perfekt: "hat sich umgezogen", s: [
+                        { g: "Ich <strong>ziehe mich</strong> nach der Arbeit <strong>um</strong>.", e: "I change clothes after work.", a: "أغير ملابسي بعد العمل." },
+                        { g: "Nach dem Sport habe ich <strong>mich umgezogen</strong>.", e: "After sports, I changed clothes.", a: "بعد الرياضة، غيرت ملابسي." },
+                        { g: "Wir müssen <strong>uns</strong> für die Party <strong>umziehen</strong>.", e: "We have to change clothes for the party.", a: "يجب علينا أن نغير ملابسنا للحفلة." }
+                    ]
+                },
+                {
+                    id: 'v4', ger: "sich waschen", eng: "to wash oneself", ar: "يغتسل", type: "Reflexiv (Akk)", praeteritum: "wusch sich", perfekt: "hat sich gewaschen", s: [
+                        { g: "Ich <strong>wasche mich</strong> jeden Morgen.", e: "I wash myself every morning.", a: "أغتسل كل صباح." },
+                        { g: "Heute habe ich <strong>mich</strong> gründlich <strong>gewaschen</strong>.", e: "Today I washed myself thoroughly.", a: "اليوم اغتسلت بعناية." },
+                        { g: "Kinder, <strong>wascht euch</strong> bitte vor dem Abendessen!", e: "Children, please wash yourselves before dinner!", a: "يا أطفال، اغتسلوا من فضلكم قبل العشاء!" }
+                    ]
+                },
+                {
+                    id: 'v5', ger: "sich duschen", eng: "to shower", ar: "يستحم (دش)", type: "Reflexiv (Akk)", praeteritum: "duschte sich", perfekt: "hat sich geduscht", s: [
+                        { g: "Ich <strong>dusche mich</strong> am Abend.", e: "I shower in the evening.", a: "أستحم في المساء." },
+                        { g: "Ich habe <strong>mich</strong> gestern Abend <strong>geduscht</strong>.", e: "I showered yesterday evening.", a: "استحممت مساء أمس." },
+                        { g: "Nach der Arbeit <strong>duscht</strong> sie <strong>sich</strong> immer.", e: "After work she always showers.", a: "بعد العمل هي تستحم دائماً." }
+                    ]
+                },
+                {
+                    id: 'v6', ger: "sich baden", eng: "to take a bath", ar: "يستحم (بانيو)", type: "Reflexiv (Akk)", praeteritum: "badete sich", perfekt: "hat sich gebadet", s: [
+                        { g: "Ich <strong>bade mich</strong> selten.", e: "I rarely take a bath.", a: "نادراً ما أستحم (في البانيو)." },
+                        { g: "Am Sonntag habe ich <strong>mich gebadet</strong>.", e: "On Sunday I took a bath.", a: "يوم الأحد استحممت." },
+                        { g: "Im Winter <strong>bade</strong> ich <strong>mich</strong> gerne heiß.", e: "In winter I like to take a hot bath.", a: "في الشتاء أحب أن أستحم بماء ساخن." }
+                    ]
+                },
+                {
+                    id: 'v7', ger: "sich setzen", eng: "to sit down", ar: "يجلس", type: "Reflexiv (Akk)", praeteritum: "setzte sich", perfekt: "hat sich gesetzt", s: [
+                        { g: "Ich <strong>setze mich</strong> auf den Stuhl.", e: "I sit down on the chair.", a: "أجلس على الكرسي." },
+                        { g: "Gestern habe ich <strong>mich</strong> ins Café <strong>gesetzt</strong>.", e: "Yesterday I sat down in the café.", a: "أمس جلست في المقهى." },
+                        { g: "Wir <strong>setzen uns</strong> auf das Sofa im Wohnzimmer.", e: "We sit down on the sofa in the living room.", a: "نجلس على الأريكة في غرفة المعيشة." }
+                    ]
+                },
+                {
+                    id: 'v8', ger: "sich hinlegen", eng: "to lie down", ar: "يستلقي", type: "Reflexiv (Akk)", praeteritum: "legte sich hin", perfekt: "hat sich hingelegt", s: [
+                        { g: "Ich <strong>lege mich</strong> nach dem Mittagessen <strong>hin</strong>.", e: "I lie down after lunch.", a: "أستلقي بعد الغداء." },
+                        { g: "Ich habe <strong>mich</strong> kurz <strong>hingelegt</strong>.", e: "I lay down for a short while.", a: "استلقيت لفترة قصيرة." },
+                        { g: "Du bist krank, du solltest <strong>dich hinlegen</strong>.", e: "You are sick, you should lie down.", a: "أنت مريض، يجب أن تستلقي." }
+                    ]
+                },
+                {
+                    id: 'v9', ger: "sich beeilen", eng: "to hurry", ar: "يسرع", type: "Reflexiv (Akk)", praeteritum: "beeilte sich", perfekt: "hat sich beeilt", s: [
+                        { g: "Ich <strong>beeile mich</strong>, weil ich spät bin.", e: "I hurry because I am late.", a: "أسرع لأنني متأخر." },
+                        { g: "Heute habe ich <strong>mich</strong> sehr <strong>beeilt</strong>.", e: "Today I hurried a lot.", a: "اليوم أسرعت كثيراً." },
+                        { g: "Wir müssen <strong>uns beeilen</strong>, der Zug fährt ab!", e: "We have to hurry, the train is leaving!", a: "يجب أن نسرع، القطار سيغادر!" }
+                    ]
+                },
+                {
+                    id: 'v10', ger: "sich erinnern an", eng: "to remember", ar: "يتذكر", type: "Reflexiv + Präposition (Akk)", praeteritum: "erinnerte sich", perfekt: "hat sich erinnert", s: [
+                        { g: "Ich <strong>erinnere mich an</strong> meinen Lehrer.", e: "I remember my teacher.", a: "أتذكر معلمي." },
+                        { g: "Ich habe <strong>mich an</strong> den Namen <strong>erinnert</strong>.", e: "I remembered the name.", a: "تذكرت الاسم." },
+                        { g: "Er <strong>erinnert sich</strong> nicht <strong>an</strong> das Passwort.", e: "He doesn't remember the password.", a: "هو لا يتذكر كلمة المرور." }
+                    ]
+                },
+                {
+                    id: 'v11', ger: "sich freuen auf", eng: "to look forward to", ar: "يتطلع إلى (للمستقبل)", type: "Reflexiv + Präposition (Akk)", praeteritum: "freute sich auf", perfekt: "hat sich gefreut", s: [
+                        { g: "Ich <strong>freue mich auf</strong> die Ferien.", e: "I look forward to the holidays.", a: "أتطلع للإجازة." },
+                        { g: "Ich habe <strong>mich auf</strong> den Urlaub <strong>gefreut</strong>.", e: "I looked forward to the vacation.", a: "تطلعت للإجازة." },
+                        { g: "Die Kinder <strong>freuen sich auf</strong> das Wochenende.", e: "The children look forward to the weekend.", a: "الأطفال يتطلعون إلى عطلة نهاية الأسبوع." }
+                    ]
+                },
+                {
+                    id: 'v12', ger: "sich freuen über", eng: "to be happy about", ar: "يسعد بـ (للماضي/الحاضر)", type: "Reflexiv + Präposition (Akk)", praeteritum: "freute sich über", perfekt: "hat sich gefreut", s: [
+                        { g: "Ich <strong>freue mich über</strong> dein Geschenk.", e: "I am happy about your gift.", a: "أنا سعيد بهديتك." },
+                        { g: "Ich habe <strong>mich über</strong> den Brief <strong>gefreut</strong>.", e: "I was happy about the letter.", a: "سعدت بالرسالة." },
+                        { g: "Wir <strong>freuen uns über</strong> das gute Wetter.", e: "We are happy about the good weather.", a: "نحن سعداء بالطقس الجيد." }
+                    ]
+                },
+                {
+                    id: 'v13', ger: "sich interessieren für", eng: "to be interested in", ar: "يهتم بـ", type: "Reflexiv + Präposition (Akk)", praeteritum: "interessierte sich", perfekt: "hat sich interessiert", s: [
+                        { g: "Ich <strong>interessiere mich für</strong> Geschichte.", e: "I am interested in history.", a: "أهتم بالتاريخ." },
+                        { g: "Ich habe <strong>mich</strong> schon immer <strong>für</strong> Musik <strong>interessiert</strong>.", e: "I have always been interested in music.", a: "لطالما اهتممت بالموسيقى." },
+                        { g: "Mein Sohn <strong>interessiert sich für</strong> Autos.", e: "My son is interested in cars.", a: "ابني مهتم بالسيارات." }
+                    ]
+                },
+                {
+                    id: 'v14', ger: "sich verlieben in", eng: "to fall in love with", ar: "يقع في حب", type: "Reflexiv + Präposition (Akk)", praeteritum: "verliebte sich", perfekt: "hat sich verliebt", s: [
+                        { g: "Er <strong>verliebt sich in</strong> ein Mädchen.", e: "He falls in love with a girl.", a: "يقع في حب فتاة." },
+                        { g: "Er hat <strong>sich in</strong> seine Nachbarin <strong>verliebt</strong>.", e: "He fell in love with his neighbor.", a: "وقع في حب جارته." },
+                        { g: "Ich glaube, sie <strong>verliebt sich in</strong> ihren Kollegen.", e: "I think she is falling in love with her colleague.", a: "أعتقد أنها تقع في حب زميلها." }
+                    ]
+                },
+                {
+                    id: 'v15', ger: "sich ärgern über", eng: "to get angry about", ar: "يغضب من", type: "Reflexiv + Präposition (Akk)", praeteritum: "ärgerte sich", perfekt: "hat sich geärgert", s: [
+                        { g: "Ich <strong>ärgere mich über</strong> den Verkehr.", e: "I get angry about the traffic.", a: "أغضب من الزحام المروري." },
+                        { g: "Ich habe <strong>mich über</strong> die Rechnung <strong>geärgert</strong>.", e: "I got angry about the bill.", a: "غضبت من الفاتورة." },
+                        { g: "Wir <strong>ärgern uns über</strong> den lauten Lärm.", e: "We get angry about the loud noise.", a: "نحن نغضب من الضوضاء العالية." }
+                    ]
+                },
+                {
+                    id: 'v16', ger: "sich entschuldigen für", eng: "to apologize for", ar: "يعتذر عن", type: "Reflexiv + Präposition (Akk)", praeteritum: "entschuldigte sich", perfekt: "hat sich entschuldigt", s: [
+                        { g: "Ich <strong>entschuldige mich für</strong> die Verspätung.", e: "I apologize for being late.", a: "أعتذر عن التأخير." },
+                        { g: "Er hat <strong>sich für</strong> den Fehler <strong>entschuldigt</strong>.", e: "He apologized for the mistake.", a: "اعتذر عن الخطأ." },
+                        { g: "Sie <strong>entschuldigen sich für</strong> das Problem.", e: "They apologize for the problem.", a: "هم يعتذرون عن المشكلة." }
+                    ]
+                },
+                {
+                    id: 'v17', ger: "sich vorstellen (Dat)", eng: "to imagine", ar: "يتخيل", type: "Reflexiv (Dativ)", praeteritum: "stellte sich vor", perfekt: "hat sich vorgestellt", s: [
+                        { g: "Ich <strong>stelle mir</strong> das Leben in Paris <strong>vor</strong>.", e: "I imagine life in Paris.", a: "أتخيل الحياة في باريس." },
+                        { g: "Ich habe <strong>mir</strong> den Film ganz anders <strong>vorgestellt</strong>.", e: "I imagined the movie very differently.", a: "تخيلت الفيلم بشكل مختلف تماماً." },
+                        { g: "Ich kann <strong>mir</strong> das Problem nicht <strong>vorstellen</strong>.", e: "I cannot imagine the problem.", a: "لا أستطيع تخيل المشكلة." }
+                    ]
+                },
+                {
+                    id: 'v18', ger: "sich vorstellen (Akk)", eng: "to introduce oneself", ar: "يقدم نفسه", type: "Reflexiv (Akkusativ)", praeteritum: "stellte sich vor", perfekt: "hat sich vorgestellt", s: [
+                        { g: "Ich <strong>stelle mich</strong> der Klasse <strong>vor</strong>.", e: "I introduce myself to the class.", a: "أقدم نفسي للفصل." },
+                        { g: "Ich habe <strong>mich</strong> den Nachbarn <strong>vorgestellt</strong>.", e: "I introduced myself to the neighbors.", a: "قدمت نفسي للجيران." },
+                        { g: "Der neue Kollege <strong>stellt sich</strong> heute <strong>vor</strong>.", e: "The new colleague introduces himself today.", a: "الزميل الجديد يقدم نفسه اليوم." }
+                    ]
+                },
+                {
+                    id: 'v19', ger: "sich treffen mit", eng: "to meet with", ar: "يتقابل مع", type: "Reflexiv + Präposition (Dat)", praeteritum: "traf sich", perfekt: "hat sich getroffen", s: [
+                        { g: "Ich <strong>treffe mich mit</strong> meinen Freunden.", e: "I meet with my friends.", a: "أتقابل مع أصدقائي." },
+                        { g: "Ich habe <strong>mich mit</strong> ihm im Park <strong>getroffen</strong>.", e: "I met with him in the park.", a: "تقابلت معه في الحديقة." },
+                        { g: "Am Freitag <strong>treffen</strong> wir <strong>uns mit</strong> der Familie.", e: "On Friday we meet with the family.", a: "يوم الجمعة نتقابل مع العائلة." }
+                    ]
+                },
+                {
+                    id: 'v20', ger: "sich unterhalten mit", eng: "to converse", ar: "يتحدث / يدردش مع", type: "Reflexiv + Präposition (Dat)", praeteritum: "unterhielt sich", perfekt: "hat sich unterhalten", s: [
+                        { g: "Ich <strong>unterhalte mich mit</strong> meiner Schwester.", e: "I converse with my sister.", a: "أدردش مع أختي." },
+                        { g: "Ich habe <strong>mich</strong> lange <strong>mit</strong> ihr <strong>unterhalten</strong>.", e: "I conversed with her for a long time.", a: "تحدثت معها لفترة طويلة." },
+                        { g: "Die Studenten <strong>unterhalten sich mit</strong> dem Professor.", e: "The students converse with the professor.", a: "الطلاب يتحدثون مع الدكتور." }
+                    ]
+                },
+                {
+                    id: 'v21', ger: "sich konzentrieren auf", eng: "to concentrate on", ar: "يركز على", type: "Reflexiv + Präposition (Akk)", praeteritum: "konzentrierte sich", perfekt: "hat sich konzentriert", s: [
+                        { g: "Ich <strong>konzentriere mich auf</strong> meine Hausaufgaben.", e: "I concentrate on my homework.", a: "أركز على واجباتي." },
+                        { g: "Gestern habe ich <strong>mich auf</strong> die Prüfung <strong>konzentriert</strong>.", e: "Yesterday I concentrated on the exam.", a: "أمس ركزت على الامتحان." },
+                        { g: "Er muss <strong>sich auf</strong> das Autofahren <strong>konzentrieren</strong>.", e: "He must concentrate on driving.", a: "يجب أن يركز في القيادة." }
+                    ]
+                },
+                {
+                    id: 'v22', ger: "sich entspannen", eng: "to relax", ar: "يسترخي", type: "Reflexiv (Akk)", praeteritum: "entspannte sich", perfekt: "hat sich entspannt", s: [
+                        { g: "Ich <strong>entspanne mich</strong> im Urlaub.", e: "I relax on vacation.", a: "أسترخي في الإجازة." },
+                        { g: "Am Wochenende habe ich <strong>mich entspannt</strong>.", e: "On the weekend I relaxed.", a: "استرخيت في عطلة نهاية الأسبوع." },
+                        { g: "Bei klassischer Musik kann ich <strong>mich</strong> gut <strong>entspannen</strong>.", e: "I can relax well listening to classical music.", a: "أستطيع الاسترخاء جيداً مع الموسيقى الكلاسيكية." }
+                    ]
+                },
+                {
+                    id: 'v23', ger: "sich langweilen", eng: "to be bored", ar: "يشعر بالملل", type: "Reflexiv (Akk)", praeteritum: "langweilte sich", perfekt: "hat sich gelangweilt", s: [
+                        { g: "Ich <strong>langweile mich</strong> im Unterricht.", e: "I am bored in class.", a: "أشعر بالملل في الحصة." },
+                        { g: "Ich habe <strong>mich</strong> gestern <strong>gelangweilt</strong>.", e: "I was bored yesterday.", a: "شعرت بالملل أمس." },
+                        { g: "Die Kinder <strong>langweilen sich</strong> zu Hause.", e: "The children are bored at home.", a: "الأطفال يشعرون بالملل في المنزل." }
+                    ]
+                },
+                {
+                    id: 'v24', ger: "sich fühlen", eng: "to feel", ar: "يشعر", type: "Reflexiv (Akk)", praeteritum: "fühlte sich", perfekt: "hat sich gefühlt", s: [
+                        { g: "Ich <strong>fühle mich</strong> heute gut.", e: "I feel good today.", a: "أشعر أنني بحالة جيدة اليوم." },
+                        { g: "Ich habe <strong>mich</strong> gestern schlecht <strong>gefühlt</strong>.", e: "I felt bad yesterday.", a: "شعرت بالسوء أمس." },
+                        { g: "Wie <strong>fühlst</strong> du <strong>dich</strong> heute Morgen?", e: "How do you feel this morning?", a: "كيف تشعر هذا الصباح؟" }
+                    ]
+                },
+                {
+                    id: 'v25', ger: "sich kämmen", eng: "to comb one's hair", ar: "يمشط شعره", type: "Reflexiv (Akk)", praeteritum: "kämmte sich", perfekt: "hat sich gekämmt", s: [
+                        { g: "Ich <strong>kämme mich</strong> jeden Morgen.", e: "I comb my hair every morning.", a: "أمشط شعري كل صباح." },
+                        { g: "Heute Morgen habe ich <strong>mich</strong> schnell <strong>gekämmt</strong>.", e: "This morning I quickly combed my hair.", a: "هذا الصباح مشطت شعري بسرعة." },
+                        { g: "Sie <strong>kämmt sich</strong> vor dem Spiegel.", e: "She combs her hair in front of the mirror.", a: "هي تمشط شعرها أمام المرآة." }
+                    ]
+                },
+                {
+                    id: 'v26', ger: "sich die Haare föhnen", eng: "to blow-dry hair", ar: "يجفف شعره بالسيشوار", type: "Reflexiv (Dativ)", praeteritum: "föhnte sich", perfekt: "hat sich geföhnt", s: [
+                        { g: "Nach dem Duschen <strong>föhne</strong> ich <strong>mir</strong> die Haare.", e: "After showering I blow-dry my hair.", a: "بعد الاستحمام أجفف شعري." },
+                        { g: "Nach dem Training habe ich <strong>mir</strong> die Haare <strong>geföhnt</strong>.", e: "After training I blow-dried my hair.", a: "بعد التمرين جففت شعري بالسيشوار." },
+                        { g: "Ich muss <strong>mir</strong> noch schnell die Haare <strong>föhnen</strong>.", e: "I still need to quickly blow-dry my hair.", a: "يجب أن أجفف شعري بالسيشوار سريعاً." }
+                    ]
+                },
+                {
+                    id: 'v27', ger: "sich rasieren", eng: "to shave", ar: "يحلق ذقنه", type: "Reflexiv (Akk)", praeteritum: "rasierte sich", perfekt: "hat sich rasiert", s: [
+                        { g: "Er <strong>rasiert sich</strong> jeden Tag.", e: "He shaves every day.", a: "يحلق كل يوم." },
+                        { g: "Heute hat er <strong>sich</strong> noch nicht <strong>rasiert</strong>.", e: "Today he hasn't shaved yet.", a: "اليوم لم يحلق بعد." },
+                        { g: "Mein Vater <strong>rasiert sich</strong> am Morgen im Bad.", e: "My father shaves in the morning in the bathroom.", a: "أبي يحلق ذقنه صباحاً في الحمام." }
+                    ]
+                },
+                {
+                    id: 'v28', ger: "sich schminken", eng: "to put on makeup", ar: "تضع مكياج", type: "Reflexiv (Akk)", praeteritum: "schminkte sich", perfekt: "hat sich geschminkt", s: [
+                        { g: "Sie <strong>schminkt sich</strong> vor der Party.", e: "She puts on makeup before the party.", a: "تضع مكياج قبل الحفلة." },
+                        { g: "Sie hat <strong>sich</strong> schön <strong>geschminkt</strong>.", e: "She put on beautiful makeup.", a: "وضعت مكياجاً جميلاً." },
+                        { g: "Sie <strong>schminkt sich</strong> jeden Tag für die Arbeit.", e: "She puts on makeup every day for work.", a: "هي تضع مكياج كل يوم للعمل." }
+                    ]
+                },
+                {
+                    id: 'v29', ger: "sich die Zähne putzen", eng: "to brush one's teeth", ar: "يغسل أسنانه", type: "Reflexiv (Dativ)", praeteritum: "putzte sich", perfekt: "hat sich geputzt", s: [
+                        { g: "Ich <strong>putze mir</strong> morgens die Zähne.", e: "I brush my teeth in the morning.", a: "أغسل أسناني في الصباح." },
+                        { g: "Nach dem Frühstück habe ich <strong>mir</strong> die Zähne <strong>geputzt</strong>.", e: "After breakfast I brushed my teeth.", a: "بعد الإفطار غسلت أسناني." },
+                        { g: "Kinder, vergesst nicht, <strong>euch</strong> die Zähne zu <strong>putzen</strong>!", e: "Children, don't forget to brush your teeth!", a: "يا أطفال، لا تنسوا أن تغسلوا أسنانكم!" }
+                    ]
+                },
+                {
+                    id: 'v30', ger: "sich die Hände waschen", eng: "to wash one's hands", ar: "يغسل يديه", type: "Reflexiv (Dativ)", praeteritum: "wusch sich", perfekt: "hat sich gewaschen", s: [
+                        { g: "Ich <strong>wasche mir</strong> die Hände vor dem Essen.", e: "I wash my hands before eating.", a: "أغسل يدي قبل الأكل." },
+                        { g: "Vor dem Kochen habe ich <strong>mir</strong> die Hände <strong>gewaschen</strong>.", e: "Before cooking I washed my hands.", a: "قبل الطبخ غسلت يدي." },
+                        { g: "Wir <strong>waschen uns</strong> nach der Gartenarbeit die Hände.", e: "We wash our hands after gardening.", a: "نغسل أيدينا بعد العمل في الحديقة." }
+                    ]
+                },
+                {
+                    id: 'v31', ger: "sich ausruhen", eng: "to rest", ar: "يستريح", type: "Reflexiv (Akk)", praeteritum: "ruhte sich aus", perfekt: "hat sich ausgeruht", s: [
+                        { g: "Nach der Schule <strong>ruhe</strong> ich <strong>mich aus</strong>.", e: "After school I rest.", a: "بعد المدرسة أستريح." },
+                        { g: "Am Wochenende habe ich <strong>mich ausgeruht</strong>.", e: "On the weekend I rested.", a: "في عطلة نهاية الأسبوع استرحت." },
+                        { g: "Nach dem langen Flug muss ich <strong>mich ausruhen</strong>.", e: "After the long flight I must rest.", a: "بعد الرحلة الطويلة يجب أن أستريح." }
+                    ]
+                },
+
+                // PREPOSITIONAL VERBS (Mit Akkusativ & Dativ)
+                {
+                    id: 'v32', ger: "warten auf", eng: "to wait for", ar: "ينتظر", type: "Präposition (Akkusativ)", praeteritum: "wartete auf", perfekt: "hat gewartet", s: [
+                        { g: "Ich <strong>warte auf</strong> den Bus.", e: "I wait for the bus.", a: "أنتظر الأتوبيس." },
+                        { g: "Ich habe <strong>auf</strong> dich <strong>gewartet</strong>.", e: "I waited for you.", a: "انتظرتك." },
+                        { g: "Wir <strong>warten</strong> schon eine Stunde <strong>auf</strong> den Arzt.", e: "We have been waiting for the doctor for an hour.", a: "نحن ننتظر الطبيب منذ ساعة." }
+                    ]
+                },
+                {
+                    id: 'v33', ger: "denken an", eng: "to think of", ar: "يفكر في", type: "Präposition (Akkusativ)", praeteritum: "dachte an", perfekt: "hat gedacht", s: [
+                        { g: "Ich <strong>denke an</strong> meine Mutter.", e: "I think of my mother.", a: "أفكر في أمي." },
+                        { g: "Ich habe <strong>an</strong> dich <strong>gedacht</strong>.", e: "I thought of you.", a: "فكرت فيك." },
+                        { g: "<strong>Denkst</strong> du bitte <strong>an</strong> den Termin morgen?", e: "Will you please think of the appointment tomorrow?", a: "هل تفكر (تتذكر) من فضلك موعد الغد؟" }
+                    ]
+                },
+                {
+                    id: 'v34', ger: "sich bewerben um", eng: "to apply for", ar: "يتقدم لـ (وظيفة)", type: "Reflexiv + Präposition (Akk)", praeteritum: "bewarb sich um", perfekt: "hat sich beworben", s: [
+                        { g: "Ich <strong>bewerbe mich um</strong> die Stelle.", e: "I apply for the job.", a: "أتقدم للوظيفة." },
+                        { g: "Ich habe <strong>mich um</strong> die Arbeit <strong>beworben</strong>.", e: "I applied for the job.", a: "تقدمت للعمل." },
+                        { g: "Viele Leute <strong>bewerben sich um</strong> diesen Praktikumsplatz.", e: "Many people are applying for this internship.", a: "كثيرون يتقدمون لهذا التدريب." }
+                    ]
+                },
+                {
+                    id: 'v35', ger: "sich kümmern um", eng: "to take care of", ar: "يعتني بـ", type: "Reflexiv + Präposition (Akk)", praeteritum: "kümmerte sich um", perfekt: "hat sich gekümmert", s: [
+                        { g: "Ich <strong>kümmere mich um</strong> die Kinder.", e: "I take care of the children.", a: "أعتني بالأطفال." },
+                        { g: "Ich habe <strong>mich um</strong> meinen Bruder <strong>gekümmert</strong>.", e: "I took care of my brother.", a: "اعتنيت بأخي." },
+                        { g: "Wer <strong>kümmert sich um</strong> den Hund, wenn wir weg sind?", e: "Who takes care of the dog when we are away?", a: "من سيعتني بالكلب عندما نكون غائبين؟" }
+                    ]
+                },
+                {
+                    id: 'v36', ger: "sprechen über", eng: "to talk about", ar: "يتحدث عن", type: "Präposition (Akkusativ)", praeteritum: "sprach über", perfekt: "hat gesprochen", s: [
+                        { g: "Wir <strong>sprechen über</strong> die Reise.", e: "We talk about the trip.", a: "نتحدث عن الرحلة." },
+                        { g: "Wir haben <strong>über</strong> das Wetter <strong>gesprochen</strong>.", e: "We talked about the weather.", a: "تحدثنا عن الطقس." },
+                        { g: "In der Besprechung <strong>sprechen</strong> wir <strong>über</strong> die Zahlen.", e: "In the meeting we talk about the numbers.", a: "في الاجتماع نتحدث عن الأرقام." }
+                    ]
+                },
+                {
+                    id: 'v37', ger: "sprechen mit", eng: "to speak with", ar: "يتحدث مع", type: "Präposition (Dativ)", praeteritum: "sprach mit", perfekt: "hat gesprochen", s: [
+                        { g: "Ich <strong>spreche mit</strong> meinem Lehrer.", e: "I speak with my teacher.", a: "أتحدث مع معلمي." },
+                        { g: "Ich habe <strong>mit</strong> ihm <strong>gesprochen</strong>.", e: "I spoke with him.", a: "تحدثت معه." },
+                        { g: "Der Manager <strong>spricht mit</strong> den neuen Mitarbeitern.", e: "The manager speaks with the new employees.", a: "المدير يتحدث مع الموظفين الجدد." }
+                    ]
+                },
+                {
+                    id: 'v38', ger: "anfangen mit", eng: "to start with", ar: "يبدأ بـ", type: "Präposition (Dativ)", praeteritum: "fing an", perfekt: "hat angefangen", s: [
+                        { g: "Ich <strong>fange mit</strong> der Arbeit <strong>an</strong>.", e: "I start with the work.", a: "أبدأ العمل." },
+                        { g: "Ich habe <strong>mit</strong> dem Kurs <strong>angefangen</strong>.", e: "I started with the course.", a: "بدأت الكورس." },
+                        { g: "Wann <strong>fängst</strong> du <strong>mit</strong> dem Kochen <strong>an</strong>?", e: "When do you start with the cooking?", a: "متى ستبدأ بالطبخ؟" }
+                    ]
+                },
+                {
+                    id: 'v39', ger: "aufhören mit", eng: "to stop with", ar: "يتوقف عن", type: "Präposition (Dativ)", praeteritum: "hörte auf", perfekt: "hat aufgehört", s: [
+                        { g: "Ich <strong>höre mit</strong> dem Rauchen <strong>auf</strong>.", e: "I stop smoking.", a: "أتوقف عن التدخين." },
+                        { g: "Ich habe <strong>mit</strong> dem Training <strong>aufgehört</strong>.", e: "I stopped with the training.", a: "توقفت عن التمرين." },
+                        { g: "Wir müssen jetzt <strong>mit</strong> dem Spiel <strong>aufhören</strong>.", e: "We have to stop with the game now.", a: "يجب أن نتوقف عن اللعب الآن." }
+                    ]
+                },
+                {
+                    id: 'v40', ger: "fragen nach", eng: "to ask for", ar: "يسأل عن", type: "Präposition (Dativ)", praeteritum: "fragte nach", perfekt: "hat gefragt", s: [
+                        { g: "Ich <strong>frage nach</strong> dem Weg.", e: "I ask for the way.", a: "أسأل عن الطريق." },
+                        { g: "Ich habe <strong>nach</strong> dem Preis <strong>gefragt</strong>.", e: "I asked about the price.", a: "سألت عن السعر." },
+                        { g: "Der Tourist <strong>fragt nach</strong> einem guten Restaurant.", e: "The tourist asks for a good restaurant.", a: "السائح يسأل عن مطعم جيد." }
+                    ]
+                }
+            ]
+        };
+
+        const { useState, useEffect } = React;
+
+        // --- HELPER FOR ARTICLES COLORING ---
+        const colorizeArticles = (text) => {
+            if (!text) return text;
+            const regex = /(der |die |das )/gi;
+            const parts = text.split(regex);
+            return parts.map((part, i) => {
+                const lower = part.toLowerCase();
+                if (lower === 'der ') return <span key={i} className="text-blue-500 font-extrabold">{part}</span>;
+                if (lower === 'die ') return <span key={i} className="text-rose-500 font-extrabold">{part}</span>;
+                if (lower === 'das ') return <span key={i} className="text-emerald-500 font-extrabold">{part}</span>;
+                return <span key={i}>{part}</span>;
+            });
+        };
+
+        // --- COMPONENTS ---
+        const ProgressBar = ({ total, learned, colorClass }) => {
+            const percentage = total === 0 ? 0 : Math.round((learned / total) * 100);
+            return (
+                <div className="glass-panel p-5 rounded-2xl mb-8 flex items-center justify-between transition-all" dir="rtl">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider ar-text mb-1">مستوى التقدم</h3>
+                        <p className="text-3xl font-extrabold text-slate-800">{learned} <span className="text-sm font-medium text-slate-400">/ {total} أتقنتهم</span></p>
+                    </div>
+                    <div className="relative w-20 h-20 drop-shadow-md">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path className="text-slate-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                            <path className={`${colorClass} transition-all duration-1000 ease-out`} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold text-slate-700">
+                            {percentage}%
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const WordCard = ({ item, isLearned, toggleLearned }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+            return (
+                <div className="relative group perspective-1000 w-full h-[24rem]">
+                    <div className={`w-full h-full transition-all duration-700 transform-style-3d shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl ${isFlipped ? 'rotate-y-180' : ''}`}>
+
+                        {/* FRONT */}
+                        <div className="absolute w-full h-full backface-hidden bg-white border border-slate-100 rounded-2xl p-5 flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
+                            onClick={() => setIsFlipped(true)}>
+                            <div className="flex justify-between items-start shrink-0" dir="rtl">
+                                <span className="bg-orange-50 text-orange-600 text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider ar-text border border-orange-100">مفردات</span>
+                                <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <div className="text-center mt-2 flex-grow flex flex-col justify-center overflow-y-auto front-scroll px-1 py-3">
+                                <div className="flex flex-col justify-center items-center gap-3 mb-1">
+                                    <h3 className="text-xl lg:text-2xl font-bold text-slate-800 leading-tight">{colorizeArticles(item.ger)}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={(e) => playAudio(item.ger, e)} className="p-2 rounded-full bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors shadow-sm"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                        <SpeechTester targetText={item.ger} />
+                                    </div>
+                                </div>
+                                <div className="mt-4 space-y-1">
+                                    <p className="text-slate-500 font-medium text-sm">{item.eng}</p>
+                                    <p className="text-orange-600 font-bold ar-text text-lg" dir="rtl">{item.ar}</p>
+                                </div>
+                            </div>
+
+                            <div className="text-center text-xs text-slate-400 font-medium flex items-center justify-center gap-1 ar-text mt-2 shrink-0">
+                                <i data-lucide="rotate-cw" className="w-3 h-3"></i> اضغط للأمثلة
+                            </div>
+                        </div>
+
+                        {/* BACK */}
+                        <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-2xl p-5 shadow-lg flex flex-col cursor-pointer overflow-hidden"
+                            onClick={() => setIsFlipped(false)} style={{ transform: 'rotateY(180deg)' }}>
+                            <div className="mb-3 border-b border-white/20 pb-2 flex justify-between items-center shrink-0" dir="rtl">
+                                <h4 className="font-bold text-white/90 text-sm tracking-wider ar-text">أمثلة سياقية</h4>
+                                <i data-lucide="rotate-ccw" className="w-4 h-4 text-white/60"></i>
+                            </div>
+                            <div className="overflow-y-auto card-scroll flex-grow pr-2 pb-2">
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="text-sm bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/5">
+                                            <div className="flex items-start gap-2 mb-1.5">
+                                                <button onClick={(e) => playAudio(sentence.g, e)} className="p-1 text-orange-200 hover:text-white shrink-0 mt-0.5"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <span className="leading-relaxed" dangerouslySetInnerHTML={{ __html: sentence.g }}></span>
+                                            </div>
+                                            <div className="text-orange-200 text-xs italic ml-8 mb-1.5">{sentence.e}</div>
+                                            <div className="text-amber-100 text-sm font-bold ar-text border-t border-white/10 pt-1.5 mt-1" dir="rtl">{sentence.a}</div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const VerbRow = ({ item, isLearned, toggleLearned }) => {
+            const [expanded, setExpanded] = useState(false);
+
+            return (
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-4 transition-all duration-300 hover:shadow-md" dir="ltr">
+                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+                        <div className="flex items-center gap-4">
+                            <button onClick={(e) => { e.stopPropagation(); toggleLearned(item.id); }} className={`p-2 rounded-full transition-colors shrink-0 ${isLearned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                <i data-lucide="check" className="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 flex flex-wrap items-center gap-2">
+                                    {item.ger}
+                                    <button onClick={(e) => playAudio(item.ger, e)} className="text-emerald-600 opacity-70 hover:opacity-100 transition-opacity"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                    <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded uppercase tracking-wider">{item.type}</span>
+                                </h3>
+                                <p className="text-sm text-slate-500 mt-1">{item.eng} <span className="mx-2 text-slate-300">|</span> <span className="text-emerald-600 font-bold ar-text" dir="rtl">{item.ar}</span></p>
+                            </div>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+                            <i data-lucide="chevron-down" className="w-6 h-6 text-slate-400"></i>
+                        </div>
+                    </div>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-slate-50 p-5 border-t border-slate-100">
+                            {/* PRÄTERITUM & PERFEKT BLOCKS */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präteritum (ماضي بسيط)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.praeteritum, e)} className="text-amber-600 bg-amber-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.praeteritum}</p>
+                                    </div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-purple-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Perfekt (ماضي تام)</div>
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <button onClick={(e) => playAudio(item.perfekt, e)} className="text-purple-600 bg-purple-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-lg font-bold leading-relaxed mt-1">{item.perfekt}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <h4 className="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider ar-text">أمثلة سياقية (Beispiele)</h4>
+                                <ul className="space-y-3">
+                                    {item.s && item.s.map((sentence, idx) => (
+                                        <li key={idx} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm group flex flex-col sm:flex-row gap-4 justify-between items-start">
+                                            <div className="flex-1">
+                                                <div className="flex items-start gap-3 mb-2">
+                                                    <button onClick={(e) => playAudio(sentence.g, e)} className="mt-0.5 text-emerald-600 bg-emerald-50 p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                    <p className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: sentence.g }}></p>
+                                                </div>
+                                                <p className="text-slate-500 text-sm ml-10 mb-2">{sentence.e}</p>
+                                                <div className="ml-10 text-emerald-600 text-base font-bold ar-text border-t border-slate-100 pt-2" dir="rtl">{sentence.a}</div>
+                                            </div>
+                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-slate-50 p-1.5 rounded-full" dir="ltr">
+                                                <SpeechTester targetText={sentence.g} />
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const DialogueRow = ({ dialogue }) => {
+            const [expanded, setExpanded] = useState(false);
+            return (
+                <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden mb-6 transition-all duration-300 hover:shadow-lg" dir="ltr">
+                    <button
+                        className="w-full p-6 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white"
+                        onClick={() => setExpanded(!expanded)}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl">
+                                <i data-lucide={dialogue.icon} className="w-6 h-6"></i>
+                            </div>
+                            <h3 className="text-xl md:text-2xl font-bold text-slate-800 ar-text">{dialogue.title}</h3>
+                        </div>
+                        <i data-lucide="chevron-down" className={`w-6 h-6 text-slate-400 transform transition-transform duration-300 ${expanded ? 'rotate-180 text-blue-600' : ''}`}></i>
+                    </button>
+
+                    <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="p-6 bg-white space-y-4">
+                            {dialogue.lines.map((line, idx) => {
+                                const isFirstSpeaker = idx === 0 || line.speaker === dialogue.lines[0].speaker;
+                                return (
+                                    <div key={idx} className={`flex flex-col p-4 rounded-2xl border ${isFirstSpeaker ? 'bg-blue-50/50 border-blue-100 ml-8' : 'bg-slate-50 border-slate-100 mr-8'}`}>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${isFirstSpeaker ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-700'}`}>
+                                                {line.speaker}
+                                            </span>
+                                            <div className="flex gap-2">
+                                                <button onClick={(e) => playAudio(line.text, e)} className="text-slate-400 hover:text-blue-600 transition-colors"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                <SpeechTester targetText={line.text} />
+                                            </div>
+                                        </div>
+                                        <p className="text-lg font-medium text-slate-800 mb-1">{line.text}</p>
+                                        <p className="text-sm text-slate-500 mb-2 italic">{line.en}</p>
+                                        <p className="text-blue-700 font-bold ar-text border-t border-slate-200/50 pt-2 text-right" dir="rtl">{line.ar}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Custom UI for Grammar: Reflexive Pronouns Table
+        const ReflexiveTable = () => {
+            const thClass = "border border-slate-200 p-3 bg-purple-50 font-bold text-purple-800 text-sm tracking-wider";
+            const tdClass = "border border-slate-200 p-3 text-slate-700 font-medium";
+            return (
+                <div className="space-y-4" dir="ltr">
+                    <div className="overflow-x-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th className={thClass}>Person</th>
+                                    <th className={thClass}>Akkusativ (A)</th>
+                                    <th className={thClass}>Dativ (D)</th>
+                                    <th className={thClass}>Beispiel / Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td className={tdClass}>ich</td><td className={tdClass}>mich</td><td className={tdClass}>mir</td><td className={tdClass}>Ich wasche <b>mich</b>. / Ich wasche <b>mir</b> die Hände.</td></tr>
+                                <tr><td className={tdClass}>du</td><td className={tdClass}>dich</td><td className={tdClass}>dir</td><td className={tdClass}>Du duschst <b>dich</b>. / Du kaufst <b>dir</b> ein Buch.</td></tr>
+                                <tr><td className={tdClass}>er/sie/es</td><td className={tdClass}>sich</td><td className={tdClass}>sich</td><td className={tdClass}>Er rasiert <b>sich</b>. / Sie nimmt <b>sich</b> Zeit.</td></tr>
+                                <tr><td className={tdClass}>wir</td><td className={tdClass}>uns</td><td className={tdClass}>uns</td><td className={tdClass}>Wir setzen <b>uns</b>. / Wir kochen <b>uns</b> Tee.</td></tr>
+                                <tr><td className={tdClass}>ihr</td><td className={tdClass}>euch</td><td className={tdClass}>euch</td><td className={tdClass}>Ihr beeilt <b>euch</b>. / Ihr nehmt <b>euch</b> Essen.</td></tr>
+                                <tr><td className={tdClass}>sie/Sie</td><td className={tdClass}>sich</td><td className={tdClass}>sich</td><td className={tdClass}>Sie freuen <b>sich</b>. / Sie kaufen <b>sich</b> ein Auto.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="bg-purple-50 p-4 rounded-xl border border-purple-100 ar-text" dir="rtl">
+                        <p className="font-bold text-purple-800 mb-2">💡 قاعدة مهمة:</p>
+                        <p className="text-purple-700">يأتي الضمير المنعكس بعد الفعل المصرف أو بعد الفاعل مباشرة (إذا كان الفاعل ضمير شخصي):</p>
+                        <ul className="list-disc list-inside mt-2 text-slate-600" dir="ltr">
+                            <li>Hat <b>sich</b> Peter geärgert? / Hat Peter <b>sich</b> geärgert?</li>
+                            <li>Hat er <b>sich</b> geärgert? (ضمير شخصي)</li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- MAIN APP ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('words');
+            const [learnedItems, setLearnedItems] = useState(new Set());
+            const [searchTerm, setSearchTerm] = useState('');
+
+            // Load saved progress
+            useEffect(() => {
+                const saved = localStorage.getItem('a2_alltag_progress');
+                if (saved) setLearnedItems(new Set(JSON.parse(saved)));
+            }, []);
+
+            // Save progress
+            useEffect(() => {
+                localStorage.setItem('a2_alltag_progress', JSON.stringify(Array.from(learnedItems)));
+            }, [learnedItems]);
+
+            useEffect(() => { lucide.createIcons(); });
+
+            const toggleLearned = (id) => {
+                const newLearned = new Set(learnedItems);
+                if (newLearned.has(id)) newLearned.delete(id);
+                else newLearned.add(id);
+                setLearnedItems(newLearned);
+            };
+
+            const totalWords = LEARNING_DATA.words.schulfaecher.length + LEARNING_DATA.words.berufe.length;
+            const totalVerbs = LEARNING_DATA.verbs.length;
+            const totalExp = LEARNING_DATA.expressions.length;
+            const grandTotal = totalWords + totalVerbs + totalExp;
+
+            const tabConfig = {
+                words: { labelEn: 'Vocabulary', labelAr: 'مفردات هامة', icon: 'briefcase', color: 'orange' },
+                expressions: { labelEn: 'Phrases', labelAr: 'عبارات المحادثة', icon: 'calendar', color: 'amber' },
+                dialogues: { labelEn: 'Dialogues', labelAr: 'حوارات', icon: 'phone-call', color: 'blue' },
+                verbs: { labelEn: 'Verbs', labelAr: 'الأفعال المنعكسة', icon: 'list-checks', color: 'emerald' },
+                grammar: { labelEn: 'Grammar', labelAr: 'القواعد', icon: 'book-open', color: 'purple' },
+                letters: { labelEn: 'Emails', labelAr: 'إيميلات ورسائل', icon: 'mail', color: 'cyan' },
+                culture: { labelEn: 'Culture', labelAr: 'نصوص القراءة', icon: 'globe', color: 'rose' }
+            };
+
+            const activeColor = tabConfig[activeTab].color;
+
+            return (
+                <div className="h-screen flex flex-col bg-slate-50" dir="rtl">
+                    {/* TOP NAVIGATION HEADER */}
+                    <header className="w-full bg-slate-900 text-white shadow-xl z-50 shrink-0 relative overflow-hidden">
+                        <div className={`absolute top-0 left-0 w-full h-1 bg-${activeColor}-500 transition-colors duration-500`}></div>
+
+                        <div className="flex justify-between items-center px-4 md:px-8 py-3 border-b border-slate-800">
+                            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-3 ar-text">
+                                <span className={`bg-${activeColor}-500 p-2 rounded-xl transition-colors duration-500 shadow-lg`}>
+                                    <i data-lucide="book" className="w-5 h-5 md:w-6 md:h-6 text-white"></i>
+                                </span>
+                                A2: Alltag, Ausbildung & Verben
+                            </h1>
+
+                            <div className="flex items-center gap-3" dir="ltr">
+                                <div className="text-right hidden sm:block">
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Progress</div>
+                                    <div className={`text-sm font-extrabold text-${activeColor}-400 transition-colors`}>{grandTotal === 0 ? 0 : Math.round((learnedItems.size / grandTotal) * 100)}%</div>
+                                </div>
+                                <div className="relative w-10 h-10">
+                                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                        <path className="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                                        <path className={`text-${activeColor}-500 transition-all duration-1000 ease-out`} strokeDasharray={`${grandTotal === 0 ? 0 : (learnedItems.size / grandTotal) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Horizontal Navigation Tabs */}
+                        <nav className="flex overflow-x-auto scrollbar-hide px-4 py-2 gap-2 snap-x">
+                            {Object.entries(tabConfig).map(([key, tab]) => (
+                                <button
+                                    key={key}
+                                    onClick={() => { setActiveTab(key); setSearchTerm(''); }}
+                                    className={`snap-center shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold ar-text group relative overflow-hidden ${activeTab === key ? `bg-${tab.color}-600 text-white shadow-md` : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <i data-lucide={tab.icon} className={`w-5 h-5 ${activeTab === key ? 'text-white' : `text-${tab.color}-400 group-hover:text-${tab.color}-300`} transition-colors`}></i>
+                                    <span className="text-sm whitespace-nowrap">{tab.labelAr}</span>
+                                    {activeTab === key && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-white/50 rounded-t-full"></div>}
+                                </button>
+                            ))}
+                        </nav>
+                    </header>
+
+                    {/* MAIN CONTENT AREA */}
+                    <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 relative" dir="ltr">
+                        <div className={`fixed top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-${activeColor}-200/20 blur-3xl -z-10 transition-colors duration-1000 pointer-events-none`}></div>
+
+                        <div className="max-w-7xl mx-auto">
+
+                            {/* LIVE SEARCH BAR */}
+                            {activeTab !== 'grammar' && activeTab !== 'culture' && activeTab !== 'dialogues' && activeTab !== 'letters' && (
+                                <div className="flex flex-col md:flex-row gap-4 mb-10" dir="rtl">
+                                    <div className="flex-1 relative group max-w-3xl mx-auto w-full">
+                                        <div className={`absolute -inset-0.5 bg-gradient-to-r from-${activeColor}-400 to-${activeColor}-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
+                                        <div className="relative">
+                                            <i data-lucide="search" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                                            <input
+                                                type="text"
+                                                placeholder="ابحث بالعربي أو الألماني..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className={`w-full pr-14 pl-6 py-4 rounded-2xl border-none focus:outline-none focus:ring-4 focus:ring-${activeColor}-500/20 shadow-lg text-lg ar-text text-slate-700 font-medium`}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* PROGRESS BARS */}
+                            {activeTab === 'words' && <ProgressBar total={totalWords} learned={Array.from(learnedItems).filter(id => id.startsWith('w')).length} colorClass="text-orange-500" />}
+                            {activeTab === 'verbs' && <ProgressBar total={totalVerbs} learned={Array.from(learnedItems).filter(id => id.startsWith('v')).length} colorClass="text-emerald-500" />}
+                            {activeTab === 'expressions' && <ProgressBar total={totalExp} learned={Array.from(learnedItems).filter(id => id.startsWith('e')).length} colorClass="text-amber-500" />}
+
+                            {/* TAB: WORDS */}
+                            {activeTab === 'words' && (
+                                <div className="space-y-12">
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-orange-100 p-2 rounded-xl text-orange-600"><i data-lucide="book-open" className="w-6 h-6"></i></span> المواد المدرسية (Schulfächer)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.schulfaecher.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h2 className="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3 ar-text" dir="rtl"><span className="bg-red-100 p-2 rounded-xl text-red-600"><i data-lucide="briefcase" className="w-6 h-6"></i></span> المهن والتخصصات (Berufe)</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {LEARNING_DATA.words.berufe.filter(w => w.ger.toLowerCase().includes(searchTerm.toLowerCase()) || w.eng.toLowerCase().includes(searchTerm.toLowerCase()) || w.ar.includes(searchTerm)).map(word => (
+                                                <WordCard key={word.id} item={word} isLearned={learnedItems.has(word.id)} toggleLearned={toggleLearned} />
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
+
+                            {/* TAB: EXPRESSIONS */}
+                            {activeTab === 'expressions' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-amber-100 p-2 rounded-xl text-amber-600"><i data-lucide="message-circle" className="w-6 h-6"></i></span>
+                                        عبارات المحادثة (Ausdrücke)
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {LEARNING_DATA.expressions.filter(e => e.ger.toLowerCase().includes(searchTerm.toLowerCase()) || e.eng.toLowerCase().includes(searchTerm.toLowerCase()) || e.ar.includes(searchTerm)).map(exp => (
+                                            <div key={exp.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative group hover:shadow-xl hover:border-amber-200 transition-all duration-300">
+                                                <button onClick={() => toggleLearned(exp.id)} className={`absolute top-5 left-5 p-2 rounded-full transition-colors z-10 ${learnedItems.has(exp.id) ? 'bg-amber-100 text-amber-600' : 'bg-slate-50 text-slate-300 hover:bg-slate-100'}`}>
+                                                    <i data-lucide="check" className="w-5 h-5"></i>
+                                                </button>
+                                                <span className="inline-block bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-xs font-bold mb-4 ar-text border border-amber-100">{exp.type}</span>
+                                                <div className="flex items-start gap-3 mb-3" dir="ltr">
+                                                    <div className="flex flex-col gap-2 shrink-0">
+                                                        <button onClick={(e) => playAudio(exp.ger, e)} className="text-amber-500 bg-amber-50 p-2 rounded-xl hover:bg-amber-100 transition-colors"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                        <div className="bg-slate-50 rounded-full p-1"><SpeechTester targetText={exp.ger} /></div>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-lg font-extrabold text-slate-800 leading-tight mt-1">"{exp.ger}"</h3>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
+                                                    <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
+                                                    <p className="text-amber-700 font-extrabold text-lg mb-4 ar-text">{exp.ar}</p>
+                                                    <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
+                                                        <i data-lucide="info" className="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>
+                                                        <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: DIALOGUES */}
+                            {activeTab === 'dialogues' && (
+                                <div dir="rtl">
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text">
+                                        <span className="bg-blue-100 p-2 rounded-xl text-blue-600"><i data-lucide="mic" className="w-6 h-6"></i></span>
+                                        مقابلات وحوارات (Interviews)
+                                    </h2>
+                                    <div className="max-w-4xl mx-auto space-y-6">
+                                        {LEARNING_DATA.dialogues.map(dialogue => (
+                                            <DialogueRow key={dialogue.id} dialogue={dialogue} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: VERBS */}
+                            {activeTab === 'verbs' && (
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 ar-text" dir="rtl">
+                                        <span className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><i data-lucide="list-checks" className="w-6 h-6"></i></span>
+                                        الأفعال المنعكسة وحروف الجر (Verben)
+                                    </h2>
+                                    <div className="space-y-4 max-w-4xl mx-auto">
+                                        {LEARNING_DATA.verbs.filter(v => v.ger.toLowerCase().includes(searchTerm.toLowerCase()) || v.eng.toLowerCase().includes(searchTerm.toLowerCase()) || v.ar.includes(searchTerm)).map(verb => (
+                                            <VerbRow key={verb.id} item={verb} isLearned={learnedItems.has(verb.id)} toggleLearned={toggleLearned} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: GRAMMAR */}
+                            {activeTab === 'grammar' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-purple-700 to-indigo-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="book-open" className="absolute -right-4 -bottom-4 w-48 h-48 text-white opacity-10 transform rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">القواعد النحوية (Grammatik)</h2>
+                                            <p className="text-purple-200 ar-text text-lg max-w-2xl">الضمائر المنعكسة (Reflexivpronomen) وجمل الشرط باستخدام (Wenn).</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-8">
+                                        {LEARNING_DATA.grammar.map((gram, idx) => (
+                                            <div key={idx} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                                <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-start gap-4">
+                                                    <div className="bg-purple-100 p-3 rounded-2xl text-purple-600 shrink-0 mt-1">
+                                                        <i data-lucide="braces" className="w-6 h-6"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-2">{gram.title}</h3>
+                                                        <p className="text-base text-slate-600 ar-text leading-relaxed">{gram.desc}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-8">
+                                                    {gram.structure && (
+                                                        <div className="bg-slate-900 text-purple-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
+                                                            <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i> {gram.structure}
+                                                        </div>
+                                                    )}
+
+                                                    {gram.examples && (
+                                                        <>
+                                                            <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
+                                                            <ul className="space-y-4">
+                                                                {gram.examples.map((ex, i) => (
+                                                                    <li key={i} className="bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
+                                                                        <span className="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold mb-3 ar-text">{ex.category}</span>
+                                                                        <div className="flex gap-4 items-start mb-3" dir="ltr">
+                                                                            <button onClick={(e) => playAudio(ex.g, e)} className="text-purple-500 bg-white p-2 rounded-xl shadow-sm hover:bg-purple-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
+                                                                            <div className="flex flex-col gap-1">
+                                                                                <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                                {ex.e && <span className="text-slate-500 text-sm italic">{ex.e}</span>}
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="text-purple-700 font-bold ar-text border-t border-purple-200/50 pt-3 mt-3">{ex.a}</div>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </>
+                                                    )}
+
+                                                    {gram.type === 'reflexive_table' && <ReflexiveTable />}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: LETTERS */}
+                            {activeTab === 'letters' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-cyan-600 to-teal-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="mail" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">رسائل وإيميلات (E-Mails & SMS)</h2>
+                                            <p className="text-cyan-100 ar-text text-lg max-w-2xl">طريقة كتابة الإيميلات والرسائل القصيرة في المواقف المختلفة.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.letters.map((letter) => (
+                                            <div key={letter.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-cyan-100 text-cyan-700 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    Text
+                                                </div>
+                                                <h3 className="text-2xl font-extrabold text-slate-800 ar-text mb-6 mt-2 flex items-center gap-3">
+                                                    <i data-lucide="message-square" className="w-6 h-6 text-cyan-500"></i> {letter.title}
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {letter.lines.map((line, idx) => {
+                                                        const isHeader = line.g.includes("---");
+                                                        return (
+                                                            <div key={idx} className={`${isHeader ? 'bg-cyan-600 text-white font-bold text-center py-2 rounded-xl my-4' : 'bg-slate-50/50 p-4 rounded-2xl border border-cyan-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group'}`}>
+                                                                {isHeader ? (
+                                                                    <span className="ar-text">{line.a}</span>
+                                                                ) : (
+                                                                    <>
+                                                                        <div className="flex-1">
+                                                                            <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                                <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-cyan-600 bg-white p-2 rounded-xl shadow-sm hover:bg-cyan-50 transition-colors shrink-0">
+                                                                                    <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                                </button>
+                                                                                <p className="text-slate-800 text-lg font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                            </div>
+                                                                            {line.e && <p className="sm:ml-14 text-slate-500 text-sm italic mb-2" dir="ltr">{line.e}</p>}
+                                                                            <div className="sm:ml-14 text-cyan-800 text-base font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                            <SpeechTester targetText={line.g} />
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: CULTURE */}
+                            {activeTab === 'culture' && (
+                                <div dir="rtl">
+                                    <div className="bg-gradient-to-br from-rose-600 to-red-800 text-white p-10 rounded-3xl shadow-xl mb-10 relative overflow-hidden">
+                                        <i data-lucide="book-open" className="absolute -left-4 -top-4 w-48 h-48 text-white opacity-10 transform -rotate-12"></i>
+                                        <div className="relative z-10">
+                                            <h2 className="text-4xl font-extrabold mb-3 ar-text">نصوص القراءة (Lesetexte)</h2>
+                                            <p className="text-rose-200 ar-text text-lg max-w-2xl">نصوص طويلة عن الروتين اليومي، الدراسة، وأنظمة التعليم في ألمانيا ومصر.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {LEARNING_DATA.culture.map((item) => (
+                                            <div key={item.id} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow relative">
+                                                <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-rose-100 text-rose-600 px-4 py-1 rounded-full font-bold text-sm tracking-wider uppercase shadow-sm">
+                                                    Lesetext
+                                                </div>
+                                                <h3 className="text-3xl font-extrabold text-slate-800 ar-text mb-6 mt-2">{item.title}</h3>
+                                                <div className="space-y-4">
+                                                    {item.lines.map((line, idx) => (
+                                                        <div key={idx} className="bg-slate-50/50 p-4 rounded-2xl border border-rose-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-start group">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-start gap-3 mb-2" dir="ltr">
+                                                                    <button onClick={(e) => playAudio(line.g, e)} className="mt-0.5 text-rose-500 bg-white p-2 rounded-xl shadow-sm hover:bg-rose-50 transition-colors shrink-0">
+                                                                        <i data-lucide="volume-2" className="w-4 h-4"></i>
+                                                                    </button>
+                                                                    <p className="text-slate-800 text-xl font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: line.g }}></p>
+                                                                </div>
+                                                                {line.e && <p className="sm:ml-14 text-slate-500 text-sm italic mb-2" dir="ltr">{line.e}</p>}
+                                                                <div className="sm:ml-14 text-rose-700 text-lg font-bold ar-text border-t border-slate-200 pt-3 text-right" dir="rtl" dangerouslySetInnerHTML={{ __html: line.a }}>
+                                                                </div>
+                                                            </div>
+                                                            <div className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:mt-1 self-end sm:self-start bg-white shadow-sm p-1.5 rounded-full" dir="ltr">
+                                                                <SpeechTester targetText={line.g} />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
