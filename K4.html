@@ -22,34 +22,22 @@
             color: #1e293b;
             overflow: hidden;
         }
-        .ar-text { 
-            font-family: 'Cairo', sans-serif; 
-            line-height: 1.6;
-        }
+        .ar-text { font-family: 'Cairo', sans-serif; line-height: 1.6; }
         .perspective-1000 { perspective: 1000px; }
         .transform-style-3d { transform-style: preserve-3d; }
         .backface-hidden { backface-visibility: hidden; }
         .rotate-y-180 { transform: rotateY(180deg); }
-        
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
-        }
-
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); }
         .card-scroll::-webkit-scrollbar { width: 5px; }
         .card-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
         .card-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 10px; }
         .card-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.6); }
-        
         .front-scroll::-webkit-scrollbar { width: 5px; }
         .front-scroll::-webkit-scrollbar-track { background: transparent; }
         .front-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -113,7 +101,7 @@
             );
         };
 
-        // --- MASTER DATA OBJECT ---
+        // --- COMPRESSED LEARNING DATA ---
         const LEARNING_DATA = {
             words: {
                 vhs_studium: [
@@ -203,101 +191,101 @@
                 { id: 'v18', ger: "kritisieren", eng: "to criticize", ar: "ينتقد", s: [ { g: "Die Kunden <strong>kritisieren</strong> den schlechten Service.", e: "The customers criticize the bad service.", a: "العملاء بينتقدوا الخدمة السيئة." }, { g: "Man darf nicht nur <strong>kritisieren</strong>, sondern muss auch loben.", e: "One shouldn't just criticize, but also praise.", a: "الواحد مايبقاش بينتقد بس، لازم يشكر كمان." }, { g: "Der Lehrer <strong>kritisierte</strong> meine Hausaufgabe.", e: "The teacher criticized my homework.", a: "المدرس انتقد واجبي." } ]}
             ],
             irregularVerbs: [
-                { id: 'iv1', ger: "bestehen", eng: "to pass (exam)", ar: "يجتاز (امتحان)", praesens: "Ich bestehe die Prüfung.", praeteritum: "ich bestand", perfekt: "ich habe bestanden" },
-                { id: 'iv2', ger: "ergeben", eng: "to yield / show", ar: "يُسفر عن / يُظهر", praesens: "Die Studie ergibt neue Daten.", praeteritum: "sie ergab", perfekt: "sie hat ergeben" },
-                { id: 'iv3', ger: "verschwinden", eng: "to disappear", ar: "يختفي", praesens: "Die Daten verschwinden aus dem Kopf.", praeteritum: "sie verschwanden", perfekt: "sie sind verschwunden" },
-                { id: 'iv4', ger: "gelangen", eng: "to reach / arrive at", ar: "يصل إلى", praesens: "Informationen gelangen ins Gehirn.", praeteritum: "sie gelangten", perfekt: "sie sind gelangt" },
-                { id: 'iv5', ger: "zurückgreifen", eng: "to fall back on", ar: "يستعين بـ", praesens: "Wir greifen auf Erinnerungen zurück.", praeteritum: "wir griffen zurück", perfekt: "wir haben zurückgegriffen" },
-                { id: 'iv6', ger: "teilnehmen", eng: "to participate", ar: "يشارك في", praesens: "Er nimmt am Kurs teil.", praeteritum: "er nahm teil", perfekt: "er hat teilgenommen" },
-                { id: 'iv7', ger: "auftreten", eng: "to occur / appear", ar: "يحدث / يظهر", praesens: "Probleme treten im Alltag auf.", praeteritum: "sie traten auf", perfekt: "sie sind aufgetreten" },
-                { id: 'iv8', ger: "sich einschreiben", eng: "to enroll", ar: "يسجل في كورس", praesens: "Er schreibt sich für das Seminar ein.", praeteritum: "er schrieb sich ein", perfekt: "er hat sich eingeschrieben" },
-                { id: 'iv9', ger: "empfehlen", eng: "to recommend", ar: "يوصي / يرشح", praesens: "Ich empfehle das Buch.", praeteritum: "ich empfahl", perfekt: "ich habe empfohlen" },
-                { id: 'iv10', ger: "erkennen", eng: "to recognize", ar: "يدرك / يتعرف", praesens: "Sie erkennen den Fehler sofort.", praeteritum: "sie erkannten", perfekt: "sie haben erkannt" },
-                { id: 'iv11', ger: "verbinden", eng: "to connect", ar: "يربط بـ", praesens: "Er verbindet Wörter mit Bildern.", praeteritum: "er verband", perfekt: "er hat verbunden" },
-                { id: 'iv12', ger: "vergessen", eng: "to forget", ar: "ينسى", praesens: "Ich vergesse oft Termine.", praeteritum: "ich vergaß", perfekt: "ich habe vergessen" },
-                { id: 'iv13', ger: "verstehen", eng: "to understand", ar: "يفهم", praesens: "Wir verstehen die Vorlesung gut.", praeteritum: "wir verstanden", perfekt: "wir haben verstanden" },
-                { id: 'iv14', ger: "stattfinden", eng: "to take place", ar: "يُقام / يحدث", praesens: "Das Treffen findet morgen statt.", praeteritum: "es fand statt", perfekt: "es hat stattgefunden" },
-                { id: 'iv15', ger: "wissen", eng: "to know", ar: "يعرف", praesens: "Er weiß die genaue Antwort nicht.", praeteritum: "er wusste", perfekt: "er hat gewusst" }
+                { id: 'iv1', ger: "bestehen", eng: "to pass (exam)", ar: "يجتاز (امتحان)", praesens: "Ich bestehe die Prüfung.", praeteritum: "ich bestand", perfekt: "ich habe bestanden", ex: { g: "Er hat die schwierige Prüfung <strong>bestanden</strong>.", e: "He passed the difficult exam.", a: "هو نجح في الامتحان الصعب." } },
+                { id: 'iv2', ger: "ergeben", eng: "to yield / show", ar: "يُسفر عن / يُظهر", praesens: "Die Studie ergibt neue Daten.", praeteritum: "sie ergab", perfekt: "sie hat ergeben", ex: { g: "Die Studie <strong>ergab</strong> interessante Resultate.", e: "The study yielded interesting results.", a: "الدراسة أسفرت عن نتايج مثيرة." } },
+                { id: 'iv3', ger: "verschwinden", eng: "to disappear", ar: "يختفي", praesens: "Die Daten verschwinden aus dem Kopf.", praeteritum: "sie verschwanden", perfekt: "sie sind verschwunden", ex: { g: "Alte Infos <strong>verschwinden</strong> aus dem Gedächtnis.", e: "Old info disappears from the memory.", a: "المعلومات القديمة بتختفي من الذاكرة." } },
+                { id: 'iv4', ger: "gelangen", eng: "to reach / arrive at", ar: "يصل إلى", praesens: "Informationen gelangen ins Gehirn.", praeteritum: "sie gelangten", perfekt: "sie sind gelangt", ex: { g: "So <strong>gelangen</strong> die Daten ins Langzeitgedächtnis.", e: "This is how data reaches the long-term memory.", a: "كده البيانات بتوصل للذاكرة طويلة المدى." } },
+                { id: 'iv5', ger: "zurückgreifen", eng: "to fall back on", ar: "يستعين بـ", praesens: "Wir greifen auf Erinnerungen zurück.", praeteritum: "wir griffen zurück", perfekt: "wir haben zurückgegriffen", ex: { g: "Wir müssen auf alte Wörter <strong>zurückgreifen</strong>.", e: "We have to fall back on old words.", a: "لازم نستعين بالكلمات القديمة اللي عارفينها." } },
+                { id: 'iv6', ger: "teilnehmen", eng: "to participate", ar: "يشارك في", praesens: "Er nimmt am Kurs teil.", praeteritum: "er nahm teil", perfekt: "er hat teilgenommen", ex: { g: "Ich möchte an dem Englischkurs <strong>teilnehmen</strong>.", e: "I would like to participate in the English course.", a: "حابب أشارك في كورس الإنجليزي." } },
+                { id: 'iv7', ger: "auftreten", eng: "to occur / appear", ar: "يحدث / يظهر", praesens: "Probleme treten im Alltag auf.", praeteritum: "sie traten auf", perfekt: "sie sind aufgetreten", ex: { g: "Beim Lernen können Probleme <strong>auftreten</strong>.", e: "Problems can occur while learning.", a: "ممكن تظهر مشاكل وقت المذاكرة." } },
+                { id: 'iv8', ger: "sich einschreiben", eng: "to enroll", ar: "يسجل في كورس", praesens: "Er schreibt sich für das Seminar ein.", praeteritum: "er schrieb sich ein", perfekt: "er hat sich eingeschrieben", ex: { g: "Ich habe <strong>mich</strong> für den Kurs <strong>eingeschrieben</strong>.", e: "I enrolled for the course.", a: "أنا سجلت اسمي في الكورس." } },
+                { id: 'iv9', ger: "empfehlen", eng: "to recommend", ar: "يوصي / يرشح", praesens: "Ich empfehle das Buch.", praeteritum: "ich empfahl", perfekt: "ich habe empfohlen", ex: { g: "Der Lehrer <strong>empfiehlt</strong> uns diese Methode.", e: "The teacher recommends this method to us.", a: "المدرس بيرشحلنا الطريقة دي." } },
+                { id: 'iv10', ger: "erkennen", eng: "to recognize", ar: "يدرك / يتعرف", praesens: "Sie erkennen den Fehler sofort.", praeteritum: "sie erkannten", perfekt: "sie haben erkannt", ex: { g: "Man muss seinen Lerntyp <strong>erkennen</strong>.", e: "One must recognize their learning type.", a: "الواحد لازم يكتشف/يدرك نوعه في التعلم." } },
+                { id: 'iv11', ger: "verbinden", eng: "to connect", ar: "يربط بـ", praesens: "Er verbindet Wörter mit Bildern.", praeteritum: "er verband", perfekt: "er hat verbunden", ex: { g: "<strong>Verbinde</strong> das Wort mit einem Bild.", e: "Connect the word with a picture.", a: "اربط الكلمة بصورة." } },
+                { id: 'iv12', ger: "vergessen", eng: "to forget", ar: "ينسى", praesens: "Ich vergesse oft Termine.", praeteritum: "ich vergaß", perfekt: "ich habe vergessen", ex: { g: "Ich habe den Termin leider <strong>vergessen</strong>.", e: "I unfortunately forgot the appointment.", a: "للأسف نسيت الميعاد." } },
+                { id: 'iv13', ger: "verstehen", eng: "to understand", ar: "يفهم", praesens: "Wir verstehen die Vorlesung gut.", praeteritum: "wir verstanden", perfekt: "wir haben verstanden", ex: { g: "Ich <strong>verstehe</strong> diese Grammatik nicht.", e: "I don't understand this grammar.", a: "أنا مش فاهم القاعدة دي." } },
+                { id: 'iv14', ger: "stattfinden", eng: "to take place", ar: "يُقام / يحدث", praesens: "Das Treffen findet morgen statt.", praeteritum: "es fand statt", perfekt: "es hat stattgefunden", ex: { g: "Die Vorlesung <strong>findet</strong> im Raum 3 <strong>statt</strong>.", e: "The lecture takes place in room 3.", a: "المحاضرة هتتعمل في قاعة ٣." } },
+                { id: 'iv15', ger: "wissen", eng: "to know", ar: "يعرف", praesens: "Er weiß die genaue Antwort nicht.", praeteritum: "er wusste", perfekt: "er hat gewusst", ex: { g: "Ich <strong>weiß</strong> nicht, wie das funktioniert.", e: "I don't know how that works.", a: "أنا معرفش ده بيشتغل إزاي." } }
             ],
             expressions: [
-                { id: 'e1', type: "Lernen", ger: "an einem Kurs teilnehmen", eng: "to participate in a course", ar: "يشارك في كورس", context: "Ich nehme an einem Sprachkurs teil." },
-                { id: 'e2', type: "Lernen", ger: "an einer Weiterbildung teilnehmen", eng: "to participate in further education", ar: "يشارك في تدريب مهني", context: "Er nimmt an einer Weiterbildung teil." },
-                { id: 'e3', type: "Lernen", ger: "einen Kurs besuchen", eng: "to attend a course", ar: "يحضر كورس", context: "Sie besucht einen Englischkurs." },
-                { id: 'e4', type: "Lernen", ger: "einen Kurs machen", eng: "to take a course", ar: "ياخد كورس", context: "Ich mache einen Computerkurs." },
-                { id: 'e5', type: "Lernen", ger: "sich für einen Kurs einschreiben", eng: "to enroll for a course", ar: "يسجل اسمه في كورس", context: "Hast du dich für den Kurs eingeschrieben?" },
-                { id: 'e6', type: "Lernen", ger: "sich für eine Prüfung einschreiben", eng: "to register for an exam", ar: "يسجل للامتحان", context: "Ich habe mich für die Prüfung eingeschrieben." },
-                { id: 'e7', type: "Lernen", ger: "die Vorlesung interessant finden", eng: "to find the lecture interesting", ar: "يلاقي المحاضرة شيقة", context: "Ich finde die Vorlesung sehr interessant." },
-                { id: 'e8', type: "Lernen", ger: "das Seminar langweilig finden", eng: "to find the seminar boring", ar: "يلاقي السيمينار ممل", context: "Er findet das Seminar langweilig." },
-                { id: 'e9', type: "Lernen", ger: "eine Prüfung machen", eng: "to take an exam", ar: "يعمل امتحان", context: "Morgen mache ich eine wichtige Prüfung." },
-                { id: 'e10', type: "Lernen", ger: "eine Prüfung ablegen", eng: "to sit an exam", ar: "يؤدي امتحان", context: "Sie wird nächste Woche die Prüfung ablegen." },
-                { id: 'e11', type: "Lernen", ger: "eine Prüfung bestehen", eng: "to pass an exam", ar: "ينجح في امتحان", context: "Ich hoffe, ich werde die Prüfung bestehen." },
-                { id: 'e12', type: "Lernen", ger: "gute Noten bekommen", eng: "to get good grades", ar: "يجيب درجات كويسة", context: "Sie bekommt immer gute Noten." },
-                { id: 'e13', type: "Lernen", ger: "schlechte Noten haben", eng: "to have bad grades", ar: "عنده درجات وحشة", context: "Früher hatte ich oft schlechte Noten." },
-                { id: 'e14', type: "Lernen", ger: "etwas macht Spaß", eng: "something is fun", ar: "حاجة ممتعة / بتفرح", context: "Fremdsprachen lernen macht mir Spaß." },
-                { id: 'e15', type: "Lernen", ger: "nicht gern in die Schule gehen", eng: "not like going to school", ar: "مش بيحب يروح المدرسة", context: "Als Kind bin ich nicht gern in die Schule gegangen." },
-                { id: 'e16', type: "Lernen", ger: "das Gelernte direkt anwenden", eng: "to apply what has been learned directly", ar: "يطبق اللي اتعلمه بشكل مباشر", context: "Ich kann das Gelernte direkt im Job anwenden." },
-                { id: 'e17', type: "Lernen", ger: "etwas für den Beruf brauchen", eng: "to need something for the job", ar: "محتاج حاجة عشان الشغل", context: "Ich brauche Englisch für meinen Beruf." },
-                { id: 'e18', type: "Lernen", ger: "jemandem in einem Fach helfen", eng: "to help someone in a subject", ar: "يساعد حد في مادة", context: "Er hilft mir in Mathematik." },
-                { id: 'e19', type: "Empfehlungen", ger: "Man sollte Wörter mehrmals wiederholen.", eng: "One should repeat words several times.", ar: "الواحد المفروض يراجع الكلمات كذا مرة.", context: "لتقديم نصيحة عامة للتعلم." },
-                { id: 'e20', type: "Empfehlungen", ger: "Der Text empfiehlt, vor dem Einschlafen zu lernen.", eng: "The text recommends learning before falling asleep.", ar: "النص بينصح بالمذاكرة قبل النوم.", context: "نصيحة من مقال." },
-                { id: 'e21', type: "Empfehlungen", ger: "Nach Meinung von Experten ist es sinnvoll, den eigenen Lerntyp zu erkennen.", eng: "In the opinion of experts, it makes sense to recognize one's learning type.", ar: "حسب رأي الخبراء، مفيد إن الواحد يعرف نوع تعلمه.", context: "نصيحة مبنية على الخبراء." },
-                { id: 'e22', type: "Empfehlungen", ger: "Es ist ratsam, aktive Übungen zu machen.", eng: "It is advisable to do active exercises.", ar: "من المستحسن عمل تمارين نشطة.", context: "للتوجيه الفعال." },
-                { id: 'e23', type: "Empfehlungen", ger: "Es ist effektiv, aktive Übungen zu machen.", eng: "It is effective to do active exercises.", ar: "من الفعال إنك تعمل تمارين أكتيڤ.", context: "نصيحة قوية للتعلم." },
-                { id: 'e24', type: "Wie wir lernen", ger: "das Lernmaterial hören", eng: "to hear/listen to the learning material", ar: "يسمع المادة التعليمية", context: "Auditive Lerner müssen das Lernmaterial hören." },
-                { id: 'e25', type: "Wie wir lernen", ger: "absolute Stille brauchen", eng: "to need absolute silence", ar: "محتاج هدوء تام", context: "Zum Lernen brauche ich absolute Stille." },
-                { id: 'e26', type: "Wie wir lernen", ger: "etwas schreiben müssen", eng: "to have to write something", ar: "مضطر يكتب حاجة (عشان يحفظها)", context: "Ich muss die Wörter schreiben, um sie zu lernen." },
-                { id: 'e27', type: "Wie wir lernen", ger: "beim Einprägen helfen", eng: "to help with memorizing", ar: "يساعد في الحفظ / التثبيت", context: "Handbewegungen helfen beim Einprägen." },
-                { id: 'e28', type: "Wie wir lernen", ger: "in der Fremdsprache kommunizieren", eng: "to communicate in the foreign language", ar: "يتواصل باللغة الأجنبية", context: "Wir müssen viel in der Fremdsprache kommunizieren." },
-                { id: 'e29', type: "Wie wir lernen", ger: "neue Informationen veranschaulichen", eng: "to illustrate/visualize new information", ar: "يوضح/يصور المعلومات الجديدة", context: "Visualisieren hilft dem Gehirn sehr." },
-                { id: 'e30', type: "Wie wir lernen", ger: "neue Wörter mit Bildern verbinden", eng: "to connect new words with pictures", ar: "يربط الكلمات الجديدة بصور", context: "Man sollte Wörter mit Bildern verbinden." },
-                { id: 'e31', type: "Wie wir lernen", ger: "Bilder in den Lernprozess einbeziehen", eng: "to include pictures in the learning process", ar: "يدخل الصور في عملية التعلم", context: "Bilder in den Lernprozess einzubeziehen ist effektiv." },
-                { id: 'e32', type: "Wie wir lernen", ger: "etwas farbig hervorheben", eng: "to highlight something in color", ar: "يظلل/يبرز حاجة بلون", context: "Ich hebe wichtige Wörter farbig hervor." },
-                { id: 'e33', type: "Wie wir lernen", ger: "die Struktur einer Fremdsprache verstehen wollen", eng: "to want to understand the structure of a foreign language", ar: "عايز يفهم تركيبة اللغة", context: "Kognitive Lerner wollen die Struktur verstehen." },
-                { id: 'e34', type: "Interesse", ger: "Mich interessiert der Kurs Zeichnen.", eng: "I am interested in the drawing course.", ar: "أنا مهتم بكورس الرسم.", context: "للتعبير عن الاهتمام بصيغة غير مباشرة." },
-                { id: 'e35', type: "Interesse", ger: "Ich finde den Kurs interessant.", eng: "I find the course interesting.", ar: "أنا شايف الكورس ده شيق.", context: "لإبداء رأي إيجابي." },
-                { id: 'e36', type: "Interesse", ger: "Ich möchte mehr über Kunst erfahren.", eng: "I would like to learn more about art.", ar: "عايز أعرف أكتر عن الفن.", context: "طلب تفاصيل إضافية." },
-                { id: 'e37', type: "Interesse", ger: "Ich wollte schon immer tanzen lernen.", eng: "I have always wanted to learn to dance.", ar: "كان دايماً نفسي أتعلم الرقص.", context: "للتعبير عن أمنية قديمة." },
-                { id: 'e38', type: "Lernprozess", ger: "ein gutes Gedächtnis haben", eng: "to have a good memory", ar: "عنده ذاكرة قوية", context: "Mein Kollege hat ein gutes Gedächtnis." },
-                { id: 'e39', type: "Lernprozess", ger: "ein schlechtes Gedächtnis haben", eng: "to have a bad memory", ar: "عنده ذاكرة ضعيفة", context: "Ich habe leider ein schlechtes Gedächtnis für Namen." },
-                { id: 'e40', type: "Lernprozess", ger: "sich Zahlen gut merken können", eng: "to be able to remember numbers well", ar: "بيقدر يحفظ الأرقام كويس", context: "Ich kann mir Zahlen immer gut merken." },
-                { id: 'e41', type: "Lernprozess", ger: "sich an chemische Formeln erinnern", eng: "to remember chemical formulas", ar: "يفتكر المعادلات الكيميائية", context: "Wer erinnert sich an die chemischen Formeln?" },
-                { id: 'e42', type: "Lernprozess", ger: "in Vergessenheit geraten", eng: "to fall into oblivion / be forgotten", ar: "يُنسى تماماً", context: "Vieles aus der Schulzeit ist in Vergessenheit geraten." },
-                { id: 'e43', type: "Lernprozess", ger: "Informationen mit Interesse aufnehmen", eng: "to absorb information with interest", ar: "يستقبل المعلومات باهتمام", context: "Wenn man interessiert ist, lernt man schneller." },
-                { id: 'e44', type: "Lernprozess", ger: "etwas als wichtig bewerten", eng: "to evaluate something as important", ar: "يُقيم شيء على إنه مهم", context: "Das Gehirn muss die Daten als wichtig bewerten." },
-                { id: 'e45', type: "Lernprozess", ger: "ins Kurzzeitgedächtnis gelangen", eng: "to reach the short-term memory", ar: "يوصل للذاكرة قصيرة المدى", context: "Infos gelangen zuerst ins Kurzzeitgedächtnis." },
-                { id: 'e46', type: "Lernprozess", ger: "ins Langzeitgedächtnis gelangen", eng: "to reach the long-term memory", ar: "يوصل للذاكرة طويلة المدى", context: "Wichtige Daten gelangen ins Langzeitgedächtnis." },
-                { id: 'e47', type: "Lernprozess", ger: "aus dem Gedächtnis gelöscht werden", eng: "to be deleted from memory", ar: "يتمسح من الذاكرة", context: "Unwichtige Daten werden aus dem Gedächtnis gelöscht." },
-                { id: 'e48', type: "Lernprozess", ger: "aus dem Gedächtnis entfernt werden", eng: "to be removed from memory", ar: "يتشال من الذاكرة", context: "Vieles wird nach kurzer Zeit wieder entfernt." },
-                { id: 'e49', type: "Lernprozess", ger: "alte Daten mit neuen Daten überschreiben", eng: "to overwrite old data with new data", ar: "يستبدل الداتا القديمة بداتا جديدة", context: "Das Gehirn überschreibt alte Daten." },
-                { id: 'e50', type: "Lernprozess", ger: "das Gehirn vor einer Datenflut schützen", eng: "to protect the brain from a flood of data", ar: "يحمي المخ من سيل البيانات", context: "Das schützt das Gehirn vor einer Datenflut." },
-                { id: 'e51', type: "Lernprozess", ger: "den bestmöglichen Lernerfolg erzielen", eng: "to achieve the best possible learning success", ar: "يحقق أفضل نتيجة دراسية", context: "So erzielen Sie den bestmöglichen Lernerfolg." },
-                { id: 'e52', type: "Lernprozess", ger: "der Schlüssel zum erfolgreichen Lernen sein", eng: "to be the key to successful learning", ar: "يكون مفتاح التعلم الناجح", context: "Wiederholung ist der Schlüssel zum erfolgreichen Lernen." },
-                { id: 'e53', type: "Lernprozess", ger: "Gelerntes in regelmäßigen Abständen wiederholen", eng: "to repeat what has been learned at regular intervals", ar: "يراجع اللي اتعلمه على فترات منتظمة", context: "Man muss Vokabeln oft wiederholen." },
-                { id: 'e54', type: "Lernprozess", ger: "Verbindungen im Gehirn aktivieren", eng: "to activate connections in the brain", ar: "ينشط الروابط في المخ", context: "Aktives Lernen aktiviert Verbindungen im Gehirn." },
-                { id: 'e55', type: "Lernprozess", ger: "für eine langfristige Speicherung sorgen", eng: "to ensure long-term storage", ar: "يضمن تخزين طويل المدى", context: "Das sorgt für eine langfristige Speicherung." },
-                { id: 'e56', type: "Lernprozess", ger: "besonders effektiv sein", eng: "to be particularly effective", ar: "يكون فعال جداً", context: "Diese Methode ist besonders effektiv." },
-                { id: 'e57', type: "Lernprozess", ger: "als besonders effektiv gelten", eng: "to be considered particularly effective", ar: "يُعتبر فعال جداً", context: "Lernen vor dem Schlaf gilt als besonders effektiv." },
-                { id: 'e58', type: "Lernprozess", ger: "vor dem Einschlafen lernen", eng: "to learn before falling asleep", ar: "يذاكر قبل ما ينام", context: "Lernen Sie Vokabeln direkt vor dem Einschlafen." },
-                { id: 'e59', type: "Lernprozess", ger: "Ereignisse im Schlaf verarbeiten", eng: "to process events during sleep", ar: "يُعالج الأحداث في النوم", context: "Im Schlaf verarbeitet das Gehirn Ereignisse." },
-                { id: 'e60', type: "Lernprozess", ger: "sich Wörter beim Hören einprägen", eng: "to memorize words while listening", ar: "يحفظ الكلمات وهو بيسمع", context: "Auditive Lerner prägen sich Wörter beim Hören ein." },
-                { id: 'e61', type: "Lernprozess", ger: "lautes Lesen bevorzugen", eng: "to prefer reading aloud", ar: "يفضل القراءة بصوت عالي", context: "Viele Schüler bevorzugen lautes Lesen." },
-                { id: 'e62', type: "Lernprozess", ger: "aktive Lernformen benutzen", eng: "to use active forms of learning", ar: "يستخدم طرق تعلم نشطة", context: "Man sollte aktive Lernformen benutzen." },
-                { id: 'e63', type: "Lernprozess", ger: "auf Wörter zurückgreifen, an die wir uns erinnern", eng: "to fall back on words that we remember", ar: "نستعين بالكلمات اللي فاكرينها", context: "Wir können nur auf diese Wörter zurückgreifen." },
-                { id: 'e64', type: "VHS", ger: "Kurse anbieten", eng: "to offer courses", ar: "يقدم كورسات", context: "Die VHS bietet viele Kurse an." },
-                { id: 'e65', type: "VHS", ger: "Vorträge anbieten", eng: "to offer lectures", ar: "يقدم محاضرات/ندوات", context: "Es werden auch Vorträge angeboten." },
-                { id: 'e66', type: "VHS", ger: "wissenschaftliche Erkenntnisse in einfacher Sprache präsentieren", eng: "to present scientific findings in simple language", ar: "يعرض الاكتشافات العلمية بلغة بسيطة", context: "Die VHS präsentiert wissenschaftliche Erkenntnisse." },
-                { id: 'e67', type: "VHS", ger: "ein vielfältiges Kursangebot haben", eng: "to have a diverse course range", ar: "عنده كورسات متنوعة", context: "Die Volkshochschule hat ein vielfältiges Kursangebot." },
-                { id: 'e68', type: "VHS", ger: "ein Bildungsangebot für die Bevölkerung unterbreiten", eng: "to offer an educational program for the population", ar: "بيقدم عرض تعليمي للشعب", context: "Das ist die Aufgabe der Einrichtung." },
-                { id: 'e69', type: "VHS", ger: "einen Schulabschluss nachholen können", eng: "to be able to catch up on a school leaving certificate", ar: "يقدر يعوض شهادته المدرسية", context: "Man kann an der VHS das Abitur nachholen." },
-                { id: 'e70', type: "VHS", ger: "das Angebot nutzen", eng: "to use the offer", ar: "يستفيد من العرض", context: "Viele Millionen Menschen nutzen das Angebot." },
-                { id: 'e71', type: "VHS", ger: "finanziell unterstützt werden", eng: "to be financially supported", ar: "يتدعم مادياً", context: "Die VHS wird vom Staat finanziell unterstützt." },
-                { id: 'e72', type: "VHS", ger: "auf Wirtschaftlichkeit achten", eng: "to pay attention to economic efficiency", ar: "يراعي الجدوى الاقتصادية", context: "Schulen müssen streng auf Wirtschaftlichkeit achten." },
-                { id: 'e73', type: "VHS", ger: "Es steht zu wenig Geld zur Verfügung.", eng: "There is too little money available.", ar: "مفيش فلوس كفاية متاحة.", context: "Es steht leider zu wenig Geld zur Verfügung." },
-                { id: 'e74', type: "VHS", ger: "das Fehlen technischer Geräte kritisieren", eng: "to criticize the lack of technical equipment", ar: "ينتقد نقص الأجهزة التقنية", context: "Viele Teilnehmer kritisieren das Fehlen technischer Geräte." },
-                { id: 'e75', type: "VHS", ger: "Der Geldmangel wirkt sich auf die Ausstattung aus.", eng: "The lack of money affects the equipment.", ar: "نقص الفلوس بيأثر على التجهيزات.", context: "Der Geldmangel wirkt sich auf die Klassenzimmer aus." },
-                { id: 'e76', type: "VHS", ger: "gute Resultate erzielen", eng: "to achieve good results", ar: "يحقق نتايج كويسة", context: "Die VHS erzielte gute Resultate in der Umfrage." },
-                { id: 'e77', type: "VHS", ger: "ein gutes Preis-Leistungs-Verhältnis bieten", eng: "to offer a good value for money", ar: "يقدم نسبة ممتازة بين السعر والجودة", context: "Die Kurse bieten ein gutes Preis-Leistungs-Verhältnis." },
-                { id: 'e78', type: "VHS", ger: "einen Auftrag erfüllen", eng: "to fulfill a mandate/mission", ar: "ينفذ تكليف / مهمة", context: "Die VHS erfüllen ihren Auftrag immer noch gut." }
+                { id: 'e1', type: "Lernen", ger: "an einem Kurs teilnehmen", eng: "to participate in a course", ar: "يشارك في كورس", ex: { g: "Ich nehme an einem Sprachkurs teil.", e: "I am taking part in a language course.", a: "أنا بشارك في كورس لغة." } },
+                { id: 'e2', type: "Lernen", ger: "an einer Weiterbildung teilnehmen", eng: "to participate in further education", ar: "يشارك في تدريب مهني", ex: { g: "Er nimmt an einer Weiterbildung teil.", e: "He is participating in further education.", a: "هو بيشارك في تدريب مهني." } },
+                { id: 'e3', type: "Lernen", ger: "einen Kurs besuchen", eng: "to attend a course", ar: "يحضر كورس", ex: { g: "Sie besucht einen Englischkurs.", e: "She is attending an English course.", a: "هي بتحضر كورس إنجليزي." } },
+                { id: 'e4', type: "Lernen", ger: "einen Kurs machen", eng: "to take a course", ar: "ياخد كورس", ex: { g: "Ich mache einen Computerkurs.", e: "I am taking a computer course.", a: "أنا باخد كورس كمبيوتر." } },
+                { id: 'e5', type: "Lernen", ger: "sich für einen Kurs einschreiben", eng: "to enroll for a course", ar: "يسجل اسمه في كورس", ex: { g: "Hast du dich für den Kurs eingeschrieben?", e: "Have you enrolled for the course?", a: "سجلت اسمك في الكورس؟" } },
+                { id: 'e6', type: "Lernen", ger: "sich für eine Prüfung einschreiben", eng: "to register for an exam", ar: "يسجل للامتحان", ex: { g: "Ich habe mich für die Prüfung eingeschrieben.", e: "I have registered for the exam.", a: "أنا سجلت للامتحان." } },
+                { id: 'e7', type: "Lernen", ger: "die Vorlesung interessant finden", eng: "to find the lecture interesting", ar: "يلاقي المحاضرة شيقة", ex: { g: "Ich finde die Vorlesung sehr interessant.", e: "I find the lecture very interesting.", a: "أنا شايف المحاضرة شيقة جداً." } },
+                { id: 'e8', type: "Lernen", ger: "das Seminar langweilig finden", eng: "to find the seminar boring", ar: "يلاقي السيمينار ممل", ex: { g: "Er findet das Seminar langweilig.", e: "He finds the seminar boring.", a: "هو شايف السيمينار ممل." } },
+                { id: 'e9', type: "Lernen", ger: "eine Prüfung machen", eng: "to take an exam", ar: "يعمل امتحان", ex: { g: "Morgen mache ich eine wichtige Prüfung.", e: "Tomorrow I am taking an important exam.", a: "بكرة هعمل امتحان مهم." } },
+                { id: 'e10', type: "Lernen", ger: "eine Prüfung ablegen", eng: "to sit an exam", ar: "يؤدي امتحان", ex: { g: "Sie wird nächste Woche die Prüfung ablegen.", e: "She will sit the exam next week.", a: "هي هتمتحن الأسبوع الجاي." } },
+                { id: 'e11', type: "Lernen", ger: "eine Prüfung bestehen", eng: "to pass an exam", ar: "ينجح في امتحان", ex: { g: "Ich hoffe, ich werde die Prüfung bestehen.", e: "I hope I will pass the exam.", a: "أتمنى أنجح في الامتحان." } },
+                { id: 'e12', type: "Lernen", ger: "gute Noten bekommen", eng: "to get good grades", ar: "يجيب درجات كويسة", ex: { g: "Sie bekommt immer gute Noten.", e: "She always gets good grades.", a: "هي دايماً بتجيب درجات كويسة." } },
+                { id: 'e13', type: "Lernen", ger: "schlechte Noten haben", eng: "to have bad grades", ar: "عنده درجات وحشة", ex: { g: "Früher hatte ich oft schlechte Noten.", e: "I used to have bad grades often.", a: "زمان كنت بجيب درجات وحشة كتير." } },
+                { id: 'e14', type: "Lernen", ger: "etwas macht Spaß", eng: "something is fun", ar: "حاجة ممتعة / بتفرح", ex: { g: "Fremdsprachen lernen macht mir Spaß.", e: "Learning foreign languages is fun for me.", a: "تعلم اللغات الأجنبية ممتع بالنسبالي." } },
+                { id: 'e15', type: "Lernen", ger: "nicht gern in die Schule gehen", eng: "not like going to school", ar: "مش بيحب يروح المدرسة", ex: { g: "Als Kind bin ich nicht gern in die Schule gegangen.", e: "As a child, I didn't like going to school.", a: "وأنا صغير مكنتش بحب أروح المدرسة." } },
+                { id: 'e16', type: "Lernen", ger: "das Gelernte direkt anwenden", eng: "to apply what has been learned directly", ar: "يطبق اللي اتعلمه بشكل مباشر", ex: { g: "Ich kann das Gelernte direkt im Job anwenden.", e: "I can apply what I've learned directly in my job.", a: "أقدر أطبق اللي اتعلمته علطول في شغلي." } },
+                { id: 'e17', type: "Lernen", ger: "etwas für den Beruf brauchen", eng: "to need something for the job", ar: "محتاج حاجة عشان الشغل", ex: { g: "Ich brauche Englisch für meinen Beruf.", e: "I need English for my job.", a: "أنا محتاج إنجليزي عشان شغلي." } },
+                { id: 'e18', type: "Lernen", ger: "jemandem in einem Fach helfen", eng: "to help someone in a subject", ar: "يساعد حد في مادة", ex: { g: "Er hilft mir in Mathematik.", e: "He helps me in mathematics.", a: "هو بيساعدني في الرياضة." } },
+                { id: 'e19', type: "Empfehlungen", ger: "Man sollte Wörter mehrmals wiederholen.", eng: "One should repeat words several times.", ar: "الواحد المفروض يراجع الكلمات كذا مرة.", ex: { g: "Man sollte neue Wörter mehrmals wiederholen.", e: "One should repeat new words several times.", a: "الواحد المفروض يراجع الكلمات كذا مرة." } },
+                { id: 'e20', type: "Empfehlungen", ger: "Der Text empfiehlt, vor dem Einschlafen zu lernen.", eng: "The text recommends learning before falling asleep.", ar: "النص بينصح بالمذاكرة قبل النوم.", ex: { g: "Der Text empfiehlt, vor dem Einschlafen zu lernen.", e: "The text recommends studying before falling asleep.", a: "النص بينصح إننا نذاكر قبل النوم." } },
+                { id: 'e21', type: "Empfehlungen", ger: "Nach Meinung von Experten ist es sinnvoll, den Lerntyp zu erkennen.", eng: "In the opinion of experts, it makes sense to recognize the learning type.", ar: "حسب رأي الخبراء، مفيد إن الواحد يعرف نوع تعلمه.", ex: { g: "Es ist sinnvoll, den eigenen Lerntyp zu erkennen.", e: "It makes sense to recognize one's own learning type.", a: "من المنطقي إن الواحد يعرف هو بيتعلم إزاي." } },
+                { id: 'e22', type: "Empfehlungen", ger: "Es ist ratsam, aktive Übungen zu machen.", eng: "It is advisable to do active exercises.", ar: "من المستحسن عمل تمارين نشطة.", ex: { g: "Es ist ratsam, aktive Übungen zu machen.", e: "It is advisable to do active exercises.", a: "من المستحسن إنك تحل تمارين." } },
+                { id: 'e23', type: "Empfehlungen", ger: "Es ist effektiv, Wörter laut zu lesen.", eng: "It is effective to read words aloud.", ar: "من الفعال إنك تقرا بصوت عالي.", ex: { g: "Es ist sehr effektiv, Wörter laut zu lesen.", e: "It is very effective to read words aloud.", a: "من الفعال جداً إنك تقرا الكلمات بصوت عالي." } },
+                { id: 'e24', type: "Wie wir lernen", ger: "das Lernmaterial hören", eng: "to hear/listen to the learning material", ar: "يسمع المادة التعليمية", ex: { g: "Auditive Lerner müssen das Lernmaterial hören.", e: "Auditory learners need to hear the learning material.", a: "المتعلم السمعي لازم يسمع الماتيريال." } },
+                { id: 'e25', type: "Wie wir lernen", ger: "absolute Stille brauchen", eng: "to need absolute silence", ar: "محتاج هدوء تام", ex: { g: "Zum Lernen brauche ich absolute Stille.", e: "I need absolute silence to study.", a: "عشان أذاكر محتاج هدوء تام." } },
+                { id: 'e26', type: "Wie wir lernen", ger: "etwas schreiben müssen", eng: "to have to write something", ar: "مضطر يكتب حاجة (عشان يحفظها)", ex: { g: "Ich muss die Wörter schreiben, um sie zu lernen.", e: "I have to write the words to learn them.", a: "لازم أكتب الكلمات عشان أحفظها." } },
+                { id: 'e27', type: "Wie wir lernen", ger: "beim Einprägen helfen", eng: "to help with memorizing", ar: "يساعد في الحفظ / التثبيت", ex: { g: "Handbewegungen helfen beim Einprägen.", e: "Hand movements help with memorization.", a: "حركة الإيد بتساعد في تثبيت المعلومة." } },
+                { id: 'e28', type: "Wie wir lernen", ger: "in der Fremdsprache kommunizieren", eng: "to communicate in the foreign language", ar: "يتواصل باللغة الأجنبية", ex: { g: "Wir müssen viel in der Fremdsprache kommunizieren.", e: "We have to communicate a lot in the foreign language.", a: "لازم نتواصل كتير باللغة الأجنبية." } },
+                { id: 'e29', type: "Wie wir lernen", ger: "neue Informationen veranschaulichen", eng: "to illustrate/visualize new information", ar: "يوضح/يصور المعلومات الجديدة", ex: { g: "Visualisieren hilft dem Gehirn sehr.", e: "Visualizing helps the brain a lot.", a: "تصور المعلومات بيساعد المخ جداً." } },
+                { id: 'e30', type: "Wie wir lernen", ger: "neue Wörter mit Bildern verbinden", eng: "to connect new words with pictures", ar: "يربط الكلمات الجديدة بصور", ex: { g: "Man sollte neue Wörter mit Bildern verbinden.", e: "One should connect new words with pictures.", a: "المفروض نربط الكلمات الجديدة بصور." } },
+                { id: 'e31', type: "Wie wir lernen", ger: "Bilder in den Lernprozess einbeziehen", eng: "to include pictures in the learning process", ar: "يدخل الصور في عملية التعلم", ex: { g: "Bilder in den Lernprozess einzubeziehen ist effektiv.", e: "Including pictures in the learning process is effective.", a: "دخول الصور في المذاكرة شيء فعال." } },
+                { id: 'e32', type: "Wie wir lernen", ger: "etwas farbig hervorheben", eng: "to highlight something in color", ar: "يظلل/يبرز حاجة بلون", ex: { g: "Ich hebe wichtige Wörter farbig hervor.", e: "I highlight important words in color.", a: "أنا بظلل الكلمات المهمة بلون." } },
+                { id: 'e33', type: "Wie wir lernen", ger: "die Struktur einer Fremdsprache verstehen wollen", eng: "to want to understand the structure of a foreign language", ar: "عايز يفهم تركيبة اللغة", ex: { g: "Kognitive Lerner wollen die Struktur verstehen.", e: "Cognitive learners want to understand the structure.", a: "المتعلم الإدراكي بيبقى عايز يفهم التركيبة." } },
+                { id: 'e34', type: "Interesse", ger: "Mich interessiert der Kurs Zeichnen.", eng: "I am interested in the drawing course.", ar: "أنا مهتم بكورس الرسم.", ex: { g: "Mich interessiert der Kurs für Anfänger.", e: "I am interested in the course for beginners.", a: "أنا مهتم بكورس المبتدئين." } },
+                { id: 'e35', type: "Interesse", ger: "Ich finde den Kurs interessant.", eng: "I find the course interesting.", ar: "أنا شايف الكورس ده شيق.", ex: { g: "Ich finde den Malkurs sehr interessant.", e: "I find the painting course very interesting.", a: "أنا شايف كورس الرسم شيق جداً." } },
+                { id: 'e36', type: "Interesse", ger: "Ich möchte mehr über Kunst erfahren.", eng: "I would like to learn more about art.", ar: "عايز أعرف أكتر عن الفن.", ex: { g: "Ich möchte mehr über dieses Thema erfahren.", e: "I would like to learn more about this topic.", a: "حابب أعرف تفاصيل أكتر عن الموضوع ده." } },
+                { id: 'e37', type: "Interesse", ger: "Ich wollte schon immer tanzen lernen.", eng: "I have always wanted to learn to dance.", ar: "كان دايماً نفسي أتعلم الرقص.", ex: { g: "Ich wollte schon immer Gitarre spielen lernen.", e: "I've always wanted to learn to play the guitar.", a: "كان دايماً نفسي أتعلم جيتار." } },
+                { id: 'e38', type: "Lernprozess", ger: "ein gutes Gedächtnis haben", eng: "to have a good memory", ar: "عنده ذاكرة قوية", ex: { g: "Mein Kollege hat ein sehr gutes Gedächtnis.", e: "My colleague has a very good memory.", a: "زميلي عنده ذاكرة قوية جداً." } },
+                { id: 'e39', type: "Lernprozess", ger: "ein schlechtes Gedächtnis haben", eng: "to have a bad memory", ar: "عنده ذاكرة ضعيفة", ex: { g: "Ich habe leider ein schlechtes Gedächtnis für Namen.", e: "Unfortunately, I have a bad memory for names.", a: "للأسف ذاكرتي ضعيفة في الأسامي." } },
+                { id: 'e40', type: "Lernprozess", ger: "sich Zahlen gut merken können", eng: "to be able to remember numbers well", ar: "بيقدر يحفظ الأرقام كويس", ex: { g: "Ich kann mir Zahlen immer gut merken.", e: "I can always remember numbers well.", a: "أنا بقدر أحفظ الأرقام بسهولة." } },
+                { id: 'e41', type: "Lernprozess", ger: "sich an chemische Formeln erinnern", eng: "to remember chemical formulas", ar: "يفتكر المعادلات الكيميائية", ex: { g: "Wer erinnert sich an die chemischen Formeln?", e: "Who remembers the chemical formulas?", a: "مين فاكر المعادلات الكيميائية؟" } },
+                { id: 'e42', type: "Lernprozess", ger: "in Vergessenheit geraten", eng: "to fall into oblivion / be forgotten", ar: "يُنسى تماماً", ex: { g: "Vieles aus der Schulzeit ist in Vergessenheit geraten.", e: "Much from school days has fallen into oblivion.", a: "حاجات كتير من أيام المدرسة اتنست." } },
+                { id: 'e43', type: "Lernprozess", ger: "Informationen mit Interesse aufnehmen", eng: "to absorb information with interest", ar: "يستقبل المعلومات باهتمام", ex: { g: "Wenn man interessiert ist, nimmt man Informationen schneller auf.", e: "If you are interested, you absorb information faster.", a: "لما بتبقى مهتم، بتستقبل المعلومات أسرع." } },
+                { id: 'e44', type: "Lernprozess", ger: "etwas als wichtig bewerten", eng: "to evaluate something as important", ar: "يُقيم شيء على إنه مهم", ex: { g: "Das Gehirn muss die Daten als wichtig bewerten.", e: "The brain must evaluate the data as important.", a: "المخ لازم يقيم البيانات إنها مهمة." } },
+                { id: 'e45', type: "Lernprozess", ger: "ins Kurzzeitgedächtnis gelangen", eng: "to reach the short-term memory", ar: "يوصل للذاكرة قصيرة المدى", ex: { g: "Infos gelangen zuerst ins Kurzzeitgedächtnis.", e: "Info reaches the short-term memory first.", a: "المعلومات بتوصل للذاكرة القصيرة الأول." } },
+                { id: 'e46', type: "Lernprozess", ger: "ins Langzeitgedächtnis gelangen", eng: "to reach the long-term memory", ar: "يوصل للذاكرة طويلة المدى", ex: { g: "Wichtige Daten gelangen ins Langzeitgedächtnis.", e: "Important data reaches the long-term memory.", a: "البيانات المهمة بتوصل للذاكرة طويلة المدى." } },
+                { id: 'e47', type: "Lernprozess", ger: "aus dem Gedächtnis gelöscht werden", eng: "to be deleted from memory", ar: "يتمسح من الذاكرة", ex: { g: "Unwichtige Daten werden aus dem Gedächtnis gelöscht.", e: "Unimportant data is deleted from memory.", a: "البيانات اللي مش مهمة بتتمسح من الذاكرة." } },
+                { id: 'e48', type: "Lernprozess", ger: "aus dem Gedächtnis entfernt werden", eng: "to be removed from memory", ar: "يتشال من الذاكرة", ex: { g: "Vieles wird nach kurzer Zeit wieder entfernt.", e: "Much is removed again after a short time.", a: "حاجات كتير بتتشال تاني بعد وقت قصير." } },
+                { id: 'e49', type: "Lernprozess", ger: "alte Daten mit neuen Daten überschreiben", eng: "to overwrite old data with new data", ar: "يستبدل الداتا القديمة بداتا جديدة", ex: { g: "Das Gehirn überschreibt alte Daten mit neuen.", e: "The brain overwrites old data with new ones.", a: "المخ بيستبدل الداتا القديمة بجديدة." } },
+                { id: 'e50', type: "Lernprozess", ger: "das Gehirn vor einer Datenflut schützen", eng: "to protect the brain from a flood of data", ar: "يحمي المخ من سيل البيانات", ex: { g: "Das schützt das Gehirn vor einer Datenflut.", e: "This protects the brain from a flood of data.", a: "ده بيحمي المخ من سيل البيانات." } },
+                { id: 'e51', type: "Lernprozess", ger: "den bestmöglichen Lernerfolg erzielen", eng: "to achieve the best possible learning success", ar: "يحقق أفضل نتيجة دراسية", ex: { g: "So erzielen Sie den bestmöglichen Lernerfolg.", e: "This is how you achieve the best possible learning success.", a: "كده هتقدر تحقق أحسن نتيجة دراسية." } },
+                { id: 'e52', type: "Lernprozess", ger: "der Schlüssel zum erfolgreichen Lernen sein", eng: "to be the key to successful learning", ar: "يكون مفتاح التعلم الناجح", ex: { g: "Wiederholung ist der Schlüssel zum erfolgreichen Lernen.", e: "Repetition is the key to successful learning.", a: "التكرار هو مفتاح التعلم الناجح." } },
+                { id: 'e53', type: "Lernprozess", ger: "Gelerntes in regelmäßigen Abständen wiederholen", eng: "to repeat what has been learned at regular intervals", ar: "يراجع اللي اتعلمه على فترات منتظمة", ex: { g: "Man muss Vokabeln in regelmäßigen Abständen wiederholen.", e: "One must repeat vocabulary at regular intervals.", a: "لازم تراجع الكلمات في فترات منتظمة." } },
+                { id: 'e54', type: "Lernprozess", ger: "Verbindungen im Gehirn aktivieren", eng: "to activate connections in the brain", ar: "ينشط الروابط في المخ", ex: { g: "Aktives Lernen aktiviert Verbindungen im Gehirn.", e: "Active learning activates connections in the brain.", a: "المذاكرة الأكتيڤ بتنشط الروابط في المخ." } },
+                { id: 'e55', type: "Lernprozess", ger: "für eine langfristige Speicherung sorgen", eng: "to ensure long-term storage", ar: "يضمن تخزين طويل المدى", ex: { g: "Das sorgt für eine langfristige Speicherung.", e: "This ensures long-term storage.", a: "ده بيضمن تثبيت المعلومة لفترة طويلة." } },
+                { id: 'e56', type: "Lernprozess", ger: "besonders effektiv sein", eng: "to be particularly effective", ar: "يكون فعال جداً", ex: { g: "Diese Methode ist besonders effektiv.", e: "This method is particularly effective.", a: "الطريقة دي فعالة جداً." } },
+                { id: 'e57', type: "Lernprozess", ger: "als besonders effektiv gelten", eng: "to be considered particularly effective", ar: "يُعتبر فعال جداً", ex: { g: "Lernen vor dem Schlaf gilt als besonders effektiv.", e: "Studying before sleep is considered particularly effective.", a: "المذاكرة قبل النوم تعتبر فعالة جداً." } },
+                { id: 'e58', type: "Lernprozess", ger: "vor dem Einschlafen lernen", eng: "to learn before falling asleep", ar: "يذاكر قبل ما ينام", ex: { g: "Lernen Sie Vokabeln direkt vor dem Einschlafen.", e: "Study vocabulary right before falling asleep.", a: "ذاكر الكلمات قبل ما تنام علطول." } },
+                { id: 'e59', type: "Lernprozess", ger: "Ereignisse im Schlaf verarbeiten", eng: "to process events during sleep", ar: "يُعالج الأحداث في النوم", ex: { g: "Im Schlaf verarbeitet das Gehirn die Ereignisse.", e: "During sleep, the brain processes the events.", a: "في النوم المخ بيعالج الأحداث." } },
+                { id: 'e60', type: "Lernprozess", ger: "sich Wörter beim Hören einprägen", eng: "to memorize words while listening", ar: "يحفظ الكلمات وهو بيسمع", ex: { g: "Auditive Lerner prägen sich Wörter beim Hören ein.", e: "Auditory learners memorize words while listening.", a: "المتعلم السمعي بيحفظ الكلمات وهو بيسمع." } },
+                { id: 'e61', type: "Lernprozess", ger: "lautes Lesen bevorzugen", eng: "to prefer reading aloud", ar: "يفضل القراءة بصوت عالي", ex: { g: "Viele Schüler bevorzugen lautes Lesen.", e: "Many students prefer reading aloud.", a: "طلاب كتير بيفضلوا القراية بصوت عالي." } },
+                { id: 'e62', type: "Lernprozess", ger: "aktive Lernformen benutzen", eng: "to use active forms of learning", ar: "يستخدم طرق تعلم نشطة", ex: { g: "Man sollte aktive Lernformen benutzen.", e: "One should use active forms of learning.", a: "الواحد المفروض يستخدم طرق مذاكرة نشطة." } },
+                { id: 'e63', type: "Lernprozess", ger: "auf Wörter zurückgreifen, an die wir uns erinnern", eng: "to fall back on words that we remember", ar: "نستعين بالكلمات اللي فاكرينها", ex: { g: "Wir können nur auf Wörter zurückgreifen, die wir kennen.", e: "We can only fall back on words we know.", a: "بنقدر بس نستخدم الكلمات اللي احنا عارفينها." } },
+                { id: 'e64', type: "VHS", ger: "Kurse anbieten", eng: "to offer courses", ar: "يقدم كورسات", ex: { g: "Die VHS bietet viele Sprachkurse an.", e: "The VHS offers many language courses.", a: "المركز بيقدم كورسات لغات كتير." } },
+                { id: 'e65', type: "VHS", ger: "Vorträge anbieten", eng: "to offer lectures", ar: "يقدم محاضرات/ندوات", ex: { g: "Es werden auch interessante Vorträge angeboten.", e: "Interesting lectures are also offered.", a: "فيه كمان محاضرات شيقة بتتقدم." } },
+                { id: 'e66', type: "VHS", ger: "wissenschaftliche Erkenntnisse in einfacher Sprache präsentieren", eng: "to present scientific findings in simple language", ar: "يعرض الاكتشافات العلمية بلغة بسيطة", ex: { g: "Die VHS präsentiert wissenschaftliche Erkenntnisse.", e: "The VHS presents scientific findings.", a: "المركز بيعرض الاكتشافات العلمية." } },
+                { id: 'e67', type: "VHS", ger: "ein vielfältiges Kursangebot haben", eng: "to have a diverse course range", ar: "عنده كورسات متنوعة", ex: { g: "Die Volkshochschule hat ein vielfältiges Kursangebot.", e: "The adult education center has a diverse course range.", a: "المركز عنده تشكيلة كورسات متنوعة." } },
+                { id: 'e68', type: "VHS", ger: "ein Bildungsangebot für die Bevölkerung unterbreiten", eng: "to offer an educational program for the population", ar: "بيقدم عرض تعليمي للشعب", ex: { g: "Das ist ein tolles Bildungsangebot für die Bevölkerung.", e: "That is a great educational offer for the population.", a: "ده عرض تعليمي ممتاز للشعب." } },
+                { id: 'e69', type: "VHS", ger: "einen Schulabschluss nachholen können", eng: "to be able to catch up on a school leaving certificate", ar: "يقدر يعوض شهادته المدرسية", ex: { g: "Man kann an der VHS das Abitur nachholen.", e: "You can catch up on your high school diploma at the VHS.", a: "تقدر تمتحن ثانوية عامة في المركز لو فاتتك." } },
+                { id: 'e70', type: "VHS", ger: "das Angebot nutzen", eng: "to use the offer", ar: "يستفيد من العرض", ex: { g: "Viele Millionen Menschen nutzen dieses Angebot.", e: "Many millions of people use this offer.", a: "ملايين الناس بتستفيد من العرض ده." } },
+                { id: 'e71', type: "VHS", ger: "finanziell unterstützt werden", eng: "to be financially supported", ar: "يتدعم مادياً", ex: { g: "Die Einrichtung wird vom Staat finanziell unterstützt.", e: "The institution is financially supported by the state.", a: "المؤسسة دي مدعومة مادياً من الدولة." } },
+                { id: 'e72', type: "VHS", ger: "auf Wirtschaftlichkeit achten", eng: "to pay attention to economic efficiency", ar: "يراعي الجدوى الاقتصادية", ex: { g: "Schulen müssen streng auf Wirtschaftlichkeit achten.", e: "Schools must pay strict attention to profitability.", a: "المدارس لازم تاخد بالها جداً من الجدوى الاقتصادية." } },
+                { id: 'e73', type: "VHS", ger: "Es steht zu wenig Geld zur Verfügung.", eng: "There is too little money available.", ar: "مفيش فلوس كفاية متاحة.", ex: { g: "Es steht leider zu wenig Geld zur Verfügung.", e: "Unfortunately, there is too little money available.", a: "للأسف مفيش فلوس كفاية متاحة." } },
+                { id: 'e74', type: "VHS", ger: "das Fehlen technischer Geräte kritisieren", eng: "to criticize the lack of technical equipment", ar: "ينتقد نقص الأجهزة التقنية", ex: { g: "Viele Teilnehmer kritisieren das Fehlen technischer Geräte.", e: "Many participants criticize the lack of technical equipment.", a: "مشاركين كتير بينتقدوا نقص الأجهزة التقنية." } },
+                { id: 'e75', type: "VHS", ger: "Der Geldmangel wirkt sich auf die Ausstattung aus.", eng: "The lack of money affects the equipment.", ar: "نقص الفلوس بيأثر على التجهيزات.", ex: { g: "Der Geldmangel wirkt sich auf die Klassenzimmer aus.", e: "The lack of money affects the classrooms.", a: "نقص الفلوس مأثر على الفصول." } },
+                { id: 'e76', type: "VHS", ger: "gute Resultate erzielen", eng: "to achieve good results", ar: "يحقق نتايج كويسة", ex: { g: "Die Einrichtung erzielte gute Resultate in der Umfrage.", e: "The institution achieved good results in the survey.", a: "المؤسسة حققت نتايج كويسة في الاستطلاع." } },
+                { id: 'e77', type: "VHS", ger: "ein gutes Preis-Leistungs-Verhältnis bieten", eng: "to offer a good value for money", ar: "يقدم نسبة ممتازة بين السعر والجودة", ex: { g: "Die Kurse bieten ein gutes Preis-Leistungs-Verhältnis.", e: "The courses offer a good value for money.", a: "الكورسات سعرها ممتاز مقارنة بجودتها." } },
+                { id: 'e78', type: "VHS", ger: "einen Auftrag erfüllen", eng: "to fulfill a mandate/mission", ar: "ينفذ تكليف / مهمة", ex: { g: "Die Volkshochschulen erfüllen ihren Auftrag immer noch gut.", e: "The adult education centers still fulfill their mission well.", a: "مراكز تعليم الكبار لسه بتأدي مهمتها كويس." } }
             ],
             prepositions: [
                 { id: 'p1', ger: "achten (auf + Akk)", eng: "to pay attention to", ar: "ينتبه لـ / يراعي", s: [ { g: "Achten Sie <strong>auf</strong> die Fehler.", e: "Pay attention to the mistakes.", a: "خد بالك من الغلطات." }, { g: "Die Schule achtet <strong>auf</strong> Wirtschaftlichkeit.", e: "The school pays attention to profitability.", a: "المدرسة بتراعي الجدوى الاقتصادية." }, { g: "Wir müssen mehr <strong>auf</strong> die Qualität achten.", e: "We must pay more attention to quality.", a: "لازم نهتم أكتر بالجودة." } ]},
@@ -326,9 +314,9 @@
                     desc: "بنستخدم الروابط دي عشان نرد على سؤال (Warum؟) ونوضح السبب. القاعدة الذهبية: (weil) بتحدف الفعل المتصرف لآخر الجملة لأنها بتعمل جملة جانبية. (denn) رابطة طيبة جداً ومابتأثرش على ترتيب الجملة (الفعل بيفضل رقم 2). أما (deshalb/deswegen/darum) فدي ظروف، بتيجي في بداية الجملة التانية وبتزق الفعل وراها علطول (يعني الفعل رقم 2 والفاعل بيترمي رقم 3).",
                     structure: "weil (Verb am Ende) | denn (Verb Position 2) | deshalb/deswegen/darum (Verb nach dem Adverb)",
                     examples: [
-                        { g: "Ich lerne Polnisch, <span class='text-purple-600 font-bold'>weil</span> wir polnische Kunden <span class='text-purple-600 font-bold'>haben</span>.", a: "بتعلم بولندي لأن عندنا عملاء بولنديين. (لاحظ: haben في آخر الجملة)" },
-                        { g: "Ich lerne Polnisch, <span class='text-purple-600 font-bold'>denn</span> wir <span class='text-purple-600 font-bold'>haben</span> polnische Kunden.", a: "بتعلم بولندي، عشان احنا عندنا عملاء بولنديين. (لاحظ: haben رقم 2)" },
-                        { g: "Wir haben polnische Kunden, <span class='text-purple-600 font-bold'>deshalb lerne</span> ich Polnisch.", a: "عندنا عملاء بولنديين، عشان كدة بتعلم بولندي. (لاحظ: lerne جت بعد deshalb علطول)" }
+                        { g: "Ich lerne Polnisch, <span class='text-purple-600 font-bold'>weil</span> wir polnische Kunden <span class='text-purple-600 font-bold'>haben</span>.", e: "I am learning Polish because we have Polish customers.", a: "بتعلم بولندي لأن عندنا عملاء بولنديين. (لاحظ: haben في آخر الجملة)" },
+                        { g: "Ich lerne Polnisch, <span class='text-purple-600 font-bold'>denn</span> wir <span class='text-purple-600 font-bold'>haben</span> polnische Kunden.", e: "I am learning Polish, for we have Polish customers.", a: "بتعلم بولندي، عشان احنا عندنا عملاء بولنديين. (لاحظ: haben رقم 2)" },
+                        { g: "Wir haben polnische Kunden, <span class='text-purple-600 font-bold'>deshalb lerne</span> ich Polnisch.", e: "We have Polish customers, therefore I am learning Polish.", a: "عندنا عملاء بولنديين، عشان كدة بتعلم بولندي. (لاحظ: lerne جت بعد deshalb علطول)" }
                     ]
                 },
                 {
@@ -337,9 +325,9 @@
                     desc: "للرد على سؤال (Wozu؟ - لأي غرض؟). بنستخدم (damit) لو الفاعلين مختلفين في الجملتين (أو لو الفاعل واحد)، والفعل معاها بيترمي في الآخر. أما (um ... zu) بنستخدمها بس لو الفاعل واحد في الجملتين، وبنشيل الفاعل من الجملة التانية خالص. بنحط (um) وبعدها بنرص باقي الجملة (المفعول به، المكان، الزمان، إلخ)، وفي الآخر خالص بنقفل بـ (zu) وبعدها الفعل في المصدر.",
                     structure: "damit + Subjekt ... Verb | um + [باقي الجملة] + zu + Infinitiv",
                     examples: [
-                        { g: "Wiederhole Wörter, <span class='text-purple-600 font-bold'>damit</span> man sie nicht <span class='text-purple-600 font-bold'>vergisst</span>.", a: "راجع الكلمات، عشان ماتنساهاش. (الفعل متصرف في الآخر مع damit)" },
-                        { g: "Man muss wiederholen, <span class='text-purple-600 font-bold'>um</span> nicht <span class='text-purple-600 font-bold'>zu vergessen</span>.", a: "الواحد لازم يراجع، من أجل ألا ينسى. (الفعل في المصدر مع um...zu)" },
-                        { g: "Wir lernen, <span class='text-purple-600 font-bold'>um</span> bessere Chancen <span class='text-purple-600 font-bold'>zu haben</span>.", a: "بنذاكر عشان يبقى عندنا فرص أحسن. (لاحظ: حطينا المفعول bessere Chancen بين um و zu)" }
+                        { g: "Wiederhole Wörter, <span class='text-purple-600 font-bold'>damit</span> man sie nicht <span class='text-purple-600 font-bold'>vergisst</span>.", e: "Repeat words so that one doesn't forget them.", a: "راجع الكلمات، عشان ماتنساهاش. (الفعل متصرف في الآخر مع damit)" },
+                        { g: "Man muss wiederholen, <span class='text-purple-600 font-bold'>um</span> nicht <span class='text-purple-600 font-bold'>zu vergessen</span>.", e: "One must repeat in order not to forget.", a: "الواحد لازم يراجع، من أجل ألا ينسى. (الفعل في المصدر مع um...zu)" },
+                        { g: "Wir lernen, <span class='text-purple-600 font-bold'>um</span> bessere Chancen <span class='text-purple-600 font-bold'>zu haben</span>.", e: "We learn in order to have better chances.", a: "بنذاكر عشان يبقى عندنا فرص أحسن. (لاحظ: حطينا المفعول bessere Chancen بين um و zu)" }
                     ]
                 },
                 {
@@ -348,9 +336,9 @@
                     desc: "مش لازم تحفظ كل كلمة بأداتها بشكل عشوائي! ركز على نهايات الكلمة اللي بتغششك الأداة (der, die, das).",
                     structure: "der (männlich) | die (weiblich) | das (neutral)",
                     examples: [
-                        { g: "<span class='text-blue-600 font-bold'>der</span>: maskuline Personen, Tage, Monate. Endungen: -ant, -ent, -ist, -eur, -ismus, -or, -ling.", a: "المذكر: ذكور، أيام، شهور. نهايات زي: Student, Optimist, Motor." },
-                        { g: "<span class='text-rose-600 font-bold'>die</span>: feminine Personen. Endungen: -heit, -keit, -ung, -schaft, -ur, -ion, -tät, viele auf -ie, -e.", a: "المؤنث: إناث. نهايات زي: Sicherheit, Information, Natur." },
-                        { g: "<span class='text-emerald-600 font-bold'>das</span>: Endungen: -chen, -lein, -um, viele auf -ment, -nis. Auch Infinitiv als Nomen.", a: "المحايد: تصغير زي Mädchen. نهايات زي Museum, Instrument. والمصدر كاسم (das Lernen)." }
+                        { g: "<span class='text-blue-600 font-bold'>der</span>: maskuline Personen, Tage, Monate. Endungen: -ant, -ent, -ist, -eur, -ismus, -or, -ling.", e: "Masculine persons, days, months. Endings: -ant, -ent, -ist...", a: "المذكر: ذكور، أيام، شهور. نهايات زي: Student, Optimist, Motor." },
+                        { g: "<span class='text-rose-600 font-bold'>die</span>: feminine Personen. Endungen: -heit, -keit, -ung, -schaft, -ur, -ion, -tät, viele auf -ie, -e.", e: "Feminine persons. Endings: -heit, -keit, -ung...", a: "المؤنث: إناث. نهايات زي: Sicherheit, Information, Natur." },
+                        { g: "<span class='text-emerald-600 font-bold'>das</span>: Endungen: -chen, -lein, -um, viele auf -ment, -nis. Auch Infinitiv als Nomen.", e: "Diminutives: -chen, -lein. Also infinitive as noun.", a: "المحايد: تصغير زي Mädchen. نهايات زي Museum, Instrument. والمصدر كاسم (das Lernen)." }
                     ]
                 }
             ],
@@ -383,7 +371,7 @@
                 },
                 {
                     catId: 'rev-empfehlungen',
-                    title: '2. Empfehlungen geben (Giving recommendations)',
+                    title: '2. Empfehlungen geben',
                     items: [
                         { id: 'r_e_1', g: "Man sollte Wörter mehrmals wiederholen.", e: "One should repeat words several times.", a: "الواحد المفروض يراجع الكلمات كذا مرة." },
                         { id: 'r_e_2', g: "Der Text empfiehlt, vor dem Einschlafen zu lernen.", e: "The text recommends studying before falling asleep.", a: "النص بينصح بالمذاكرة قبل النوم." },
@@ -394,7 +382,7 @@
                 },
                 {
                     catId: 'rev-wiewirlernen',
-                    title: '3. Wie wir lernen (How we learn)',
+                    title: '3. Wie wir lernen',
                     items: [
                         { id: 'r_w_1', g: "das Lernmaterial hören", e: "hear the learning material", a: "يسمع المادة التعليمية" },
                         { id: 'r_w_2', g: "absolute Stille brauchen", e: "need absolute silence", a: "محتاج هدوء تام" },
@@ -411,7 +399,7 @@
                 },
                 {
                     catId: 'rev-interesse',
-                    title: '4. Interesse zeigen (Showing interest)',
+                    title: '4. Interesse zeigen',
                     items: [
                         { id: 'r_i_1', g: "Mich interessiert der Kurs Zeichnen.", e: "I am interested in the drawing course.", a: "أنا مهتم بكورس الرسم." },
                         { id: 'r_i_2', g: "Ich finde den Kurs Pasta! interessant.", e: "I find the course Pasta! interesting.", a: "أنا شايف كورس المكرونة شيق." },
@@ -421,7 +409,7 @@
                 },
                 {
                     catId: 'rev-lernprozess',
-                    title: '5. Lernprozess (Learning process)',
+                    title: '5. Lernprozess',
                     items: [
                         { id: 'r_p_1', g: "ein gutes Gedächtnis haben", e: "have a good memory", a: "عنده ذاكرة قوية" },
                         { id: 'r_p_1b', g: "ein schlechtes Gedächtnis haben", e: "have a bad memory", a: "عنده ذاكرة ضعيفة" },
@@ -453,7 +441,7 @@
                 },
                 {
                     catId: 'rev-vhs',
-                    title: '6. Volkshochschulen (Adult education centers)',
+                    title: '6. Volkshochschulen',
                     items: [
                         { id: 'r_v_1', g: "Kurse anbieten", e: "offer courses", a: "يقدم كورسات" },
                         { id: 'r_v_1b', g: "Vorträge anbieten", e: "offer lectures", a: "يقدم محاضرات/ندوات" },
@@ -602,19 +590,19 @@
                 { id: 'b2_w_26', ger: "die Flexibilität", pl: "(nur Singular)", eng: "Flexibility", ar: "المرونة", s: [ { g: "Wir erwarten zeitliche <strong>Flexibilität</strong>.", e: "We expect time flexibility.", a: "إحنا متوقعين مرونة في مواعيد الشغل." }, { g: "<strong>Flexibilität</strong> ist im modernen Beruf wichtig.", e: "Flexibility is important in modern jobs.", a: "المرونة مهمة في الوظايف الحديثة." }, { g: "Sie zeigt große <strong>Flexibilität</strong> bei Problemen.", e: "She shows great flexibility with problems.", a: "هي بتبين مرونة كبيرة وقت المشاكل." } ]}
             ],
             b2_expressions: [
-                { id: 'b2_e_1', type: "Meinung äußern", ger: "Meiner Auffassung nach...", eng: "In my view...", ar: "من وجهة نظري...", context: "للتعبير عن الرأي بقوة في الامتحانات." },
-                { id: 'b2_e_2', type: "Aspekte betonen", ger: "Ein wesentlicher Aspekt ist, dass...", eng: "An essential aspect is that...", ar: "جانب أساسي هو إن...", context: "للتأكيد على نقطة مهمة في العرض (Präsentation)." },
-                { id: 'b2_e_3', type: "Standpunkt", ger: "Ich stehe auf dem Standpunkt, dass...", eng: "I take the view that...", ar: "أنا متبني وجهة النظر اللي بتقول إن...", context: "طريقة راقية لقول (Ich denke)." },
-                { id: 'b2_e_4', type: "Pro & Kontra", ger: "Einerseits ..., andererseits ...", eng: "On the one hand..., on the other hand...", ar: "من ناحية... ومن ناحية تانية...", context: "لوزن المميزات والعيوب في النقاش." },
-                { id: 'b2_e_5', type: "Vorschläge", ger: "Aus diesem Grund würde ich vorschlagen, dass...", eng: "For this reason, I would suggest that...", ar: "للسبب ده أنا بقترح إن...", context: "لتقديم حلول في نهاية النقاش." },
-                { id: 'b2_e_6', type: "Widersprechen", ger: "Da muss ich Ihnen leider widersprechen.", eng: "I have to disagree with you there.", ar: "للأسف مضطر أختلف معاك في النقطة دي.", context: "للاعتراض بأدب شديد." },
-                { id: 'b2_e_7', type: "Teilweise Zustimmung", ger: "Das ist zwar im Prinzip richtig, aber...", eng: "That is correct in principle, but...", ar: "ده صح مبدئياً، لكن...", context: "لما توافق جزئياً بس عندك تحفظ." },
-                { id: 'b2_e_8', type: "Zweifel", ger: "Ich kann dem nur teilweise zustimmen.", eng: "I can only partly agree with that.", ar: "أقدر أوافق على ده جزئياً بس.", context: "للتعبير عن عدم الاقتناع الكامل." },
-                { id: 'b2_e_9', type: "Ergänzen", ger: "Wir sollten auch in Betracht ziehen, dass...", eng: "We should also consider that...", ar: "المفروض كمان ناخد في الاعتبار إن...", context: "لإضافة فكرة جديدة للنقاش." },
-                { id: 'b2_e_10', type: "Zusammenfassen", ger: "Zusammenfassend lässt sich sagen, dass...", eng: "In summary, it can be said that...", ar: "في النهاية نقدر نقول إن...", context: "لختام البرزنتيشن أو النقاش." },
-                { id: 'b2_e_11', type: "Beispiele", ger: "Ein gutes Beispiel dafür ist...", eng: "A good example of this is...", ar: "مثال كويس على ده هو...", context: "لضرب أمثلة توضيحية." },
-                { id: 'b2_e_12', type: "Sicherheit", ger: "Es steht außer Zweifel, dass...", eng: "It is beyond doubt that...", ar: "مما لا شك فيه إن...", context: "للتأكيد على حقيقة مؤكدة." },
-                { id: 'b2_e_13', type: "Skepsis", ger: "Mich überzeugt dieses Argument nicht ganz.", eng: "This argument doesn't fully convince me.", ar: "الحجة دي مش مقنعاني أوي.", context: "لرفض حجة الخصم بأدب." }
+                { id: 'b2_e_1', type: "Meinung äußern", ger: "Meiner Auffassung nach...", eng: "In my view...", ar: "من وجهة نظري...", ex: { g: "Meiner Auffassung nach ist das die beste Lösung.", e: "In my view, this is the best solution.", a: "من وجهة نظري ده أحسن حل." } },
+                { id: 'b2_e_2', type: "Aspekte betonen", ger: "Ein wesentlicher Aspekt ist, dass...", eng: "An essential aspect is that...", ar: "جانب أساسي هو إن...", ex: { g: "Ein wesentlicher Aspekt ist, dass wir Zeit sparen.", e: "An essential aspect is that we save time.", a: "جانب أساسي هو إننا بنوفر وقت." } },
+                { id: 'b2_e_3', type: "Standpunkt", ger: "Ich stehe auf dem Standpunkt, dass...", eng: "I take the view that...", ar: "أنا متبني وجهة النظر اللي بتقول إن...", ex: { g: "Ich stehe auf dem Standpunkt, dass Gesundheit vorgeht.", e: "I take the view that health comes first.", a: "أنا متبني وجهة النظر إن الصحة أهم." } },
+                { id: 'b2_e_4', type: "Pro & Kontra", ger: "Einerseits ..., andererseits ...", eng: "On the one hand..., on the other hand...", ar: "من ناحية... ومن ناحية تانية...", ex: { g: "Einerseits ist es teuer, andererseits sehr nützlich.", e: "On the one hand it is expensive, on the other hand very useful.", a: "من ناحية هو غالي، ومن ناحية تانية مفيد جداً." } },
+                { id: 'b2_e_5', type: "Vorschläge", ger: "Aus diesem Grund würde ich vorschlagen, dass...", eng: "For this reason, I would suggest that...", ar: "للسبب ده أنا بقترح إن...", ex: { g: "Aus diesem Grund würde ich vorschlagen, dass wir warten.", e: "For this reason, I would suggest that we wait.", a: "للسبب ده أنا بقترح إننا نستنى." } },
+                { id: 'b2_e_6', type: "Widersprechen", ger: "Da muss ich Ihnen leider widersprechen.", eng: "I have to disagree with you there.", ar: "للأسف مضطر أختلف معاك في النقطة دي.", ex: { g: "Da muss ich Ihnen leider widersprechen, das sehe ich anders.", e: "I have to disagree with you there, I see it differently.", a: "للأسف مضطر أختلف معاك، أنا شايف الموضوع بشكل تاني." } },
+                { id: 'b2_e_7', type: "Teilweise Zustimmung", ger: "Das ist zwar im Prinzip richtig, aber...", eng: "That is correct in principle, but...", ar: "ده صح مبدئياً، لكن...", ex: { g: "Das ist zwar im Prinzip richtig, aber zu teuer.", e: "That is correct in principle, but too expensive.", a: "ده صح مبدئياً، لكن غالي جداً." } },
+                { id: 'b2_e_8', type: "Zweifel", ger: "Ich kann dem nur teilweise zustimmen.", eng: "I can only partly agree with that.", ar: "أقدر أوافق على ده جزئياً بس.", ex: { g: "Ich kann dem nur teilweise zustimmen, weil Geld fehlt.", e: "I can only partly agree with that, because money is missing.", a: "أقدر أوافق على ده جزئياً بس، عشان مفيش فلوس." } },
+                { id: 'b2_e_9', type: "Ergänzen", ger: "Wir sollten auch in Betracht ziehen, dass...", eng: "We should also consider that...", ar: "المفروض كمان ناخد في الاعتبار إن...", ex: { g: "Wir sollten auch in Betracht ziehen, dass das Risiko hoch ist.", e: "We should also consider that the risk is high.", a: "المفروض كمان ناخد في الاعتبار إن المخاطرة عالية." } },
+                { id: 'b2_e_10', type: "Zusammenfassen", ger: "Zusammenfassend lässt sich sagen, dass...", eng: "In summary, it can be said that...", ar: "في النهاية نقدر نقول إن...", ex: { g: "Zusammenfassend lässt sich sagen, dass der Plan funktioniert.", e: "In summary, it can be said that the plan works.", a: "في النهاية نقدر نقول إن الخطة شغالة." } },
+                { id: 'b2_e_11', type: "Beispiele", ger: "Ein gutes Beispiel dafür ist...", eng: "A good example of this is...", ar: "مثال كويس على ده هو...", ex: { g: "Ein gutes Beispiel dafür ist die neue Software.", e: "A good example of this is the new software.", a: "مثال كويس على ده هو السوفت وير الجديد." } },
+                { id: 'b2_e_12', type: "Sicherheit", ger: "Es steht außer Zweifel, dass...", eng: "It is beyond doubt that...", ar: "مما لا شك فيه إن...", ex: { g: "Es steht außer Zweifel, dass wir handeln müssen.", e: "It is beyond doubt that we must act.", a: "مما لا شك فيه إننا لازم نتحرك." } },
+                { id: 'b2_e_13', type: "Skepsis", ger: "Mich überzeugt dieses Argument nicht ganz.", eng: "This argument doesn't fully convince me.", ar: "الحجة دي مش مقنعاني أوي.", ex: { g: "Mich überzeugt dieses Argument nicht ganz, ehrlich gesagt.", e: "This argument doesn't fully convince me, to be honest.", a: "الحجة دي مش مقنعاني أوي بصراحة." } }
             ],
             b2_grammar: [
                 {
@@ -623,9 +611,9 @@
                     desc: "روابط بتتكون من جزئين بنستخدمها عشان نربط بين فكرتين أو صفتين. بتدي أسلوب راقي جداً في الكتابة والكلام (مهمة جداً لامتحانات B2).",
                     structure: "sowohl ... als auch (إضافة) | weder ... noch (نفي) | nicht nur ... sondern auch (إضافة وتأكيد)",
                     examples: [
-                        { g: "Er spricht <span class='text-purple-600 font-bold'>sowohl</span> Englisch <span class='text-purple-600 font-bold'>als auch</span> Deutsch.", a: "هو بيتكلم إنجليزي وألماني كمان. (sowohl... als auch بيجوا بدون كوما)" },
-                        { g: "Das ist <span class='text-purple-600 font-bold'>weder</span> praktisch <span class='text-purple-600 font-bold'>noch</span> günstig.", a: "ده لا هو عملي ولا هو رخيص. (لنفي الحاجتين سوا)" },
-                        { g: "Sie ist <span class='text-purple-600 font-bold'>nicht nur</span> intelligent, <span class='text-purple-600 font-bold'>sondern auch</span> sehr fleißig.", a: "هي مش بس ذكية، دي كمان مجتهدة جداً. (لازم كوما قبل sondern)" }
+                        { g: "Er spricht <span class='text-purple-600 font-bold'>sowohl</span> Englisch <span class='text-purple-600 font-bold'>als auch</span> Deutsch.", e: "He speaks both English and German.", a: "هو بيتكلم إنجليزي وألماني كمان. (sowohl... als auch بيجوا بدون كوما)" },
+                        { g: "Das ist <span class='text-purple-600 font-bold'>weder</span> praktisch <span class='text-purple-600 font-bold'>noch</span> günstig.", e: "That is neither practical nor cheap.", a: "ده لا هو عملي ولا هو رخيص. (لنفي الحاجتين سوا)" },
+                        { g: "Sie ist <span class='text-purple-600 font-bold'>nicht nur</span> intelligent, <span class='text-purple-600 font-bold'>sondern auch</span> sehr fleißig.", e: "She is not only intelligent, but also very hardworking.", a: "هي مش بس ذكية، دي كمان مجتهدة جداً. (لازم كوما قبل sondern)" }
                     ]
                 },
                 {
@@ -634,9 +622,9 @@
                     desc: "بدل ما تستخدم جملة Passiv معقدة، تقدر تستخدم بدائل شيك ومختصرة بتدي نفس المعنى (يُمكن فعله) لكن بطريقة أسهل وأكثر احترافية.",
                     structure: "sich lassen + Infinitiv | sein + zu + Infinitiv | Adjektive auf -bar/-lich",
                     examples: [
-                        { g: "Das Problem <span class='text-purple-600 font-bold'>lässt sich</span> leicht <span class='text-purple-600 font-bold'>lösen</span>.", a: "المشكلة دي ممكن تتحل بسهولة. (بدل kann gelöst werden)" },
-                        { g: "Die Aufgabe <span class='text-purple-600 font-bold'>ist</span> kaum <span class='text-purple-600 font-bold'>zu schaffen</span>.", a: "المهمة دي صعب تتعمل. (بدل kann kaum geschafft werden)" },
-                        { g: "Dieser Text ist gut <span class='text-purple-600 font-bold'>lesbar</span>.", a: "النص ده قابل للقراءة (سهل يتقري). (استخدام صفة تنتهي بـ bar)" }
+                        { g: "Das Problem <span class='text-purple-600 font-bold'>lässt sich</span> leicht <span class='text-purple-600 font-bold'>lösen</span>.", e: "The problem can be solved easily.", a: "المشكلة دي ممكن تتحل بسهولة. (بدل kann gelöst werden)" },
+                        { g: "Die Aufgabe <span class='text-purple-600 font-bold'>ist</span> kaum <span class='text-purple-600 font-bold'>zu schaffen</span>.", e: "The task is hardly manageable.", a: "المهمة دي صعب تتعمل. (بدل kann kaum geschafft werden)" },
+                        { g: "Dieser Text ist gut <span class='text-purple-600 font-bold'>lesbar</span>.", e: "This text is highly readable.", a: "النص ده قابل للقراءة (سهل يتقري). (استخدام صفة تنتهي بـ bar)" }
                     ]
                 },
                 {
@@ -645,9 +633,9 @@
                     desc: "بعض الأسماء المذكرة (غالباً اللي بتنتهي بـ -e أو -ent/-ist) بتعتبر 'ضعيفة'، يعني لازم تاخد حرف (n) أو (en) في كل حالات الإعراب (Akkusativ, Dativ, Genitiv) ما عدا حالة الفاعل Nominativ.",
                     structure: "Nominativ: der Student -> Akkusativ/Dativ/Genitiv: den/dem/des Studenten",
                     examples: [
-                        { g: "Ich spreche mit dem <span class='text-purple-600 font-bold'>Studenten</span>.", a: "أنا بتكلم مع الطالب. (Dativ ضفنا en)" },
-                        { g: "Wir fragen den <span class='text-purple-600 font-bold'>Experten</span>.", a: "إحنا بنسأل الخبير. (Akkusativ ضفنا en)" },
-                        { g: "Das ist die Meinung des <span class='text-purple-600 font-bold'>Herrn</span>.", a: "ده رأي السيد. (Genitiv ضفنا n وبس بدون s)" }
+                        { g: "Ich spreche mit dem <span class='text-purple-600 font-bold'>Studenten</span>.", e: "I am talking to the student.", a: "أنا بتكلم مع الطالب. (Dativ ضفنا en)" },
+                        { g: "Wir fragen den <span class='text-purple-600 font-bold'>Experten</span>.", e: "We are asking the expert.", a: "إحنا بنسأل الخبير. (Akkusativ ضفنا en)" },
+                        { g: "Das ist die Meinung des <span class='text-purple-600 font-bold'>Herrn</span>.", e: "That is the opinion of the gentleman.", a: "ده رأي السيد. (Genitiv ضفنا n وبس بدون s)" }
                     ]
                 }
             ]
@@ -840,7 +828,7 @@
                     
                     <div className={`transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                         <div className="bg-slate-50 p-5 border-t border-slate-100">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative group">
                                     <div className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Präsens (مضارع)</div>
                                     <div className="flex items-start gap-2 mb-2">
@@ -866,12 +854,27 @@
                                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.perfekt} /></div>
                                 </div>
                             </div>
+                            
+                            {/* Trilingual Example Sentence */}
+                            {item.ex && (
+                                <div className="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm relative group">
+                                    <div className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-2 border-b border-slate-100 pb-1">Beispiel (مثال)</div>
+                                    <div className="flex items-start gap-3 mb-2">
+                                        <button onClick={(e) => playAudio(item.ex.g, e)} className="text-emerald-500 bg-emerald-50 hover:bg-emerald-100 transition-colors p-1.5 rounded-lg shrink-0"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                        <p className="text-slate-800 text-base font-medium leading-relaxed mt-1" dangerouslySetInnerHTML={{ __html: item.ex.g }}></p>
+                                        <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity"><SpeechTester targetText={item.ex.g} /></div>
+                                    </div>
+                                    <p className="text-slate-500 text-sm ml-10 mb-2">{item.ex.e}</p>
+                                    <div className="ml-10 text-emerald-600 text-base font-bold ar-text border-t border-slate-100 pt-2" dir="rtl">{item.ex.a}</div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
             );
         };
 
+        // --- MAIN APP ---
         const App = () => {
             const [activeTab, setActiveTab] = useState('words');
             const [learnedItems, setLearnedItems] = useState(new Set());
@@ -1068,12 +1071,12 @@
                                                 </div>
                                                 
                                                 <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
-                                                    <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
-                                                    <p className="text-amber-700 font-extrabold text-xl mb-4 ar-text">{exp.ar}</p>
-                                                    <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
-                                                        <i data-lucide="info" className="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>
-                                                        <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                    <div className="flex items-start gap-2 mb-2" dir="ltr">
+                                                        <button onClick={(e) => playAudio(exp.ex.g, e)} className="text-amber-400 hover:text-amber-600 shrink-0 mt-0.5"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                        <span className="text-slate-700 font-medium" dangerouslySetInnerHTML={{ __html: exp.ex.g }}></span>
                                                     </div>
+                                                    <p className="text-slate-500 text-sm ml-6 mb-2" dir="ltr">{exp.ex.e}</p>
+                                                    <div className="text-amber-700 font-bold ar-text border-t border-slate-200 pt-2" dir="rtl">{exp.ex.a}</div>
                                                 </div>
                                             </div>
                                         ))}
@@ -1132,9 +1135,12 @@
                                                     <ul className="space-y-4">
                                                         {gram.examples.map((ex, i) => (
                                                             <li key={i} className="bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
-                                                                <div className="flex gap-4 items-center mb-3" dir="ltr">
+                                                                <div className="flex gap-4 items-start mb-3" dir="ltr">
                                                                     <button onClick={(e) => playAudio(ex.g, e)} className="text-purple-500 bg-white p-2 rounded-xl shadow-sm hover:bg-purple-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
-                                                                    <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                    <div>
+                                                                        <span className="text-slate-800 text-lg font-medium block mb-1" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                        <span className="text-slate-500 text-sm block">{ex.e}</span>
+                                                                    </div>
                                                                 </div>
                                                                 <div className="text-purple-700 font-bold ar-text border-t border-purple-200/50 pt-3 mt-3">{ex.a}</div>
                                                             </li>
@@ -1275,12 +1281,12 @@
                                                         </div>
                                                         
                                                         <div className="bg-slate-50 rounded-2xl p-4 mt-4 border border-slate-100">
-                                                            <p className="text-slate-500 font-medium text-sm mb-2" dir="ltr">{exp.eng}</p>
-                                                            <p className="text-indigo-700 font-extrabold text-xl mb-4 ar-text">{exp.ar}</p>
-                                                            <div className="text-sm text-slate-600 flex gap-2 items-start pt-3 border-t border-slate-200">
-                                                                <i data-lucide="info" className="w-5 h-5 text-indigo-400 mt-0.5 shrink-0"></i>
-                                                                <span className="ar-text leading-relaxed">{exp.context}</span>
+                                                            <div className="flex items-start gap-2 mb-2" dir="ltr">
+                                                                <button onClick={(e) => playAudio(exp.ex.g, e)} className="text-indigo-400 hover:text-indigo-600 shrink-0 mt-0.5"><i data-lucide="volume-2" className="w-4 h-4"></i></button>
+                                                                <span className="text-slate-700 font-medium" dangerouslySetInnerHTML={{ __html: exp.ex.g }}></span>
                                                             </div>
+                                                            <p className="text-slate-500 text-sm ml-6 mb-2" dir="ltr">{exp.ex.e}</p>
+                                                            <div className="text-indigo-700 font-bold ar-text border-t border-slate-200 pt-2" dir="rtl">{exp.ex.a}</div>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -1314,9 +1320,12 @@
                                                             <ul className="space-y-4">
                                                                 {gram.examples.map((ex, i) => (
                                                                     <li key={i} className="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100">
-                                                                        <div className="flex gap-4 items-center mb-3" dir="ltr">
+                                                                        <div className="flex gap-4 items-start mb-3" dir="ltr">
                                                                             <button onClick={(e) => playAudio(ex.g, e)} className="text-indigo-500 bg-white p-2 rounded-xl shadow-sm hover:bg-indigo-50 transition-colors shrink-0"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
-                                                                            <span className="text-slate-800 text-lg font-medium" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                            <div>
+                                                                                <span className="text-slate-800 text-lg font-medium block mb-1" dangerouslySetInnerHTML={{ __html: ex.g }}></span>
+                                                                                <span className="text-slate-500 text-sm block">{ex.e}</span>
+                                                                            </div>
                                                                         </div>
                                                                         <div className="text-indigo-700 font-bold ar-text border-t border-indigo-200/50 pt-3 mt-3">{ex.a}</div>
                                                                     </li>
