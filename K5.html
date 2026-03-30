@@ -299,6 +299,15 @@
                     title: "1. Relativsätze (الجمل الموصولة)",
                     desc: "الجمل الموصولة تُستخدم لتجنب التكرار وربط الجمل. القاعدة الذهبية هنا: الضمير الموصول يأخذ (الجنس والعدد: مذكر/مؤنث/مفرد/جمع) من الكلمة التي يشير إليها في الجملة الرئيسية، ولكن (حالة الإعراب: Nominativ, Akkusativ, Dativ) تتحدد حصرياً بناءً على وظيفته النحوية داخل الجملة الموصولة نفسها (هل هو فاعل، مفعول به، أم مجرور بحرف جر؟). ولا تنسَ وضع الفاصلة (Komma) قبل الضمير، وأن الفعل المُصرف يذهب دائماً لنهاية الجملة.",
                     structure: "Nominativ: der/die/das/die | Akkusativ: den/die/das/die | Dativ: dem/der/dem/denen",
+                    table: {
+                        headers: ["Kasus (الحالة)", "Maskulin (m)", "Feminin (f)", "Neutral (n)", "Plural (pl)"],
+                        rows: [
+                            ["Nominativ", "der", "die", "das", "die"],
+                            ["Akkusativ", "den", "die", "das", "die"],
+                            ["Dativ", "dem", "der", "dem", "denen"],
+                            ["Genitiv", "dessen", "deren", "dessen", "deren"]
+                        ]
+                    },
                     examples: [
                         { g: "Das ist der <span class='text-blue-600 font-bold'>Wissenschaftler</span>, <span class='text-rose-600 font-bold'>der</span> das Gerät entwickelt <span class='text-emerald-600 font-bold'>hat</span>.", a: "ده العالم اللي (الفاعل) طور الجهاز.<br><span class='text-xs text-slate-500 mt-1 inline-block'>🟦 الكلمة المرجعية | 🟥 الضمير الموصول | 🟩 الفعل المصرف (في النهاية)</span>" },
                         { g: "Das ist die <span class='text-blue-600 font-bold'>Stadt</span>, in <span class='text-rose-600 font-bold'>der</span> Schiller gelehrt <span class='text-emerald-600 font-bold'>hat</span>.", a: "دي المدينة اللي (Dativ بسبب حرف in) شيلر درس فيها." },
@@ -973,6 +982,34 @@
                                                     <div className="bg-slate-900 text-purple-300 font-mono text-base p-5 rounded-2xl mb-8 shadow-inner flex items-center gap-3 overflow-x-auto border border-slate-800" dir="ltr">
                                                         <i data-lucide="code" className="text-slate-500 w-5 h-5 shrink-0"></i> {gram.structure}
                                                     </div>
+
+                                                    {gram.table && (
+                                                        <div className="mb-8 overflow-x-auto rounded-2xl border border-purple-200 shadow-sm" dir="ltr">
+                                                            <table className="w-full text-left border-collapse">
+                                                                <thead>
+                                                                    <tr className="bg-purple-100 text-purple-800 text-sm tracking-wider">
+                                                                        {gram.table.headers.map((h, i) => (
+                                                                            <th key={i} className="p-4 font-bold border-b border-purple-200">{h}</th>
+                                                                        ))}
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {gram.table.rows.map((row, rIdx) => (
+                                                                        <tr key={rIdx} className={rIdx % 2 === 0 ? "bg-white" : "bg-purple-50/50"}>
+                                                                            {row.map((cell, cIdx) => (
+                                                                                <td key={cIdx} className={`p-4 border-b border-purple-100 ${cIdx === 0 ? 'font-bold text-slate-700' : 'text-slate-600'} ${['denen', 'dessen', 'deren'].includes(cell) ? 'text-rose-600 font-bold' : ''}`}>
+                                                                                    {cell}
+                                                                                </td>
+                                                                            ))}
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                            <div className="bg-purple-50/30 p-3 text-xs text-slate-600 ar-text text-right" dir="rtl">
+                                                                * لاحظ الاختلافات باللون الأحمر (<span className="text-rose-600 font-bold">denen</span> في جمع Dativ) و (<span className="text-rose-600 font-bold">dessen/deren</span> في الـ Genitiv) عن أدوات التعريف العادية.
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                     
                                                     <h4 className="font-bold text-slate-400 mb-4 text-sm tracking-widest uppercase ar-text">أمثلة للتوضيح:</h4>
                                                     <ul className="space-y-4">
