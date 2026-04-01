@@ -118,264 +118,469 @@
             );
         };
 
-        // --- COMPREHENSIVE LEARNING DATA (With Exactly 3 Examples per item) ---
+        // --- COMPREHENSIVE LEARNING DATA (Fully Split + Plurals added) ---
         const LEARNING_DATA = {
             words: {
                 gesundheit_fitness: [
-                    { id: 'w1', ger: "die Gesundheit / die Fitness", eng: "Health / Fitness", ar: "الصحة / اللياقة البدنية", s: [
-                        { g: "<strong>Gesundheit</strong> und <strong>Fitness</strong> sind sehr wichtig.", e: "Health and fitness are very important.", a: "الصحة واللياقة البدنية مهمين جداً." },
+                    { id: 'w1_1', ger: "die Gesundheit", plural: "(nur Singular)", eng: "Health", ar: "الصحة", s: [
+                        { g: "<strong>Gesundheit</strong> ist das Wichtigste im Leben.", e: "Health is the most important thing in life.", a: "الصحة هي أهم حاجة في الحياة." },
                         { g: "Er achtet sehr auf seine <strong>Gesundheit</strong>.", e: "He pays close attention to his health.", a: "هو بيهتم بصحته جداً." },
-                        { g: "Sport verbessert die <strong>Fitness</strong>.", e: "Sport improves fitness.", a: "الرياضة بتحسن اللياقة البدنية." }
+                        { g: "Rauchen schadet der <strong>Gesundheit</strong>.", e: "Smoking harms health.", a: "التدخين بيضر الصحة." }
                     ]},
-                    { id: 'w2', ger: "die Führungskraft / die Führungskräfte", eng: "Manager / Executives", ar: "المدير / القيادات (الكوادر القيادية)", s: [
+                    { id: 'w1_2', ger: "die Fitness", plural: "(nur Singular)", eng: "Fitness", ar: "اللياقة البدنية", s: [
+                        { g: "Er tut viel für seine <strong>Fitness</strong>.", e: "He does a lot for his fitness.", a: "هو بيعمل مجهود كبير عشان لياقته." },
+                        { g: "Sport verbessert die <strong>Fitness</strong> enorm.", e: "Sport improves fitness enormously.", a: "الرياضة بتحسن اللياقة بشكل كبير." },
+                        { g: "Sie hat eine sehr gute <strong>Fitness</strong>.", e: "She has very good fitness.", a: "هي عندها لياقة بدنية ممتازة." }
+                    ]},
+                    { id: 'w2', ger: "die Führungskraft", plural: "die Führungskräfte", eng: "Manager / Executive", ar: "المدير / الكادر القيادي", s: [
                         { g: "Eine gute <strong>Führungskraft</strong> motiviert das Team.", e: "A good manager motivates the team.", a: "المدير الشاطر بيحفز فريقه." },
                         { g: "Die <strong>Führungskräfte</strong> treffen sich heute im Büro.", e: "The executives are meeting in the office today.", a: "القيادات هيجتمعوا في المكتب النهاردة." },
                         { g: "Er wurde zur <strong>Führungskraft</strong> befördert.", e: "He was promoted to manager.", a: "هو اترقى لمدير/كادر قيادي." }
                     ]},
-                    { id: 'w3', ger: "das Nahrungsergänzungsmittel", eng: "Dietary supplement", ar: "المكملات الغذائية", s: [
+                    { id: 'w3', ger: "das Nahrungsergänzungsmittel", plural: "die Nahrungsergänzungsmittel", eng: "Dietary supplement", ar: "المكمل الغذائي", s: [
                         { g: "Nimmst du oft <strong>Nahrungsergänzungsmittel</strong>?", e: "Do you often take dietary supplements?", a: "بتاخد مكملات غذائية كتير؟" },
                         { g: "Viele Sportler nutzen <strong>Nahrungsergänzungsmittel</strong>.", e: "Many athletes use dietary supplements.", a: "رياضيين كتير بيستخدموا المكملات الغذائية." },
                         { g: "Ein <strong>Nahrungsergänzungsmittel</strong> ersetzt keine gute Ernährung.", e: "A dietary supplement does not replace a good diet.", a: "المكمل الغذائي مش بديل للتغذية السليمة." }
                     ]},
-                    { id: 'w4', ger: "die Vitaminpille", eng: "Vitamin pill", ar: "حبوب الفيتامينات", s: [
+                    { id: 'w4', ger: "die Vitaminpille", plural: "die Vitaminpillen", eng: "Vitamin pill", ar: "حبة الفيتامينات", s: [
                         { g: "Jeden Morgen nimmt sie eine <strong>Vitaminpille</strong>.", e: "Every morning she takes a vitamin pill.", a: "كل يوم الصبح بتاخد حبة فيتامين." },
                         { g: "Eine <strong>Vitaminpille</strong> kann im Winter helfen.", e: "A vitamin pill can help in winter.", a: "حبة الفيتامين ممكن تساعد في الشتا." },
                         { g: "Hast du deine <strong>Vitaminpille</strong> geschluckt?", e: "Did you swallow your vitamin pill?", a: "بلعت حبة الفيتامين بتاعتك؟" }
                     ]},
-                    { id: 'w5', ger: "die Entspannungstechnik / die Meditation", eng: "Relaxation technique / Meditation", ar: "تقنية الاسترخاء / التأمل", s: [
-                        { g: "<strong>Meditation</strong> ist eine tolle <strong>Entspannungstechnik</strong>.", e: "Meditation is a great relaxation technique.", a: "التأمل هو تقنية استرخاء رائعة." },
+                    { id: 'w5_1', ger: "die Entspannungstechnik", plural: "die Entspannungstechniken", eng: "Relaxation technique", ar: "تقنية الاسترخاء", s: [
                         { g: "Ich lerne eine neue <strong>Entspannungstechnik</strong>.", e: "I am learning a new relaxation technique.", a: "أنا بتعلم تقنية استرخاء جديدة." },
-                        { g: "Tägliche <strong>Meditation</strong> beruhigt den Geist.", e: "Daily meditation calms the mind.", a: "التأمل اليومي بيهدي العقل." }
+                        { g: "Diese <strong>Entspannungstechnik</strong> hilft gegen Stress.", e: "This relaxation technique helps against stress.", a: "تقنية الاسترخاء دي بتساعد ضد التوتر." },
+                        { g: "Es gibt viele verschiedene <strong>Entspannungstechniken</strong>.", e: "There are many different relaxation techniques.", a: "في تقنيات استرخاء كتير مختلفة." }
                     ]},
-                    { id: 'w6', ger: "das Fitnessarmband / die Gesundheits-App", eng: "Fitness tracker / Health app", ar: "سوار اللياقة البدنية / تطبيق الصحة", s: [
-                        { g: "Mein <strong>Fitnessarmband</strong> ist mit der <strong>Gesundheits-App</strong> verbunden.", e: "My fitness tracker is connected to the health app.", a: "سوار اللياقة بتاعي متوصل بتطبيق الصحة." },
+                    { id: 'w5_2', ger: "die Meditation", plural: "die Meditationen", eng: "Meditation", ar: "التأمل", s: [
+                        { g: "<strong>Meditation</strong> beruhigt den Geist.", e: "Meditation calms the mind.", a: "التأمل بيهدي العقل." },
+                        { g: "Tägliche <strong>Meditation</strong> hilft bei Stress.", e: "Daily meditation helps with stress.", a: "التأمل اليومي بيساعد في علاج التوتر." },
+                        { g: "Er macht jeden Abend eine halbe Stunde <strong>Meditation</strong>.", e: "He does half an hour of meditation every evening.", a: "هو بيعمل تأمل نص ساعة كل يوم بالليل." }
+                    ]},
+                    { id: 'w6_1', ger: "das Fitnessarmband", plural: "die Fitnessarmbänder", eng: "Fitness tracker", ar: "سوار اللياقة البدنية", s: [
+                        { g: "Mein <strong>Fitnessarmband</strong> zählt meine Schritte.", e: "My fitness tracker counts my steps.", a: "سوار اللياقة بتاعي بيعد خطواتي." },
+                        { g: "Ein <strong>Fitnessarmband</strong> motiviert zur Bewegung.", e: "A fitness tracker motivates you to move.", a: "سوار اللياقة بيشجعك على الحركة." },
+                        { g: "Ich lade mein <strong>Fitnessarmband</strong> auf.", e: "I am charging my fitness tracker.", a: "أنا بشحن سوار اللياقة بتاعي." }
+                    ]},
+                    { id: 'w6_2', ger: "die Gesundheits-App", plural: "die Gesundheits-Apps", eng: "Health app", ar: "تطبيق الصحة", s: [
+                        { g: "Ich benutze eine neue <strong>Gesundheits-App</strong>.", e: "I am using a new health app.", a: "أنا بستخدم تطبيق صحة جديد." },
                         { g: "Die <strong>Gesundheits-App</strong> zeigt meine Daten.", e: "The health app shows my data.", a: "تطبيق الصحة بيعرض بياناتي." },
-                        { g: "Ein <strong>Fitnessarmband</strong> motiviert zur Bewegung.", e: "A fitness tracker motivates you to move.", a: "سوار اللياقة بيشجعك على الحركة." }
+                        { g: "Laden Sie diese <strong>Gesundheits-App</strong> herunter.", e: "Download this health app.", a: "حمل تطبيق الصحة ده." }
                     ]},
-                    { id: 'w7', ger: "der Puls / der Blutdruck", eng: "Pulse / Blood pressure", ar: "النبض / ضغط الدم", s: [
-                        { g: "Der Arzt misst den <strong>Blutdruck</strong> und den <strong>Puls</strong>.", e: "The doctor measures the blood pressure and the pulse.", a: "الدكتور بيقيس ضغط الدم والنبض." },
+                    { id: 'w7_1', ger: "der Puls", plural: "die Pulse", eng: "Pulse / Heart rate", ar: "النبض", s: [
+                        { g: "Der Arzt misst den <strong>Puls</strong>.", e: "The doctor measures the pulse.", a: "الدكتور بيقيس النبض." },
+                        { g: "Beim Laufen steigt der <strong>Puls</strong> schnell an.", e: "When running, the pulse rises quickly.", a: "وقت الجري النبض بيعلى بسرعة." },
+                        { g: "Mein <strong>Puls</strong> ist ganz normal.", e: "My pulse is completely normal.", a: "نبضي طبيعي جداً." }
+                    ]},
+                    { id: 'w7_2', ger: "der Blutdruck", plural: "die Blutdrücke", eng: "Blood pressure", ar: "ضغط الدم", s: [
+                        { g: "Der Arzt misst den <strong>Blutdruck</strong>.", e: "The doctor measures the blood pressure.", a: "الدكتور بيقيس ضغط الدم." },
                         { g: "Mein <strong>Blutdruck</strong> ist heute etwas zu hoch.", e: "My blood pressure is a bit too high today.", a: "ضغط دمي عالي شوية النهاردة." },
-                        { g: "Beim Laufen steigt der <strong>Puls</strong> schnell an.", e: "When running, the pulse rises quickly.", a: "وقت الجري النبض بيعلى بسرعة." }
+                        { g: "Sie hat einen niedrigen <strong>Blutdruck</strong>.", e: "She has low blood pressure.", a: "هي عندها ضغط دم واطي." }
                     ]},
-                    { id: 'w8', ger: "die Ernährung", eng: "Nutrition / Diet", ar: "التغذية", s: [
+                    { id: 'w8', ger: "die Ernährung", plural: "die Ernährungen", eng: "Nutrition / Diet", ar: "التغذية", s: [
                         { g: "Eine gesunde <strong>Ernährung</strong> ist das Wichtigste.", e: "A healthy diet is the most important thing.", a: "التغذية الصحية هي أهم حاجة." },
                         { g: "Er hat seine <strong>Ernährung</strong> komplett umgestellt.", e: "He has completely changed his diet.", a: "هو غير نظام تغذيته بالكامل." },
                         { g: "Schlechte <strong>Ernährung</strong> führt zu Krankheiten.", e: "Poor nutrition leads to diseases.", a: "التغذية السيئة بتؤدي للأمراض." }
                     ]},
-                    { id: 'w9', ger: "das Fertiggericht / die Mikrowelle", eng: "Ready meal / Microwave", ar: "الوجبة الجاهزة / الميكروويف", s: [
-                        { g: "Er macht das <strong>Fertiggericht</strong> in der <strong>Mikrowelle</strong> warm.", e: "He warms up the ready meal in the microwave.", a: "هو بيسخن الوجبة الجاهزة في الميكروويف." },
+                    { id: 'w9_1', ger: "das Fertiggericht", plural: "die Fertiggerichte", eng: "Ready meal", ar: "الوجبة الجاهزة", s: [
+                        { g: "Er isst abends oft ein <strong>Fertiggericht</strong>.", e: "He often eats a ready meal in the evening.", a: "هو غالباً بياكل وجبة جاهزة بالليل." },
                         { g: "Ein <strong>Fertiggericht</strong> ist oft nicht sehr gesund.", e: "A ready meal is often not very healthy.", a: "الوجبة الجاهزة غالباً مش صحية قوي." },
-                        { g: "Die <strong>Mikrowelle</strong> ist kaputt gegangen.", e: "The microwave is broken.", a: "الميكروويف باظ." }
+                        { g: "Wir kaufen heute keine <strong>Fertiggerichte</strong>.", e: "We are not buying any ready meals today.", a: "إحنا مش هنشتري وجبات جاهزة النهاردة." }
                     ]},
-                    { id: 'w10', ger: "das Fleisch / die Pizza", eng: "Meat / Pizza", ar: "اللحم / البيتزا", s: [
-                        { g: "Ich esse lieber <strong>Pizza</strong> als <strong>Fleisch</strong>.", e: "I prefer eating pizza over meat.", a: "بفضل أكل بيتزا عن اللحمة." },
+                    { id: 'w9_2', ger: "die Mikrowelle", plural: "die Mikrowellen", eng: "Microwave", ar: "الميكروويف", s: [
+                        { g: "Er macht das Essen in der <strong>Mikrowelle</strong> warm.", e: "He warms up the food in the microwave.", a: "هو بيسخن الأكل في الميكروويف." },
+                        { g: "Unsere <strong>Mikrowelle</strong> ist gestern kaputt gegangen.", e: "Our microwave broke yesterday.", a: "الميكروويف بتاعنا باظ امبارح." },
+                        { g: "Stell den Teller in die <strong>Mikrowelle</strong>.", e: "Put the plate in the microwave.", a: "حط الطبق في الميكروويف." }
+                    ]},
+                    { id: 'w10_1', ger: "das Fleisch", plural: "(nur Singular)", eng: "Meat", ar: "اللحم", s: [
+                        { g: "Er isst jeden Tag <strong>Fleisch</strong>.", e: "He eats meat every day.", a: "هو بياكل لحمة كل يوم." },
                         { g: "Dieses <strong>Fleisch</strong> ist sehr zart.", e: "This meat is very tender.", a: "اللحمة دي طرية جداً." },
-                        { g: "Wir bestellen heute Abend eine große <strong>Pizza</strong>.", e: "We are ordering a large pizza tonight.", a: "هنطلب بيتزا كبيرة بالليل." }
+                        { g: "Ich esse lieber Geflügel als rotes <strong>Fleisch</strong>.", e: "I prefer eating poultry over red meat.", a: "بفضل أكل فراخ عن اللحمة الحمرا." }
                     ]},
-                    { id: 'w11', ger: "die Sauna / das Fitnessstudio", eng: "Sauna / Gym", ar: "الساونا / صالة الألعاب الرياضية", s: [
-                        { g: "Nach dem <strong>Fitnessstudio</strong> gehe ich in die <strong>Sauna</strong>.", e: "After the gym, I go to the sauna.", a: "بعد الجيم بروح الساونا." },
+                    { id: 'w10_2', ger: "die Pizza", plural: "die Pizzen / die Pizzas", eng: "Pizza", ar: "البيتزا", s: [
+                        { g: "Ich esse heute Abend eine <strong>Pizza</strong>.", e: "I am eating a pizza tonight.", a: "هاكل بيتزا النهاردة بالليل." },
+                        { g: "Wir bestellen zwei große <strong>Pizzen</strong>.", e: "We are ordering two large pizzas.", a: "هنطلب اتنين بيتزا كبار." },
+                        { g: "Magst du <strong>Pizza</strong> mit viel Käse?", e: "Do you like pizza with a lot of cheese?", a: "بتحب البيتزا بجبنة كتير؟" }
+                    ]},
+                    { id: 'w11_1', ger: "die Sauna", plural: "die Saunen", eng: "Sauna", ar: "الساونا", s: [
+                        { g: "Nach dem Sport gehe ich in die <strong>Sauna</strong>.", e: "After sports, I go to the sauna.", a: "بعد الرياضة بروح الساونا." },
                         { g: "Die <strong>Sauna</strong> ist gut für das Immunsystem.", e: "The sauna is good for the immune system.", a: "الساونا مفيدة لجهاز المناعة." },
-                        { g: "Ich habe mich im <strong>Fitnessstudio</strong> angemeldet.", e: "I have registered at the gym.", a: "أنا سجلت نفسي في الجيم." }
+                        { g: "Es ist sehr heiß in der <strong>Sauna</strong>.", e: "It is very hot in the sauna.", a: "الجو حر جداً في الساونا." }
                     ]},
-                    { id: 'w12', ger: "der Trainingsanzug / die Sportschuhe", eng: "Tracksuit / Sports shoes", ar: "البدلة الرياضية / الأحذية الرياضية", s: [
-                        { g: "Ich brauche einen neuen <strong>Trainingsanzug</strong> und <strong>Sportschuhe</strong>.", e: "I need a new tracksuit and sports shoes.", a: "محتاج بدلة رياضية وكوتشي جديد." },
+                    { id: 'w11_2', ger: "das Fitnessstudio", plural: "die Fitnessstudios", eng: "Gym", ar: "صالة الألعاب الرياضية", s: [
+                        { g: "Ich trainiere dreimal pro Woche im <strong>Fitnessstudio</strong>.", e: "I train at the gym three times a week.", a: "بتدرب في الجيم تلات مرات في الأسبوع." },
+                        { g: "Ich habe mich im <strong>Fitnessstudio</strong> angemeldet.", e: "I have registered at the gym.", a: "أنا سجلت نفسي في الجيم." },
+                        { g: "Das neue <strong>Fitnessstudio</strong> ist sehr modern.", e: "The new gym is very modern.", a: "الجيم الجديد حديث جداً." }
+                    ]},
+                    { id: 'w12_1', ger: "der Trainingsanzug", plural: "die Trainingsanzüge", eng: "Tracksuit", ar: "البدلة الرياضية", s: [
+                        { g: "Ich brauche einen neuen <strong>Trainingsanzug</strong>.", e: "I need a new tracksuit.", a: "محتاج بدلة رياضية جديدة." },
                         { g: "Zieh deinen <strong>Trainingsanzug</strong> an!", e: "Put on your tracksuit!", a: "اللبس البدلة الرياضية بتاعتك!" },
-                        { g: "Diese <strong>Sportschuhe</strong> sind sehr bequem.", e: "These sports shoes are very comfortable.", a: "الكوتشي ده مريح جداً." }
+                        { g: "Der blaue <strong>Trainingsanzug</strong> passt mir gut.", e: "The blue tracksuit fits me well.", a: "البدلة الرياضية الزرقا مقاسي بالظبط." }
                     ]},
-                    { id: 'w13', ger: "das Yoga / das Radfahren / das Joggen", eng: "Yoga / Cycling / Jogging", ar: "اليوجا / ركوب الدراجات / الركض", s: [
-                        { g: "<strong>Yoga</strong>, <strong>Radfahren</strong> und <strong>Joggen</strong> machen fit.", e: "Yoga, cycling, and jogging make you fit.", a: "اليوجا والعجل والجري بيخلوك لائق بدنياً." },
-                        { g: "Beim <strong>Radfahren</strong> entspanne ich mich.", e: "I relax while cycling.", a: "أنا بسترخي وأنا راكب العجل." },
-                        { g: "Er geht jeden Morgen eine Stunde <strong>Joggen</strong>.", e: "He goes jogging for an hour every morning.", a: "هو بيروح يجري ساعة كل يوم الصبح." }
+                    { id: 'w12_2', ger: "der Sportschuh", plural: "die Sportschuhe", eng: "Sports shoe", ar: "الحذاء الرياضي", s: [
+                        { g: "Ich kaufe mir neue <strong>Sportschuhe</strong> zum Laufen.", e: "I am buying new sports shoes for running.", a: "بشتري كوتشي جديد للجري." },
+                        { g: "Diese <strong>Sportschuhe</strong> sind sehr bequem.", e: "These sports shoes are very comfortable.", a: "الكوتشي ده مريح جداً." },
+                        { g: "Zieh bitte deine <strong>Sportschuhe</strong> aus.", e: "Please take off your sports shoes.", a: "لو سمحت اقلع الكوتشي بتاعك." }
+                    ]},
+                    { id: 'w13_1', ger: "das Yoga", plural: "(nur Singular)", eng: "Yoga", ar: "اليوجا", s: [
+                        { g: "<strong>Yoga</strong> macht den Körper fit und flexibel.", e: "Yoga makes the body fit and flexible.", a: "اليوجا بتخلي الجسم لائق ومرن." },
+                        { g: "Sie macht jeden Morgen <strong>Yoga</strong>.", e: "She does yoga every morning.", a: "هي بتلعب يوجا كل يوم الصبح." },
+                        { g: "Der <strong>Yoga</strong>-Kurs beginnt um acht Uhr.", e: "The yoga course begins at eight o'clock.", a: "كورس اليوجا بيبدأ الساعة ٨." }
+                    ]},
+                    { id: 'w13_2', ger: "das Radfahren", plural: "(nur Singular)", eng: "Cycling", ar: "ركوب الدراجات", s: [
+                        { g: "Beim <strong>Radfahren</strong> kann ich mich gut entspannen.", e: "I can relax well while cycling.", a: "بقدر أسترخي كويس وأنا راكب العجل." },
+                        { g: "<strong>Radfahren</strong> ist sehr gesund für das Herz.", e: "Cycling is very healthy for the heart.", a: "ركوب العجل صحي جداً للقلب." },
+                        { g: "Wir planen ein Wochenende mit viel <strong>Radfahren</strong>.", e: "We are planning a weekend with lots of cycling.", a: "بنخطط لويك إند فيه ركوب عجل كتير." }
+                    ]},
+                    { id: 'w13_3', ger: "das Joggen", plural: "(nur Singular)", eng: "Jogging", ar: "الركض", s: [
+                        { g: "Er geht jeden Morgen eine Stunde <strong>Joggen</strong>.", e: "He goes jogging for an hour every morning.", a: "هو بيروح يجري ساعة كل يوم الصبح." },
+                        { g: "<strong>Joggen</strong> im Wald ist meine Lieblingssportart.", e: "Jogging in the forest is my favorite sport.", a: "الجري في الغابة هو رياضتي المفضلة." },
+                        { g: "Beim <strong>Joggen</strong> höre ich gerne Musik.", e: "I like listening to music while jogging.", a: "بحب أسمع مزيكا وأنا بجري." }
                     ]}
                 ],
                 schlaf_buero: [
-                    { id: 'w14', ger: "das Mittagsschläfchen / der Power-Nap", eng: "Afternoon nap / Power nap", ar: "قيلولة الظهيرة / الغفوة المنشطة", s: [
-                        { g: "Ein <strong>Mittagsschläfchen</strong> oder <strong>Power-Nap</strong> gibt neue Energie.", e: "An afternoon nap or power nap gives new energy.", a: "قيلولة الضهر أو الغفوة بتدي طاقة جديدة." },
-                        { g: "Ein <strong>Power-Nap</strong> sollte nicht länger als 20 Minuten dauern.", e: "A power nap shouldn't last longer than 20 minutes.", a: "الغفوة المفروض ماتزدش عن ٢٠ دقيقة." },
-                        { g: "Ich brauche jetzt ein kurzes <strong>Mittagsschläfchen</strong>.", e: "I need a short afternoon nap right now.", a: "أنا محتاج قيلولة قصيرة دلوقتي." }
+                    { id: 'w14_1', ger: "das Mittagsschläfchen", plural: "die Mittagsschläfchen", eng: "Afternoon nap", ar: "قيلولة الظهيرة", s: [
+                        { g: "Ein kurzes <strong>Mittagsschläfchen</strong> gibt neue Energie.", e: "A short afternoon nap gives new energy.", a: "قيلولة الضهر القصيرة بتدي طاقة جديدة." },
+                        { g: "Er macht jeden Tag ein <strong>Mittagsschläfchen</strong>.", e: "He takes an afternoon nap every day.", a: "هو بياخد قيلولة ضهر كل يوم." },
+                        { g: "Nach dem <strong>Mittagsschläfchen</strong> bin ich wieder fit.", e: "After the afternoon nap, I am fit again.", a: "بعد القيلولة بكون فايق تاني." }
                     ]},
-                    { id: 'w15', ger: "das Mittagstief", eng: "Afternoon slump", ar: "الخمول وقت الظهيرة", s: [
+                    { id: 'w14_2', ger: "der Power-Nap", plural: "die Power-Naps", eng: "Power nap", ar: "الغفوة المنشطة", s: [
+                        { g: "Ich mache im Büro oft einen kurzen <strong>Power-Nap</strong>.", e: "I often take a short power nap in the office.", a: "غالباً باخد غفوة سريعة في المكتب." },
+                        { g: "Ein <strong>Power-Nap</strong> sollte nicht länger als 20 Minuten dauern.", e: "A power nap shouldn't last longer than 20 minutes.", a: "الغفوة المفروض ماتزدش عن ٢٠ دقيقة." },
+                        { g: "Der <strong>Power-Nap</strong> hilft mir sehr beim Arbeiten.", e: "The power nap helps me a lot while working.", a: "الغفوة بتساعدني جداً وقت الشغل." }
+                    ]},
+                    { id: 'w15', ger: "das Mittagstief", plural: "die Mittagstiefs", eng: "Afternoon slump", ar: "الخمول وقت الظهيرة", s: [
                         { g: "Gegen 14 Uhr habe ich ein <strong>Mittagstief</strong>.", e: "Around 2 PM I have an afternoon slump.", a: "حوالي الساعة ٢ بكون في حالة خمول." },
                         { g: "Kaffee hilft mir gegen das <strong>Mittagstief</strong>.", e: "Coffee helps me against the afternoon slump.", a: "القهوة بتساعدني أتغلب على الخمول." },
                         { g: "Ein kleiner Spaziergang überwindet das <strong>Mittagstief</strong>.", e: "A short walk overcomes the afternoon slump.", a: "التمشية الخفيفة بتضيع الخمول." }
                     ]},
-                    { id: 'w16', ger: "die Konzentrationsfähigkeit", eng: "Ability to concentrate", ar: "القدرة على التركيز", s: [
+                    { id: 'w16', ger: "die Konzentrationsfähigkeit", plural: "(nur Singular)", eng: "Ability to concentrate", ar: "القدرة على التركيز", s: [
                         { g: "Kaffee erhöht die <strong>Konzentrationsfähigkeit</strong>.", e: "Coffee increases the ability to concentrate.", a: "القهوة بتزود القدرة على التركيز." },
                         { g: "Müdigkeit senkt die <strong>Konzentrationsfähigkeit</strong> enorm.", e: "Fatigue enormously lowers the ability to concentrate.", a: "التعب بيقلل القدرة على التركيز جداً." },
                         { g: "Eine kurze Pause verbessert die <strong>Konzentrationsfähigkeit</strong>.", e: "A short break improves the ability to concentrate.", a: "الراحة القصيرة بتحسن التركيز." }
                     ]},
-                    { id: 'w17', ger: "der Stressabbau", eng: "Stress relief", ar: "تخفيف التوتر", s: [
+                    { id: 'w17', ger: "der Stressabbau", plural: "(nur Singular)", eng: "Stress relief", ar: "تخفيف التوتر", s: [
                         { g: "Sport ist sehr gut für den <strong>Stressabbau</strong>.", e: "Sport is very good for stress relief.", a: "الرياضة مفيدة جداً لتقليل التوتر." },
                         { g: "Yoga dient dem <strong>Stressabbau</strong> nach der Arbeit.", e: "Yoga serves as stress relief after work.", a: "اليوجا بتستخدم لتخفيف التوتر بعد الشغل." },
                         { g: "Jeder braucht eine Methode zum <strong>Stressabbau</strong>.", e: "Everyone needs a method for stress relief.", a: "كل واحد محتاج طريقة لتخفيف التوتر." }
                     ]},
-                    { id: 'w18', ger: "das Herz-Kreislauf-System", eng: "Cardiovascular system", ar: "الدورة الدموية", s: [
+                    { id: 'w18', ger: "das Herz-Kreislauf-System", plural: "die Herz-Kreislauf-Systeme", eng: "Cardiovascular system", ar: "الدورة الدموية", s: [
                         { g: "Joggen stärkt das <strong>Herz-Kreislauf-System</strong>.", e: "Jogging strengthens the cardiovascular system.", a: "الجري بيقوي الدورة الدموية والقلب." },
                         { g: "Rauchen ist schlecht für das <strong>Herz-Kreislauf-System</strong>.", e: "Smoking is bad for the cardiovascular system.", a: "التدخين مضر للدورة الدموية." },
                         { g: "Das <strong>Herz-Kreislauf-System</strong> pumpt Blut durch den Körper.", e: "The cardiovascular system pumps blood through the body.", a: "جهاز القلب بيضخ الدم في الجسم." }
                     ]},
-                    { id: 'w19', ger: "das Schlafbedürfnis / der Schlafraum", eng: "Need for sleep / Bedroom", ar: "الحاجة للنوم / غرفة النوم", s: [
-                        { g: "Mein <strong>Schlafbedürfnis</strong> ist groß, deshalb ist der <strong>Schlafraum</strong> wichtig.", e: "My need for sleep is high, so the bedroom is important.", a: "احتياجي للنوم كبير، عشان كده أوضة النوم مهمة." },
+                    { id: 'w19_1', ger: "das Schlafbedürfnis", plural: "die Schlafbedürfnisse", eng: "Need for sleep", ar: "الحاجة للنوم", s: [
+                        { g: "Mein <strong>Schlafbedürfnis</strong> ist sehr groß.", e: "My need for sleep is very high.", a: "احتياجي للنوم كبير جداً." },
                         { g: "Jeder Mensch hat ein anderes <strong>Schlafbedürfnis</strong>.", e: "Everyone has a different need for sleep.", a: "كل إنسان ليه احتياج مختلف للنوم." },
-                        { g: "Der <strong>Schlafraum</strong> sollte immer dunkel sein.", e: "The bedroom should always be dark.", a: "أوضة النوم المفروض دايماً تكون ضلمة." }
+                        { g: "Im Alter ändert sich das <strong>Schlafbedürfnis</strong> oft.", e: "In old age, the need for sleep often changes.", a: "في الكبر غالباً بيختلف الاحتياج للنوم." }
                     ]},
-                    { id: 'w20', ger: "der Unternehmensalltag", eng: "Everyday corporate life", ar: "الروتين اليومي للشركة", s: [
+                    { id: 'w19_2', ger: "der Schlafraum", plural: "die Schlafräume", eng: "Bedroom", ar: "غرفة النوم", s: [
+                        { g: "Der <strong>Schlafraum</strong> sollte immer gut gelüftet sein.", e: "The bedroom should always be well ventilated.", a: "أوضة النوم المفروض تتهوى كويس دايماً." },
+                        { g: "Ein dunkler <strong>Schlafraum</strong> ist wichtig für die Erholung.", e: "A dark bedroom is important for recovery.", a: "أوضة النوم الضلمة مهمة للراحة." },
+                        { g: "Wir haben den <strong>Schlafraum</strong> neu gestrichen.", e: "We painted the bedroom newly.", a: "إحنا دهنا أوضة النوم من جديد." }
+                    ]},
+                    { id: 'w20', ger: "der Unternehmensalltag", plural: "(nur Singular)", eng: "Everyday corporate life", ar: "الروتين اليومي للشركة", s: [
                         { g: "Stress gehört oft zum <strong>Unternehmensalltag</strong>.", e: "Stress is often part of everyday corporate life.", a: "التوتر غالباً جزء من روتين الشركة." },
                         { g: "Im <strong>Unternehmensalltag</strong> gibt es viele Meetings.", e: "There are many meetings in everyday corporate life.", a: "في روتين الشركة في اجتماعات كتير." },
-                        { g: "Der <strong>Unternehmensalltag</strong> kann manchmal langweilig sein.", e: "Everyday corporate life can sometimes be boring.", a: "روتين الشركة ممكن يكون ممل أحياناً." }
+                        { g: "Der <strong>Unternehmensalltag</strong> kann manchmal monoton sein.", e: "Everyday corporate life can sometimes be monotonous.", a: "روتين الشركة ممكن يكون رتيب أحياناً." }
                     ]},
-                    { id: 'w21', ger: "die Ausnahme", eng: "Exception", ar: "الاستثناء", s: [
+                    { id: 'w21', ger: "die Ausnahme", plural: "die Ausnahmen", eng: "Exception", ar: "الاستثناء", s: [
                         { g: "Das ist hier leider keine <strong>Ausnahme</strong>.", e: "Unfortunately, this is no exception here.", a: "للأسف ده مش استثناء هنا." },
                         { g: "Wir machen heute eine kleine <strong>Ausnahme</strong>.", e: "We are making a small exception today.", a: "هنعمل استثناء صغير النهاردة." },
-                        { g: "Ausnahmen bestätigen die Regel.", e: "Exceptions prove the rule.", a: "الاستثناءات بتأكد القاعدة." }
+                        { g: "<strong>Ausnahmen</strong> bestätigen die Regel.", e: "Exceptions prove the rule.", a: "الاستثناءات بتأكد القاعدة." }
                     ]},
-                    { id: 'w22', ger: "das Ansehen / das Zeichen", eng: "Reputation / Sign", ar: "السمعة (المكانة) / العلامة", s: [
-                        { g: "Das ist ein gutes <strong>Zeichen</strong> für das <strong>Ansehen</strong> der Firma.", e: "That is a good sign for the company's reputation.", a: "دي علامة كويسة لسمعة ومكانة الشركة." },
+                    { id: 'w22_1', ger: "das Ansehen", plural: "(nur Singular)", eng: "Reputation", ar: "السمعة (المكانة)", s: [
+                        { g: "Das ist ein gutes Zeichen für das <strong>Ansehen</strong> der Firma.", e: "That is a good sign for the company's reputation.", a: "دي علامة كويسة لسمعة ومكانة الشركة." },
                         { g: "Sein <strong>Ansehen</strong> in der Gesellschaft ist hoch.", e: "His reputation in society is high.", a: "مكانته في المجتمع عالية." },
-                        { g: "Fieber ist ein <strong>Zeichen</strong> für eine Infektion.", e: "Fever is a sign of an infection.", a: "الحمى هي علامة على وجود عدوى." }
+                        { g: "Er fürchtet um sein <strong>Ansehen</strong>.", e: "He fears for his reputation.", a: "هو خايف على سمعته ومكانته." }
                     ]},
-                    { id: 'w23', ger: "der Kaffee / der Tee", eng: "Coffee / Tea", ar: "القهوة / الشاي", s: [
-                        { g: "Möchten Sie <strong>Kaffee</strong> oder lieber <strong>Tee</strong>?", e: "Would you like coffee or rather tea?", a: "تحب قهوة ولا تفضل شاي؟" },
-                        { g: "Ohne <strong>Kaffee</strong> kann ich nicht arbeiten.", e: "I can't work without coffee.", a: "مقدرش أشتغل من غير قهوة." },
-                        { g: "Dieser grüne <strong>Tee</strong> schmeckt fantastisch.", e: "This green tea tastes fantastic.", a: "الشاي الأخضر ده طعمه رائع." }
+                    { id: 'w22_2', ger: "das Zeichen", plural: "die Zeichen", eng: "Sign", ar: "العلامة (الرمز)", s: [
+                        { g: "Fieber ist ein <strong>Zeichen</strong> für eine Infektion.", e: "Fever is a sign of an infection.", a: "الحمى هي علامة على وجود عدوى." },
+                        { g: "Das ist ein gutes <strong>Zeichen</strong>.", e: "That is a good sign.", a: "دي علامة كويسة." },
+                        { g: "Geben Sie mir ein <strong>Zeichen</strong>, wenn Sie fertig sind.", e: "Give me a sign when you are done.", a: "إديني إشارة لما تخلص." }
+                    ]},
+                    { id: 'w23_1', ger: "der Kaffee", plural: "die Kaffees", eng: "Coffee", ar: "القهوة", s: [
+                        { g: "Ohne <strong>Kaffee</strong> kann ich morgens nicht arbeiten.", e: "I can't work in the morning without coffee.", a: "مقدرش أشتغل الصبح من غير قهوة." },
+                        { g: "Ich trinke meinen <strong>Kaffee</strong> schwarz.", e: "I drink my coffee black.", a: "أنا بشرب القهوة بتاعتي سادة." },
+                        { g: "Möchten Sie eine Tasse <strong>Kaffee</strong>?", e: "Would you like a cup of coffee?", a: "تحب فنجان قهوة؟" }
+                    ]},
+                    { id: 'w23_2', ger: "der Tee", plural: "die Tees", eng: "Tea", ar: "الشاي", s: [
+                        { g: "Möchten Sie Kaffee oder lieber <strong>Tee</strong>?", e: "Would you like coffee or rather tea?", a: "تحب قهوة ولا تفضل شاي؟" },
+                        { g: "Dieser grüne <strong>Tee</strong> schmeckt fantastisch.", e: "This green tea tastes fantastic.", a: "الشاي الأخضر ده طعمه رائع." },
+                        { g: "Bei einer Erkältung trinke ich viel <strong>Tee</strong>.", e: "When I have a cold, I drink a lot of tea.", a: "لما بيكون عندي برد بشرب شاي كتير." }
                     ]}
                 ],
                 krankheiten_koerper: [
-                    { id: 'w24', ger: "die Rückenschmerzen / die Kopfschmerzen", eng: "Backache / Headache", ar: "آلام الظهر / الصداع", s: [
-                        { g: "Vom Sitzen habe ich <strong>Rückenschmerzen</strong> und <strong>Kopfschmerzen</strong>.", e: "From sitting I have backache and headache.", a: "من القعدة عندي وجع في ضهري وصداع." },
+                    { id: 'w24_1', ger: "die Rückenschmerzen (Pl.)", plural: "-", eng: "Backache", ar: "آلام الظهر", s: [
+                        { g: "Vom Sitzen habe ich starke <strong>Rückenschmerzen</strong>.", e: "From sitting I have severe backache.", a: "من القعدة عندي وجع شديد في ضهري." },
                         { g: "Hast du oft <strong>Rückenschmerzen</strong>?", e: "Do you often have backache?", a: "بيجيلك وجع في ضهرك كتير؟" },
-                        { g: "Diese Tabletten helfen sofort gegen <strong>Kopfschmerzen</strong>.", e: "These pills help immediately against headache.", a: "الحبوب دي بتعالج الصداع فوراً." }
+                        { g: "Sport ist das beste Mittel gegen <strong>Rückenschmerzen</strong>.", e: "Sport is the best remedy against backache.", a: "الرياضة هي أحسن علاج لآلام الضهر." }
                     ]},
-                    { id: 'w25', ger: "der Schulterbereich / der Arm / die Hand / der Finger", eng: "Shoulder area / Arm / Hand / Finger", ar: "منطقة الكتف / الذراع / اليد / الإصبع", s: [
-                        { g: "Mein <strong>Arm</strong>, meine <strong>Hand</strong> und mein <strong>Finger</strong> tun weh.", e: "My arm, my hand and my finger hurt.", a: "دراعي وإيدي وصباعي بيوجعوني." },
-                        { g: "Der <strong>Schulterbereich</strong> ist extrem verspannt.", e: "The shoulder area is extremely tense.", a: "منطقة الكتف مشدودة جداً." },
-                        { g: "Er hat sich in den <strong>Finger</strong> geschnitten.", e: "He cut his finger.", a: "هو جرح صباعه." }
+                    { id: 'w24_2', ger: "die Kopfschmerzen (Pl.)", plural: "-", eng: "Headache", ar: "الصداع", s: [
+                        { g: "Ich habe heute furchtbare <strong>Kopfschmerzen</strong>.", e: "I have a terrible headache today.", a: "أنا عندي صداع فظيع النهاردة." },
+                        { g: "Diese Tabletten helfen sofort gegen <strong>Kopfschmerzen</strong>.", e: "These pills help immediately against headache.", a: "الحبوب دي بتعالج الصداع فوراً." },
+                        { g: "Viel Wasser trinken beugt <strong>Kopfschmerzen</strong> vor.", e: "Drinking a lot of water prevents headaches.", a: "شرب مية كتير بيقي من الصداع." }
                     ]},
-                    { id: 'w26', ger: "das Auge / die Augenübung", eng: "Eye / Eye exercise", ar: "العين / تمرين العين", s: [
-                        { g: "Eine <strong>Augenübung</strong> ist gut für das <strong>Auge</strong>.", e: "An eye exercise is good for the eye.", a: "تمرين العين مفيد للعين." },
+                    { id: 'w25_1', ger: "der Schulterbereich", plural: "die Schulterbereiche", eng: "Shoulder area", ar: "منطقة الكتف", s: [
+                        { g: "Mein <strong>Schulterbereich</strong> ist extrem verspannt.", e: "My shoulder area is extremely tense.", a: "منطقة الكتف مشدودة جداً." },
+                        { g: "Massagen entspannen den <strong>Schulterbereich</strong>.", e: "Massages relax the shoulder area.", a: "المساج بيرخي منطقة الكتف." },
+                        { g: "Ich habe Schmerzen im <strong>Schulterbereich</strong>.", e: "I have pain in the shoulder area.", a: "عندي ألم في منطقة الكتف." }
+                    ]},
+                    { id: 'w25_2', ger: "der Arm", plural: "die Arme", eng: "Arm", ar: "الذراع", s: [
+                        { g: "Mein rechter <strong>Arm</strong> tut weh.", e: "My right arm hurts.", a: "دراعي اليمين بيوجعني." },
+                        { g: "Er hat sich den <strong>Arm</strong> gebrochen.", e: "He broke his arm.", a: "هو كسر دراعه." },
+                        { g: "Sie nahm das Kind auf den <strong>Arm</strong>.", e: "She took the child in her arms.", a: "هي شالت الطفل على دراعها." }
+                    ]},
+                    { id: 'w25_3', ger: "die Hand", plural: "die Hände", eng: "Hand", ar: "اليد", s: [
+                        { g: "Sie hat sich an der <strong>Hand</strong> verletzt.", e: "She injured her hand.", a: "هي جرحت إيدها." },
+                        { g: "Waschen Sie sich bitte die <strong>Hände</strong>.", e: "Please wash your hands.", a: "لو سمحت اغسل إيدك." },
+                        { g: "Er gab mir zur Begrüßung die <strong>Hand</strong>.", e: "He gave me his hand as a greeting.", a: "هو مد إيده يسلم عليا." }
+                    ]},
+                    { id: 'w25_4', ger: "der Finger", plural: "die Finger", eng: "Finger", ar: "الإصبع", s: [
+                        { g: "Er hat sich in den <strong>Finger</strong> geschnitten.", e: "He cut his finger.", a: "هو جرح صباعه." },
+                        { g: "Mein <strong>Finger</strong> blutet.", e: "My finger is bleeding.", a: "صباعي بينزف." },
+                        { g: "Sie trägt einen Ring am <strong>Finger</strong>.", e: "She wears a ring on her finger.", a: "هي لابسة خاتم في صباعها." }
+                    ]},
+                    { id: 'w26_1', ger: "das Auge", plural: "die Augen", eng: "Eye", ar: "العين", s: [
                         { g: "Mein linkes <strong>Auge</strong> ist rot.", e: "My left eye is red.", a: "عيني الشمال حمرا." },
-                        { g: "Machst du regelmäßig <strong>Augenübungen</strong> am PC?", e: "Do you regularly do eye exercises at the PC?", a: "بتعمل تمارين للعين بانتظام على الكمبيوتر؟" }
+                        { g: "Sie hat wunderschöne blaue <strong>Augen</strong>.", e: "She has beautiful blue eyes.", a: "هي عينيها زرقا وجميلة جداً." },
+                        { g: "Der Bildschirm strengt die <strong>Augen</strong> an.", e: "The screen strains the eyes.", a: "الشاشة بتجهد العين." }
                     ]},
-                    { id: 'w27', ger: "das Konzentrationsproblem", eng: "Concentration problem", ar: "مشكلة التركيز", s: [
+                    { id: 'w26_2', ger: "die Augenübung", plural: "die Augenübungen", eng: "Eye exercise", ar: "تمرين العين", s: [
+                        { g: "Eine <strong>Augenübung</strong> ist gut für das Auge.", e: "An eye exercise is good for the eye.", a: "تمرين العين مفيد للعين." },
+                        { g: "Machst du regelmäßig <strong>Augenübungen</strong> am PC?", e: "Do you regularly do eye exercises at the PC?", a: "بتعمل تمارين للعين بانتظام على الكمبيوتر؟" },
+                        { g: "Diese <strong>Augenübung</strong> entspannt die Muskeln.", e: "This eye exercise relaxes the muscles.", a: "تمرين العين ده بيرخي العضلات." }
+                    ]},
+                    { id: 'w27', ger: "das Konzentrationsproblem", plural: "die Konzentrationsprobleme", eng: "Concentration problem", ar: "مشكلة التركيز", s: [
                         { g: "Ich habe heute ein großes <strong>Konzentrationsproblem</strong>.", e: "I have a big concentration problem today.", a: "عندي مشكلة كبيرة في التركيز النهاردة." },
                         { g: "Schlafmangel führt zu <strong>Konzentrationsproblemen</strong>.", e: "Lack of sleep leads to concentration problems.", a: "نقص النوم بيؤدي لمشاكل في التركيز." },
                         { g: "Er nimmt Tabletten gegen sein <strong>Konzentrationsproblem</strong>.", e: "He takes pills for his concentration problem.", a: "بياخد حبوب عشان مشكلة التركيز اللي عنده." }
                     ]},
-                    { id: 'w28', ger: "die Nebenwirkung", eng: "Side effect", ar: "العرض الجانبي", s: [
+                    { id: 'w28', ger: "die Nebenwirkung", plural: "die Nebenwirkungen", eng: "Side effect", ar: "العرض الجانبي", s: [
                         { g: "Das Medikament hat leider eine starke <strong>Nebenwirkung</strong>.", e: "Unfortunately, the medicine has a strong side effect.", a: "للأسف الدواء ليه عرض جانبي قوي." },
                         { g: "Müdigkeit ist eine bekannte <strong>Nebenwirkung</strong>.", e: "Fatigue is a known side effect.", a: "التعب يعتبر عرض جانبي معروف." },
                         { g: "Lesen Sie die Liste der <strong>Nebenwirkungen</strong>.", e: "Read the list of side effects.", a: "اقرأ لستة الأعراض الجانبية." }
                     ]},
-                    { id: 'w29', ger: "das Medikament / die Tablette", eng: "Medicine / Pill", ar: "الدواء / القرص (الحبة)", s: [
-                        { g: "Haben Sie die <strong>Tablette</strong> oder das <strong>Medikament</strong> eingenommen?", e: "Did you take the pill or the medicine?", a: "أخدت الحبة أو الدواء؟" },
+                    { id: 'w29_1', ger: "das Medikament", plural: "die Medikamente", eng: "Medicine / Medication", ar: "الدواء", s: [
+                        { g: "Haben Sie das <strong>Medikament</strong> eingenommen?", e: "Did you take the medication?", a: "أخدت الدواء؟" },
                         { g: "Dieses <strong>Medikament</strong> ist nur auf Rezept erhältlich.", e: "This medicine is only available on prescription.", a: "الدواء ده بيتباع بروشتة بس." },
-                        { g: "Du musst die <strong>Tablette</strong> mit viel Wasser schlucken.", e: "You must swallow the pill with plenty of water.", a: "لازم تبلع الحبة بمية كتير." }
+                        { g: "Das <strong>Medikament</strong> wirkt sehr schnell.", e: "The medicine works very quickly.", a: "الدواء ده مفعوله سريع جداً." }
                     ]},
-                    { id: 'w30', ger: "der Kreislauf", eng: "Circulation", ar: "الدورة الدموية", s: [
+                    { id: 'w29_2', ger: "die Tablette", plural: "die Tabletten", eng: "Pill / Tablet", ar: "القرص (الحبة)", s: [
+                        { g: "Du musst die <strong>Tablette</strong> mit viel Wasser schlucken.", e: "You must swallow the pill with plenty of water.", a: "لازم تبلع الحبة بمية كتير." },
+                        { g: "Nehmen Sie eine <strong>Tablette</strong> nach dem Essen.", e: "Take one pill after a meal.", a: "خد حبة واحدة بعد الأكل." },
+                        { g: "Die <strong>Tabletten</strong> helfen gegen Fieber.", e: "The pills help against fever.", a: "الحبوب بتساعد ضد الحمى." }
+                    ]},
+                    { id: 'w30', ger: "der Kreislauf", plural: "die Kreisläufe", eng: "Circulation", ar: "الدورة الدموية", s: [
                         { g: "Mein <strong>Kreislauf</strong> ist heute sehr schwach.", e: "My circulation is very weak today.", a: "دورتي الدموية ضعيفة جداً النهاردة." },
                         { g: "Sport bringt den <strong>Kreislauf</strong> in Schwung.", e: "Sport gets the circulation going.", a: "الرياضة بتنشط الدورة الدموية." },
                         { g: "Er hatte gestern Probleme mit dem <strong>Kreislauf</strong>.", e: "He had problems with his circulation yesterday.", a: "كان عنده مشاكل في الدورة الدموية امبارح." }
                     ]},
-                    { id: 'w31', ger: "der Bürostuhl / die Tastatur / die Maus / der Bildschirm", eng: "Office chair / Keyboard / Mouse / Screen", ar: "كرسي المكتب / لوحة المفاتيح / الماوس / الشاشة", s: [
-                        { g: "Ich habe eine neue <strong>Tastatur</strong>, <strong>Maus</strong> und einen <strong>Bildschirm</strong>.", e: "I have a new keyboard, mouse, and a screen.", a: "عندي كيبورد وماوس وشاشة جداد." },
+                    { id: 'w31_1', ger: "der Bürostuhl", plural: "die Bürostühle", eng: "Office chair", ar: "كرسي المكتب", s: [
                         { g: "Ein ergonomischer <strong>Bürostuhl</strong> ist teuer.", e: "An ergonomic office chair is expensive.", a: "كرسي المكتب المريح غالي." },
-                        { g: "Der <strong>Bildschirm</strong> ist zu hell eingestellt.", e: "The screen is set too bright.", a: "إضاءة الشاشة عالية بزيادة." }
+                        { g: "Mein <strong>Bürostuhl</strong> ist sehr bequem.", e: "My office chair is very comfortable.", a: "كرسي المكتب بتاعي مريح جداً." },
+                        { g: "Wir brauchen neue <strong>Bürostühle</strong> für das Team.", e: "We need new office chairs for the team.", a: "إحنا محتاجين كراسي مكتب جديدة للفريق." }
                     ]},
-                    { id: 'w32', ger: "die Beleuchtung", eng: "Lighting", ar: "الإضاءة", s: [
+                    { id: 'w31_2', ger: "die Tastatur", plural: "die Tastaturen", eng: "Keyboard", ar: "لوحة المفاتيح", s: [
+                        { g: "Ich habe eine neue ergonomische <strong>Tastatur</strong>.", e: "I have a new ergonomic keyboard.", a: "عندي كيبورد مريح جديد." },
+                        { g: "Meine <strong>Tastatur</strong> ist leider kaputt.", e: "My keyboard is unfortunately broken.", a: "للاسف الكيبورد بتاعي باظ." },
+                        { g: "Die Buchstaben auf der <strong>Tastatur</strong> sind klein.", e: "The letters on the keyboard are small.", a: "الحروف على الكيبورد صغيرة." }
+                    ]},
+                    { id: 'w31_3', ger: "die Maus", plural: "die Mäuse", eng: "Mouse", ar: "الماوس", s: [
+                        { g: "Die <strong>Maus</strong> funktioniert nicht mehr.", e: "The mouse is no longer working.", a: "الماوس مبقاش شغال." },
+                        { g: "Sie arbeitet mit einer speziellen <strong>Maus</strong>.", e: "She works with a special mouse.", a: "هي بتشتغل بماوس مخصوص." },
+                        { g: "Eine kabellose <strong>Maus</strong> ist sehr praktisch.", e: "A wireless mouse is very practical.", a: "الماوس الوايرلس عملي جداً." }
+                    ]},
+                    { id: 'w31_4', ger: "der Bildschirm", plural: "die Bildschirme", eng: "Screen / Monitor", ar: "الشاشة", s: [
+                        { g: "Der <strong>Bildschirm</strong> ist zu hell eingestellt.", e: "The screen is set too bright.", a: "إضاءة الشاشة عالية بزيادة." },
+                        { g: "Ich brauche einen größeren <strong>Bildschirm</strong>.", e: "I need a bigger screen.", a: "محتاج شاشة أكبر." },
+                        { g: "Schauen Sie nicht zu nah auf den <strong>Bildschirm</strong>.", e: "Do not look too closely at the screen.", a: "ماتبصش للشاشة من قريب قوي." }
+                    ]},
+                    { id: 'w32', ger: "die Beleuchtung", plural: "die Beleuchtungen", eng: "Lighting", ar: "الإضاءة", s: [
                         { g: "Die <strong>Beleuchtung</strong> im Büro ist zu dunkel.", e: "The lighting in the office is too dark.", a: "الإضاءة في المكتب ضلمة جداً." },
                         { g: "Gute <strong>Beleuchtung</strong> ist wichtig für die Augen.", e: "Good lighting is important for the eyes.", a: "الإضاءة الكويسة مهمة للعين." },
                         { g: "Wir brauchen eine neue <strong>Beleuchtung</strong> hier.", e: "We need new lighting here.", a: "إحنا محتاجين إضاءة جديدة هنا." }
                     ]}
                 ],
                 praesentationen: [
-                    { id: 'w33', ger: "der Inhalt / die Struktur", eng: "Content / Structure", ar: "المحتوى / الهيكل", s: [
-                        { g: "Der <strong>Inhalt</strong> und die <strong>Struktur</strong> der Präsentation waren gut.", e: "The content and the structure of the presentation were good.", a: "محتوى وهيكل العرض التقديمي كانوا كويسين." },
+                    { id: 'w33_1', ger: "der Inhalt", plural: "die Inhalte", eng: "Content", ar: "المحتوى", s: [
+                        { g: "Der <strong>Inhalt</strong> der Präsentation war sehr gut.", e: "The content of the presentation was very good.", a: "محتوى العرض التقديمي كان كويس جداً." },
                         { g: "Der <strong>Inhalt</strong> muss klar und deutlich sein.", e: "The content must be clear and distinct.", a: "المحتوى لازم يكون واضح وصريح." },
-                        { g: "Ich brauche eine bessere <strong>Struktur</strong> für meinen Text.", e: "I need a better structure for my text.", a: "أنا محتاج هيكل أفضل للنص بتاعي." }
+                        { g: "Mir gefällt der <strong>Inhalt</strong> dieses Buches.", e: "I like the content of this book.", a: "عاجبني محتوى الكتاب ده." }
                     ]},
-                    { id: 'w34', ger: "die Erfahrung / das Erlebnis", eng: "Experience / Adventure", ar: "الخبرة / التجربة (الموقف)", s: [
-                        { g: "Das war ein tolles <strong>Erlebnis</strong> und eine gute <strong>Erfahrung</strong>.", e: "That was a great adventure and a good experience.", a: "دي كانت تجربة وموقف رائع وخبرة كويسة." },
+                    { id: 'w33_2', ger: "die Struktur", plural: "die Strukturen", eng: "Structure", ar: "الهيكل", s: [
+                        { g: "Die <strong>Struktur</strong> des Textes ist logisch.", e: "The structure of the text is logical.", a: "هيكل النص منطقي." },
+                        { g: "Ich brauche eine bessere <strong>Struktur</strong> für meine Arbeit.", e: "I need a better structure for my work.", a: "أنا محتاج هيكل أفضل لشغلي." },
+                        { g: "Achten Sie auf eine klare <strong>Struktur</strong>.", e: "Pay attention to a clear structure.", a: "راعي إن يكون في هيكل واضح." }
+                    ]},
+                    { id: 'w34_1', ger: "die Erfahrung", plural: "die Erfahrungen", eng: "Experience", ar: "الخبرة", s: [
                         { g: "Er hat viel <strong>Erfahrung</strong> in diesem Bereich.", e: "He has a lot of experience in this field.", a: "هو عنده خبرة كبيرة في المجال ده." },
-                        { g: "Dieses <strong>Erlebnis</strong> werde ich nie vergessen.", e: "I will never forget this experience.", a: "الموقف والتجربة دي عمري ما هنساها." }
+                        { g: "Ich spreche aus eigener <strong>Erfahrung</strong>.", e: "I am speaking from my own experience.", a: "أنا بتكلم من واقع خبرتي." },
+                        { g: "Das ist eine sehr nützliche <strong>Erfahrung</strong>.", e: "That is a very useful experience.", a: "دي خبرة مفيدة جداً." }
                     ]},
-                    { id: 'w35', ger: "die Situation / der Bezug", eng: "Situation / Connection", ar: "الموقف / الارتباط (العلاقة بـ)", s: [
-                        { g: "Ich sehe den <strong>Bezug</strong> zu dieser <strong>Situation</strong>.", e: "I see the connection to this situation.", a: "أنا شايف العلاقة بالموقف ده." },
+                    { id: 'w34_2', ger: "das Erlebnis", plural: "die Erlebnisse", eng: "Adventure / Experience", ar: "التجربة (الموقف)", s: [
+                        { g: "Das war ein tolles <strong>Erlebnis</strong>.", e: "That was a great adventure.", a: "ده كان موقف/تجربة روعة." },
+                        { g: "Dieses <strong>Erlebnis</strong> werde ich nie vergessen.", e: "I will never forget this experience.", a: "الموقف والتجربة دي عمري ما هنساها." },
+                        { g: "Im Urlaub hatten wir viele schöne <strong>Erlebnisse</strong>.", e: "On vacation we had many beautiful experiences.", a: "في الإجازة مرينا بتجارب حلوة كتير." }
+                    ]},
+                    { id: 'w35_1', ger: "die Situation", plural: "die Situationen", eng: "Situation", ar: "الموقف", s: [
                         { g: "Die finanzielle <strong>Situation</strong> der Firma ist schwierig.", e: "The financial situation of the company is difficult.", a: "الوضع المالي للشركة صعب." },
-                        { g: "Der Text hat keinen <strong>Bezug</strong> zum Thema.", e: "The text has no connection to the topic.", a: "النص ملوش أي علاقة بالموضوع." }
+                        { g: "In dieser <strong>Situation</strong> muss man ruhig bleiben.", e: "In this situation one must stay calm.", a: "في الموقف ده الواحد لازم يفضل هادي." },
+                        { g: "Das ist eine gefährliche <strong>Situation</strong>.", e: "That is a dangerous situation.", a: "ده موقف خطير." }
                     ]},
-                    { id: 'w36', ger: "der Vorteil / der Nachteil", eng: "Advantage / Disadvantage", ar: "الميزة / العيب", s: [
-                        { g: "Alles hat einen <strong>Vorteil</strong> und einen <strong>Nachteil</strong>.", e: "Everything has an advantage and a disadvantage.", a: "كل حاجة ليها ميزة وعيب." },
+                    { id: 'w35_2', ger: "der Bezug", plural: "die Bezüge", eng: "Reference / Connection", ar: "الارتباط (العلاقة بـ)", s: [
+                        { g: "Ich sehe den <strong>Bezug</strong> zu dieser Situation.", e: "I see the connection to this situation.", a: "أنا شايف العلاقة بالموقف ده." },
+                        { g: "Der Text hat keinen <strong>Bezug</strong> zum Thema.", e: "The text has no connection to the topic.", a: "النص ملوش أي علاقة بالموضوع." },
+                        { g: "Wir nehmen <strong>Bezug</strong> auf Ihr Schreiben.", e: "We refer to your letter.", a: "إحنا بنشير/نستند لجوابكم." }
+                    ]},
+                    { id: 'w36_1', ger: "der Vorteil", plural: "die Vorteile", eng: "Advantage", ar: "الميزة", s: [
                         { g: "Der größte <strong>Vorteil</strong> ist die Zeitersparnis.", e: "The biggest advantage is the time saving.", a: "أكبر ميزة هي توفير الوقت." },
-                        { g: "Gibt es auch einen <strong>Nachteil</strong> bei dieser Methode?", e: "Is there also a disadvantage to this method?", a: "هل في أي عيب للطريقة دي؟" }
+                        { g: "Dieses System hat viele <strong>Vorteile</strong>.", e: "This system has many advantages.", a: "النظام ده ليه مميزات كتير." },
+                        { g: "Was ist der <strong>Vorteil</strong> davon?", e: "What is the advantage of that?", a: "إيه ميزة الموضوع ده؟" }
                     ]},
-                    { id: 'w37', ger: "die Position / die Meinung / das Argument", eng: "Position / Opinion / Argument", ar: "الموقف (الرأي) / الرأي / الحجة", s: [
-                        { g: "Ihre <strong>Meinung</strong> und Ihr <strong>Argument</strong> sind stark.", e: "Your opinion and your argument are strong.", a: "رأيك وحجتك قوية." },
+                    { id: 'w36_2', ger: "der Nachteil", plural: "die Nachteile", eng: "Disadvantage", ar: "العيب", s: [
+                        { g: "Gibt es auch einen <strong>Nachteil</strong> bei dieser Methode?", e: "Is there also a disadvantage to this method?", a: "هل في أي عيب للطريقة دي؟" },
+                        { g: "Ein großer <strong>Nachteil</strong> ist der hohe Preis.", e: "A big disadvantage is the high price.", a: "عيب كبير هو السعر العالي." },
+                        { g: "Alles hat seine Vor- und <strong>Nachteile</strong>.", e: "Everything has its advantages and disadvantages.", a: "كل حاجة ليها مميزاتها وعيوبها." }
+                    ]},
+                    { id: 'w37_1', ger: "die Position", plural: "die Positionen", eng: "Position", ar: "الموقف (الرأي) / المنصب", s: [
                         { g: "Wir müssen unsere <strong>Position</strong> klar verteidigen.", e: "We must clearly defend our position.", a: "لازم ندافع عن موقفنا بوضوح." },
-                        { g: "Das ist meine persönliche <strong>Meinung</strong>.", e: "That is my personal opinion.", a: "ده رأيي الشخصي." }
+                        { g: "Er hat eine hohe <strong>Position</strong> in der Firma.", e: "He has a high position in the company.", a: "هو عنده منصب عالي في الشركة." },
+                        { g: "Das ist meine <strong>Position</strong> zu diesem Thema.", e: "That is my position on this topic.", a: "ده موقفي ورأيي في الموضوع ده." }
                     ]},
-                    { id: 'w38', ger: "die Aufmerksamkeit / der Zuhörer", eng: "Attention / Listener", ar: "الانتباه / المستمع", s: [
-                        { g: "Vielen Dank an die <strong>Zuhörer</strong> für die <strong>Aufmerksamkeit</strong>.", e: "Many thanks to the listeners for their attention.", a: "شكراً للمستمعين على انتباههم." },
+                    { id: 'w37_2', ger: "die Meinung", plural: "die Meinungen", eng: "Opinion", ar: "الرأي", s: [
+                        { g: "Das ist meine persönliche <strong>Meinung</strong>.", e: "That is my personal opinion.", a: "ده رأيي الشخصي." },
+                        { g: "Ich bin der <strong>Meinung</strong>, dass wir warten sollten.", e: "I am of the opinion that we should wait.", a: "أنا من رأيي إننا نستنى." },
+                        { g: "Ihre <strong>Meinung</strong> ist mir sehr wichtig.", e: "Your opinion is very important to me.", a: "رأيك مهم جداً بالنسبة لي." }
+                    ]},
+                    { id: 'w37_3', ger: "das Argument", plural: "die Argumente", eng: "Argument", ar: "الحجة / الدليل", s: [
+                        { g: "Dein <strong>Argument</strong> ist wirklich sehr stark.", e: "Your argument is really very strong.", a: "حجتك فعلاً قوية جداً." },
+                        { g: "Das ist ein gutes <strong>Argument</strong> dafür.", e: "That is a good argument for it.", a: "دي حجة كويسة بتدعم ده." },
+                        { g: "Wir brauchen bessere <strong>Argumente</strong>.", e: "We need better arguments.", a: "إحنا محتاجين حجج أقوى." }
+                    ]},
+                    { id: 'w38_1', ger: "die Aufmerksamkeit", plural: "(nur Singular)", eng: "Attention", ar: "الانتباه", s: [
+                        { g: "Vielen Dank für Ihre <strong>Aufmerksamkeit</strong>.", e: "Thank you for your attention.", a: "شكراً جزيلاً لانتباهكم." },
                         { g: "Sie hat die volle <strong>Aufmerksamkeit</strong> des Publikums.", e: "She has the full attention of the audience.", a: "هي واخدة انتباه الجمهور بالكامل." },
-                        { g: "Ein guter <strong>Zuhörer</strong> ist viel wert.", e: "A good listener is worth a lot.", a: "المستمع الجيد ليه قيمة كبيرة." }
+                        { g: "Lernen erfordert viel <strong>Aufmerksamkeit</strong>.", e: "Learning requires a lot of attention.", a: "التعلم بيحتاج انتباه كبير." }
                     ]},
-                    { id: 'w39', ger: "die Folie", eng: "Slide (Presentation)", ar: "الشريحة (في العرض)", s: [
+                    { id: 'w38_2', ger: "der Zuhörer", plural: "die Zuhörer", eng: "Listener", ar: "المستمع", s: [
+                        { g: "Vielen Dank an die <strong>Zuhörer</strong>.", e: "Many thanks to the listeners.", a: "شكراً للمستمعين." },
+                        { g: "Ein guter <strong>Zuhörer</strong> ist viel wert.", e: "A good listener is worth a lot.", a: "المستمع الجيد ليه قيمة كبيرة." },
+                        { g: "Der Vortrag hat die <strong>Zuhörer</strong> fasziniert.", e: "The presentation fascinated the listeners.", a: "العرض أبهر المستمعين." }
+                    ]},
+                    { id: 'w39', ger: "die Folie", plural: "die Folien", eng: "Slide (Presentation)", ar: "الشريحة (في العرض)", s: [
                         { g: "Auf der nächsten <strong>Folie</strong> sehen Sie die Zahlen.", e: "On the next slide you see the numbers.", a: "في الشريحة اللي جاية هتشوفوا الأرقام." },
                         { g: "Die erste <strong>Folie</strong> enthält den Titel.", e: "The first slide contains the title.", a: "أول شريحة فيها العنوان." },
                         { g: "Können Sie bitte eine <strong>Folie</strong> zurückgehen?", e: "Can you please go back one slide?", a: "ممكن ترجع شريحة لورا لو سمحت؟" }
                     ]},
-                    { id: 'w40', ger: "das Heimatland", eng: "Home country", ar: "البلد الأم", s: [
+                    { id: 'w40', ger: "das Heimatland", plural: "die Heimatländer", eng: "Home country", ar: "البلد الأم", s: [
                         { g: "In meinem <strong>Heimatland</strong> ist das anders.", e: "In my home country, that is different.", a: "في بلدي الأم الموضوع مختلف." },
                         { g: "Er vermisst sein <strong>Heimatland</strong> sehr.", e: "He misses his home country a lot.", a: "هو مفتقد بلده الأم جداً." },
                         { g: "Sie reist jedes Jahr in ihr <strong>Heimatland</strong>.", e: "She travels to her home country every year.", a: "هي بتسافر لبلدها الأم كل سنة." }
                     ]}
                 ],
                 adjektive_adverbien: [
-                    { id: 'w41', ger: "immer / meistens / oft / regelmäßig", eng: "always / mostly / often / regularly", ar: "دائماً / في الغالب / غالباً / بانتظام", s: [
-                        { g: "Er treibt <strong>oft</strong> und <strong>regelmäßig</strong> Sport.", e: "He often and regularly practices sports.", a: "هو بيلعب رياضة غالباً وبانتظام." },
-                        { g: "Ich trinke <strong>immer</strong> Kaffee, <strong>meistens</strong> am Morgen.", e: "I always drink coffee, mostly in the morning.", a: "أنا دايماً بشرب قهوة، وفي الغالب الصبح." },
-                        { g: "Wir besuchen <strong>oft</strong> unsere Großeltern.", e: "We often visit our grandparents.", a: "إحنا غالباً بنزور أجدادنا." }
+                    { id: 'w41_1', ger: "immer", plural: null, eng: "always (100%)", ar: "دائماً", s: [
+                        { g: "Er kommt <strong>immer</strong> pünktlich.", e: "He always comes on time.", a: "هو دايماً بييجي في ميعاده." },
+                        { g: "Ich trinke <strong>immer</strong> Kaffee am Morgen.", e: "I always drink coffee in the morning.", a: "أنا دايماً بشرب قهوة الصبح." },
+                        { g: "Du hast <strong>immer</strong> gute Ideen.", e: "You always have good ideas.", a: "أنت دايماً أفكارك حلوة." }
                     ]},
-                    { id: 'w42', ger: "manchmal / ab und zu / selten / nie", eng: "sometimes / now and then / rarely / never", ar: "أحياناً / من حين لآخر / نادراً / أبداً", s: [
-                        { g: "Ich esse <strong>selten</strong>, fast <strong>nie</strong> Fleisch.", e: "I rarely, almost never eat meat.", a: "أنا نادراً وأحياناً عمري ما باكل لحمة." },
-                        { g: "<strong>Manchmal</strong> gehe ich <strong>ab und zu</strong> ins Kino.", e: "Sometimes I go to the cinema now and then.", a: "أحياناً بروح السينما من حين لآخر." },
-                        { g: "Er kommt <strong>nie</strong> pünktlich zur Arbeit.", e: "He never comes to work on time.", a: "هو عمره ما بييجي الشغل في ميعاده." }
+                    { id: 'w41_2', ger: "meistens", plural: null, eng: "mostly", ar: "في الغالب", s: [
+                        { g: "<strong>Meistens</strong> trinke ich Wasser.", e: "Mostly I drink water.", a: "في الغالب بشرب مية." },
+                        { g: "Am Wochenende bin ich <strong>meistens</strong> zu Hause.", e: "On the weekend I am mostly at home.", a: "في الويك إند بكون في البيت غالباً." },
+                        { g: "Sie hat <strong>meistens</strong> gute Laune.", e: "She is mostly in a good mood.", a: "هي في الغالب مزاجها رايق." }
                     ]},
-                    { id: 'w43', ger: "gesund / gesünder", eng: "healthy / healthier", ar: "صحي / صحي أكثر", s: [
-                        { g: "Salat ist <strong>gesund</strong>, aber Gemüse ist <strong>gesünder</strong>.", e: "Salad is healthy, but vegetables are healthier.", a: "السلطة صحية، بس الخضار صحي أكتر." },
+                    { id: 'w41_3', ger: "oft", plural: null, eng: "often", ar: "غالباً", s: [
+                        { g: "Wir besuchen <strong>oft</strong> unsere Großeltern.", e: "We often visit our grandparents.", a: "إحنا غالباً بنزور أجدادنا." },
+                        { g: "Er treibt <strong>oft</strong> Sport.", e: "He often practices sports.", a: "هو بيلعب رياضة غالباً." },
+                        { g: "Gehst du <strong>oft</strong> ins Kino?", e: "Do you often go to the cinema?", a: "بتروح السينما كتير؟" }
+                    ]},
+                    { id: 'w41_4', ger: "regelmäßig", plural: null, eng: "regularly", ar: "بانتظام", s: [
+                        { g: "Er treibt <strong>regelmäßig</strong> Sport.", e: "He regularly practices sports.", a: "هو بيلعب رياضة بانتظام." },
+                        { g: "Man sollte <strong>regelmäßig</strong> Pausen machen.", e: "One should take breaks regularly.", a: "الواحد المفروض ياخد راحة بانتظام." },
+                        { g: "Ich lerne <strong>regelmäßig</strong> Deutsch.", e: "I study German regularly.", a: "بذاكر ألماني بانتظام." }
+                    ]},
+                    { id: 'w42_1', ger: "manchmal", plural: null, eng: "sometimes", ar: "أحياناً", s: [
+                        { g: "<strong>Manchmal</strong> esse ich Fast Food.", e: "Sometimes I eat fast food.", a: "أحياناً باكل فاست فود." },
+                        { g: "<strong>Manchmal</strong> bin ich sehr müde.", e: "Sometimes I am very tired.", a: "أحياناً بكون تعبان جداً." },
+                        { g: "Er ist <strong>manchmal</strong> etwas faul.", e: "He is sometimes a bit lazy.", a: "هو أحياناً بيكون كسلان شوية." }
+                    ]},
+                    { id: 'w42_2', ger: "ab und zu", plural: null, eng: "now and then", ar: "من حين لآخر", s: [
+                        { g: "<strong>Ab und zu</strong> brauche ich eine Pause.", e: "Now and then I need a break.", a: "من حين لآخر بحتاج راحة." },
+                        { g: "Ich gehe <strong>ab und zu</strong> ins Kino.", e: "I go to the cinema now and then.", a: "بروح السينما من وقت للتاني." },
+                        { g: "Wir sehen uns <strong>ab und zu</strong>.", e: "We see each other now and then.", a: "بنشوف بعض من حين لآخر." }
+                    ]},
+                    { id: 'w42_3', ger: "selten", plural: null, eng: "rarely", ar: "نادراً", s: [
+                        { g: "Ich esse <strong>selten</strong> Fleisch.", e: "I rarely eat meat.", a: "أنا نادراً ما باكل لحمة." },
+                        { g: "Sie ist <strong>selten</strong> krank.", e: "She is rarely sick.", a: "هي نادراً ما بتعيى." },
+                        { g: "Wir gehen <strong>selten</strong> aus.", e: "We rarely go out.", a: "نادر لما بنخرج." }
+                    ]},
+                    { id: 'w42_4', ger: "nie", plural: null, eng: "never", ar: "أبداً (0%)", s: [
+                        { g: "Ich rauche <strong>nie</strong>.", e: "I never smoke.", a: "أنا عمري ما بدخن." },
+                        { g: "Er kommt <strong>nie</strong> pünktlich zur Arbeit.", e: "He never comes to work on time.", a: "هو عمره ما بييجي الشغل في ميعاده." },
+                        { g: "Ich habe das noch <strong>nie</strong> probiert.", e: "I have never tried that.", a: "أنا عمري ما جربت ده." }
+                    ]},
+                    { id: 'w43_1', ger: "gesund", plural: null, eng: "healthy", ar: "صحي", s: [
+                        { g: "Salat ist sehr <strong>gesund</strong>.", e: "Salad is very healthy.", a: "السلطة صحية جداً." },
                         { g: "Ich versuche, mich <strong>gesund</strong> zu ernähren.", e: "I try to eat healthy.", a: "أنا بحاول آكل صحي." },
-                        { g: "Gibt es eine <strong>gesündere</strong> Alternative dazu?", e: "Is there a healthier alternative to this?", a: "في بديل صحي أكتر لده؟" }
+                        { g: "Bleib <strong>gesund</strong>!", e: "Stay healthy!", a: "خليك بصحة وعافية!" }
                     ]},
-                    { id: 'w44', ger: "fit / gestresst / müde / unkonzentriert", eng: "fit / stressed / tired / unfocused", ar: "لائق بدنياً / متوتر / متعب / فاقد للتركيز", s: [
-                        { g: "Ich bin <strong>müde</strong> und <strong>gestresst</strong>, nicht <strong>fit</strong>.", e: "I am tired and stressed, not fit.", a: "أنا تعبان ومتوتر، مش فايق." },
+                    { id: 'w43_2', ger: "gesünder", plural: null, eng: "healthier", ar: "صحي أكثر", s: [
+                        { g: "Gemüse ist <strong>gesünder</strong> als Pizza.", e: "Vegetables are healthier than pizza.", a: "الخضار صحي أكتر من البيتزا." },
+                        { g: "Gibt es eine <strong>gesündere</strong> Alternative dazu?", e: "Is there a healthier alternative to this?", a: "في بديل صحي أكتر لده؟" },
+                        { g: "Ich möchte <strong>gesünder</strong> leben.", e: "I want to live healthier.", a: "أنا عايز أعيش بشكل صحي أكتر." }
+                    ]},
+                    { id: 'w44_1', ger: "fit", plural: null, eng: "fit", ar: "لائق بدنياً", s: [
+                        { g: "Nach dem Urlaub bin ich wieder <strong>fit</strong>.", e: "After the vacation I am fit again.", a: "بعد الإجازة رجعت فايق ولائق بدنياً تاني." },
+                        { g: "Sport hält den Körper <strong>fit</strong>.", e: "Sport keeps the body fit.", a: "الرياضة بتخلي الجسم لائق." },
+                        { g: "Fühlst du dich heute <strong>fit</strong>?", e: "Do you feel fit today?", a: "حاسس إنك فايق النهاردة؟" }
+                    ]},
+                    { id: 'w44_2', ger: "gestresst", plural: null, eng: "stressed", ar: "متوتر", s: [
+                        { g: "Ich bin heute sehr <strong>gestresst</strong>.", e: "I am very stressed today.", a: "أنا متوتر ومضغوط جداً النهاردة." },
+                        { g: "Sie wirkt immer ein bisschen <strong>gestresst</strong>.", e: "She always seems a bit stressed.", a: "هي باين عليها دايماً إنها مضغوطة شوية." },
+                        { g: "Wenn ich <strong>gestresst</strong> bin, meditiere ich.", e: "When I am stressed, I meditate.", a: "لما بكون متوتر، بعمل تأمل." }
+                    ]},
+                    { id: 'w44_3', ger: "müde", plural: null, eng: "tired", ar: "متعب / مرهق", s: [
+                        { g: "Am Abend bin ich oft sehr <strong>müde</strong>.", e: "In the evening I am often very tired.", a: "بالليل غالباً بكون تعبان جداً." },
+                        { g: "Bist du <strong>müde</strong>?", e: "Are you tired?", a: "أنت تعبان/عايز تنام؟" },
+                        { g: "Der Kaffee macht mich weniger <strong>müde</strong>.", e: "The coffee makes me less tired.", a: "القهوة بتخليني أقل إرهاقاً." }
+                    ]},
+                    { id: 'w44_4', ger: "unkonzentriert", plural: null, eng: "unfocused", ar: "فاقد للتركيز", s: [
                         { g: "Er wirkt heute sehr <strong>unkonzentriert</strong>.", e: "He seems very unfocused today.", a: "هو باين عليه فاقد للتركيز النهاردة." },
-                        { g: "Nach dem Urlaub bin ich wieder <strong>fit</strong>.", e: "After the vacation I am fit again.", a: "بعد الإجازة رجعت فايق ولائق بدنياً تاني." }
+                        { g: "Ohne Schlaf bin ich völlig <strong>unkonzentriert</strong>.", e: "Without sleep I am completely unfocused.", a: "من غير نوم بكون مشتت تماماً." },
+                        { g: "Die Kinder sind nachmittags oft <strong>unkonzentriert</strong>.", e: "The children are often unfocused in the afternoons.", a: "الأطفال غالباً بيفقدوا التركيز بعد الضهر." }
                     ]},
-                    { id: 'w45', ger: "vegetarisch", eng: "vegetarian", ar: "نباتي", s: [
+                    { id: 'w45', ger: "vegetarisch", plural: null, eng: "vegetarian", ar: "نباتي", s: [
                         { g: "Er isst nur <strong>vegetarisch</strong>.", e: "He only eats vegetarian.", a: "هو بياكل نباتي بس." },
                         { g: "Haben Sie auch <strong>vegetarische</strong> Gerichte?", e: "Do you also have vegetarian dishes?", a: "عندكم أطباق نباتية؟" },
                         { g: "Meine Schwester lebt seit fünf Jahren <strong>vegetarisch</strong>.", e: "My sister has been living vegetarian for five years.", a: "أختي عايشة نباتية بقالها ٥ سنين." }
                     ]},
-                    { id: 'w46', ger: "nützlich / praktisch", eng: "useful / practical", ar: "مفيد / عملي", s: [
-                        { g: "Diese App ist sehr <strong>nützlich</strong> und <strong>praktisch</strong>.", e: "This app is very useful and practical.", a: "التطبيق ده مفيد وعملي جداً." },
+                    { id: 'w46_1', ger: "nützlich", plural: null, eng: "useful", ar: "مفيد", s: [
                         { g: "Das ist ein sehr <strong>nützlicher</strong> Ratschlag.", e: "That is a very useful piece of advice.", a: "دي نصيحة مفيدة جداً." },
-                        { g: "Ein Laptop ist für Studenten sehr <strong>praktisch</strong>.", e: "A laptop is very practical for students.", a: "اللابتوب عملي جداً للطلاب." }
+                        { g: "Diese App ist für Schüler sehr <strong>nützlich</strong>.", e: "This app is very useful for students.", a: "التطبيق ده مفيد جداً للطلاب." },
+                        { g: "Fremdsprachen sind im Beruf extrem <strong>nützlich</strong>.", e: "Foreign languages are extremely useful in the profession.", a: "اللغات الأجنبية مفيدة جداً في الشغل." }
                     ]},
-                    { id: 'w47', ger: "ergonomisch", eng: "ergonomic", ar: "مريح (مصمم للجسم)", s: [
+                    { id: 'w46_2', ger: "praktisch", plural: null, eng: "practical", ar: "عملي", s: [
+                        { g: "Ein Laptop ist für Studenten sehr <strong>praktisch</strong>.", e: "A laptop is very practical for students.", a: "اللابتوب عملي جداً للطلاب." },
+                        { g: "Diese Lösung ist sehr einfach und <strong>praktisch</strong>.", e: "This solution is very simple and practical.", a: "الحل ده بسيط وعملي جداً." },
+                        { g: "Ich finde die neue Tastatur sehr <strong>praktisch</strong>.", e: "I find the new keyboard very practical.", a: "أنا شايف إن الكيبورد الجديد عملي جداً." }
+                    ]},
+                    { id: 'w47', ger: "ergonomisch", plural: null, eng: "ergonomic", ar: "مريح (مصمم للجسم)", s: [
                         { g: "Ein <strong>ergonomisch</strong> geformter Stuhl ist wichtig.", e: "An ergonomically shaped chair is important.", a: "الكرسي المريح للجسم مهم." },
                         { g: "Sie arbeitet mit einer <strong>ergonomischen</strong> Maus.", e: "She works with an ergonomic mouse.", a: "هي بتشتغل بماوس مريح." },
                         { g: "Die Tastatur sollte <strong>ergonomisch</strong> sein.", e: "The keyboard should be ergonomic.", a: "الكيبورد المفروض يكون مريح." }
                     ]},
-                    { id: 'w48', ger: "faul", eng: "lazy", ar: "كسول", s: [
+                    { id: 'w48', ger: "faul", plural: null, eng: "lazy", ar: "كسول", s: [
                         { g: "Am Wochenende bin ich oft <strong>faul</strong>.", e: "On the weekend I am often lazy.", a: "في الويك إند بكون غالباً كسلان." },
                         { g: "Er ist zu <strong>faul</strong> zum Aufräumen.", e: "He is too lazy to clean up.", a: "هو مكسل جداً إنه يروق." },
                         { g: "Sei nicht so <strong>faul</strong> und mach Sport!", e: "Don't be so lazy and do some sports!", a: "ماتبقاش كسلان كده والعب رياضة!" }
                     ]},
-                    { id: 'w49', ger: "aktuell", eng: "current", ar: "حالي / مواكب للعصر", s: [
+                    { id: 'w49', ger: "aktuell", plural: null, eng: "current / up to date", ar: "حالي / مواكب للعصر", s: [
                         { g: "Das ist ein sehr <strong>aktuelles</strong> Thema.", e: "That is a very current topic.", a: "ده موضوع حالي ومواكب للعصر جداً." },
                         { g: "Hier sind die <strong>aktuellen</strong> Nachrichten.", e: "Here is the current news.", a: "دي الأخبار الحالية." },
                         { g: "Haben Sie eine <strong>aktuelle</strong> Version der Software?", e: "Do you have a current version of the software?", a: "عندك نسخة حديثة من السوفت وير؟" }
                     ]},
-                    { id: 'w50', ger: "zwischendurch", eng: "in between", ar: "في المنتصف / بين حين وآخر", s: [
+                    { id: 'w50', ger: "zwischendurch", plural: null, eng: "in between", ar: "في المنتصف / بين حين وآخر", s: [
                         { g: "Ich esse <strong>zwischendurch</strong> einen Apfel.", e: "I eat an apple in between.", a: "باكل تفاحة في النص/بين الوجبات." },
                         { g: "<strong>Zwischendurch</strong> trinke ich immer einen Schluck Wasser.", e: "In between, I always drink a sip of water.", a: "بين الحين والآخر بشرب بؤ مية." },
                         { g: "Er macht <strong>zwischendurch</strong> kleine Pausen.", e: "He takes small breaks in between.", a: "هو بياخد راحة قصيرة في النص." }
@@ -792,152 +997,152 @@
             ],
             b2: {
                 words: [
-                    { id: 'b2_w1', ger: "die Work-Life-Balance", eng: "Work-life balance", ar: "التوازن بين العمل والحياة", s: [
+                    { id: 'b2_w1_1', ger: "die Work-Life-Balance", plural: "die Work-Life-Balances", eng: "Work-life balance", ar: "التوازن بين العمل والحياة", s: [
                         { g: "Eine gute <strong>Work-Life-Balance</strong> schützt vor Burnout.", e: "A good work-life balance protects against burnout.", a: "التوازن الجيد بين الشغل والحياة بيحمي من الإرهاق." },
                         { g: "Er hat Probleme mit seiner <strong>Work-Life-Balance</strong>.", e: "He has problems with his work-life balance.", a: "هو عنده مشاكل في التوازن بين شغله وحياته." },
                         { g: "Wir fördern eine gesunde <strong>Work-Life-Balance</strong> im Team.", e: "We promote a healthy work-life balance in the team.", a: "إحنا بندعم توازن صحي بين الشغل والحياة في الفريق." }
                     ]},
-                    { id: 'b2_w2', ger: "das Burnout-Syndrom", eng: "Burnout syndrome", ar: "متلازمة الاحتراق الوظيفي", s: [
+                    { id: 'b2_w2', ger: "das Burnout-Syndrom", plural: "die Burnout-Syndrome", eng: "Burnout syndrome", ar: "متلازمة الاحتراق الوظيفي", s: [
                         { g: "Immer mehr Arbeitnehmer leiden am <strong>Burnout-Syndrom</strong>.", e: "More and more employees suffer from burnout syndrome.", a: "المزيد من الموظفين بيعانوا من متلازمة الاحتراق الوظيفي." },
                         { g: "Er ist wegen eines <strong>Burnout-Syndroms</strong> krankgeschrieben.", e: "He is on sick leave due to a burnout syndrome.", a: "هو واخد إجازة مرضية بسبب متلازمة الاحتراق الوظيفي." },
                         { g: "Das <strong>Burnout-Syndrom</strong> entwickelt sich schleichend.", e: "The burnout syndrome develops gradually.", a: "متلازمة الاحتراق الوظيفي بتتطور بشكل تدريجي." }
                     ]},
-                    { id: 'b2_w3', ger: "die Prävention", eng: "Prevention", ar: "الوقاية", s: [
+                    { id: 'b2_w3', ger: "die Prävention", plural: "die Präventionen", eng: "Prevention", ar: "الوقاية", s: [
                         { g: "<strong>Prävention</strong> ist besser als Heilung.", e: "Prevention is better than cure.", a: "الوقاية خير من العلاج." },
                         { g: "Die Firma bietet Kurse zur <strong>Prävention</strong> an.", e: "The company offers courses for prevention.", a: "الشركة بتقدم كورسات للوقاية." },
                         { g: "Gesundheits-<strong>Prävention</strong> spart langfristig Geld.", e: "Health prevention saves money in the long run.", a: "الوقاية الصحية بتوفر فلوس على المدى الطويل." }
                     ]},
-                    { id: 'b2_w4', ger: "die Rehabilitation", eng: "Rehabilitation", ar: "إعادة التأهيل", s: [
+                    { id: 'b2_w4', ger: "die Rehabilitation", plural: "die Rehabilitationen", eng: "Rehabilitation", ar: "إعادة التأهيل", s: [
                         { g: "Nach der Operation begann die <strong>Rehabilitation</strong>.", e: "Rehabilitation began after the operation.", a: "بعد العملية بدأت مرحلة إعادة التأهيل." },
                         { g: "Er befindet sich zurzeit in <strong>Rehabilitation</strong>.", e: "He is currently in rehabilitation.", a: "هو حالياً في فترة إعادة التأهيل." },
                         { g: "Die <strong>Rehabilitation</strong> wird drei Monate dauern.", e: "The rehabilitation will last three months.", a: "إعادة التأهيل هتستمر ٣ شهور." }
                     ]},
-                    { id: 'b2_w5', ger: "die Leistungsfähigkeit", eng: "Performance capacity", ar: "القدرة على الأداء / الإنتاجية", s: [
+                    { id: 'b2_w5', ger: "die Leistungsfähigkeit", plural: "(nur Singular)", eng: "Performance capacity", ar: "القدرة على الأداء / الإنتاجية", s: [
                         { g: "Stress verringert unsere <strong>Leistungsfähigkeit</strong>.", e: "Stress reduces our performance capacity.", a: "التوتر بيقلل من قدرتنا على الأداء." },
                         { g: "Sport erhöht die mentale <strong>Leistungsfähigkeit</strong>.", e: "Sport increases mental performance.", a: "الرياضة بتزود القدرة الذهنية على الأداء." },
                         { g: "Am Abend sinkt meine <strong>Leistungsfähigkeit</strong>.", e: "In the evening, my performance drops.", a: "بالليل إنتاجيتي وقدرتي بتقل." }
                     ]},
-                    { id: 'b2_w6', ger: "das Wohlbefinden", eng: "Well-being", ar: "الشعور بالراحة / العافية", s: [
+                    { id: 'b2_w6', ger: "das Wohlbefinden", plural: "(nur Singular)", eng: "Well-being", ar: "الشعور بالراحة / العافية", s: [
                         { g: "Sport trägt zum körperlichen <strong>Wohlbefinden</strong> bei.", e: "Sport contributes to physical well-being.", a: "الرياضة بتساهم في الشعور بالعافية الجسدية." },
                         { g: "Mein allgemeines <strong>Wohlbefinden</strong> hat sich verbessert.", e: "My general well-being has improved.", a: "إحساسي العام بالراحة والعافية اتحسن." },
                         { g: "Stress am Arbeitsplatz stört das <strong>Wohlbefinden</strong>.", e: "Stress at work disrupts well-being.", a: "التوتر في الشغل بيعكر صفو الشعور بالراحة." }
                     ]},
-                    { id: 'b2_w7', ger: "die Krankenkasse", eng: "Health insurance company", ar: "شركة التأمين الصحي", s: [
+                    { id: 'b2_w7', ger: "die Krankenkasse", plural: "die Krankenkassen", eng: "Health insurance company", ar: "شركة التأمين الصحي", s: [
                         { g: "Die <strong>Krankenkasse</strong> übernimmt die Kosten.", e: "The health insurance covers the costs.", a: "شركة التأمين الصحي بتتحمل التكاليف." },
                         { g: "Ich möchte meine <strong>Krankenkasse</strong> wechseln.", e: "I would like to change my health insurance.", a: "أنا عايز أغير شركة التأمين الصحي بتاعتي." },
                         { g: "Die <strong>Krankenkasse</strong> bietet Präventionskurse an.", e: "The health insurance offers prevention courses.", a: "التأمين الصحي بيقدم كورسات وقائية." }
                     ]},
-                    { id: 'b2_w8', ger: "die Krankschreibung", eng: "Sick note", ar: "شهادة الإجازة المرضية", s: [
+                    { id: 'b2_w8', ger: "die Krankschreibung", plural: "die Krankschreibungen", eng: "Sick note", ar: "شهادة الإجازة المرضية", s: [
                         { g: "Ich muss die <strong>Krankschreibung</strong> beim Arbeitgeber abgeben.", e: "I have to hand in the sick note to my employer.", a: "لازم أسلم الإجازة المرضية لصاحب العمل." },
                         { g: "Der Arzt hat mir eine <strong>Krankschreibung</strong> gegeben.", e: "The doctor gave me a sick note.", a: "الدكتور إداني إجازة مرضية." },
                         { g: "Die <strong>Krankschreibung</strong> gilt für eine Woche.", e: "The sick note is valid for one week.", a: "الإجازة المرضية سارية لمدة أسبوع." }
                     ]},
-                    { id: 'b2_w9', ger: "die Belastung", eng: "Burden / Strain", ar: "العبء / الضغط", s: [
+                    { id: 'b2_w9', ger: "die Belastung", plural: "die Belastungen", eng: "Burden / Strain", ar: "العبء / الضغط", s: [
                         { g: "Die psychische <strong>Belastung</strong> ist sehr hoch.", e: "The psychological strain is very high.", a: "الضغط النفسي عالي جداً." },
                         { g: "Diese Arbeit ist eine große <strong>Belastung</strong> für den Rücken.", e: "This work is a big strain on the back.", a: "الشغلانة دي بتمثل عبء كبير على الضهر." },
                         { g: "Wie gehen Sie mit der doppelten <strong>Belastung</strong> um?", e: "How do you deal with the double burden?", a: "بتتعامل إزاي مع العبء والضغط المزدوج؟" }
                     ]},
-                    { id: 'b2_w10', ger: "die Überforderung", eng: "Overwhelm", ar: "الإرهاق المفرط / التحميل الزائد", s: [
+                    { id: 'b2_w10', ger: "die Überforderung", plural: "die Überforderungen", eng: "Overwhelm", ar: "الإرهاق المفرط / التحميل الزائد", s: [
                         { g: "Ständige <strong>Überforderung</strong> macht krank.", e: "Constant overwhelm makes you sick.", a: "الإرهاق المفرط المستمر بيجيب المرض." },
                         { g: "Viele Studenten leiden unter <strong>Überforderung</strong>.", e: "Many students suffer from overwhelm.", a: "طلبة كتير بيعانوا من الضغط والإرهاق الزايد." },
                         { g: "Das Gefühl der <strong>Überforderung</strong> ist gefährlich.", e: "The feeling of overwhelm is dangerous.", a: "إحساس التحميل الزائد عن الحد بيكون خطير." }
                     ]},
-                    { id: 'b2_w11', ger: "die Diagnose", eng: "Diagnosis", ar: "التشخيص", s: [
+                    { id: 'b2_w11', ger: "die Diagnose", plural: "die Diagnosen", eng: "Diagnosis", ar: "التشخيص", s: [
                         { g: "Der Arzt stellte eine genaue <strong>Diagnose</strong>.", e: "The doctor made an exact diagnosis.", a: "الدكتور عمل تشخيص دقيق." },
                         { g: "Die <strong>Diagnose</strong> war ein Schock für ihn.", e: "The diagnosis was a shock to him.", a: "التشخيص كان صدمة بالنسبة ليه." },
                         { g: "Wir warten noch auf die endgültige <strong>Diagnose</strong>.", e: "We are still waiting for the final diagnosis.", a: "إحنا لسه مستنيين التشخيص النهائي." }
                     ]},
-                    { id: 'b2_w12', ger: "das Symptom", eng: "Symptom", ar: "العرض الطبي", s: [
+                    { id: 'b2_w12', ger: "das Symptom", plural: "die Symptome", eng: "Symptom", ar: "العرض الطبي", s: [
                         { g: "Kopfschmerzen sind ein typisches <strong>Symptom</strong>.", e: "Headaches are a typical symptom.", a: "الصداع هو عرض طبي تقليدي." },
                         { g: "Welche <strong>Symptome</strong> haben Sie genau?", e: "What exact symptoms do you have?", a: "إيه الأعراض اللي عندك بالظبط؟" },
                         { g: "Dieses <strong>Symptom</strong> tritt oft bei Stress auf.", e: "This symptom often occurs with stress.", a: "العرض ده بيظهر غالباً مع التوتر." }
                     ]},
-                    { id: 'b2_w13', ger: "die Therapie", eng: "Therapy", ar: "العلاج / العلاج النفسي", s: [
+                    { id: 'b2_w13', ger: "die Therapie", plural: "die Therapien", eng: "Therapy", ar: "العلاج / العلاج النفسي", s: [
                         { g: "Er macht eine <strong>Therapie</strong> gegen seine Ängste.", e: "He is doing therapy for his fears.", a: "هو بيعمل جلسات علاج عشان مخاوفه." },
                         { g: "Die körperliche <strong>Therapie</strong> hat gut geholfen.", e: "The physical therapy helped well.", a: "العلاج الطبيعي جاب نتيجة كويسة." },
                         { g: "Der Arzt empfiehlt eine neue <strong>Therapie</strong>.", e: "The doctor recommends a new therapy.", a: "الدكتور بينصح بعلاج جديد." }
                     ]},
-                    { id: 'b2_w14', ger: "die Genesung", eng: "Recovery", ar: "التعافي / الشفاء", s: [
+                    { id: 'b2_w14', ger: "die Genesung", plural: "(nur Singular)", eng: "Recovery", ar: "التعافي / الشفاء", s: [
                         { g: "Ich wünsche Ihnen eine schnelle <strong>Genesung</strong>.", e: "I wish you a speedy recovery.", a: "بتمنالك الشفاء العاجل." },
                         { g: "Die <strong>Genesung</strong> wird einige Zeit dauern.", e: "Recovery will take some time.", a: "التعافي هياخد شوية وقت." },
                         { g: "Wir hoffen auf vollständige <strong>Genesung</strong>.", e: "We hope for a full recovery.", a: "نتمنى الشفاء والتعافي التام." }
                     ]},
-                    { id: 'b2_w15', ger: "der Facharzt", eng: "Medical specialist", ar: "الطبيب الأخصائي", s: [
+                    { id: 'b2_w15', ger: "der Facharzt", plural: "die Fachärzte", eng: "Medical specialist", ar: "الطبيب الأخصائي", s: [
                         { g: "Sie brauchen eine Überweisung zum <strong>Facharzt</strong>.", e: "You need a referral to a specialist.", a: "أنت محتاج تحويل لدكتور أخصائي." },
                         { g: "Der <strong>Facharzt</strong> hat mich untersucht.", e: "The specialist examined me.", a: "الدكتور الأخصائي فحصني." },
                         { g: "Einen Termin beim <strong>Facharzt</strong> zu bekommen, dauert lange.", e: "Getting an appointment with a specialist takes a long time.", a: "حجز ميعاد عند دكتور أخصائي بياخد وقت طويل." }
                     ]},
-                    { id: 'b2_w16', ger: "die Vorsorgeuntersuchung", eng: "Preventive medical check-up", ar: "الفحص الوقائي", s: [
+                    { id: 'b2_w16', ger: "die Vorsorgeuntersuchung", plural: "die Vorsorgeuntersuchungen", eng: "Preventive medical check-up", ar: "الفحص الوقائي", s: [
                         { g: "Eine jährliche <strong>Vorsorgeuntersuchung</strong> ist ratsam.", e: "An annual preventive check-up is advisable.", a: "الفحص الوقائي السنوي يُنصح بيه." },
                         { g: "Haben Sie die letzte <strong>Vorsorgeuntersuchung</strong> gemacht?", e: "Did you do the last preventive check-up?", a: "عملت الفحص الوقائي الأخير؟" },
                         { g: "Die <strong>Vorsorgeuntersuchung</strong> zahlt die Kasse.", e: "The check-up is paid by the insurance.", a: "شركة التأمين بتدفع تمن الفحص الوقائي." }
                     ]},
-                    { id: 'b2_w17', ger: "die Arbeitsunfähigkeit", eng: "Incapacity for work", ar: "العجز عن العمل", s: [
+                    { id: 'b2_w17', ger: "die Arbeitsunfähigkeit", plural: "die Arbeitsunfähigkeiten", eng: "Incapacity for work", ar: "العجز عن العمل", s: [
                         { g: "Die <strong>Arbeitsunfähigkeit</strong> dauerte drei Wochen.", e: "The incapacity to work lasted three weeks.", a: "العجز عن العمل استمر تلات أسابيع." },
                         { g: "Eine Bescheinigung über die <strong>Arbeitsunfähigkeit</strong> ist nötig.", e: "A certificate of incapacity for work is necessary.", a: "شهادة العجز عن العمل (المرضية) ضرورية." },
                         { g: "Chronische Schmerzen führen oft zur <strong>Arbeitsunfähigkeit</strong>.", e: "Chronic pain often leads to incapacity for work.", a: "الآلام المزمنة غالباً بتؤدي للعجز عن العمل." }
                     ]},
-                    { id: 'b2_w18', ger: "der Ausgleich", eng: "Balance / Compensation", ar: "التوازن / التعويض", s: [
+                    { id: 'b2_w18', ger: "der Ausgleich", plural: "die Ausgleiche", eng: "Balance / Compensation", ar: "التوازن / التعويض", s: [
                         { g: "Ich brauche Sport als <strong>Ausgleich</strong> zur Arbeit.", e: "I need sport as a balance to work.", a: "محتاج الرياضة كتعويض/توازن مع الشغل." },
                         { g: "Die Freizeit bietet einen guten <strong>Ausgleich</strong>.", e: "Free time offers a good balance.", a: "وقت الفراغ بيوفر توازن كويس." },
                         { g: "Sie sucht nach einem kreativen <strong>Ausgleich</strong>.", e: "She is looking for a creative balance.", a: "هي بتدور على نشاط إبداعي يوازن حياتها." }
                     ]},
-                    { id: 'b2_w19', ger: "die Eigenverantwortung", eng: "Personal responsibility", ar: "المسؤولية الشخصية", s: [
+                    { id: 'b2_w19', ger: "die Eigenverantwortung", plural: "die Eigenverantwortungen", eng: "Personal responsibility", ar: "المسؤولية الشخصية", s: [
                         { g: "Gesundheit erfordert auch <strong>Eigenverantwortung</strong>.", e: "Health also requires personal responsibility.", a: "الصحة بتتطلب برضه مسؤولية شخصية." },
                         { g: "Wir betonen die <strong>Eigenverantwortung</strong> der Mitarbeiter.", e: "We emphasize the personal responsibility of the employees.", a: "إحنا بنأكد على المسؤولية الشخصية للموظفين." },
                         { g: "Jeder muss <strong>Eigenverantwortung</strong> für sein Leben übernehmen.", e: "Everyone must take personal responsibility for their life.", a: "كل واحد لازم يتحمل مسؤولية شخصية عن حياته." }
                     ]},
-                    { id: 'b2_w20', ger: "die Auswirkung", eng: "Impact / Effect", ar: "التأثير / التداعيات", s: [
+                    { id: 'b2_w20', ger: "die Auswirkung", plural: "die Auswirkungen", eng: "Impact / Effect", ar: "التأثير / التداعيات", s: [
                         { g: "Die <strong>Auswirkungen</strong> des Schlafmangels sind enorm.", e: "The effects of sleep deprivation are enormous.", a: "تأثيرات نقص النوم ضخمة." },
                         { g: "Welche <strong>Auswirkung</strong> hat das auf die Gesundheit?", e: "What effect does that have on health?", a: "إيه التأثير بتاع ده على الصحة؟" },
                         { g: "Stress hat negative <strong>Auswirkungen</strong> auf den Körper.", e: "Stress has negative effects on the body.", a: "التوتر ليه تأثيرات سلبية على الجسم." }
                     ]},
-                    { id: 'b2_w21', ger: "die Maßnahme", eng: "Measure / Action", ar: "الإجراء", s: [
+                    { id: 'b2_w21', ger: "die Maßnahme", plural: "die Maßnahmen", eng: "Measure / Action", ar: "الإجراء", s: [
                         { g: "Wir müssen präventive <strong>Maßnahmen</strong> ergreifen.", e: "We must take preventive measures.", a: "لازم نتخذ إجراءات وقائية." },
                         { g: "Das ist eine wichtige <strong>Maßnahme</strong>.", e: "That is an important measure.", a: "ده إجراء مهم جداً." },
                         { g: "Welche <strong>Maßnahmen</strong> schlagen Sie vor?", e: "What measures do you suggest?", a: "إيه الإجراءات اللي حضرتك بتقترحها؟" }
                     ]},
-                    { id: 'b2_w22', ger: "die Ressourcen", eng: "Resources", ar: "الموارد (طاقة الإنسان)", s: [
+                    { id: 'b2_w22', ger: "die Ressource", plural: "die Ressourcen", eng: "Resource", ar: "المورد (الطاقة)", s: [
                         { g: "Jeder hat begrenzte mentale <strong>Ressourcen</strong>.", e: "Everyone has limited mental resources.", a: "كل واحد عنده موارد وطاقة عقلية محدودة." },
                         { g: "Wir müssen unsere <strong>Ressourcen</strong> besser nutzen.", e: "We must use our resources better.", a: "لازم نستخدم مواردنا بشكل أحسن." },
                         { g: "Dem Team fehlen die nötigen <strong>Ressourcen</strong>.", e: "The team lacks the necessary resources.", a: "الفريق ناقصه الموارد الضرورية." }
                     ]},
-                    { id: 'b2_w23', ger: "die Belastbarkeit", eng: "Resilience / Load capacity", ar: "القدرة على التحمل", s: [
+                    { id: 'b2_w23', ger: "die Belastbarkeit", plural: "(nur Singular)", eng: "Resilience / Load capacity", ar: "القدرة على التحمل", s: [
                         { g: "Seine <strong>Belastbarkeit</strong> im Job ist gesunken.", e: "His resilience on the job has dropped.", a: "قدرته على التحمل في الشغل قلت." },
                         { g: "Die körperliche <strong>Belastbarkeit</strong> nimmt im Alter ab.", e: "Physical resilience decreases with age.", a: "القدرة البدنية على التحمل بتقل مع السن." },
                         { g: "Sie hat eine sehr hohe <strong>Belastbarkeit</strong>.", e: "She has a very high resilience.", a: "هي عندها قدرة عالية جداً على التحمل." }
                     ]},
-                    { id: 'b2_w24', ger: "das Betriebsklima", eng: "Working atmosphere", ar: "بيئة العمل في الشركة", s: [
+                    { id: 'b2_w24', ger: "das Betriebsklima", plural: "die Betriebsklimata", eng: "Working atmosphere", ar: "بيئة العمل في الشركة", s: [
                         { g: "Ein gutes <strong>Betriebsklima</strong> reduziert Stress.", e: "A good working atmosphere reduces stress.", a: "بيئة العمل الجيدة بتقلل التوتر." },
                         { g: "Das <strong>Betriebsklima</strong> in dieser Firma ist toxisch.", e: "The working atmosphere in this company is toxic.", a: "بيئة العمل في الشركة دي سامة." },
                         { g: "Wir wollen das <strong>Betriebsklima</strong> verbessern.", e: "We want to improve the working atmosphere.", a: "إحنا عايزين نحسن بيئة العمل جوه الشركة." }
                     ]},
-                    { id: 'b2_w25', ger: "die Ergonomie", eng: "Ergonomics", ar: "الهندسة البشرية / بيئة العمل", s: [
+                    { id: 'b2_w25', ger: "die Ergonomie", plural: "(nur Singular)", eng: "Ergonomics", ar: "الهندسة البشرية / بيئة العمل", s: [
                         { g: "<strong>Ergonomie</strong> am Arbeitsplatz ist Pflicht.", e: "Ergonomics at the workplace is mandatory.", a: "بيئة العمل المريحة والمناسبة للجسم إجبارية." },
                         { g: "Sie ist Expertin für <strong>Ergonomie</strong>.", e: "She is an expert in ergonomics.", a: "هي خبيرة في هندسة بيئة العمل (الأرجونوميا)." },
                         { g: "Gute <strong>Ergonomie</strong> verhindert Rückenschmerzen.", e: "Good ergonomics prevents backache.", a: "بيئة العمل الكويسة بتمنع آلام الظهر." }
                     ]},
-                    { id: 'b2_w26', ger: "die Förderung", eng: "Promotion / Support", ar: "التعزيز / الدعم", s: [
+                    { id: 'b2_w26', ger: "die Förderung", plural: "die Förderungen", eng: "Promotion / Support", ar: "التعزيز / الدعم", s: [
                         { g: "Die <strong>Förderung</strong> der Gesundheit ist das Ziel.", e: "The promotion of health is the goal.", a: "تعزيز الصحة هو الهدف." },
                         { g: "Es gibt finanzielle <strong>Förderung</strong> vom Staat.", e: "There is financial support from the state.", a: "في دعم مالي من الدولة." },
                         { g: "Die <strong>Förderung</strong> junger Talente ist wichtig.", e: "The promotion of young talents is important.", a: "دعم المواهب الشابة شيء مهم." }
                     ]},
-                    { id: 'b2_w27', ger: "die Ausdauer", eng: "Endurance / Stamina", ar: "قوة التحمل / المواظبة", s: [
+                    { id: 'b2_w27', ger: "die Ausdauer", plural: "(nur Singular)", eng: "Endurance / Stamina", ar: "قوة التحمل / المواظبة", s: [
                         { g: "Für den Marathon braucht man viel <strong>Ausdauer</strong>.", e: "You need a lot of stamina for the marathon.", a: "عشان الماراثون محتاج قوة تحمل كبيرة." },
                         { g: "Er hat keine <strong>Ausdauer</strong> beim Lernen.", e: "He has no endurance when studying.", a: "هو معندوش قوة تحمل/مواظبة في المذاكرة." },
                         { g: "Das Training verbessert die <strong>Ausdauer</strong>.", e: "The training improves endurance.", a: "التدريب بيحسن قوة التحمل." }
                     ]},
-                    { id: 'b2_w28', ger: "der Kompromiss", eng: "Compromise", ar: "التسوية / الحل الوسط", s: [
+                    { id: 'b2_w28', ger: "der Kompromiss", plural: "die Kompromisse", eng: "Compromise", ar: "التسوية / الحل الوسط", s: [
                         { g: "Wir müssen einen guten <strong>Kompromiss</strong> finden.", e: "We must find a good compromise.", a: "لازم نلاقي حل وسط كويس." },
                         { g: "Beide Seiten haben einen <strong>Kompromiss</strong> geschlossen.", e: "Both sides reached a compromise.", a: "الطرفين وصلوا لتسوية/حل وسط." },
                         { g: "Ich bin zu keinem <strong>Kompromiss</strong> bereit.", e: "I am not ready for any compromise.", a: "أنا مش مستعد لأي حل وسط." }
                     ]},
-                    { id: 'b2_w29', ger: "die Priorität", eng: "Priority", ar: "الأولوية", s: [
+                    { id: 'b2_w29', ger: "die Priorität", plural: "die Prioritäten", eng: "Priority", ar: "الأولوية", s: [
                         { g: "Meine Familie hat höchste <strong>Priorität</strong>.", e: "My family has the highest priority.", a: "عيلتي ليها الأولوية القصوى." },
                         { g: "Sie müssen Ihre Aufgaben nach <strong>Priorität</strong> ordnen.", e: "You must organize your tasks by priority.", a: "لازم ترتب مهامك حسب الأولوية." },
                         { g: "Gesundheit sollte immer <strong>Priorität</strong> haben.", e: "Health should always have priority.", a: "الصحة المفروض دايماً يكون ليها الأولوية." }
                     ]},
-                    { id: 'b2_w30', ger: "die Erschöpfung", eng: "Exhaustion", ar: "الإنهاك / الإعياء", s: [
+                    { id: 'b2_w30', ger: "die Erschöpfung", plural: "die Erschöpfungen", eng: "Exhaustion", ar: "الإنهاك / الإعياء", s: [
                         { g: "Er brach vor völliger <strong>Erschöpfung</strong> zusammen.", e: "He collapsed from complete exhaustion.", a: "هو انهار من الإعياء التام." },
                         { g: "Die <strong>Erschöpfung</strong> stand ihr ins Gesicht geschrieben.", e: "Exhaustion was written all over her face.", a: "الإنهاك كان مرسوم على وشها." },
                         { g: "Chronische <strong>Erschöpfung</strong> ist ein Warnsignal.", e: "Chronic exhaustion is a warning sign.", a: "الإنهاك المزمن ده علامة تحذير." }
@@ -1111,8 +1316,13 @@
                             </div>
                             
                             <div className="text-center mt-2 flex-grow flex flex-col justify-center overflow-y-auto front-scroll px-1 py-3">
-                                <div className="flex flex-col justify-center items-center gap-3 mb-1">
-                                    <h3 className="text-2xl font-bold text-slate-800 leading-tight">{colorizeArticles(item.ger)}</h3>
+                                <div className="flex flex-col justify-center items-center mb-1">
+                                    <h3 className="text-2xl font-bold text-slate-800 leading-tight mb-2">{colorizeArticles(item.ger)}</h3>
+                                    {item.plural && (
+                                        <span className="text-sm font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg mb-3 tracking-wide">
+                                            Pl: {colorizeArticles(item.plural)}
+                                        </span>
+                                    )}
                                     <div className="flex items-center gap-2">
                                         <button onClick={(e) => playAudio(item.ger, e)} className="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors shadow-sm"><i data-lucide="volume-2" className="w-5 h-5"></i></button>
                                         <SpeechTester targetText={item.ger} />
@@ -1345,10 +1555,10 @@
             const activeColor = tabConfig[activeTab].color;
 
             // Safe matchers for progress bars
-            const isWord = id => /^w\d+$/.test(id);
-            const isVerb = id => /^(iv|v)\d+$/.test(id);
-            const isExp = id => /^e\d+$/.test(id);
-            const isPrep = id => /^p\d+$/.test(id);
+            const isWord = id => /^w\d+/.test(id);
+            const isVerb = id => /^(iv|v)\d+/.test(id);
+            const isExp = id => /^e\d+/.test(id);
+            const isPrep = id => /^p\d+/.test(id);
             const isReview = id => /^r_/.test(id);
             const isB2 = id => /^b2_/.test(id);
 
